@@ -28,4 +28,9 @@ class HomeController extends BaseController {
         }
         return View::make('blade.welcome.v1')->with('timer', $timerStr);
     }
+
+    public function index(){
+        $users = User::find(1);
+        var_dump($users);
+    }
 }
