@@ -3,25 +3,105 @@
 class User extends Eloquent {
 
 	public $primaryKey = 'u_id';
-
-	public function register($mobile, $pass){
-
-		$this->u_phone = $mobile;
-		$this->u_password = Hash::make($pasa);
-		// check uniqueness of token
-		$this->token = $this->getUniqueToken();
-
+	public $timestamps = false;
+	
+	public function baseValidate(){
+		$validator = Validator::make(
+				['mobile' => $this->u_telephone, 'pass' => $this->u_password],
+				['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
+			);
+		if($validator->fails()){
+			$msg = $validator->messages();
+			throw new Exception($msg->first(), 1);
+		}else
+			return true;
 	}
 
 	public function getUniqueToken(){
 		$token = Str::random(32);
-		if(User::where('token', '=', $token)->count() > 0){
-			$this->checkTokenUniqueness()
-		}
+		if(User::where('u_token', '=', $token)->count() > 0) $this->checkTokenUniqueness();
 		return $token;
 	}
 
+	public function register(){
+		$this->baseValidate();
+		// generate token
+		$this->u_token = $this->getUniqueToken();
+		// chcek if mobile exsits
+		if(User::where('u_telephone', '=', $this->u_telephone)->count() > 0){
+			throw new Exception("mobile has been used", 1);
+		}
+		$this->u_password = Hash::make($this->u_password);
+		$this->save();
+		return $this->u_token;
+	}
+
 	public function login(){
-		
+		$this->baseValidate();
+		$user = User::where('u_telephone', '=', $this->u_telephone)->first();
+		if(!isset($user->u_id)){
+			throw new Exception("user not found", 1);
+		}
+		if(!Hash::check($this->u_password, $user->u_password)){
+			throw new Exception("wrong password", 1);
+		}else{
+			return $user->u_token;
+		}
+	}
+
+	public function updateUser(){
+		$validator = Validator::make(
+			[
+				'nickname' => $this->u_nickname,
+				'age' => $this->u_age,
+				'name' => $this->u_name,
+				'sex' => $this->u_sex,
+				'head_photo' => $this->u_head_photo,
+				'pid' => $this->u_pid,
+				'id_photo' => $this->u_id_photo,
+				'school_name' => $this->u_school_name,
+				'student_num' => $this->u_student_num,
+				'student_photo' => $this->u_student_photo,
+				'address' => $this->u_address,
+			],
+			[
+				'nickname' => 'sometimes|max:32',
+				'age' => 'sometimes|digits_between:1,3',
+				'name' => 'sometimes|max:5',
+				'sex' => 'sometimes|digits:1',
+				'head_photo' => 'sometimes',
+				'pid' => 'sometimes',
+				'id_photo' => 'sometimes',
+				'school_name' => 'sometimes',
+				'student_num' => 'sometimes|alpha_num',
+				'student_photo' => 'sometimes',
+				'address' => 'sometimes',
+			]
+			);
+		if($validator->fails()){
+			$msg = $validator->messages();
+			throw new Exception($msg->first(), 1);			
+		}
+		$user = User::where('u_token', '=', $this->u_token)->first();
+		if(!isset($user->u_id)){
+			throw new Exception("user not found", 1);
+		}
+
+		isset($this->u_nickname) ? $user->u_nickname = $this->u_nickname : '';
+		isset($this->u_age) ? $user->u_age = $this->u_age : '';
+		isset($this->u_name) ? $user->u_name = $this->u_name : '';
+		isset($this->u_sex) ? $user->u_sex = $this->u_sex : '';
+		isset($this->u_head_photo) ? $user->u_head_photo = $this->u_head_photo : '';
+		isset($this->u_pid) ? $user->u_pid = $this->u_pid : '';
+		isset($this->u_id_photo) ? $user->u_id_photo = $this->u_id_photo : '';
+		isset($this->u_school_name) ? $user->u_school_name = $this->u_school_name : '';
+		isset($this->u_student_num) ? $user->u_student_num = $this->u_student_num : '';
+		isset($this->u_student_photo) ? $user->u_student_photo = $this->u_student_photo : '';
+		isset($this->u_address) ? $user->u_address = $this->u_address : '';
+		if(!$user->save()){
+			throw new Exception("update user failde", 1);
+		}else{
+			return true;			
+		}
 	}
 }

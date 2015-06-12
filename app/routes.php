@@ -11,7 +11,7 @@
 |
 */
 Route::get('/', 'HomeController@index');
+
+
 Route::resource('user', 'UserController');
-Route::get('/archive/{id}.html', 'ArchiveController@showArticle');
-Route::get('/archive', 'ArchiveController@showList');
 
