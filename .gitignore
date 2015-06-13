@@ -1,11 +1,11 @@
-/app/config/local
-/app/config/on
-/bootstrap/compiled.php
-/vendor
+app/config/local
+app/config/on
+bootstrap/compiled.php
+vendor
 composer.phar
 composer.lock
 .env.*.php
 .env.php
 .DS_Store
 Thumbs.db
-/public/web.config
+public/web.config
