@@ -45,11 +45,13 @@ class DataBaseInit extends Migration {
 			$table->increments('v_id');
 			$table->string('v_code');
 			$table->tinyInteger('v_reuse');
-			$table->timestamp('verify_at');
+			$table->timestamp('verify_at')->nullable();
 			$table->timestamp('expire_at');
 			$table->morphs('verifiable');
 			$table->timestamps();
 		});
+
+		DB::statement('ALTER TABLE `qnckdb`.`t_verification_codes` CHANGE COLUMN `verifiable_id` `verifiable_id` varchar(11) NOT NULL');
 	}
 
 	/**

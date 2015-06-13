@@ -39,7 +39,9 @@ class HomeController extends BaseController {
         //     var_dump($e->getMessage());
         // }
         // 
-                    $time = new DateTime();
+            $time = new DateTime();
+            var_dump($time->format('Y-m-d H:i:s'));
+            $time->modify('+5mins');
             var_dump($time->format('Y-m-d H:i:s'));
 
     }

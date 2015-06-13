@@ -12,6 +12,11 @@ class TxtMessage extends Eloquent{
 	private $apiKey = '028qnck';
 	private $apiPass = '789654';
 	private $apiId = '436';
+	private $apiAuth = [];
+
+	const SEND_FAST = 1;
+	const SEND_NORMAL = 2;
+	const SEND_SLOW = 3;
 
 
 	private function initCurl(){
@@ -24,10 +29,22 @@ class TxtMessage extends Eloquent{
 		$this->apiAuth = ['userid' => $this->apiId, 'account' => $this->apiKey, 'password' => $this->apiPass];
 	}
 
+	private function baseValidate(){
+		$validator = Validator::make(
+			['mobile' => $this->t_mobile, 'content' => $this->t_content],
+			['mobile' => 'required|digits:11', 'content' => 'required']
+			);
+		if($validator->fails()){
+			$msg = $validator->messages();
+			throw new Exception($msg->first(), 1);
+		}else{
+			return true;
+		}
+	}
+	
 	private function execCurl(){
 		$re = curl_exec($this->ch);
 		$re = new SimpleXMLElement($re);
-
 		return $re;
 	}
 
@@ -36,6 +53,7 @@ class TxtMessage extends Eloquent{
 	}
 
 	public function sendMessage(){
+		$this->baseValidate();
 		$this->initCurl();
 		$data = new Collection();
 		$send = ['mobile' => $this->t_mobile, 'content' => $this->t_content, 'action' => 'send', 'extno' => '', 'sendTime' => ''];
@@ -49,11 +67,12 @@ class TxtMessage extends Eloquent{
 			$this->save();
 			return true;
 		}else{
-			throw new Exception($re->message, 1);
+			if(is_object($re)){
+				throw new Exception($re->message, 1);				
+			}else{
+				throw new Exception("send message failed", 1);				
+			}
 		}
 	}
 
-	public function verifyCode(){
-		$this->morphOne('VerificationCode', 'verifiable');
-	}
 }

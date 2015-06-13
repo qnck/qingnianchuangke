@@ -12,6 +12,10 @@
 */
 Route::get('/', 'HomeController@index');
 
-
+/* USER START*/
 Route::resource('user', 'UserController');
+/* USER END*/
 
+/* VERIFY START*/
+Route::get('verify/code', 'VerificationController@getVCode');
+/* VERIFY END*/
