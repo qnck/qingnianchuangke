@@ -5,6 +5,11 @@ class User extends Eloquent {
 	public $primaryKey = 'u_id';
 	public $timestamps = false;
 
+	/**
+	 * validate base info
+	 * @author Kydz 2015-06-14
+	 * @return bool
+	 */
 	public function baseValidate(){
 		$validator = Validator::make(
 				['mobile' => $this->u_mobile, 'pass' => $this->u_password],
@@ -17,12 +22,22 @@ class User extends Eloquent {
 			return true;
 	}
 
+	/**
+	 * get unique token
+	 * @author Kydz 2015-06-14
+	 * @return string token
+	 */
 	public function getUniqueToken(){
 		$token = Str::random(32);
 		if(User::where('u_token', '=', $token)->count() > 0) $this->checkTokenUniqueness();
 		return $token;
 	}
 
+	/**
+	 * register user
+	 * @author Kydz 2015-06-14
+	 * @return string user token
+	 */
 	public function register(){
 		$this->baseValidate();
 		// generate token
@@ -37,6 +52,11 @@ class User extends Eloquent {
 		return $this->u_token;
 	}
 
+	/**
+	 * log user in
+	 * @author Kydz 2015-06-14
+	 * @return sting user token
+	 */
 	public function login(){
 		$this->baseValidate();
 		$user = User::where('u_mobile', '=', $this->u_mobile)->first();
@@ -50,6 +70,11 @@ class User extends Eloquent {
 		}
 	}
 
+	/**
+	 * update user info
+	 * @author Kydz 2015-06-14
+	 * @return bool
+	 */
 	public function updateUser(){
 		$validator = Validator::make(
 			[

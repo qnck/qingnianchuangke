@@ -1,12 +1,26 @@
 <?php
 
 /**
-* 
+* handle phone opreation, send text, verify text code e.g.
 */
 class Phone extends Eloquent{
 
 	private $_mobile = '';
 
+	/**
+	 * __construct
+	 * @param n/a
+	 */
+	function __construct($mobile){
+		$this->_mobile = $mobile;
+		$this->baseValidate();
+	}
+
+	/**
+	 * validate base information
+	 * @author Kydz 2015-06-14
+	 * @return bool
+	 */
 	private function baseValidate(){
 		$validator = Validator::make(
 			['mobile' => $this->_mobile],
@@ -20,11 +34,13 @@ class Phone extends Eloquent{
 		}
 	}
 	
-	function __construct($mobile){
-		$this->_mobile = $mobile;
-		$this->baseValidate();
-	}
-
+	/**
+	 * send text message
+	 * @author Kydz 2015-06-14
+	 * @param  string $content   text message
+	 * @param  int $sendLevel how fast will this message been sent
+	 * @return bool
+	 */
 	public function sendText($content, $sendLevel = TxtMessage::SEND_NORMAL){
 		$now = new DateTime();
 		$txt = new TxtMessage();
@@ -35,6 +51,11 @@ class Phone extends Eloquent{
 		return $txt->sendMessage();
 	}
 
+	/**
+	 * send verification code
+	 * @author Kydz 2015-06-14
+	 * @return string code
+	 */
 	public function sendVCode(){
 		$code = new VerificationCode();
 		$code->generateCode();
@@ -50,6 +71,12 @@ class Phone extends Eloquent{
 		return $code->v_code;
 	}
 
+	/**
+	 * validate code
+	 * @author Kydz 2015-06-14
+	 * @param  string $code the vode to be alidate
+	 * @return bool
+	 */
 	public function authVCode($code){
 		$now = new DateTime();
 		$now = $now->format('Y-m-d H:i:s');
@@ -69,6 +96,11 @@ class Phone extends Eloquent{
 		}
 	}
 
+	/**
+	 * morph method from laravel
+	 * @author Kydz 2015-06-14
+	 * @return n/a
+	 */
 	public function verification_code(){
 		$this->morphOne('VerificationCode', 'verifiable');
 	}

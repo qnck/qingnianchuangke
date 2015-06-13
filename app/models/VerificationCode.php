@@ -14,6 +14,12 @@ class VerificationCode extends Eloquent{
         return $this->morphTo();
     }
 
+    /**
+     * generate verification code
+     * @author Kydz 2015-06-14
+     * @param  int $type code type
+     * @return string
+     */
     public function generateCode($type = VerificationCode::CODE_TYPE_NUMERIC){
     	switch ($type) {
     		case VerificationCode::CODE_TYPE_ALPHA_NUMERIC:

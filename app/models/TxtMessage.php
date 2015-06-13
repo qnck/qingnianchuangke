@@ -18,17 +18,11 @@ class TxtMessage extends Eloquent{
 	const SEND_NORMAL = 2;
 	const SEND_SLOW = 3;
 
-
-	private function initCurl(){
-		$this->ch = curl_init();
-
-		curl_setopt($this->ch, CURLOPT_POST, 1);
-		curl_setopt($this->ch, CURLOPT_URL, $this->sendUrl);
-		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-		
-		$this->apiAuth = ['userid' => $this->apiId, 'account' => $this->apiKey, 'password' => $this->apiPass];
-	}
-
+	/**
+	 * validate base information
+	 * @author Kydz 2015-06-14
+	 * @return bool
+	 */
 	private function baseValidate(){
 		$validator = Validator::make(
 			['mobile' => $this->t_mobile, 'content' => $this->t_content],
@@ -41,17 +35,47 @@ class TxtMessage extends Eloquent{
 			return true;
 		}
 	}
+
+	/**
+	 * prepare curl connection
+	 * @author Kydz 2015-06-14
+	 * @return n/a
+	 */
+	private function initCurl(){
+		$this->ch = curl_init();
+
+		curl_setopt($this->ch, CURLOPT_POST, 1);
+		curl_setopt($this->ch, CURLOPT_URL, $this->sendUrl);
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
+		
+		$this->apiAuth = ['userid' => $this->apiId, 'account' => $this->apiKey, 'password' => $this->apiPass];
+	}
 	
+	/**
+	 * execute curl
+	 * @author Kydz 2015-06-14
+	 * @return object xml to obj
+	 */
 	private function execCurl(){
 		$re = curl_exec($this->ch);
 		$re = new SimpleXMLElement($re);
 		return $re;
 	}
 
+	/**
+	 * set post data
+	 * @author Kydz 2015-06-14
+	 * @param  array $data data to be posted
+	 */
 	private function setPostData($data){
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
 	}
 
+	/**
+	 * send text meesage and store it
+	 * @author Kydz 2015-06-14
+	 * @return bool
+	 */
 	public function sendMessage(){
 		$this->baseValidate();
 		$this->initCurl();
@@ -60,7 +84,7 @@ class TxtMessage extends Eloquent{
 		$data = $data->merge($send)->merge($this->apiAuth);
 		$data = $data->toArray();
 		$this->setPostData($data);
-		// $re = $this->execCurl();
+		$re = $this->execCurl();
 		$re = new stdClass();
 		$re->returnstatus = 'Success';
 		if($re->returnstatus == 'Success'){
