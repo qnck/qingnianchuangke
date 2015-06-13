@@ -3,21 +3,11 @@
 class UserController extends \BaseController {
 
 	/**
-	 * Display a listing of the resource.
+	 * sign in
 	 *
 	 * @return Response
 	 */
 	public function index(){
-
-	}
-
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create(){
 		$mobile = Input::get('mobile');
 		$pass = Input::get('pass');
 		$user = new User();
@@ -33,17 +23,30 @@ class UserController extends \BaseController {
 
 
 	/**
-	 * Store a newly created resource in storage.
+	 * Show the form for creating a new resource.
+	 *
+	 * @return Response
+	 */
+	public function create(){
+	}
+
+
+	/**
+	 * sign up
 	 *
 	 * @return Response
 	 */
 	public function store(){
 		$mobile = Input::get('mobile');
 		$pass = Input::get('pass');
+		$vCode = Input::get('vcode');
 		$user = new User();
 		$user->u_mobile = $mobile;
 		$user->u_password = $pass;
 		try {
+			// verify vcode via phone
+			$phone = new Phone($mobile);
+			$phone->authVCode($vCode);			
 			$re = ['token' => $user->register(), 'error' => ''];
 		} catch (Exception $e) {
 			$re = ['error' => $e->getMessage()];
@@ -75,7 +78,7 @@ class UserController extends \BaseController {
 
 
 	/**
-	 * Update the specified resource in storage.
+	 * update
 	 *
 	 * @param  int  $id
 	 * @return Response
