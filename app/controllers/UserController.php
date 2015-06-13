@@ -17,9 +17,18 @@ class UserController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function create()
-	{
-		//
+	public function create(){
+		$mobile = Input::get('mobile');
+		$pass = Input::get('pass');
+		$user = new User();
+		$user->u_telephone = $mobile;
+		$user->u_password = $pass;
+		try {
+			$re = ['token' => $user->login(), 'error' => ''];
+		} catch (Exception $e) {
+			$re = ['error' => $e->getMessage()];
+		}
+		return Response::json($re);
 	}
 
 
@@ -28,14 +37,18 @@ class UserController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function store()
-	{
-		$mobile = Request::get('mobile');
-		$pass = Request::get('pass');
+	public function store(){
+		$mobile = Input::get('mobile');
+		$pass = Input::get('pass');
 		$user = new User();
-		$user->save();
-
-
+		$user->u_telephone = $mobile;
+		$user->u_password = $pass;
+		try {
+			$re = ['token' => $user->register(), 'error' => ''];
+		} catch (Exception $e) {
+			$re = ['error' => $e->getMessage()];
+		}
+		return Response::json($re);
 	}
 
 
@@ -45,8 +58,7 @@ class UserController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
-	{
+	public function show($id){
 		//
 	}
 
@@ -57,8 +69,7 @@ class UserController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
-	{
+	public function edit($id){
 		//
 	}
 
@@ -69,9 +80,26 @@ class UserController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
-	{
-		//
+	public function update($id){
+		$user = new User();
+		$user->u_token = $id;
+		$user->u_nickname = Input::get('nickname');
+		$user->u_age = Input::get('age');
+		$user->u_name = Input::get('name');
+		$user->u_sex = Input::get('sex');
+		$user->u_head_photo = Input::get('head_photo');
+		$user->u_pid = Input::get('pid');
+		$user->u_id_photo = Input::get('id_photo');
+		$user->u_school_name = Input::get('school_name');
+		$user->u_student_num = Input::get('student_num');
+		$user->u_student_photo = Input::get('student_photo');
+		$user->u_address = Input::get('address');
+		try {
+			$re = $user->updateUser();
+		} catch (Exception $e) {
+			$re = ['error' => $e->getMessage()];
+		}
+		return Response::json($re);
 	}
 
 
@@ -81,8 +109,7 @@ class UserController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
-	{
+	public function destroy($id){
 		//
 	}
 

@@ -1,5 +1,7 @@
 <?php
 
+use \Illuminate\Support\Collection;
+
 class HomeController extends BaseController {
 
     /*
@@ -30,7 +32,11 @@ class HomeController extends BaseController {
     }
 
     public function index(){
-        $users = User::find(1);
-        var_dump($users);
+        $msg = new TxtMessage();
+        try {
+            $msg->sendMessage('18628320065', '第一题短信');
+        } catch (Exception $e) {
+            
+        }
     }
 }
