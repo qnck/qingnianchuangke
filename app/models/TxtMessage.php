@@ -3,11 +3,12 @@
 use \Illuminate\Support\Collection;
 
 class TxtMessage extends Eloquent{
-	// public $primaryKey = 't_id';
+
+	public $primaryKey = 't_id';
 
 	private $ch = '';
 	private $api = '';
-	private $sendUrl = 'http://222.76.210.200:9898/sms.aspx';
+	private $sendUrl = 'http://222.76.210.200:9999/sms.aspx';
 	private $apiKey = '028qnck';
 	private $apiPass = '789654';
 	private $apiId = '436';
@@ -34,17 +35,25 @@ class TxtMessage extends Eloquent{
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
 	}
 
-	public function sendMessage($message, $mobile){
+	public function sendMessage(){
 		$this->initCurl();
 		$data = new Collection();
-		$data = $data->merge(['mobile' => $mobile, 'content' => $message, 'action' => 'send'])->merge($this->apiAuth);
+		$send = ['mobile' => $this->t_mobile, 'content' => $this->t_content, 'action' => 'send', 'extno' => '', 'sendTime' => ''];
+		$data = $data->merge($send)->merge($this->apiAuth);
 		$data = $data->toArray();
 		$this->setPostData($data);
-		$re = $this->execCurl();
-		if($re->returnstatus == 'Faild'){
-			throw new Exception($re->message, 1);			
+		// $re = $this->execCurl();
+		$re = new stdClass();
+		$re->returnstatus = 'Success';
+		if($re->returnstatus == 'Success'){
+			$this->save();
+			return true;
 		}else{
-			
+			throw new Exception($re->message, 1);
 		}
+	}
+
+	public function verifyCode(){
+		$this->morphOne('VerificationCode', 'verifiable');
 	}
 }
