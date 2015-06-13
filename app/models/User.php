@@ -4,10 +4,10 @@ class User extends Eloquent {
 
 	public $primaryKey = 'u_id';
 	public $timestamps = false;
-	
+
 	public function baseValidate(){
 		$validator = Validator::make(
-				['mobile' => $this->u_telephone, 'pass' => $this->u_password],
+				['mobile' => $this->u_mobile, 'pass' => $this->u_password],
 				['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
 			);
 		if($validator->fails()){
@@ -28,17 +28,18 @@ class User extends Eloquent {
 		// generate token
 		$this->u_token = $this->getUniqueToken();
 		// chcek if mobile exsits
-		if(User::where('u_telephone', '=', $this->u_telephone)->count() > 0){
+		if(User::where('u_mobile', '=', $this->u_mobile)->count() > 0){
 			throw new Exception("mobile has been used", 1);
 		}
 		$this->u_password = Hash::make($this->u_password);
+		$this->u_status = 1;
 		$this->save();
 		return $this->u_token;
 	}
 
 	public function login(){
 		$this->baseValidate();
-		$user = User::where('u_telephone', '=', $this->u_telephone)->first();
+		$user = User::where('u_mobile', '=', $this->u_mobile)->first();
 		if(!isset($user->u_id)){
 			throw new Exception("user not found", 1);
 		}

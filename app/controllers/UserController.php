@@ -21,7 +21,7 @@ class UserController extends \BaseController {
 		$mobile = Input::get('mobile');
 		$pass = Input::get('pass');
 		$user = new User();
-		$user->u_telephone = $mobile;
+		$user->u_mobile = $mobile;
 		$user->u_password = $pass;
 		try {
 			$re = ['token' => $user->login(), 'error' => ''];
@@ -41,7 +41,7 @@ class UserController extends \BaseController {
 		$mobile = Input::get('mobile');
 		$pass = Input::get('pass');
 		$user = new User();
-		$user->u_telephone = $mobile;
+		$user->u_mobile = $mobile;
 		$user->u_password = $pass;
 		try {
 			$re = ['token' => $user->register(), 'error' => ''];
