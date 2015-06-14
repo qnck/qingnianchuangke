@@ -14,7 +14,8 @@ class VerificationController extends \BaseController{
 		try {
 			$phone = new Phone($mobile);
 			$code = $phone->sendVCode();
-			$re = ['data' => ['vcode' => $code], 'result' => true, 'info' => '验证码已经发送'];
+			$data = ['vcode' => $code];
+			$re = ['data' => [$data], 'result' => true, 'info' => '验证码已经发送'];
 		} catch (Exception $e) {
 			$re = ['data' => [], 'result' => false, 'info' => $e->getMessage()];
 		}
