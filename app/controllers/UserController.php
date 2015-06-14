@@ -14,9 +14,9 @@ class UserController extends \BaseController {
 		$user->u_mobile = $mobile;
 		$user->u_password = $pass;
 		try {
-			$re = ['data' => ['token' => $user->login()], 'error' => false, 'info' => '登陆成功'];
+			$re = ['data' => ['token' => $user->login()], 'result' => true, 'info' => '登陆成功'];
 		} catch (Exception $e) {
-			$re = ['data' => [], 'error' => true, 'info' => $e->getMessage()];
+			$re = ['data' => [], 'result' => false, 'info' => $e->getMessage()];
 		}
 		return Response::json($re);
 	}
@@ -47,9 +47,9 @@ class UserController extends \BaseController {
 			// verify vcode via phone
 			$phone = new Phone($mobile);
 			$phone->authVCode($vCode);			
-			$re = ['data' => ['token' => $user->register()], 'error' => false, 'info' => '注册成功'];
+			$re = ['data' => ['token' => $user->register()], 'result' => true, 'info' => '注册成功'];
 		} catch (Exception $e) {
-			$re = ['data' => [], 'info' => $e->getMessage(), 'error' => true];
+			$re = ['data' => [], 'info' => $e->getMessage(), 'result' => false];
 		}
 		return Response::json($re);
 	}
@@ -99,9 +99,9 @@ class UserController extends \BaseController {
 		$user->u_address = Input::get('address');
 		try {
 			$user->updateUser();
-			$re = ['data' => [], 'error' => false, 'info' => '更新成功'];
+			$re = ['data' => [], 'result' => true, 'info' => '更新成功'];
 		} catch (Exception $e) {
-			$re = ['data' => [], 'error' => true, 'info' => $e->getMessage()];
+			$re = ['data' => [], 'result' => false, 'info' => $e->getMessage()];
 		}
 		return Response::json($re);
 	}
