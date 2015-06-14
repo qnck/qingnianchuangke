@@ -13,13 +13,10 @@ class VerificationController extends \BaseController{
 		$mobile = Input::get('mobile');
 		try {
 			$phone = new Phone($mobile);
-			if($re = $phone->sendVCode()){
-				$re = ['error' => '', 'v_code' => $re];
-			}else{
-				$re = ['error' => 'unknow error'];
-			}
+			$code = $phone->sendVCode();
+			$re = ['data' => ['vcode' => $code], 'error' => false, 'info' => '验证码已经发送'];
 		} catch (Exception $e) {
-			$re = ['error' => $e->getMessage()];
+			$re = ['data' => [], 'error' => true, 'info' => $e->getMessage()];
 		}
 		return Response::json($re);
 	}

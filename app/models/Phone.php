@@ -88,7 +88,7 @@ class Phone extends Eloquent{
 		->whereNull('verify_at')
 		->first();
 		if(!isset($vCode->v_id)){
-			throw new Exception("the code is invalide", 1);			
+			throw new Exception("验证码无效", 1);			
 		}else{
 			$vCode->verify_at = $now;
 			$vCode->save();

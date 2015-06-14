@@ -32,9 +32,10 @@ class VerificationCode extends Eloquent{
     			break;
     		
     		default:
-    			throw new Exception("unknow code type", 1);
+    			throw new Exception("未知的验证码类型", 1);
     			break;
     	}
+        $code = '111111';
 		$this->v_code = $code;
 	}
 }

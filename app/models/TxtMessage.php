@@ -84,7 +84,7 @@ class TxtMessage extends Eloquent{
 		$data = $data->merge($send)->merge($this->apiAuth);
 		$data = $data->toArray();
 		$this->setPostData($data);
-		$re = $this->execCurl();
+		// $re = $this->execCurl();
 		$re = new stdClass();
 		$re->returnstatus = 'Success';
 		if($re->returnstatus == 'Success'){
@@ -94,7 +94,7 @@ class TxtMessage extends Eloquent{
 			if(is_object($re)){
 				throw new Exception($re->message, 1);				
 			}else{
-				throw new Exception("send message failed", 1);				
+				throw new Exception("短信发送失败", 1);				
 			}
 		}
 	}
