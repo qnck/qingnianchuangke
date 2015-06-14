@@ -44,7 +44,7 @@ class User extends Eloquent {
 		$this->u_token = $this->getUniqueToken();
 		// chcek if mobile exsits
 		if(User::where('u_mobile', '=', $this->u_mobile)->count() > 0){
-			throw new Exception("mobile has been used", 1);
+			throw new Exception("手机号码已被使用", 1);
 		}
 		$this->u_password = Hash::make($this->u_password);
 		$this->u_status = 1;
@@ -61,10 +61,10 @@ class User extends Eloquent {
 		$this->baseValidate();
 		$user = User::where('u_mobile', '=', $this->u_mobile)->first();
 		if(!isset($user->u_id)){
-			throw new Exception("user not found", 1);
+			throw new Exception("没有找到请求的用户", 1);
 		}
 		if(!Hash::check($this->u_password, $user->u_password)){
-			throw new Exception("wrong password", 1);
+			throw new Exception("密码错误", 1);
 		}else{
 			return $user->u_token;
 		}
@@ -110,7 +110,7 @@ class User extends Eloquent {
 		}
 		$user = User::where('u_token', '=', $this->u_token)->first();
 		if(!isset($user->u_id)){
-			throw new Exception("user not found", 1);
+			throw new Exception("没有找到请求的用户", 1);
 		}
 
 		isset($this->u_nickname) ? $user->u_nickname = $this->u_nickname : '';
@@ -125,7 +125,7 @@ class User extends Eloquent {
 		isset($this->u_student_photo) ? $user->u_student_photo = $this->u_student_photo : '';
 		isset($this->u_address) ? $user->u_address = $this->u_address : '';
 		if(!$user->save()){
-			throw new Exception("update user failde", 1);
+			throw new Exception("更新用户信息失败", 1);
 		}else{
 			return true;			
 		}
