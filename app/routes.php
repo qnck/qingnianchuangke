@@ -16,6 +16,10 @@ Route::get('/', 'HomeController@index');
 Route::resource('user', 'UserController');
 /* USER END*/
 
+/* POST START*/
+Route::resource('post', 'PostController');
+/* POST END*/
+
 /* VERIFY START*/
 Route::get('verify/code', 'VerificationController@getVCode');
 /* VERIFY END*/
