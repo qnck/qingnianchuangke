@@ -3,7 +3,6 @@
 class User extends Eloquent {
 
 	public $primaryKey = 'u_id';
-	public $timestamps = false;
 
 	/**
 	 * validate base info
@@ -129,5 +128,17 @@ class User extends Eloquent {
 		}else{
 			return true;			
 		}
+	}
+
+	public function showInList(){
+		$data = [];
+		$data['name'] = $this->u_nickname;
+		$data['head_img'] = $this->u_head_img;
+		$data['id'] = $this->u_id;
+		return $data;
+	}
+
+	public function getPost(){
+		return $this->hasMany('Post');
 	}
 }

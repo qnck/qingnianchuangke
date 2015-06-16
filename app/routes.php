@@ -16,6 +16,12 @@ Route::get('/', 'HomeController@index');
 Route::resource('user', 'UserController');
 /* USER END*/
 
+/* POST START*/
+Route::resource('post', 'PostController');
+Route::get('post/praise/{id}', 'PostController@praise');
+Route::delete('post/reply/{id}', 'PostController@disableReply');
+/* POST END*/
+
 /* VERIFY START*/
 Route::get('verify/code', 'VerificationController@getVCode');
 /* VERIFY END*/
