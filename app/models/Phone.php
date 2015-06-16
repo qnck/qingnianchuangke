@@ -101,7 +101,7 @@ class Phone extends Eloquent{
 	 * @author Kydz 2015-06-14
 	 * @return n/a
 	 */
-	public function verification_code(){
+	public function verifiable(){
 		$this->morphOne('VerificationCode', 'verifiable');
 	}
 }

@@ -18,6 +18,8 @@ Route::resource('user', 'UserController');
 
 /* POST START*/
 Route::resource('post', 'PostController');
+Route::get('post/praise/{id}', 'PostController@praise');
+Route::delete('post/reply/{id}', 'PostController@disableReply');
 /* POST END*/
 
 /* VERIFY START*/
