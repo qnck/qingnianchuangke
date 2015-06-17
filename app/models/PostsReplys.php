@@ -46,7 +46,7 @@ class PostsReplys extends Eloquent{
 
 	public function showInList(){
 		$data = [];
-		$data = ['content' => urldecode($this->r_content), 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList()];
+		$data = ['content' => $this->r_content, 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList()];
 		return $data;
 	}
 }
