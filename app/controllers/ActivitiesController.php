@@ -7,9 +7,8 @@ class ActivitiesController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function index()
-	{
-		//
+	public function index(){
+		
 	}
 
 

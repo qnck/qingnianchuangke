@@ -20,7 +20,7 @@ class PostController extends \BaseController {
 			foreach ($posts as $post) {
 				$data[] = $post->showInList();
 			}
-			$re = ['result' => true, 'data' => [$data], 'info' => '读取帖子成功'];
+			$re = ['result' => true, 'data' => $data, 'info' => '读取帖子成功'];
 		} catch (Exception $e) {
 			$re = ['result' => false, 'data' => $data, 'info' => $e->getMessage()];
 		}
@@ -85,7 +85,7 @@ class PostController extends \BaseController {
 		->where('p_id', '=', $id)->where('p_status', '=', 0)->first();
 		try {
 			$data = $post->showInList();
-			$re = ['result' => true, 'data' => [$data], 'info' => '读取帖子成功'];
+			$re = ['result' => true, 'data' => $data, 'info' => '读取帖子成功'];
 		} catch (Exception $e) {
 			$re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
 		}
