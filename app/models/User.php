@@ -141,4 +141,14 @@ class User extends Eloquent {
 	public function getPost(){
 		return $this->hasMany('Post');
 	}
+
+	public static function chkUserByToken($token){
+		$user = User::where('u_token', '=', $token)->first();
+		if(!isset($user->u_id)){
+			throw new Exception('您的登录已过期， 请重新登录', 1);
+		}else{
+			return $user;
+		}
+	}
+
 }
