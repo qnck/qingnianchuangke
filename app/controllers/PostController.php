@@ -58,6 +58,7 @@ class PostController extends \BaseController {
 	public function store(){
 		$this->chkUser();
 		$title = Input::get('title');
+		$title = urldecode($title);
 		$longitude = Input::get('longitude');
 		$latitude = Input::get('latitude');
 		$address = Input::get('address');
@@ -112,6 +113,7 @@ class PostController extends \BaseController {
 		$this->chkUser();
 		$post = Post::find($id);
 		$content = Input::get('content');
+		$content = urldecode($content);
 		$reply = new PostsReplys();
 		$reply->p_id = $id;
 		$reply->u_id = $this->user->u_id;
