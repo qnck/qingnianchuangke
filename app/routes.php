@@ -22,6 +22,10 @@ Route::get('post/praise/{id}', 'PostController@praise');
 Route::delete('post/reply/{id}', 'PostController@disableReply');
 /* POST END*/
 
+/* ACTIVITIES START*/
+Route::resource('activities', 'ActivitiesController');
+/* ACTIVITIES END*/
+
 /* VERIFY START*/
 Route::get('verify/code', 'VerificationController@getVCode');
 /* VERIFY END*/

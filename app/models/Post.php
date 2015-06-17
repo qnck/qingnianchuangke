@@ -88,10 +88,10 @@ class Post extends Eloquent{
 		$replys = [];
 		if(isset($this->replys)){
 			foreach ($this->replys as $reply) {
-				$replys[$reply->r_id] = $reply->showInList();
+				$replys[] = $reply->showInList();
 			}
 		}
-		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys];
+		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'id' => $this->p_id];
 		return $data;
 	}
 

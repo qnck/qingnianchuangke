@@ -18,7 +18,7 @@ class PostController extends \BaseController {
 				},
 				'user'])->where('p_status', '=', 0)->paginate(10);
 			foreach ($posts as $post) {
-				$data[$post->p_id] = $post->showInList();
+				$data[] = $post->showInList();
 			}
 			$re = ['result' => true, 'data' => [$data], 'info' => '读取帖子成功'];
 		} catch (Exception $e) {
