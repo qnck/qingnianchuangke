@@ -63,7 +63,7 @@ class Post extends Eloquent{
 				$replys[$reply->r_id] = $reply->showInList();
 			}
 		}
-		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys];
+		$data = ['title' => urldecode($this->p_title), 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys];
 		return $data;
 	}
 
