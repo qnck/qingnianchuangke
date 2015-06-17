@@ -4,30 +4,19 @@ class PostController extends \BaseController {
 
 	private $user = null;
 
-	private function chkUser(){
-		$token = Input::get('token');
-		$user = User::where('u_token', '=', $token)->first();
-		if(!isset($user->u_id)){
-			return Response::json(['result' => false, 'data' => [], 'msg' => '您的登录已过期，请重新登录']);
-		}else{
-			$this->user = $user;
-		}
-	}
-
 	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
 	 */
 	public function index(){
-		$page = Input::get('page', 0);
 		$data = [];
 		try {
 			$posts = Post::with([
 				'replys' => function($query){
 					$query->where('r_status', '=', 0);
 				},
-				'user'])->where('p_status', '=', 0)->get();
+				'user'])->where('p_status', '=', 0)->paginate(10);
 			foreach ($posts as $post) {
 				$data[$post->p_id] = $post->showInList();
 			}
@@ -56,7 +45,7 @@ class PostController extends \BaseController {
 	 * @return Response
 	 */
 	public function store(){
-		$this->chkUser();
+		$token = Input::get('token');
 		$title = Input::get('title');
 		$title = urldecode($title);
 		$longitude = Input::get('longitude');
@@ -64,13 +53,14 @@ class PostController extends \BaseController {
 		$address = Input::get('address');
 		$site_id = 1;
 		$post = new Post();
-		$post->u_id = $this->user->u_id;
 		$post->p_title = $title;
 		$post->s_id = $site_id;
 		$post->p_longitude = $longitude;
 		$post->p_latitude = $latitude;
 		$post->p_address = $address;
 		try {
+			$this->user = User::chkUserByToken($token);
+			$post->u_id = $this->user->u_id;
 			$post->addPost();
 			$re = ['result' => true, 'data' => [], 'info' => '添加成功'];
 		} catch (Exception $e) {
@@ -104,23 +94,24 @@ class PostController extends \BaseController {
 
 
 	/**
-	 * Show the form for editing the specified resource.
+	 * Add reply to a post
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function edit($id){
-		$this->chkUser();
-		$post = Post::find($id);
+		$post = Post::find($id);		
+		$token = Input::get('token');
 		$content = Input::get('content');
 		$content = urldecode($content);
 		$reply = new PostsReplys();
 		$reply->p_id = $id;
-		$reply->u_id = $this->user->u_id;
 		$reply->r_content = $content;
 		$reply->r_status = 0;
 		$reply->created_at = date('Y-m-d H:i:s');
 		try {
+			$this->user = User::chkUserByToken($token);
+			$reply->u_id = $this->user->u_id;
 			$reply->addReply();
 			$re = ['result' => true, 'data' => [], 'info' => '回复成功'];
 		} catch (Exception $e) {
@@ -143,15 +134,16 @@ class PostController extends \BaseController {
 
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Remove the specified resource softly.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function destroy($id){
-		$this->chkUser();
+		$token = Input::get('token');
 		$post = Post::find($id);
 		try {
+			User::chkUserByToken($token);
 			$post->disable();
 			$re = ['result' =>true, 'data' => [], 'info' => '删除成功'];
 		} catch (Exception $e) {
@@ -167,10 +159,11 @@ class PostController extends \BaseController {
 	 * @return [type]     [description]
 	 */
 	public function praise($id){
-		$this->chkUser();
+		$token = Input::get('token');
 		$type = Input::get('type');
 		$post = Post::find($id);
 		try {
+			User::chkUserByToken($token);
 			$result = true;
 			if($type == 1){
 				$post->addPraise();
@@ -191,9 +184,17 @@ class PostController extends \BaseController {
 
 	}
 
+	/**
+	 * disable reply
+	 * @author Kydz 2015-06-17
+	 * @param  int $id reply id
+	 * @return respose
+	 */
 	public function disableReply($id){
+		$token = Input::get('token');
 		$reply = PostsReplys::find($id);
 		try {
+			User::chkUserByToken($token);
 			$reply->disable();
 			$re = ['result' => true, 'data' => [], 'info' => ['评论删除成功']];
 		} catch (Exception $e) {

@@ -21,6 +21,10 @@ class Post extends Eloquent{
 		}
 	}
 
+	/**
+	 * add new post
+	 * @author Kydz 2015-06-17
+	 */
 	public function addPost(){
 		$this->created_at = date('Y-m-d H:i:s');
 		$this->p_status = 0;
@@ -32,30 +36,54 @@ class Post extends Eloquent{
 		}
 	}
 
+	/**
+	 * disable post
+	 * @author Kydz 2015-06-17
+	 * @return n/a
+	 */
 	public function disable(){
 		$this->baseValidate();
 		$this->p_status = 1;
 		$this->save();
 	}
 
+	/**
+	 * enable post
+	 * @author Kydz 2015-06-17
+	 * @return n/a
+	 */
 	public function enable(){
 		$this->baseValidate();
 		$this->p_status = 0;
 		$this->save();
 	}
 
+	/**
+	 * add priase count
+	 * @author Kydz 2015-06-17
+	 */
 	public function addPraise(){
 		$this->baseValidate();
 		$this->p_praise += 1;
 		$this->save();
 	}
 
+	/**
+	 * minus priase count
+	 * @author Kydz 2015-06-17
+	 * @return n/a
+	 */
 	public function delPraise(){
 		$this->baseValidate();
 		$this->p_praise -= 1;
 		$this->save();
 	}
 
+	/**
+	 * format data used in list
+	 * @author Kydz 2015-06-17
+	 * @return array list row
+	 */
 	public function showInList(){
 		$replys = [];
 		if(isset($this->replys)){
@@ -67,10 +95,20 @@ class Post extends Eloquent{
 		return $data;
 	}
 
+	/**
+	 * laravel relations
+	 * @author Kydz 2015-06-17
+	 * @return n/a
+	 */
 	public function user(){
 		return $this->belongsTo('User', 'u_id', 'u_id');
 	}
 
+	/**
+	 * laravel ralations
+	 * @author Kydz 2015-06-17
+	 * @return n/a
+	 */
 	public function replys(){
 		return $this->hasMany('PostsReplys', 'p_id', 'p_id');
 	}
