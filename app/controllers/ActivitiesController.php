@@ -8,7 +8,7 @@ class ActivitiesController extends \BaseController {
 	 * @return Response
 	 */
 	public function index(){
-		
+
 	}
 
 
@@ -28,9 +28,9 @@ class ActivitiesController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function store()
-	{
-		//
+	public function store(){
+		$token = Input::get('token');
+		$act = new Activity();
 	}
 
 

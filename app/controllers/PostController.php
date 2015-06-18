@@ -83,6 +83,9 @@ class PostController extends \BaseController {
 			},
 			'user'])
 		->where('p_id', '=', $id)->where('p_status', '=', 0)->first();
+		if(!isset($post->p_id)){
+			return Response::json(['result' => false, $data => [], 'info' => '请求的帖子不存在']);
+		}
 		try {
 			$data = $post->showInList();
 			$re = ['result' => true, 'data' => $data, 'info' => '读取帖子成功'];
