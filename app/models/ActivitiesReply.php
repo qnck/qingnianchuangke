@@ -3,19 +3,19 @@
 /**
 * 
 */
-class PostsReplys extends Eloquent{
+class ActivitiesReply extends Eloquent{
 
 	public $primaryKey = 'r_id';
 	public $timestamps = false;
 
 	public function baseValidate(){
 		$validator = Validator::make(
-			['content' => $this->r_content, 'user' => $this->u_id, 'status' => $this->r_status, 'post' => $this->p_id],
-			['content' => 'required', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'post' => 'required|digits_between:1,11']
+			['content' => $this->r_content, 'user' => $this->u_id, 'status' => $this->r_status, 'activity' => $this->ac_id],
+			['content' => 'required', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'activity' => 'required|digits_between:1,11']
 			);
 		if($validator->fails()){
 			$msg = $validator->messages();
-			throw new Exception($msg->first(), 1);			
+			throw new Exception($msg->first(), 1);
 		}else{
 			return true;
 		}
@@ -27,7 +27,7 @@ class PostsReplys extends Eloquent{
 	 * @return n/a
 	 */
 	public function post(){
-		return $this->belongsTo('Post', 'p_id', 'p_id');
+		return $this->belongsTo('Activity', 'ac_id', 'ac_id');
 	}
 
 	/**

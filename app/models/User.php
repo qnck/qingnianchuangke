@@ -151,4 +151,12 @@ class User extends Eloquent {
 		}
 	}
 
+	public function activity(){
+		return $this->belongsTo('Activity', 'u_id', 'ac_creat_user');
+	}
+
+	public function signUsers(){
+		return $this->hasMany('ActivitiesSignUser');
+	}
+
 }

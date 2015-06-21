@@ -14,9 +14,12 @@ class PostController extends \BaseController {
 		try {
 			$posts = Post::with([
 				'replys' => function($query){
-					$query->where('r_status', '=', 0);
+					$query->where('r_status', '=', 1);
 				},
-				'user'])->where('p_status', '=', 0)->paginate(10);
+				'praises' => function($query){
+
+				},
+				'user'])->where('p_status', '=', 1)->paginate(10);
 			foreach ($posts as $post) {
 				$data[] = $post->showInList();
 			}
@@ -51,6 +54,7 @@ class PostController extends \BaseController {
 		$longitude = Input::get('longitude');
 		$latitude = Input::get('latitude');
 		$address = Input::get('address');
+		$imgToken = Input::get('imgToken');
 		$site_id = 1;
 		$post = new Post();
 		$post->p_title = $title;
@@ -63,6 +67,10 @@ class PostController extends \BaseController {
 			$post->u_id = $this->user->u_id;
 			$post->addPost();
 			$re = ['result' => true, 'data' => [], 'info' => '添加成功'];
+			if($imgToken){
+				$img = new Img('post', $imgToken);
+				$img->save($post->p_id);
+			}
 		} catch (Exception $e) {
 			$re = ['result' =>  false, 'data' => [], 'info' => $e->getMessage()];
 		}
@@ -79,10 +87,10 @@ class PostController extends \BaseController {
 	public function show($id){
 		$post = Post::with([
 			'replys' => function($query){
-				$query->where('r_status', '=', 0);
+				$query->where('r_status', '=', 1);
 			},
 			'user'])
-		->where('p_id', '=', $id)->where('p_status', '=', 0)->first();
+		->where('p_id', '=', $id)->where('p_status', '=', 1)->first();
 		if(!isset($post->p_id)){
 			return Response::json(['result' => false, $data => [], 'info' => '请求的帖子不存在']);
 		}
@@ -103,14 +111,17 @@ class PostController extends \BaseController {
 	 * @return Response
 	 */
 	public function edit($id){
-		$post = Post::find($id);		
+		$post = Post::find($id);
+		if(!isset($post->p_id)){
+			return Response::json(['result' => false, 'data' => [], 'info' => '您回复的帖子不存在']);
+		}
 		$token = Input::get('token');
 		$content = Input::get('content');
 		$content = urldecode($content);
-		$reply = new PostsReplys();
+		$reply = new PostsReply();
 		$reply->p_id = $id;
 		$reply->r_content = $content;
-		$reply->r_status = 0;
+		$reply->r_status = 1;
 		$reply->created_at = date('Y-m-d H:i:s');
 		try {
 			$this->user = User::chkUserByToken($token);
@@ -195,7 +206,7 @@ class PostController extends \BaseController {
 	 */
 	public function disableReply($id){
 		$token = Input::get('token');
-		$reply = PostsReplys::find($id);
+		$reply = PostsReply::find($id);
 		try {
 			User::chkUserByToken($token);
 			$reply->disable();
