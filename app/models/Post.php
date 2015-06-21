@@ -27,7 +27,7 @@ class Post extends Eloquent{
 	 */
 	public function addPost(){
 		$this->created_at = date('Y-m-d H:i:s');
-		$this->p_status = 0;
+		$this->p_status = 1;
 		$this->baseValidate();
 		if(!$this->save()){
 			throw new Exception("添加帖子失败", 1);			
@@ -43,7 +43,7 @@ class Post extends Eloquent{
 	 */
 	public function disable(){
 		$this->baseValidate();
-		$this->p_status = 1;
+		$this->p_status = 0;
 		$this->save();
 	}
 
@@ -54,7 +54,7 @@ class Post extends Eloquent{
 	 */
 	public function enable(){
 		$this->baseValidate();
-		$this->p_status = 0;
+		$this->p_status = 1;
 		$this->save();
 	}
 
@@ -65,6 +65,8 @@ class Post extends Eloquent{
 	public function addPraise(){
 		$this->baseValidate();
 		$this->p_praise += 1;
+		// $postsPraise = new PostsPraise();
+		// $postsPraise->u_id = 
 		$this->save();
 	}
 
@@ -91,7 +93,9 @@ class Post extends Eloquent{
 				$replys[] = $reply->showInList();
 			}
 		}
-		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'id' => $this->p_id];
+		$img = new Img('post', $this->p_id);
+		$imglist = $img->getList();
+		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'id' => $this->p_id, 'imgs' => $imglist];
 		return $data;
 	}
 
@@ -110,6 +114,11 @@ class Post extends Eloquent{
 	 * @return n/a
 	 */
 	public function replys(){
-		return $this->hasMany('PostsReplys', 'p_id', 'p_id');
+		return $this->hasMany('PostsReply', 'p_id', 'p_id');
+	}
+
+
+	public function praises(){
+		return $this->hasMany('PostsPraise', 'p_id', 'p_id');
 	}
 }
