@@ -19,7 +19,18 @@ class Img{
 
 	public function save($newId){
 		$params = ['key' => $this->key, 'hash' => $this->id, 'id' => $newId, 'cate' => $this->category];
-		return $this->fireGetRequest($params, 'save');
+		$re = $this->fireGetRequest($params, 'save');
+		if(!$re->result){
+			throw new Exception("保存图片失败", 2);			
+		}else{
+			$imgs = [];
+			if(is_array($re->data) && !empty($re->data)){
+				foreach ($re->data as $key => $value) {
+					$imgs[] = $this->imghost.$this->imgpath.$value;
+				}
+			}
+			return $imgs;
+		}
 	}
 
 	public function getList(){
