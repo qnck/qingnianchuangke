@@ -16,9 +16,7 @@ class PostController extends \BaseController {
 				'replys' => function($query){
 					$query->where('r_status', '=', 1);
 				},
-				'praises' => function($query){
-
-				},
+				'praises.user',
 				'user'])->where('p_status', '=', 1)->paginate(10);
 			foreach ($posts as $post) {
 				$data[] = $post->showInList();
@@ -92,7 +90,7 @@ class PostController extends \BaseController {
 			'user'])
 		->where('p_id', '=', $id)->where('p_status', '=', 1)->first();
 		if(!isset($post->p_id)){
-			return Response::json(['result' => false, $data => [], 'info' => '请求的帖子不存在']);
+			return Response::json(['result' => false, 'data' => [], 'info' => '请求的帖子不存在']);
 		}
 		try {
 			$data = $post->showInList();
@@ -177,13 +175,22 @@ class PostController extends \BaseController {
 		$type = Input::get('type');
 		$post = Post::find($id);
 		try {
-			User::chkUserByToken($token);
+			$user = User::chkUserByToken($token);
 			$result = true;
 			if($type == 1){
 				$post->addPraise();
+				$praise = new PostsPraise();
+				$praise->p_id = $id;
+				$praise->u_id = $user->u_id;
+				$praise->created_at = date('Y-m-d H:i:s');
+				$praise->addPraise();
 				$info = '点赞成功';
 			}elseif($type == 2){
 				$post->delPraise();
+				$praise = PostsPraise::where('p_id', '=', $id)->where('u_id', '=', $user->u_id)->first();
+				if(isset($praise->pp_id)){
+					$praise->delete();
+				}
 				$info = '取消赞成功';
 			}else{
 				$result = false;
