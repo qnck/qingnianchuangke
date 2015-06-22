@@ -30,6 +30,10 @@ class ActivitiesSignUser extends Eloquent{
 	}
 
 	public function signUp(){
+		$chk = ActivitiesSignUser::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $this->u_id)->first();
+		if(isset($chk->r_id)){
+			throw new Exception("您已经报过名了", 1);			
+		}
 		$this->baseValidate();
 		$act = Activity::find($this->ac_id);
 		if(!isset($act->ac_id)){
@@ -48,10 +52,10 @@ class ActivitiesSignUser extends Eloquent{
 	}
 
 	public function showInList(){
-		if(isset($this->user)){
-			return $this->user->showInList();
-		}else{
-			return [];
+		$user = [];
+		if(isset($this->user->u_id)){
+			$user = $this->user->showInList();
 		}
+		return ['id' => $this->r_id, 'user' => $user, 'sign_time' => $this->created_at->format('Y-m-d H:i:s')];
 	}
 }

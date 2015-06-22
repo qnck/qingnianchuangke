@@ -132,9 +132,9 @@ class User extends Eloquent {
 
 	public function showInList(){
 		$data = [];
+		$data['id'] = $this->u_id;
 		$data['name'] = $this->u_nickname;
 		$data['head_img'] = $this->u_head_img;
-		$data['id'] = $this->u_id;
 		return $data;
 	}
 
@@ -152,15 +152,15 @@ class User extends Eloquent {
 	}
 
 	public function activity(){
-		return $this->belongsTo('Activity', 'u_id', 'ac_creat_user');
+		return $this->hasMany('Activity', 'u_id', 'ac_creat_user');
 	}
 
-	public function signUsers(){
-		return $this->hasMany('ActivitiesSignUser');
+	public function signedActivities(){
+		return $this->hasMany('ActivitiesSignUser', 'u_id', 'u_id');
 	}
 
 	public function postPraises(){
-		return $this->hasMany('PostsPraise');
+		return $this->hasMany('PostsPraise', 'u_id', 'u_id');
 	}
 
 }

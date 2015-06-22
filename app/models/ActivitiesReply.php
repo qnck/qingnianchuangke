@@ -70,7 +70,7 @@ class ActivitiesReply extends Eloquent{
 	 */
 	public function showInList(){
 		$data = [];
-		$data = ['content' => $this->r_content, 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'id' => $this->r_id];
+		$data = ['id' => $this->r_id, 'content' => $this->r_content, 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList()];
 		return $data;
 	}
 }

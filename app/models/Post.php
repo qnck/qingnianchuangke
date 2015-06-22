@@ -99,7 +99,7 @@ class Post extends Eloquent{
 		}
 		$img = new Img('post', $this->p_id);
 		$imglist = $img->getList();
-		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'id' => $this->p_id, 'imgs' => $imglist];
+		$data = ['id' => $this->p_id, 'title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'imgs' => $imglist];
 		return $data;
 	}
 

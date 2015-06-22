@@ -8,7 +8,7 @@ class ActivitiesController extends \BaseController {
 	 * @return Response
 	 */
 	public function index(){
-		$acts = Activity::with(['user', 'signedUsers'])->where('ac_status', '=', 1)->paginate(10);
+		$acts = Activity::with('replys', 'signedUsers')->where('ac_status', '=', 1)->paginate(10);
 		$list = [];
 		foreach ($acts as $key => $act) {
 			$list[] = $act->showInList();
@@ -52,7 +52,7 @@ class ActivitiesController extends \BaseController {
 			$user = User::chkUserByToken($token);
 			$act = new Activity();
 			$act->ac_title = $title;
-			$act->ac_status = 0;
+			$act->ac_status = 1;
 			$act->ac_content = $content;
 			$act->ac_begin_date = $start;
 			$act->ac_end_date = $end;
@@ -61,6 +61,9 @@ class ActivitiesController extends \BaseController {
 			$act->ac_creat_user = $user->u_id;
 			$act->ac_address = $address;
 			$act->ac_isdata = $needData;
+			$act->ac_att_count = 0;
+			$act->ac_sign_count = 0;
+			$act->ac_read_count = 0;
 			$act->addAct();
 			$re = ['result' => true, 'data' => [], 'info' => '活动添加成功'];
 		} catch (Exception $e) {
@@ -77,7 +80,7 @@ class ActivitiesController extends \BaseController {
 	 * @return Response
 	 */
 	public function show($id){
-		$act = Activity::with('signedUsers', 'user')->where('ac_id', '=', $id)->where('ac_status', '=', 1)->first();
+		$act = Activity::with('replys', 'signedUsers')->where('ac_id', '=', $id)->where('ac_status', '=', 1)->first();
 		if(!isset($act->ac_id)){
 			return Response::json(['result' => false, 'data' => [], 'info' => '您请求的活动不存在']);
 		}
@@ -105,7 +108,7 @@ class ActivitiesController extends \BaseController {
 		$token = Input::get('token');
 		$content = Input::get('content');
 		$content = urldecode($content);
-		$reply = new ActivityReply();
+		$reply = new ActivitiesReply();
 		$reply->ac_id = $id;
 		$reply->r_content = $content;
 		$reply->r_status = 1;
@@ -151,6 +154,8 @@ class ActivitiesController extends \BaseController {
 			$actSign = new ActivitiesSignUser();
 			$actSign->ac_id = $id;
 			$actSign->u_id = $user->u_id;
+			$actSign->created_at = date('Y-m-d H:i:s');
+			$actSign->s_status = 0;
 			// todo file path
 			$actSign->signUp();
 			$re = ['result' => true, 'data' => [], 'info' => '报名成功'];
