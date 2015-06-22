@@ -32,17 +32,6 @@ class HomeController extends BaseController {
     }
 
     public function index(){
-        // $msg = new TxtMessage();
-        // try {
-        //     var_dump($msg->sendMessage('18628320065', '您的验证码999111'));
-        // } catch (Exception $e) {
-        //     var_dump($e->getMessage());
-        // }
-        // 
-            $time = new DateTime();
-            var_dump($time->format('Y-m-d H:i:s'));
-            $time->modify('+5mins');
-            var_dump($time->format('Y-m-d H:i:s'));
-
+        echo '<a href="qnckapi.sinaapp.com">http://qnckapi.sinaapp.com/</a>';
     }
 }

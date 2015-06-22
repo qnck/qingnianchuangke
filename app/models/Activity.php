@@ -22,8 +22,8 @@ class Activity extends Eloquent{
 		}
 	}
 
-	public function user(){
-		return $this->hasOne('user', 'u_id', 'ac_creat_user');
+	public function creator(){
+		return $this->belongsTo('user', 'ac_creat_user', 'u_id');
 	}
 
 	public function addAct(){
@@ -35,17 +35,27 @@ class Activity extends Eloquent{
 		}
 	}
 
+	public function replys(){
+		return $this->hasMany('ActivitiesReply', 'ac_id', 'ac_id');
+	}
+
 	public function signedUsers(){
-		return $this->hasManyThrough('User', 'ActivitiesSignUser', 'ac_id', 'u_id');
+		return $this->hasMany('ActivitiesSignUser', 'ac_id', 'ac_id');
 	}
 
 	public function showInList(){
 		$signedUsers = [];
 		if(isset($this->signedUsers)){
-			foreach ($this->signedUsers as $key => $user) {
-				$signedUsers[] = $user->showInList();
+			foreach ($this->signedUsers as $key => $signed) {
+				$signedUsers[] = $signed->showInList();
 			}
 		}
-		return ['title' => $this->ac_title, 'content' => $this->ac_content, 'address' => $this->ac_address, 'pic' => $this->ac_pic_path, 'att_count' => $this->ac_att_count, 'sign_count' => $this->ac_sign_count, 'create_user' => $this->user->showInList(), 'signedUsers' => $signedUsers];
+		$replys = [];
+		if(isset($this->replys)){
+			foreach ($this->replys as $key => $reply) {
+				$replys[] = $reply->showInList();
+			}
+		}
+		return ['id' => $this->ac_id, 'title' => $this->ac_title, 'content' => $this->ac_content, 'address' => $this->ac_address, 'pic' => $this->ac_pic_path, 'att_count' => $this->ac_att_count, 'sign_count' => $this->ac_sign_count, 'create_user' => $this->creator->showInList(), 'replys' => $replys, 'signedUsers' => $signedUsers];
 	}
 }
