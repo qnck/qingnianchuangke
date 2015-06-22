@@ -56,6 +56,10 @@ class Activity extends Eloquent{
 				$replys[] = $reply->showInList();
 			}
 		}
+		if($this->ac_pic_path){
+			$tmp = explode(',', $this->ac_pic_path);
+			$this->ac_pic_path = array_pop($tmp);
+		}
 		return ['id' => $this->ac_id, 'title' => $this->ac_title, 'content' => $this->ac_content, 'address' => $this->ac_address, 'pic' => $this->ac_pic_path, 'att_count' => $this->ac_att_count, 'sign_count' => $this->ac_sign_count, 'create_user' => $this->creator->showInList(), 'replys' => $replys, 'signedUsers' => $signedUsers];
 	}
 }

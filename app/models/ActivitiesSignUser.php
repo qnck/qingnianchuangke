@@ -29,7 +29,7 @@ class ActivitiesSignUser extends Eloquent{
 		return $this->belongsTo('User', 'u_id', 'u_id');
 	}
 
-	public function signUp(){
+	public function signUp($imgToken = ''){
 		$chk = ActivitiesSignUser::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $this->u_id)->first();
 		if(isset($chk->r_id)){
 			throw new Exception("您已经报过名了", 1);			
@@ -40,7 +40,7 @@ class ActivitiesSignUser extends Eloquent{
 			throw new Exception("没有获取到请求的活动", 1);
 		}
 		if($act->ac_isdata == 1){
-			if(!$this->sign_data_path){
+			if(!$imgToken){
 				throw new Exception("请上传活动资料", 1);
 			}
 		}

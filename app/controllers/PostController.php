@@ -52,7 +52,7 @@ class PostController extends \BaseController {
 		$longitude = Input::get('longitude');
 		$latitude = Input::get('latitude');
 		$address = Input::get('address');
-		$imgToken = Input::get('imgToken');
+		$imgToken = Input::get('imgToken', '');
 		$site_id = 1;
 		$post = new Post();
 		$post->p_title = $title;
@@ -67,10 +67,15 @@ class PostController extends \BaseController {
 			$re = ['result' => true, 'data' => [], 'info' => '添加成功'];
 			if($imgToken){
 				$img = new Img('post', $imgToken);
-				$img->save($post->p_id);
+				$imgs = $img->save($post->p_id);
+				$post->p_content = implode(',', $imgs);
+				$post->save();
 			}
 		} catch (Exception $e) {
 			$re = ['result' =>  false, 'data' => [], 'info' => $e->getMessage()];
+			if($e->getCode() == 2){
+				$post->delete();
+			}
 		}
 		return Response::json($re);
 	}

@@ -97,9 +97,11 @@ class Post extends Eloquent{
 				$priases[] = $praise->showInList();
 			}
 		}
-		$img = new Img('post', $this->p_id);
-		$imglist = $img->getList();
-		$data = ['id' => $this->p_id, 'title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'imgs' => $imglist];
+		$imglist = [];
+		if($this->p_content){
+			$imglist = explode(',', $this->p_content);			
+		}
+		$data = ['id' => $this->p_id, 'title' => $this->p_title, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'imgs' => $imglist];
 		return $data;
 	}
 

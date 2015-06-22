@@ -37,6 +37,7 @@ class ActivitiesController extends \BaseController {
 	 */
 	public function store(){
 		$token = Input::get('token');
+		$imgToken = Input::get('imgToken', '');
 		$title = Input::get('title');
 		$title = urldecode($title);
 		$content = Input::get('content');
@@ -65,9 +66,20 @@ class ActivitiesController extends \BaseController {
 			$act->ac_sign_count = 0;
 			$act->ac_read_count = 0;
 			$act->addAct();
+			if($imgToken){
+				// save img
+				$img = new Img('activity', $imgToken);
+				$imgs = $img->save($act->id);
+				$path = implode(',', $imgs);
+				$act->ac_pic_path = $path;
+				$act->save();				
+			}
 			$re = ['result' => true, 'data' => [], 'info' => '活动添加成功'];
 		} catch (Exception $e) {
 			$re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+			if($e->getCode() == 2){
+				if($act->ac_id > 0) $act->delete();
+			}
 		}
 		return Response::json($re);
 	}
@@ -149,6 +161,7 @@ class ActivitiesController extends \BaseController {
 	}
 	public function sign($id){
 		$token = Input::get('token');
+		$imgToken = Input::get('imgToken', '');
 		try {
 			$user = User::chkUserByToken($token);
 			$actSign = new ActivitiesSignUser();
@@ -156,11 +169,20 @@ class ActivitiesController extends \BaseController {
 			$actSign->u_id = $user->u_id;
 			$actSign->created_at = date('Y-m-d H:i:s');
 			$actSign->s_status = 0;
+			$actSign->signUp($imgToken);
 			// todo file path
-			$actSign->signUp();
+			if($imgToken){
+				$img = new Img('activity', $imgToken);
+				$imgs = $img->save($id);
+				$actSign->sign_data_path = implode(',', $imgs);
+				$actSign->save();
+			}
 			$re = ['result' => true, 'data' => [], 'info' => '报名成功'];
 		} catch (Exception $e) {
 			$re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+			if($e->getCode() == 2){
+				$actSign->delete();
+			}
 		}
 		return Response::json($re);
 
