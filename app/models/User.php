@@ -159,4 +159,8 @@ class User extends Eloquent {
 		return $this->hasMany('ActivitiesSignUser');
 	}
 
+	public function postPraises(){
+		return $this->hasMany('PostsPraise');
+	}
+
 }

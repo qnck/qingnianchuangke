@@ -45,7 +45,9 @@ class ActivitiesController extends \BaseController {
 		$end = Input::get('end');
 		$address = Input::get('address');
 		$address = urldecode($address);
-		$needData = Input::get('needData');
+		$needData = Input::get('needData', 0);
+		$site = Input::get('site');
+		$ex_user = Input::get('ex_user', 0);
 		try {
 			$user = User::chkUserByToken($token);
 			$act = new Activity();
@@ -54,6 +56,8 @@ class ActivitiesController extends \BaseController {
 			$act->ac_content = $content;
 			$act->ac_begin_date = $start;
 			$act->ac_end_date = $end;
+			$act->s_id = $site;
+			$act->ac_isex_signuser = $ex_user;
 			$act->ac_creat_user = $user->u_id;
 			$act->ac_address = $address;
 			$act->ac_isdata = $needData;

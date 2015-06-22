@@ -65,8 +65,6 @@ class Post extends Eloquent{
 	public function addPraise(){
 		$this->baseValidate();
 		$this->p_praise += 1;
-		// $postsPraise = new PostsPraise();
-		// $postsPraise->u_id = 
 		$this->save();
 	}
 
@@ -93,9 +91,15 @@ class Post extends Eloquent{
 				$replys[] = $reply->showInList();
 			}
 		}
+		$priases = [];
+		if(isset($this->praises)){
+			foreach ($this->praises as $praise) {
+				$priases[] = $praise->showInList();
+			}
+		}
 		$img = new Img('post', $this->p_id);
 		$imglist = $img->getList();
-		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'id' => $this->p_id, 'imgs' => $imglist];
+		$data = ['title' => $this->p_title, 'content' => $this->p_content, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'id' => $this->p_id, 'imgs' => $imglist];
 		return $data;
 	}
 

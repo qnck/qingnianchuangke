@@ -11,8 +11,8 @@ class Activity extends Eloquent{
 
 	public function baseValidate(){
 		$validator = Validator::make(
-			['title' => $this->ac_title, 'content' => $this->ac_content, 'start' => $this->ac_begin_date, 'end' => $this->ac_end_date, 'user' => $this->ac_creat_user, 'status' => $this->ac_status, 'address' => $this->ac_address, 'needData' => $this->ac_isdata],
-			['title' => 'required|max:200', 'content' => 'required', 'start' => 'required', 'end' => 'required', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'address' => 'required', 'needData' => 'required']
+			['title' => $this->ac_title, 'content' => $this->ac_content, 'start' => $this->ac_begin_date, 'end' => $this->ac_end_date, 'user' => $this->ac_creat_user, 'status' => $this->ac_status, 'address' => $this->ac_address, 'needData' => $this->ac_isdata, 'site' => $this->s_id],
+			['title' => 'required|max:200', 'content' => 'required', 'start' => 'required', 'end' => 'required', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'address' => 'required', 'needData' => 'required', 'site' => 'required|digits_between:1,11']
 			);
 		if($validator->fails()){
 			$msg = $validator->messages();
