@@ -23,8 +23,8 @@ Route::delete('post/reply/{id}', 'PostController@disableReply');
 /* POST END*/
 
 /* ACTIVITIES START*/
-Route::resource('activitiy', 'ActivitiesController');
-Route::get('activitiy/{id}/sign', 'ActivitiesController@sign');
+Route::resource('activity', 'ActivitiesController');
+Route::get('activity/{id}/sign', 'ActivitiesController@sign');
 /* ACTIVITIES END*/
 
 /* VERIFY START*/
