@@ -32,6 +32,8 @@ class HomeController extends BaseController {
     }
 
     public function index(){
+        $p = null;
+        var_dump(isset($p));exit;
         echo '<a href="qnckapi.sinaapp.com">http://qnckapi.sinaapp.com/</a>';
     }
 }
