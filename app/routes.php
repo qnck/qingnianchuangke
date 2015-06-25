@@ -13,6 +13,7 @@
 Route::get('/', 'HomeController@index');
 
 /* USER START*/
+Route::get('user/me', 'UserController@me');
 Route::resource('user', 'UserController');
 /* USER END*/
 

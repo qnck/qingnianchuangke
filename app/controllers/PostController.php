@@ -146,6 +146,8 @@ class PostController extends \BaseController
             $this->_user = User::chkUserByToken($token);
             $reply->u_id = $this->_user->u_id;
             $reply->addReply();
+            $post->p_reply_count += 1;
+            $post->save();
             $re = ['result' => true, 'data' => [], 'info' => '回复成功'];
         } catch (Exception $e) {
             $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];

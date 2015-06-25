@@ -1,6 +1,7 @@
 <?php
 
-class UserController extends \BaseController {
+class UserController extends \BaseController
+{
 
     /**
      * sign in
@@ -68,7 +69,17 @@ class UserController extends \BaseController {
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+        if (!isset($user->u_id)) {
+            return Response::json(['result' => false, 'data' => [], 'info' => '没有找到请求的用户']);
+        }
+        try {
+            $data = $user->showDetail();
+            $re = ['result' => true, 'data' => $data, 'info' => '读取用户成功'];
+        } catch (Exception $e) {
+            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
     }
 
 
@@ -80,7 +91,21 @@ class UserController extends \BaseController {
      */
     public function edit($id)
     {
-        //
+        $type = Input::get('type');
+        $token = Input::get('token');
+
+        $user = User::chkUserByToken($token);
+        try {
+            $target = User::find($id);
+            if ($type == 1) {
+                User::follow($user, $target);
+            } else {
+                User::unfollow($user, $target);
+            }
+            $re = ['result' => true, 'data' => [], 'info' => '操作成功'];
+        } catch (Exception $e) {
+            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+        }
     }
 
 
@@ -122,5 +147,23 @@ class UserController extends \BaseController {
     public function destroy($id)
     {
         //
+    }
+
+    public function me()
+    {
+        $token = Input::get('token', '');
+        try {
+            $user = User::chkUserByToken($token);
+            $user = User::with('bankCards.bank', 'contact')->find($user->u_id);
+            $userInfo = $user->showDetail();
+            $cards = $user->showBankCards();
+            $contact = $user->showContact();
+            $data = ['user_info' => $userInfo, 'cards' => $cards, 'contact' => $contact];
+            $re = ['result' => true, 'data' => $data, 'info' => '获取用户成功'];
+        } catch (Exception $e) {
+            $re = ['result' => false, 'data'=> [], 'info' => $e->getMessage()];
+        }
+
+        return Response::json($re);
     }
 }

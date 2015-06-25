@@ -109,7 +109,7 @@ class Post extends Eloquent
         if ($this->p_content) {
             $imglist = explode(',', $this->p_content);
         }
-        $data = ['id' => $this->p_id, 'title' => $this->p_title, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'priases' => $priases, 'imgs' => $imglist];
+        $data = ['id' => $this->p_id, 'title' => $this->p_title, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'reply_count' => $this->p_reply_count, 'priases' => $priases, 'praise_count' => $this->p_praise, 'imgs' => $imglist];
         return $data;
     }
 

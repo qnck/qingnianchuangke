@@ -1,6 +1,7 @@
 <?php
 
-class User extends Eloquent {
+class User extends Eloquent
+{
 
     public $primaryKey = 'u_id';
 
@@ -12,9 +13,9 @@ class User extends Eloquent {
     public function baseValidate()
     {
         $validator = Validator::make(
-                ['mobile' => $this->u_mobile, 'pass' => $this->u_password],
-                ['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
-            );
+            ['mobile' => $this->u_mobile, 'pass' => $this->u_password],
+            ['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
+        );
         if ($validator->fails()) {
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
@@ -102,7 +103,7 @@ class User extends Eloquent {
                 'student_num' => 'sometimes|alpha_num',
                 'address' => 'sometimes',
             ]
-            );
+        );
         if ($validator->fails()) {
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
@@ -127,6 +128,11 @@ class User extends Eloquent {
         }
     }
 
+    /**
+     * show list data
+     * @author Kydz 2015-06-24
+     * @return array data row
+     */
     public function showInList()
     {
         $data = [];
@@ -136,19 +142,122 @@ class User extends Eloquent {
         return $data;
     }
 
-    public function getPost()
+    /**
+     * show detailed data
+     * @author Kydz 2015-06-24
+     * @return array detai info
+     */
+    public function showDetail()
     {
-        return $this->hasMany('Post');
+        if (!isset($this->u_id)) {
+            throw new Exception("no such user", 1);            
+        }
+        $data = [];
+        $data['mobile'] = $this->u_mobile;
+        $data['nickname'] = $this->u_nickname;
+        $data['age'] = $this->u_age;
+        $data['name'] = $this->u_name;
+        $data['sex'] = $this->u_sex;
+        $path = explode(',', $this->u_head_img);
+        $path = array_pop($path);
+        $data['head_img'] = $path;
+        $data['identity_number'] = $this->u_identity_number;
+        $path = explode(',', $this->u_identity_img);
+        $path = array_pop($path);
+        $data['identity_img'] = $path;
+        $data['school_name'] = $this->u_school_name;
+        $data['student_number'] = $this->u_student_number;
+        $path = explode(',', $this->u_student_img);
+        $path = array_pop($path);
+        $data['student_img'] = $path;
+        $data['address'] = $this->u_address;
+        $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
+        $data['follower_count'] = $this->u_follower_count;
+        $data['following_count'] = $this->u_following_count;
+        return $data;
     }
 
+    /**
+     * check if user is legal
+     * @author Kydz 2015-06-24
+     * @param  string $token user token
+     * @return eloquent        user
+     */
     public static function chkUserByToken($token)
     {
-        $user = User::where('u_token', '=', $token)->first();
+        if(empty($token)){
+            throw new Exception("please input token", 1);            
+        }
+        $user = User::where('u_token', '=', $token)->where('u_status', '=', 1)->first();
         if (!isset($user->u_id)) {
             throw new Exception('您的登录已过期， 请重新登录', 1);
         } else {
             return $user;
         }
+    }
+
+    public function showBankCards()
+    {
+        $cards = [];
+        if (isset($this->bankCards)) {
+            foreach ($this->bankCards as $key => $card) {
+                $cards[] = $card->showInList();
+            }
+        }
+        return $cards;
+    }
+
+    public function showContact()
+    {
+        $data = [];
+        if (isset($this->contact)) {
+            $data = $this->contact->showDetail();
+        }
+        return $data;
+    }
+
+    public static function follow($from, $to)
+    {
+        $attention = new Attention();
+        $attention->u_fans_id = $from->u_id;
+        $attention->u_id = $to->u_id;
+        $attention->created_at = date('Y-m-d H:i:s');
+        if (!$attention->save()) {
+            throw new Exception("fail to add follow relation", 1);
+        }
+        $from->u_following_count += 1;
+        $to->u_follower_count += 1;
+        if ($from->save() && $to->save()) {
+            return true;
+        }else{
+            throw new Exception("fail to save", 1);            
+        }
+    }
+
+    public static function unfollow($from, $to)
+    {
+        $attention = Attention::where('u_fans_id', '=', $from->u_id)->where('u_id', '=', $to->u_id)->first();
+        if (!isset($attention->a_id)) {
+            throw new Exception("Error Processing Request", 1);
+            
+        }
+        if (!$attention->delete()) {
+            throw new Exception("fail to remove relation", 1);
+        }
+        $from->u_following_count -= 1;
+        $to->u_follower_count -= 1;
+        if ($from->save() && $to->save()) {
+            return true;
+        } else {
+            throw new Exception("fail to save", 1);            
+        }
+    }
+
+    // relations
+    
+    public function getPost()
+    {
+        return $this->hasMany('Post');
     }
 
     public function activity()
@@ -174,5 +283,15 @@ class User extends Eloquent {
     public function followings()
     {
         return $this->belongsToMany('User', 'attentions', 'u_id', 'u_fans_id');
+    }
+
+    public function bankCards()
+    {
+        return $this->hasMany('UsersBankCard', 'u_id', 'u_id');
+    }
+
+    public function contact()
+    {
+        return $this->hasOne('UsersContactPerson', 'u_id', 'u_id');
     }
 }
