@@ -136,11 +136,13 @@ class PostController extends \BaseController
         }
         $token = Input::get('token');
         $content = Input::get('content');
+        $to_user = Input::get('to', 0);
         $content = urldecode($content);
         $reply = new PostsReply();
         $reply->p_id = $id;
         $reply->r_content = $content;
         $reply->r_status = 1;
+        $reply->to_u_id = $to_user;
         $reply->created_at = date('Y-m-d H:i:s');
         try {
             $this->_user = User::chkUserByToken($token);
