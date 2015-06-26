@@ -149,6 +149,11 @@ class UserController extends \BaseController
         //
     }
 
+    /**
+     * get my-info
+     * @author Kydz 2015-06-26
+     * @return array detailed my info
+     */
     public function me()
     {
         $token = Input::get('token', '');
@@ -165,5 +170,66 @@ class UserController extends \BaseController
         }
 
         return Response::json($re);
+    }
+
+    public function myPosts(){
+        $token = Input::get('token', '');
+        $keyWord = Input::get('key');
+        try {
+            $user = User::chkUserByToken($token);            
+            $user = $this->getUserPosts($user->u_id, $keyWord);
+        } catch (Exception $e) {
+            return Response::json(['result' => false, 'data' => [], 'info' => $e->getMessage()]);
+        }
+
+        if (!isset($user->u_id)) {
+            return Response::json(['result' => false, 'data' => [], 'info' => '没有找到请求的用户']);
+        }
+        $posts = $user->getPosts();
+
+        return Response::json(['result' => true, 'data' => $posts, 'info' => '获取用户帖子成功']);
+    }
+
+    public function posts($id)
+    {
+        $keyWord = Input::get('key');
+        $user = $this->getUserPosts($id, $keyWord);
+        if (!isset($user->u_id)) {
+            return Response::json(['result' => false, 'data' => $data, 'info' => '没有找到请求的用户']);
+        }
+        $posts = $user->getPosts();
+
+        return Response::json(['result' => true, 'data' => $posts, 'info' => '获取用户帖子成功']);
+    }
+
+    public function followers($id)
+    {
+
+    }
+
+    public function followings($id)
+    {
+
+    }
+
+    private function getUserPosts($id, $keyWord)
+    {
+        $user = User::with([
+            'posts' => function($q) use ($keyWord) {
+                $q->where('p_status', '=', 1);
+                if (!empty($keyWord)) {
+                    $q->where('p_title', 'LIKE', '%'.$keyWord.'%');
+                }
+            },
+            'posts.replys' => function($q){
+                $q->where('r_status', '=', 1);
+            },
+            'posts.praises'])->find($id);
+        return $user;
+    }
+
+    private function getUserFollowers($id)
+    {
+        $user = User::with('followers')->find($id);
     }
 }

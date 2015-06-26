@@ -150,7 +150,7 @@ class User extends Eloquent
     public function showDetail()
     {
         if (!isset($this->u_id)) {
-            throw new Exception("no such user", 1);            
+            throw new Exception("no such user", 1);
         }
         $data = [];
         $data['mobile'] = $this->u_mobile;
@@ -185,8 +185,8 @@ class User extends Eloquent
      */
     public static function chkUserByToken($token)
     {
-        if(empty($token)){
-            throw new Exception("please input token", 1);            
+        if (empty($token)) {
+            throw new Exception("please input token", 1);
         }
         $user = User::where('u_token', '=', $token)->where('u_status', '=', 1)->first();
         if (!isset($user->u_id)) {
@@ -229,8 +229,8 @@ class User extends Eloquent
         $to->u_follower_count += 1;
         if ($from->save() && $to->save()) {
             return true;
-        }else{
-            throw new Exception("fail to save", 1);            
+        } else {
+            throw new Exception("fail to save", 1);
         }
     }
 
@@ -249,15 +249,26 @@ class User extends Eloquent
         if ($from->save() && $to->save()) {
             return true;
         } else {
-            throw new Exception("fail to save", 1);            
+            throw new Exception("fail to save", 1);
         }
+    }
+
+    public function getPosts()
+    {
+        $posts = [];
+        if (isset($this->posts)) {
+            foreach ($this->posts as $key => $post) {
+                $posts[] = $post->showInList();
+            }
+        }
+        return $posts;
     }
 
     // relations
     
-    public function getPost()
+    public function posts()
     {
-        return $this->hasMany('Post');
+        return $this->hasMany('Post', 'u_id', 'u_id');
     }
 
     public function activity()

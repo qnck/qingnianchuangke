@@ -14,7 +14,9 @@ class PostController extends \BaseController
     {
         $data = [];
         $following = Input::get('following', 0);
+        $u_id = Input::get('user', 0);
         $token = Input::get('token', '');
+        $keyWord = Input::get('key', '');
         try {
             $query = Post::with([
                 'replys' => function ($q) {
@@ -29,6 +31,12 @@ class PostController extends \BaseController
                     $j->on('posts.u_id', '=', 'attentions.u_id')
                     ->where('attentions.u_fans_id', '=', $user->u_id);
                 });
+            }
+            if ($u_id) {
+                $query->where('u_id', '=', $u_id);
+            }
+            if ($keyWord) {
+                $query->where('p_title', 'LIKE', '%'.$keyWord.'%');
             }
             $posts = $query->paginate(10);
             foreach ($posts as $post) {
