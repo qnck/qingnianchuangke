@@ -17,9 +17,9 @@ class UserController extends \BaseController
         $user->u_password = $pass;
         try {
             $data = ['token' => $user->login()];
-            $re = ['data' => [$data], 'result' => true, 'info' => '登陆成功'];
+            $re = ['data' => [$data], 'result' => 2000, 'info' => '登陆成功'];
         } catch (Exception $e) {
-            $re = ['data' => [], 'result' => false, 'info' => $e->getMessage()];
+            $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -53,9 +53,9 @@ class UserController extends \BaseController
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);
             $data = ['token' => $user->register()];
-            $re = ['data' => [$data], 'result' => true, 'info' => '注册成功'];
+            $re = ['data' => [$data], 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
-            $re = ['data' => [], 'info' => $e->getMessage(), 'result' => false];
+            $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];
         }
         return Response::json($re);
     }
@@ -71,13 +71,13 @@ class UserController extends \BaseController
     {
         $user = User::find($id);
         if (!isset($user->u_id)) {
-            return Response::json(['result' => false, 'data' => [], 'info' => '没有找到请求的用户']);
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '没有找到请求的用户']);
         }
         try {
             $data = $user->showDetail();
-            $re = ['result' => true, 'data' => $data, 'info' => '读取用户成功'];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -102,9 +102,9 @@ class UserController extends \BaseController
             } else {
                 User::unfollow($user, $target);
             }
-            $re = ['result' => true, 'data' => [], 'info' => '操作成功'];
+            $re = ['result' => 2000, 'data' => [], 'info' => '操作成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
     }
 
@@ -130,9 +130,9 @@ class UserController extends \BaseController
         $user->u_address = Input::get('address', null);
         try {
             $user->updateUser();
-            $re = ['data' => [], 'result' => true, 'info' => '更新成功'];
+            $re = ['data' => [], 'result' => 2000, 'info' => '更新成功'];
         } catch (Exception $e) {
-            $re = ['data' => [], 'result' => false, 'info' => $e->getMessage()];
+            $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -164,72 +164,83 @@ class UserController extends \BaseController
             $cards = $user->showBankCards();
             $contact = $user->showContact();
             $data = ['user_info' => $userInfo, 'cards' => $cards, 'contact' => $contact];
-            $re = ['result' => true, 'data' => $data, 'info' => '获取用户成功'];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data'=> [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data'=> [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
     }
 
-    public function myPosts(){
+    public function myPosts()
+    {
         $token = Input::get('token', '');
         $keyWord = Input::get('key');
         try {
-            $user = User::chkUserByToken($token);            
-            $user = $this->getUserPosts($user->u_id, $keyWord);
+            $user = User::chkUserByToken($token);
+            $user = User::with([
+                'posts' => function ($q) use ($keyWord) {
+                    $q->where('p_status', '=', 1);
+                    if (!empty($keyWord)) {
+                        $q->where('p_title', 'LIKE', '%'.$keyWord.'%');
+                    }
+                },
+                'posts.replys' => function ($q) {
+                    $q->where('r_status', '=', 1);
+                },
+                'posts.replys.user',
+                'posts.replys.toUser',
+                'posts.praises',
+                ])->find($user->u_id);
+            $posts = $user->getPosts();
+            $re = ['result' => 2000, 'data' => $posts, 'info' => '获取用户帖子成功'];
         } catch (Exception $e) {
-            return Response::json(['result' => false, 'data' => [], 'info' => $e->getMessage()]);
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
-
-        if (!isset($user->u_id)) {
-            return Response::json(['result' => false, 'data' => [], 'info' => '没有找到请求的用户']);
-        }
-        $posts = $user->getPosts();
-
-        return Response::json(['result' => true, 'data' => $posts, 'info' => '获取用户帖子成功']);
-    }
-
-    public function posts($id)
-    {
-        $keyWord = Input::get('key');
-        $user = $this->getUserPosts($id, $keyWord);
-        if (!isset($user->u_id)) {
-            return Response::json(['result' => false, 'data' => $data, 'info' => '没有找到请求的用户']);
-        }
-        $posts = $user->getPosts();
-
-        return Response::json(['result' => true, 'data' => $posts, 'info' => '获取用户帖子成功']);
+        return Response::json($re);
     }
 
     public function followers($id)
     {
-
+        try {
+            $data = $this->getUserFollowers($id);
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取粉丝成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => '获取粉丝失败'];
+        }
+        return Response::json($re);
     }
 
     public function followings($id)
     {
-
-    }
-
-    private function getUserPosts($id, $keyWord)
-    {
-        $user = User::with([
-            'posts' => function($q) use ($keyWord) {
-                $q->where('p_status', '=', 1);
-                if (!empty($keyWord)) {
-                    $q->where('p_title', 'LIKE', '%'.$keyWord.'%');
-                }
-            },
-            'posts.replys' => function($q){
-                $q->where('r_status', '=', 1);
-            },
-            'posts.praises'])->find($id);
-        return $user;
+        try {
+            $data = $this->getUserFollowings($id);
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取关注的人成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => '获取关注的人失败'];
+        }
+        return Response::json($re);
     }
 
     private function getUserFollowers($id)
     {
-        $user = User::with('followers')->find($id);
+        $user = User::with([
+            'followers' => function ($q) {
+                $q->where('u_status', '=', 1)->paginate(10);
+            },
+            ])->find($id);
+        $followers = $user->getFollowers();
+        return $followers;
+    }
+
+    private function getUserFollowings($id)
+    {
+        $user = User::with([
+            'followings' => function ($q) {
+                $q->where('u_status', '=', 1)->paginate(10);
+            },
+            ])->find($id);
+        $followings = $user->getFollowings();
+        return $followings;
     }
 }

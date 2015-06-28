@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -15,8 +14,9 @@ Route::get('/', 'HomeController@index');
 /* USER START*/
 Route::get('user/me', 'UserController@me');
 Route::get('user/me/posts', 'UserController@myPosts');
+Route::get('user/{id}/followers', 'UserController@followers');
+Route::get('user/{id}/followings', 'UserController@followings');
 Route::resource('user', 'UserController');
-Route::get('user/{id}/posts', 'UserController@posts');
 /* USER END*/
 
 /* POST START*/

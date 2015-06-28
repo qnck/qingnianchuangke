@@ -22,7 +22,9 @@ class PostController extends \BaseController
                 'replys' => function ($q) {
                     $q->where('r_status', '=', 1);
                 },
-                'praises.user',
+                'replys.user',
+                'replys.toUser',
+                'praises',
                 'user'
                 ])->where('p_status', '=', 1);
             if ($following) {
@@ -42,9 +44,9 @@ class PostController extends \BaseController
             foreach ($posts as $post) {
                 $data[] = $post->showInList();
             }
-            $re = ['result' => true, 'data' => $data, 'info' => '读取帖子成功'];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '读取帖子成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => $data, 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => $data, 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -86,7 +88,7 @@ class PostController extends \BaseController
             $this->_user = User::chkUserByToken($token);
             $post->u_id = $this->_user->u_id;
             $post->addPost();
-            $re = ['result' => true, 'data' => [], 'info' => '添加成功'];
+            $re = ['result' => 2000, 'data' => [], 'info' => '添加成功'];
             if ($imgToken) {
                 $img = new Img('post', $imgToken);
                 $imgs = $img->save($post->p_id);
@@ -94,7 +96,7 @@ class PostController extends \BaseController
                 $post->save();
             }
         } catch (Exception $e) {
-            $re = ['result' =>  false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' =>  2001, 'data' => [], 'info' => $e->getMessage()];
             if ($e->getCode() == 2) {
                 $post->delete();
             }
@@ -115,16 +117,19 @@ class PostController extends \BaseController
             'replys' => function ($query) {
                 $query->where('r_status', '=', 1);
             },
+            'replys.user',
+            'replys.toUser',
+            'praises.user',
             'user'])
         ->where('p_id', '=', $id)->where('p_status', '=', 1)->first();
         if (!isset($post->p_id)) {
-            return Response::json(['result' => false, 'data' => [], 'info' => '请求的帖子不存在']);
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '请求的帖子不存在']);
         }
         try {
             $data = $post->showInList();
-            $re = ['result' => true, 'data' => $data, 'info' => '读取帖子成功'];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '读取帖子成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -140,7 +145,7 @@ class PostController extends \BaseController
     {
         $post = Post::find($id);
         if (!isset($post->p_id)) {
-            return Response::json(['result' => false, 'data' => [], 'info' => '您回复的帖子不存在']);
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '您回复的帖子不存在']);
         }
         $token = Input::get('token');
         $content = Input::get('content');
@@ -158,9 +163,9 @@ class PostController extends \BaseController
             $reply->addReply();
             $post->p_reply_count += 1;
             $post->save();
-            $re = ['result' => true, 'data' => [], 'info' => '回复成功'];
+            $re = ['result' => 2000, 'data' => [], 'info' => '回复成功'];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -191,9 +196,9 @@ class PostController extends \BaseController
         try {
             User::chkUserByToken($token);
             $post->disable();
-            $re = ['result' =>true, 'data' => [], 'info' => '删除成功'];
+            $re = ['result' =>2000, 'data' => [], 'info' => '删除成功'];
         } catch (Exception $e) {
-            $re = ['result' =>false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' =>2001, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -211,7 +216,7 @@ class PostController extends \BaseController
         $post = Post::find($id);
         try {
             $user = User::chkUserByToken($token);
-            $result = true;
+            $result = 2000;
             if ($type == 1) {
                 $post->addPraise();
                 $praise = new PostsPraise();
@@ -228,12 +233,12 @@ class PostController extends \BaseController
                 }
                 $info = '取消赞成功';
             } else {
-                $result = false;
+                $result = 2001;
                 $info = '操作失败';
             }
             $re = ['result' => $result, 'data' => [], 'info' => $info];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
@@ -253,9 +258,9 @@ class PostController extends \BaseController
         try {
             User::chkUserByToken($token);
             $reply->disable();
-            $re = ['result' => true, 'data' => [], 'info' => ['评论删除成功']];
+            $re = ['result' => 2000, 'data' => [], 'info' => ['评论删除成功']];
         } catch (Exception $e) {
-            $re = ['result' => false, 'data' => [], 'info' => $e->getMessage()];
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
