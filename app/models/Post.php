@@ -106,33 +106,27 @@ class Post extends Eloquent
             }
         }
         $imglist = [];
-        if ($this->p_content) {
+        if (isset($this->p_content)) {
             $imglist = explode(',', $this->p_content);
         }
-        $data = ['id' => $this->p_id, 'title' => $this->p_title, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $this->user->showInList(), 'replys' => $replys, 'reply_count' => $this->p_reply_count, 'priases' => $priases, 'praise_count' => $this->p_praise, 'imgs' => $imglist];
+        $user = [];
+        if (isset($this->user)) {
+            $user = $this->user->showInList();
+        }
+        $data = ['id' => $this->p_id, 'title' => $this->p_title, 'post_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $user, 'replys' => $replys, 'reply_count' => $this->p_reply_count, 'priases' => $priases, 'praise_count' => $this->p_praise, 'imgs' => $imglist];
         return $data;
     }
 
-    /**
-     * laravel relations
-     * @author Kydz 2015-06-17
-     * @return n/a
-     */
+    // eloquent relations
     public function user()
     {
         return $this->belongsTo('User', 'u_id', 'u_id');
     }
 
-    /**
-     * laravel ralations
-     * @author Kydz 2015-06-17
-     * @return n/a
-     */
     public function replys()
     {
         return $this->hasMany('PostsReply', 'p_id', 'p_id');
     }
-
 
     public function praises()
     {

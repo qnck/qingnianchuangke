@@ -28,19 +28,12 @@ class Activity extends Eloquent{
 
 	public function addAct(){
 		$this->baseValidate();
+		$this->created_at = date('Y-m-d H:i:s');
 		if(!$this->save()){
 			throw new Exception("活动添加失败", 1);
 		}else{
 			return true;
 		}
-	}
-
-	public function replys(){
-		return $this->hasMany('ActivitiesReply', 'ac_id', 'ac_id');
-	}
-
-	public function signedUsers(){
-		return $this->hasMany('ActivitiesSignUser', 'ac_id', 'ac_id');
 	}
 
 	public function showInList(){
@@ -61,5 +54,15 @@ class Activity extends Eloquent{
 			$this->ac_pic_path = array_pop($tmp);
 		}
 		return ['id' => $this->ac_id, 'title' => $this->ac_title, 'content' => $this->ac_content, 'address' => $this->ac_address, 'pic' => $this->ac_pic_path, 'att_count' => $this->ac_att_count, 'sign_count' => $this->ac_sign_count, 'create_user' => $this->creator->showInList(), 'replys' => $replys, 'signedUsers' => $signedUsers];
+	}
+
+	// eloquent relations
+	// 
+	public function replys(){
+		return $this->hasMany('ActivitiesReply', 'ac_id', 'ac_id');
+	}
+
+	public function signedUsers(){
+		return $this->hasMany('ActivitiesSignUser', 'ac_id', 'ac_id');
 	}
 }

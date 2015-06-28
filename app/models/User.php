@@ -55,7 +55,15 @@ class User extends Eloquent
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->save();
-        return $this->u_token;
+        $re = [];
+        $re['token'] = $this->u_token;
+        $now = new Datetime();
+        $now->modify('+ 30 days');
+        $re['expire'] = $now->format('Y-m-d H:i:s');
+        $re['id'] = $this->u_id;
+        $re['name'] = $this->u_name;
+        $re['head_img'] = $this->u_head_img;
+        return $re;
     }
 
     /**
@@ -73,7 +81,15 @@ class User extends Eloquent
         if (!Hash::check($this->u_password, $user->u_password)) {
             throw new Exception("密码错误", 1);
         } else {
-            return $user->u_token;
+            $re = [];
+            $re['token'] = $user->u_token;
+            $now = new Datetime();
+            $now->modify('+ 30 days');
+            $re['expire'] = $now->format('Y-m-d H:i:s');
+            $re['id'] = $user->u_id;
+            $re['name'] = $user->u_name;
+            $re['head_img'] = $user->u_head_img;
+            return $re;
         }
     }
 
@@ -108,10 +124,7 @@ class User extends Eloquent
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
         }
-        $user = User::where('u_token', '=', $this->u_token)->first();
-        if (!isset($user->u_id)) {
-            throw new Exception("没有找到请求的用户", 1);
-        }
+        $user = User::chkUserByToken($this->u_token);
 
         isset($this->u_nickname) ? $user->u_nickname = $this->u_nickname : '';
         isset($this->u_age) ? $user->u_age = $this->u_age : '';
@@ -264,11 +277,38 @@ class User extends Eloquent
         return $posts;
     }
 
-    // relations
-    
+    public function getFollowers()
+    {
+        $followers = [];
+        if (isset($this->followers)) {
+            foreach ($this->followers as $key => $follower) {
+                $followers[] = $follower->showInList();
+            }
+        }
+        return $followers;
+    }
+
+    public function getFollowings()
+    {
+        $followings = [];
+        if (isset($this->followings)) {
+            foreach ($this->followings as $key => $follower) {
+                $followings[] = $follower->showInList();
+            }
+        }
+        return $followings;
+    }
+
+    // eloquent realtions
+    // 
     public function posts()
     {
         return $this->hasMany('Post', 'u_id', 'u_id');
+    }
+
+    public function replyPosts()
+    {
+        return $this->hasMany('PostsReply', 'u_id', 'to_u_id');
     }
 
     public function activity()
@@ -288,12 +328,12 @@ class User extends Eloquent
 
     public function followers()
     {
-        return $this->belongsToMany('User', 'attentions', 'u_id', 'u_id');
+        return $this->belongsToMany('User', 'attentions', 'u_id', 'u_fans_id');
     }
 
     public function followings()
     {
-        return $this->belongsToMany('User', 'attentions', 'u_id', 'u_fans_id');
+        return $this->belongsToMany('User', 'attentions', 'u_fans_id', 'u_id');
     }
 
     public function bankCards()
