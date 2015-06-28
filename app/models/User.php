@@ -55,7 +55,15 @@ class User extends Eloquent
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->save();
-        return $this->u_token;
+        $re = [];
+        $re['token'] = $this->u_token;
+        $now = new Datetime();
+        $now->modify('+ 30 days');
+        $re['expire'] = $now->format('Y-m-d H:i:s');
+        $re['id'] = $this->u_id;
+        $re['name'] = $this->u_name;
+        $re['head_img'] = $this->u_head_img;
+        return $re;
     }
 
     /**
@@ -73,7 +81,15 @@ class User extends Eloquent
         if (!Hash::check($this->u_password, $user->u_password)) {
             throw new Exception("密码错误", 1);
         } else {
-            return $user->u_token;
+            $re = [];
+            $re['token'] = $user->u_token;
+            $now = new Datetime();
+            $now->modify('+ 30 days');
+            $re['expire'] = $now->format('Y-m-d H:i:s');
+            $re['id'] = $user->u_id;
+            $re['name'] = $user->u_name;
+            $re['head_img'] = $user->u_head_img;
+            return $re;
         }
     }
 

@@ -16,7 +16,7 @@ class UserController extends \BaseController
         $user->u_mobile = $mobile;
         $user->u_password = $pass;
         try {
-            $data = ['token' => $user->login()];
+            $data = $user->login();
             $re = ['data' => [$data], 'result' => 2000, 'info' => '登陆成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
@@ -52,7 +52,7 @@ class UserController extends \BaseController
             // verify vcode via phone
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);
-            $data = ['token' => $user->register()];
+            $data = $user->register();
             $re = ['data' => [$data], 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];
