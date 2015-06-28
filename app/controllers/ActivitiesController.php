@@ -213,6 +213,4 @@ class ActivitiesController extends \BaseController
         $token = Input::get('token');
         
     }
-
-
 }

@@ -17,7 +17,7 @@ class UserController extends \BaseController
         $user->u_password = $pass;
         try {
             $data = $user->login();
-            $re = ['data' => [$data], 'result' => 2000, 'info' => '登陆成功'];
+            $re = ['data' => $data, 'result' => 2000, 'info' => '登陆成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
         }
@@ -53,7 +53,7 @@ class UserController extends \BaseController
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);
             $data = $user->register();
-            $re = ['data' => [$data], 'result' => 2000, 'info' => '注册成功'];
+            $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];
         }
