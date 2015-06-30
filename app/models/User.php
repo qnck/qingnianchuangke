@@ -109,6 +109,7 @@ class User extends Eloquent
                 'school_name' => $this->u_school_name,
                 'student_num' => $this->u_student_num,
                 'address' => $this->u_address,
+                'pass' => $this->u_password,
             ],
             [
                 'nickname' => 'sometimes|max:32',
@@ -118,6 +119,7 @@ class User extends Eloquent
                 'school_name' => 'sometimes',
                 'student_num' => 'sometimes|alpha_num',
                 'address' => 'sometimes',
+                'pass' => 'sometimes',
             ]
         );
         if ($validator->fails()) {
@@ -134,6 +136,9 @@ class User extends Eloquent
         isset($this->u_school_name) ? $user->u_school_name = $this->u_school_name : '';
         isset($this->u_student_number) ? $user->u_student_number = $this->u_student_number : '';
         isset($this->u_address) ? $user->u_address = $this->u_address : '';
+        isset($this->u_password) ? $user->u_password = Hash::make($this->u_password) : '';
+
+        $user->updated_at = date('Y-m-d H:i:s');
         if (!$user->save()) {
             throw new Exception("更新用户信息失败", 1);
         } else {

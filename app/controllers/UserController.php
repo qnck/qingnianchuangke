@@ -128,7 +128,12 @@ class UserController extends \BaseController
         $user->u_school_name = Input::get('school_name', null);
         $user->u_student_number = Input::get('student_number', null);
         $user->u_address = Input::get('address', null);
+        $imgToken = Input::get('img_token', '');
         try {
+            if ($imgToken) {
+                $img = new Img('user', $imgToken);
+                $user->u_head_img = $img->getSavedImg(22, $user->u_head_img);
+            }
             $user->updateUser();
             $re = ['data' => [], 'result' => 2000, 'info' => '更新成功'];
         } catch (Exception $e) {
@@ -242,5 +247,31 @@ class UserController extends \BaseController
             ])->find($id);
         $followings = $user->getFollowings();
         return $followings;
+    }
+
+    public function resetPass()
+    {
+        $mobile = Input::get('mobile');
+        $vcode = Input::get('vcode');
+        $newPass = Input::get('pass');
+
+        $user = User::where('u_mobile', '=', $mobile)->first();
+
+        // chcek if mobile exsits
+        if (!isset($user->u_id)) {
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '没有查找到与该手机号码绑定的用户']);
+        }
+        $phone = new Phone($mobile);
+        try {
+            if ($phone->authVCode($vcode)) {
+                $user->u_password = $newPass;
+                $user->updateUser();
+            }
+            $re = ['result' => 2000, 'data' => [], 'info' => '重置密码成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+
+        return Response::json($re);
     }
 }
