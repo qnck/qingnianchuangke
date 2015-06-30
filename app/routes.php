@@ -1,4 +1,8 @@
 <?php
+
+// play ground
+// 
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -14,6 +18,7 @@ Route::get('/', 'HomeController@index');
 /* USER START*/
 Route::get('user/me', 'UserController@me');
 Route::get('user/me/posts', 'UserController@myPosts');
+Route::get('user/me/resetpass', 'UserController@resetPass');
 Route::get('user/{id}/followers', 'UserController@followers');
 Route::get('user/{id}/followings', 'UserController@followings');
 Route::resource('user', 'UserController');
