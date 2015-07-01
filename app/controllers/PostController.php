@@ -14,7 +14,8 @@ class PostController extends \BaseController
     {
         $data = [];
         $following = Input::get('following', 0);
-        $u_id = Input::get('user', 0);
+        $focused_user = Input::get('user', 0);
+        $u_id = Input::get('u_id', 0);
         $token = Input::get('token', '');
         $keyWord = Input::get('key', '');
         try {
@@ -28,14 +29,14 @@ class PostController extends \BaseController
                 'user'
                 ])->where('p_status', '=', 1);
             if ($following) {
-                $user = User::chkUserByToken($token);
+                $user = User::chkUserByToken($token, $u_id);
                 $query->join('attentions', function ($j) use ($user) {
                     $j->on('posts.u_id', '=', 'attentions.u_id')
                     ->where('attentions.u_fans_id', '=', $user->u_id);
                 });
             }
-            if ($u_id) {
-                $query->where('u_id', '=', $u_id);
+            if ($focused_user) {
+                $query->where('u_id', '=', $focused_user);
             }
             if ($keyWord) {
                 $query->where('p_title', 'LIKE', '%'.$keyWord.'%');
@@ -70,13 +71,14 @@ class PostController extends \BaseController
      */
     public function store()
     {
-        $token = Input::get('token');
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
         $title = Input::get('title');
         $title = urldecode($title);
         $longitude = Input::get('longitude');
         $latitude = Input::get('latitude');
         $address = Input::get('address');
-        $imgToken = Input::get('imgToken', '');
+        $imgToken = Input::get('img_token', '');
         $site_id = 1;
         $post = new Post();
         $post->p_title = $title;
@@ -85,16 +87,10 @@ class PostController extends \BaseController
         $post->p_latitude = $latitude;
         $post->p_address = $address;
         try {
-            $this->_user = User::chkUserByToken($token);
+            $this->_user = User::chkUserByToken($token, $u_id);
             $post->u_id = $this->_user->u_id;
-            $post->addPost();
+            $post->addPost($imgToken);
             $re = ['result' => 2000, 'data' => [], 'info' => '添加成功'];
-            if ($imgToken) {
-                $img = new Img('post', $imgToken);
-                $imgs = $img->save($post->p_id);
-                $post->p_content = implode(',', $imgs);
-                $post->save();
-            }
         } catch (Exception $e) {
             $re = ['result' =>  2001, 'data' => [], 'info' => $e->getMessage()];
             if ($e->getCode() == 2) {
@@ -147,8 +143,8 @@ class PostController extends \BaseController
         if (!isset($post->p_id)) {
             return Response::json(['result' => 2001, 'data' => [], 'info' => '您回复的帖子不存在']);
         }
-        $token = Input::get('token');
-        $content = Input::get('content');
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
         $to_user = Input::get('to', 0);
         $content = urldecode($content);
         $reply = new PostsReply();
@@ -158,7 +154,7 @@ class PostController extends \BaseController
         $reply->to_u_id = $to_user;
         $reply->created_at = date('Y-m-d H:i:s');
         try {
-            $this->_user = User::chkUserByToken($token);
+            $this->_user = User::chkUserByToken($token, $u_id);
             $reply->u_id = $this->_user->u_id;
             $reply->addReply();
             $post->p_reply_count += 1;
@@ -192,9 +188,10 @@ class PostController extends \BaseController
     public function destroy($id)
     {
         $token = Input::get('token');
+        $u_id = Input::get('u_id');
         $post = Post::find($id);
         try {
-            User::chkUserByToken($token);
+            User::chkUserByToken($token, $u_id);
             $post->disable();
             $re = ['result' =>2000, 'data' => [], 'info' => '删除成功'];
         } catch (Exception $e) {
@@ -212,10 +209,11 @@ class PostController extends \BaseController
     public function praise($id)
     {
         $token = Input::get('token');
+        $u_id = Input::get('u_id');
         $type = Input::get('type');
         $post = Post::find($id);
         try {
-            $user = User::chkUserByToken($token);
+            $user = User::chkUserByToken($token, $u_id);
             $result = 2000;
             if ($type == 1) {
                 $post->addPraise();
@@ -254,9 +252,10 @@ class PostController extends \BaseController
     public function disableReply($id)
     {
         $token = Input::get('token');
+        $u_id = Input::get('u_id');
         $reply = PostsReply::find($id);
         try {
-            User::chkUserByToken($token);
+            User::chkUserByToken($token, $u_id);
             $reply->disable();
             $re = ['result' => 2000, 'data' => [], 'info' => ['评论删除成功']];
         } catch (Exception $e) {
