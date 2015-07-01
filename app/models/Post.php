@@ -14,7 +14,7 @@ class Post extends Eloquent
         $validator = Validator::make(
             ['title' => $this->p_title, 'user' => $this->u_id, 'status' => $this->p_status, 'site' => $this->s_id],
             ['title' => 'required|max:140', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'site' => 'required|digits_between:1,11']
-            );
+        );
         if ($validator->fails()) {
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
@@ -27,16 +27,21 @@ class Post extends Eloquent
      * add new post
      * @author Kydz 2015-06-17
      */
-    public function addPost()
+    public function addPost($imgToken)
     {
         $this->created_at = date('Y-m-d H:i:s');
         $this->p_status = 1;
         $this->baseValidate();
         if (!$this->save()) {
             throw new Exception("添加帖子失败", 1);
-        } else {
-            return true;
         }
+        if ($imgToken) {
+            $img = new Img('post', $imgToken);
+            $this->p_content = $img->getSavedImg($this->p_id, $this->p_content);
+            $this->save();
+        }
+
+        return true;
     }
 
     /**

@@ -98,7 +98,7 @@ class User extends Eloquent
      * @author Kydz 2015-06-14
      * @return bool
      */
-    public function updateUser()
+    public function updateUser($imgToken)
     {
         $validator = Validator::make(
             [
@@ -107,8 +107,6 @@ class User extends Eloquent
                 'name' => $this->u_name,
                 'sex' => $this->u_sex,
                 'school_name' => $this->u_school_name,
-                'student_num' => $this->u_student_num,
-                'address' => $this->u_address,
                 'pass' => $this->u_password,
             ],
             [
@@ -117,8 +115,6 @@ class User extends Eloquent
                 'name' => 'sometimes|max:5',
                 'sex' => 'sometimes|digits:1',
                 'school_name' => 'sometimes',
-                'student_num' => 'sometimes|alpha_num',
-                'address' => 'sometimes',
                 'pass' => 'sometimes',
             ]
         );
@@ -126,17 +122,22 @@ class User extends Eloquent
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
         }
-        $user = User::chkUserByToken($this->u_token);
+        $user = User::chkUserByToken($this->u_token, $this->u_id);
 
         isset($this->u_nickname) ? $user->u_nickname = $this->u_nickname : '';
         isset($this->u_age) ? $user->u_age = $this->u_age : '';
         isset($this->u_name) ? $user->u_name = $this->u_name : '';
         isset($this->u_sex) ? $user->u_sex = $this->u_sex : '';
-        isset($this->u_identity_number) ? $user->u_identity_number = $this->u_identity_number : '';
         isset($this->u_school_name) ? $user->u_school_name = $this->u_school_name : '';
-        isset($this->u_student_number) ? $user->u_student_number = $this->u_student_number : '';
-        isset($this->u_address) ? $user->u_address = $this->u_address : '';
         isset($this->u_password) ? $user->u_password = Hash::make($this->u_password) : '';
+        isset($this->u_prof) ? $user->u_prof = $this->u_prof : '';
+        isset($this->u_degree) ? $user->u_degree = $this->u_degree : '';
+        isset($this->u_entry_year) ? $user->u_entry_year = $this->u_entry_year : '';
+
+        if ($imgToken) {
+            $img = new Img('user', $imgToken);
+            $user->u_head_img = $img->getSavedImg($user->u_id, $user->u_head_img);
+        }
 
         $user->updated_at = date('Y-m-d H:i:s');
         if (!$user->save()) {
@@ -201,12 +202,16 @@ class User extends Eloquent
      * @param  string $token user token
      * @return eloquent        user
      */
-    public static function chkUserByToken($token)
+    public static function chkUserByToken($token, $id = 0)
     {
         if (empty($token)) {
             throw new Exception("please input token", 1);
         }
-        $user = User::where('u_token', '=', $token)->where('u_status', '=', 1)->first();
+        $query = User::where('u_token', '=', $token)->where('u_status', '=', 1);
+        if ($id > 0) {
+            $query->where('u_id', '=', $id);
+        }
+        $user = $query->first();
         if (!isset($user->u_id)) {
             throw new Exception('您的登录已过期， 请重新登录', 1);
         } else {

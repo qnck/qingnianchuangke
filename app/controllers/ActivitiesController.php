@@ -51,7 +51,8 @@ class ActivitiesController extends \BaseController
     public function store()
     {
         $token = Input::get('token');
-        $imgToken = Input::get('imgToken', '');
+        $u_id = Input::get('u_id');
+        $imgToken = Input::get('img_token', '');
         $title = Input::get('title');
         $title = urldecode($title);
         $content = Input::get('content');
@@ -60,11 +61,13 @@ class ActivitiesController extends \BaseController
         $end = Input::get('end');
         $address = Input::get('address');
         $address = urldecode($address);
-        $needData = Input::get('needData', 0);
+        $needData = Input::get('need_data', 0);
         $site = Input::get('site');
         $ex_user = Input::get('ex_user', 0);
+        $needSupport = Input::get('need_supp', 0);
+        $supportAmount = Input::get('supp_amt', 0);
         try {
-            $user = User::chkUserByToken($token);
+            $user = User::chkUserByToken($token, $u_id);
             $act = new Activity();
             $act->ac_title = $title;
             $act->ac_status = 1;
@@ -79,13 +82,13 @@ class ActivitiesController extends \BaseController
             $act->ac_att_count = 0;
             $act->ac_sign_count = 0;
             $act->ac_read_count = 0;
+            $act->ac_need_support = $needSupport;
+            $act->ac_support_amount = $supportAmount;
             $act->addAct();
             if ($imgToken) {
                 // save img
                 $img = new Img('activity', $imgToken);
-                $imgs = $img->save($act->id);
-                $path = implode(',', $imgs);
-                $act->ac_pic_path = $path;
+                $act->ac_pic_path = $img->getSavedImg($act->id, $act->ac_pic_path);
                 $act->save();
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '活动添加成功'];
@@ -135,7 +138,8 @@ class ActivitiesController extends \BaseController
         if (!isset($act->ac_id)) {
             return Response::json(['result' => 2001, 'data' => [], 'info' => '您回复的活动不存在']);
         }
-        $token = Input::get('token');
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', null);
         $content = Input::get('content');
         $content = urldecode($content);
         $reply = new ActivitiesReply();
@@ -144,7 +148,7 @@ class ActivitiesController extends \BaseController
         $reply->r_status = 1;
         $reply->created_at = date('Y-m-d H:i:s');
         try {
-            $this->user = User::chkUserByToken($token);
+            $this->user = User::chkUserByToken($token, $u_id);
             $reply->u_id = $this->user->u_id;
             $reply->addReply();
             $re = ['result' => 2000, 'data' => [], 'info' => '回复成功'];
@@ -180,23 +184,18 @@ class ActivitiesController extends \BaseController
 
     public function sign($id)
     {
-        $token = Input::get('token');
-        $imgToken = Input::get('imgToken', '');
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', null);
+        $imgToken = Input::get('img_token', '');
         try {
-            $user = User::chkUserByToken($token);
+            $user = User::chkUserByToken($token, $u_id);
             $actSign = new ActivitiesSignUser();
             $actSign->ac_id = $id;
             $actSign->u_id = $user->u_id;
             $actSign->created_at = date('Y-m-d H:i:s');
             $actSign->s_status = 0;
             $actSign->signUp($imgToken);
-            // todo file path
-            if ($imgToken) {
-                $img = new Img('activity', $imgToken);
-                $imgs = $img->save($id);
-                $actSign->sign_data_path = implode(',', $imgs);
-                $actSign->save();
-            }
+
             $re = ['result' => 2000, 'data' => [], 'info' => '报名成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];

@@ -84,7 +84,7 @@ class UserController extends \BaseController
 
 
     /**
-     * Show the form for editing the specified resource.
+     * add follow or unfollow.
      *
      * @param  int  $id
      * @return Response
@@ -93,8 +93,9 @@ class UserController extends \BaseController
     {
         $type = Input::get('type');
         $token = Input::get('token');
+        $u_id = Input::get('u_id');
 
-        $user = User::chkUserByToken($token);
+        $user = User::chkUserByToken($token, $u_id);
         try {
             $target = User::find($id);
             if ($type == 1) {
@@ -117,24 +118,19 @@ class UserController extends \BaseController
      */
     public function update($id)
     {
-        $user = new User();
-        $user->u_token = $id;
+        $user->u_id = $id;
+        $user->u_token = Input::get('token', null);
         $user->u_password = Input::get('pass', null);
-        $user->u_nickname = Input::get('nickname', null);
         $user->u_age = Input::get('age', null);
         $user->u_name = Input::get('name', null);
         $user->u_sex = Input::get('sex', null);
-        $user->u_identity_number = Input::get('identity_number', null);
         $user->u_school_name = Input::get('school_name', null);
-        $user->u_student_number = Input::get('student_number', null);
-        $user->u_address = Input::get('address', null);
+        $user->u_prof = Input::get('profession', null);
+        $user->u_degree = Input::get('degree', null);
+        $user->u_entry_year = Input::get('in_year', null);
         $imgToken = Input::get('img_token', '');
         try {
-            if ($imgToken) {
-                $img = new Img('user', $imgToken);
-                $user->u_head_img = $img->getSavedImg(22, $user->u_head_img);
-            }
-            $user->updateUser();
+            $user->updateUser($imgToken);
             $re = ['data' => [], 'result' => 2000, 'info' => '更新成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
@@ -162,8 +158,9 @@ class UserController extends \BaseController
     public function me()
     {
         $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
         try {
-            $user = User::chkUserByToken($token);
+            $user = User::chkUserByToken($token, $u_id);
             $user = User::with('bankCards.bank', 'contact')->find($user->u_id);
             $userInfo = $user->showDetail();
             $cards = $user->showBankCards();
@@ -180,9 +177,10 @@ class UserController extends \BaseController
     public function myPosts()
     {
         $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
         $keyWord = Input::get('key');
         try {
-            $user = User::chkUserByToken($token);
+            $user = User::chkUserByToken($token, $u_id);
             $user = User::with([
                 'posts' => function ($q) use ($keyWord) {
                     $q->where('p_status', '=', 1);
