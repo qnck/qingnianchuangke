@@ -10,16 +10,23 @@ class ActivitiesController extends \BaseController
      */
     public function index()
     {
-        $keyWord = Input::get('key', '');
+        $key_word = Input::get('key', '');
         $hot = Input::get('hot', 0);
         $new = Input::get('new', 0);
+        $site_id = Input::get('site', 1);
 
         $query = Activity::with('replys', 'signedUsers')->where('ac_status', '=', 1);
         if ($hot) {
             $query->orderBy('ac_read_count', 'desc');
         }
         if ($new) {
-            // $query->orderBy('');
+            $query->orderBy('created_at', 'desc');
+        }
+        if ($site_id) {
+            $query->where('s_id', '=', $site_id);
+        }
+        if ($key_word) {
+            $query->where('ac_content', 'LIKE', '%'.$key_word.'%');
         }
         $acts = $query->paginate(10);
         $list = [];
@@ -182,6 +189,12 @@ class ActivitiesController extends \BaseController
         //
     }
 
+    /**
+     * sign in to an activity
+     * @author Kydz 2015-07-02
+     * @param  int $id activity id
+     * @return json     activity detail
+     */
     public function sign($id)
     {
         $token = Input::get('token', '');

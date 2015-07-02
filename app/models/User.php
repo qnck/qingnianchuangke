@@ -158,6 +158,7 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_nickname;
         $data['head_img'] = $this->u_head_img;
+        $data['school_name'] = $this->u_school_name;
         return $data;
     }
 
