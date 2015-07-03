@@ -65,14 +65,14 @@ class Phone extends Eloquent
         $code = new VerificationCode();
         $code->generateCode();
         $expire = new DateTime();
-        $expire->modify('+5mins');
+        $expire->modify('+5 mins');
         $code->expire_at = $expire->format('Y-m-d H:i:s');
         $code->v_reuse = 0;
         $code->verifiable_id = $this->_mobile;
         $code->verifiable_type = 'Phone';
-        $code->save();
         $txt = '您的验证码是 '.$code->v_code;
         $this->sendText($txt, TxtMessage::SEND_FAST);
+        $code->save();
         return $code->v_code;
     }
 
