@@ -10,7 +10,7 @@ class TxtMessage extends Eloquent{
     private $api = '';
     private $sendUrl = 'http://222.76.210.200:9999/sms.aspx';
     private $apiKey = '028qnck';
-    private $apiPass = '789654';
+    private $apiPass = 'qnck8888';
     private $apiId = '436';
     private $apiAuth = [];
 
