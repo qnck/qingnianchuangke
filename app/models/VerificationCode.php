@@ -40,4 +40,9 @@ class VerificationCode extends Eloquent
         }
         $this->v_code = $code;
     }
+
+    public static function deleteVcode($vcode, $vid, $vtype)
+    {
+        DB::table('verification_codes')->where('v_code', '=', $vcode)->where('verifiable_id', '=', $vid)->where('verifiable_type', '=', $vtype)->delete();
+    }
 }
