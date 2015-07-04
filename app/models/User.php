@@ -98,7 +98,7 @@ class User extends Eloquent
      * @author Kydz 2015-06-14
      * @return bool
      */
-    public function updateUser($imgToken)
+    public function updateUser($imgToken = '')
     {
         $validator = Validator::make(
             [
