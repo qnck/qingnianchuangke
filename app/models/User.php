@@ -242,19 +242,23 @@ class User extends Eloquent
 
     public static function follow($from, $to)
     {
+        $count = Attention::where('u_fans_id', '=', $from->u_id)->where('u_id', '=', $to->u_id)->count();
+        if ($count >= 1) {
+            throw new Exception("您已经关注过了", 1);
+        }
         $attention = new Attention();
         $attention->u_fans_id = $from->u_id;
         $attention->u_id = $to->u_id;
         $attention->created_at = date('Y-m-d H:i:s');
         if (!$attention->save()) {
-            throw new Exception("fail to add follow relation", 1);
+            throw new Exception("关注用户失败", 1);
         }
         $from->u_following_count += 1;
         $to->u_follower_count += 1;
         if ($from->save() && $to->save()) {
             return true;
         } else {
-            throw new Exception("fail to save", 1);
+            throw new Exception("关注用户失败", 1);
         }
     }
 
@@ -262,18 +266,23 @@ class User extends Eloquent
     {
         $attention = Attention::where('u_fans_id', '=', $from->u_id)->where('u_id', '=', $to->u_id)->first();
         if (!isset($attention->a_id)) {
-            throw new Exception("Error Processing Request", 1);
-            
+            return true;
         }
         if (!$attention->delete()) {
-            throw new Exception("fail to remove relation", 1);
+            throw new Exception("取消关注失败", 1);
         }
         $from->u_following_count -= 1;
+        if ($from->u_following_count <= 0) {
+            $from->u_following_count = 0;
+        }
         $to->u_follower_count -= 1;
+        if ($to->u_follower_count <= 0) {
+            $to->u_follower_count = 0;
+        }
         if ($from->save() && $to->save()) {
             return true;
         } else {
-            throw new Exception("fail to save", 1);
+            throw new Exception("取消关注失败", 1);
         }
     }
 
@@ -325,6 +334,11 @@ class User extends Eloquent
     public function activity()
     {
         return $this->hasMany('Activity', 'u_id', 'ac_creat_user');
+    }
+
+    public function followingActivites()
+    {
+        return $this->belongsToMany('Activity', 'activities_follows', 'ac_id', 'ac_id');
     }
 
     public function signedActivities()

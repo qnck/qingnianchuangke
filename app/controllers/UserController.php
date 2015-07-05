@@ -174,6 +174,11 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    /**
+     * get my posts
+     * @author Kydz 2015-07-04
+     * @return array posts info
+     */
     public function myPosts()
     {
         $token = Input::get('token', '');
@@ -202,7 +207,12 @@ class UserController extends \BaseController
         }
         return Response::json($re);
     }
-
+    /**
+     * get my followers
+     * @author Kydz 2015-07-04
+     * @param  int $id user id
+     * @return json     followers
+     */
     public function followers($id)
     {
         try {
@@ -214,6 +224,12 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    /**
+     * get my followings
+     * @author Kydz 2015-07-04
+     * @param  int $id user id
+     * @return json     followings
+     */
     public function followings($id)
     {
         try {
@@ -225,6 +241,52 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    /**
+     * get my followers
+     * @author Kydz 2015-07-04
+     * @return json followers list
+     */
+    public function myFollowers()
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = $this->getUserFollowers($user->u_id);
+            $re = ['result' => 2000, 'data' => $data, 'info'=> '获取我的粉丝成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    /**
+     * get my followings
+     * @author Kydz 2015-07-04
+     * @return json followings list
+     */
+    public function myFollowings()
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = $this->getUserFollowings($user->u_id);
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我关注的人成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    /**
+     * get user following
+     * @author Kydz 2015-07-04
+     * @param  int $id user id
+     * @return array
+     */
     private function getUserFollowers($id)
     {
         $user = User::with([
@@ -236,6 +298,12 @@ class UserController extends \BaseController
         return $followers;
     }
 
+    /**
+     * get user followings
+     * @author Kydz 2015-07-04
+     * @param  int $id user id
+     * @return array
+     */
     private function getUserFollowings($id)
     {
         $user = User::with([
@@ -247,6 +315,11 @@ class UserController extends \BaseController
         return $followings;
     }
 
+    /**
+     * reset pass word
+     * @author Kydz 2015-07-04
+     * @return json n/a
+     */
     public function resetPass()
     {
         $mobile = Input::get('mobile');
@@ -270,6 +343,35 @@ class UserController extends \BaseController
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
 
+        return Response::json($re);
+    }
+
+    public function follow($id)
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+        $type = Input::get('type');
+        $target = User::find($id);
+        if (!isset($target->u_id)) {
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '您关注的用户不存在']);
+        }
+        if ($id == $u_id) {
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '您不能关注自己']);
+        }
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            if ($type == 1) {
+                $msg = '关注成功';
+                User::follow($user, $target);
+            } elseif ($type == 2) {
+                $msg = '取消关注成功';
+                User::unfollow($user, $target);
+            }
+            $re = ['result' => 2000, 'data' => [], 'info' => $msg];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
         return Response::json($re);
     }
 }
