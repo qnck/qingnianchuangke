@@ -23,20 +23,11 @@ class ActivitiesSignUser extends Eloquent
         }
     }
     
-    public function activity()
-    {
-        return $this->belongsTo('Activity', 'ac_id', 'ac_id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo('User', 'u_id', 'u_id');
-    }
 
     public function signUp($imgToken = '')
     {
-        $chk = ActivitiesSignUser::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $this->u_id)->first();
-        if (isset($chk->r_id)) {
+        $chk = ActivitiesSignUser::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $this->u_id)->count();
+        if ($chk > 0) {
             throw new Exception("您已经报过名了", 1);
         }
         $this->baseValidate();
@@ -52,12 +43,15 @@ class ActivitiesSignUser extends Eloquent
         if (!$this->save()) {
             throw new Exception("活动报名失败", 1);
         }
-
         if ($imgToken) {
             // save img
-            $img = new Img('activity', $imgToken);
-            $this->sign_data_path = $img->getSavedImg($this->ac_id, $this->sign_data_path);
+            $img = new Img('activitySignUser', $imgToken);
+            $this->sign_data_path = $img->getSavedImg($this->r_id, $this->sign_data_path);
             $this->save();
+        }
+        $act->ac_sign_count += 1;
+        if (!$act->save()) {
+            throw new Exception("修改活动数据失败", 1);
         }
 
         return true;
@@ -69,6 +63,32 @@ class ActivitiesSignUser extends Eloquent
         if (isset($this->user->u_id)) {
             $user = $this->user->showInList();
         }
-        return ['id' => $this->r_id, 'user' => $user, 'sign_time' => $this->created_at->format('Y-m-d H:i:s')];
+        if ($this->sign_data_path) {
+            $imgs = explode(',', $this->sign_data_path);
+        } else {
+            $imgs = [];
+        }
+        return ['id' => $this->r_id, 'user' => $user, 'sign_time' => $this->created_at->format('Y-m-d H:i:s'), 'imgs' => $imgs];
+    }
+
+    public function confirm()
+    {
+        $this->s_status = 1;
+        if (!$this->save()) {
+            throw new Exception("确认用户失败", 1);
+        }
+        return true;
+    }
+
+    // relation
+    //
+    public function activity()
+    {
+        return $this->belongsTo('Activity', 'ac_id', 'ac_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('User', 'u_id', 'u_id');
     }
 }

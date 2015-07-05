@@ -38,6 +38,52 @@ class Activity extends Eloquent
         }
     }
 
+    public function follow($u_id)
+    {
+        $chk = ActivitiesFollow::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $u_id)->count();
+        if ($chk > 0) {
+            throw new Exception("您已经关注过了", 1);
+        }
+        $actf = new ActivitiesFollow();
+        $actf->ac_id = $this->ac_id;
+        $actf->u_id = $u_id;
+        $actf->created_at = date('Y-m-d H:i:s');
+
+        if (!$actf->save()) {
+            throw new Exception('关注活动失败', 1);
+        }
+
+        $this->ac_att_count += 1;
+        if (!$this->save()) {
+            throw new Exception("关注活动失败", 1);
+        }
+
+        return true;
+    }
+
+    public function unfollow($u_id)
+    {
+        $actf = ActivitiesFollow::where('ac_id', '=', $this->ac_id)->where('u_id', '=', $u_id)->first();
+
+        if (!isset($actf->ac_id)) {
+            return true;
+        }
+
+        if (!$actf->delete()) {
+            throw new Exception('取消关注活动失败', 1);
+        }
+
+        $this->ac_att_count -= 1;
+        if ($this->ac_att_count <= 0) {
+            $this->ac_att_count = 0;
+        }
+        if (!$this->save()) {
+            throw new Exception("取消关注活动失败", 1);
+        }
+
+        return true;
+    }
+
     public function showInList()
     {
         $signedUsers = [];
@@ -68,5 +114,10 @@ class Activity extends Eloquent
     public function signedUsers()
     {
         return $this->hasMany('ActivitiesSignUser', 'ac_id', 'ac_id');
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany('User', 'activities_follows', 'u_id', 'u_id');
     }
 }

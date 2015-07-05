@@ -62,6 +62,16 @@ class Phone extends Eloquent
      */
     public function sendVCode()
     {
+        // chk if there is unused vcode
+        $now = new DateTime();
+        $now->modify('-1 mins');
+        $chk = VerificationCode::where('verifiable_id', '=', $this->_mobile)
+        ->where('verifiable_type', '=', 'Phone')
+        ->where('created_at', '>', $now->format('Y-m-d H:i:s'))
+        ->count();
+        if ($chk > 0) {
+            throw new Exception("您的操作太频繁了, 请稍后再试", 1);
+        }
         $code = new VerificationCode();
         $code->generateCode();
         $expire = new DateTime();

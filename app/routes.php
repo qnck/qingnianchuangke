@@ -19,6 +19,9 @@ Route::get('/', 'HomeController@index');
 Route::get('user/me', 'UserController@me');
 Route::get('user/me/posts', 'UserController@myPosts');
 Route::get('user/me/resetpass', 'UserController@resetPass');
+Route::get('user/me/followers', 'UserController@myFollowers');
+Route::get('user/me/followings', 'UserController@myFollowings');
+Route::get('user/{id}/follow', 'UserController@follow');
 Route::get('user/{id}/followers', 'UserController@followers');
 Route::get('user/{id}/followings', 'UserController@followings');
 Route::resource('user', 'UserController');
@@ -31,8 +34,11 @@ Route::delete('post/reply/{id}', 'PostController@disableReply');
 /* POST END*/
 
 /* ACTIVITIES START*/
+Route::get('activity/{id}/follow', 'ActivitiesController@follow');
+Route::post('activity/{id}/sign', 'ActivitiesController@sign');
+Route::get('activity/{id}/signers', 'ActivitiesController@signers');
+Route::get('activity/{id}/signer/{sid}/confirm', 'ActivitiesController@confirmSignedUser');
 Route::resource('activity', 'ActivitiesController');
-Route::get('activity/{id}/sign', 'ActivitiesController@sign');
 /* ACTIVITIES END*/
 
 /* VERIFY START*/
