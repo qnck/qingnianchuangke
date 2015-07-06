@@ -21,6 +21,7 @@ Route::get('user/me/posts', 'UserController@myPosts');
 Route::get('user/me/resetpass', 'UserController@resetPass');
 Route::get('user/me/followers', 'UserController@myFollowers');
 Route::get('user/me/followings', 'UserController@myFollowings');
+Route::get('user/search', 'UserController@search');
 Route::get('user/{id}/follow', 'UserController@follow');
 Route::get('user/{id}/followers', 'UserController@followers');
 Route::get('user/{id}/followings', 'UserController@followings');
