@@ -13,6 +13,9 @@ class PostController extends \BaseController
     public function index()
     {
         $data = [];
+        $p_id = Input::get('id', 0);
+        $way = Input::get('way', 'up');
+        $num = Input::get('num', 10);
         $following = Input::get('following', 0);
         $focused_user = Input::get('user', 0);
         $u_id = Input::get('u_id', 0);
@@ -41,7 +44,21 @@ class PostController extends \BaseController
             if ($keyWord) {
                 $query->where('p_title', 'LIKE', '%'.$keyWord.'%');
             }
-            $posts = $query->paginate(10);
+            if ($p_id) {
+                if ($way == 'down') {
+                    $query->where('p_id', '<', $p_id);
+                    $query->orderBy('p_id', 'DESC');
+                } elseif ($way == 'up') {
+                    $query->where('p_id', '>', $p_id);
+                    $query->orderBy('p_id', 'ASC');
+                }
+            } else {
+                $query->orderBy('p_id', 'DESC');
+            }
+            $posts = $query->take($num)->get();
+            if ($way == 'up') {
+                $posts->sortByDesc('p_id');
+            }
             foreach ($posts as $post) {
                 $data[] = $post->showInList();
             }

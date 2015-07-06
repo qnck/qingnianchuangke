@@ -346,6 +346,12 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    /**
+     * follow or unfollow other users
+     * @author Kydz
+     * @param  int $id target id
+     * @return json     n/a
+     */
     public function follow($id)
     {
         $u_id = Input::get('u_id');
@@ -369,6 +375,33 @@ class UserController extends \BaseController
                 User::unfollow($user, $target);
             }
             $re = ['result' => 2000, 'data' => [], 'info' => $msg];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    /**
+     * search user
+     * @author Kydz
+     * @return json user list
+     */
+    public function search()
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+        $keyWord = Input::get('key');
+        if (empty($keyWord)) {
+            return Response::json(['result' => 2001, 'data' => [], 'info' => '请输入搜索关键字']);
+        }
+        try {
+            User::chkUserByToken($token, $u_id);
+            $data = User::where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_school_id', 'LIKE', '%'.$keyWord.'%')->get();
+            $list = [];
+            foreach ($data as $key => $user) {
+                $list[] = $user->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $list, 'info' => '操作成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }
