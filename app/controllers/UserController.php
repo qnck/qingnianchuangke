@@ -124,7 +124,7 @@ class UserController extends \BaseController
         $user->u_age = Input::get('age', null);
         $user->u_name = Input::get('name', null);
         $user->u_sex = Input::get('sex', null);
-        $user->u_school_name = Input::get('school_name', null);
+        $user->u_school_id = Input::get('school_id', null);
         $user->u_prof = Input::get('profession', null);
         $user->u_degree = Input::get('degree', null);
         $user->u_entry_year = Input::get('in_year', null);
@@ -402,6 +402,52 @@ class UserController extends \BaseController
                 $list[] = $user->showInList();
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '操作成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    /**
+     * replies from me
+     * @author Kydz
+     * @return json reply list
+     */
+    public function myReply()
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = PostsReply::with(['post', 'toUser'])->where('u_id', '=', $u_id)->where('r_status', '=', 1)->paginate(10);
+            $list = [];
+            foreach ($data as $key => $reply) {
+                $list[] = $reply->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $list, 'info' => '获取我的回复成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    /**
+     * praised from me
+     * @author Kydz
+     * @return json praised list
+     */
+    public function myPraise()
+    {
+        $u_id = Input::get('u_id');
+        $token = Input::get('token');
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = PostsPraise::with(['post'])->where('u_id', '=', $u_id)->paginate(10);
+            $list = [];
+            foreach ($data as $key => $praise) {
+                $list[] = $praise->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $list, 'info' => '获取的赞成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
         }

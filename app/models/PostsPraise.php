@@ -31,6 +31,14 @@ class PostsPraise extends Eloquent
 
     public function showInList()
     {
-        return ['user' => $this->user->showInList(), 'praise_time' => $this->created_at->format('Y-m-d H:i:s')];
+        $user = [];
+        if (isset($this->user)) {
+            $user = $this->user->showInList();
+        }
+        $post = [];
+        if (isset($this->post)) {
+            $post = $this->post->showInList();
+        }
+        return ['user' => $user, 'post' => $post, 'praise_time' => $this->created_at->format('Y-m-d H:i:s')];
     }
 }
