@@ -23,7 +23,7 @@ class DataBaseInit extends Migration {
 			$table->integer('u_head_img')->nullable();	//头像图片
 			$table->string('u_identity_number', 18)->nullable();	//身份证号码
 			$table->integer('u_identity_img')->nullable();	//身份证图片
-			$table->string('u_school_name', 64)->nullable();	//学校名称
+			$table->string('u_school_id', 64)->nullable();	//学校名称
 			$table->string('u_student_number', 32)->nullable();	//学生证号码
 			$table->integer('u_student_img')->nullable();	//学生证图片
 			$table->string('u_address', 128)->nullable();	//地址

@@ -106,7 +106,7 @@ class User extends Eloquent
                 'age' => $this->u_age,
                 'name' => $this->u_name,
                 'sex' => $this->u_sex,
-                'school_name' => $this->u_school_name,
+                'school_id' => $this->u_school_id,
                 'pass' => $this->u_password,
             ],
             [
@@ -114,7 +114,7 @@ class User extends Eloquent
                 'age' => 'sometimes|digits_between:1,3',
                 'name' => 'sometimes|max:5',
                 'sex' => 'sometimes|digits:1',
-                'school_name' => 'sometimes',
+                'school_id' => 'sometimes',
                 'pass' => 'sometimes',
             ]
         );
@@ -128,7 +128,7 @@ class User extends Eloquent
         isset($this->u_age) ? $user->u_age = $this->u_age : '';
         isset($this->u_name) ? $user->u_name = $this->u_name : '';
         isset($this->u_sex) ? $user->u_sex = $this->u_sex : '';
-        isset($this->u_school_name) ? $user->u_school_name = $this->u_school_name : '';
+        isset($this->u_school_id) ? $user->u_school_id = $this->u_school_id : '';
         isset($this->u_password) ? $user->u_password = Hash::make($this->u_password) : '';
         isset($this->u_prof) ? $user->u_prof = $this->u_prof : '';
         isset($this->u_degree) ? $user->u_degree = $this->u_degree : '';
@@ -158,7 +158,11 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_nickname;
         $data['head_img'] = $this->u_head_img;
-        $data['school_name'] = $this->u_school_name;
+        $school = [];
+        if (isset($this->school)) {
+            $school = $this->school->showInList();
+        }
+        $data['school'] = $school;
         return $data;
     }
 
@@ -185,7 +189,7 @@ class User extends Eloquent
         $path = explode(',', $this->u_identity_img);
         $path = array_pop($path);
         $data['identity_img'] = $path;
-        $data['school_name'] = $this->u_school_name;
+        $data['school_id'] = $this->u_school_id;
         $data['student_number'] = $this->u_student_number;
         $path = explode(',', $this->u_student_img);
         $path = array_pop($path);
@@ -320,10 +324,15 @@ class User extends Eloquent
     }
 
     // eloquent realtions
-    // 
+    //
     public function posts()
     {
         return $this->hasMany('Post', 'u_id', 'u_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany('PostsReply', 'u_id', 'u_id');
     }
 
     public function replyPosts()
@@ -369,5 +378,10 @@ class User extends Eloquent
     public function contact()
     {
         return $this->hasOne('UsersContactPerson', 'u_id', 'u_id');
+    }
+
+    public function school()
+    {
+        return $this->hasOne('DicSchool', 't_id', 'u_school_id');
     }
 }

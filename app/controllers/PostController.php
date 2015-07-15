@@ -27,9 +27,11 @@ class PostController extends \BaseController
                     $q->where('r_status', '=', 1);
                 },
                 'replys.user',
+                'replys.user.school',
                 'replys.toUser',
                 'praises',
-                'user'
+                'user',
+                'user.school'
                 ])->where('p_status', '=', 1);
             if ($following) {
                 $user = User::chkUserByToken($token, $u_id);
@@ -133,7 +135,9 @@ class PostController extends \BaseController
             'replys.user',
             'replys.toUser',
             'praises.user',
-            'user'])
+            'user',
+            'user.school'
+        ])
         ->where('p_id', '=', $id)->where('p_status', '=', 1)->first();
         if (!isset($post->p_id)) {
             return Response::json(['result' => 2001, 'data' => [], 'info' => '请求的帖子不存在']);
@@ -163,7 +167,7 @@ class PostController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         $to_user = Input::get('to', 0);
-        $content = urldecode($content);
+        $content = Input::get('content', '');
         $reply = new PostsReply();
         $reply->p_id = $id;
         $reply->r_content = $content;

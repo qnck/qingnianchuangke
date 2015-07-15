@@ -18,6 +18,8 @@ Route::get('/', 'HomeController@index');
 /* USER START*/
 Route::get('user/me', 'UserController@me');
 Route::get('user/me/posts', 'UserController@myPosts');
+Route::get('user/me/reply', 'UserController@myReply');
+Route::get('user/me/praise', 'UserController@myPraise');
 Route::get('user/me/resetpass', 'UserController@resetPass');
 Route::get('user/me/followers', 'UserController@myFollowers');
 Route::get('user/me/followings', 'UserController@myFollowings');
@@ -34,6 +36,10 @@ Route::get('post/{id}/praise', 'PostController@praise');
 Route::delete('post/reply/{id}', 'PostController@disableReply');
 /* POST END*/
 
+/* TRADE START*/
+Route::resource('trade', 'TradeController');
+/* TRADE END*/
+
 /* ACTIVITIES START*/
 Route::get('activity/{id}/follow', 'ActivitiesController@follow');
 Route::post('activity/{id}/sign', 'ActivitiesController@sign');
@@ -45,3 +51,8 @@ Route::resource('activity', 'ActivitiesController');
 /* VERIFY START*/
 Route::get('verify/code', 'VerificationController@getVCode');
 /* VERIFY END*/
+
+/* DATA DICTIONARY START*/
+Route::get('dic/school', 'DicController@getSchools');
+Route::get('dic/city', 'DicController@getCities');
+/* DATA DICTIONARY END*/

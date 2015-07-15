@@ -14,7 +14,7 @@ class PostsReply extends Eloquent
         $validator = Validator::make(
             ['content' => $this->r_content, 'user' => $this->u_id, 'status' => $this->r_status, 'post' => $this->p_id],
             ['content' => 'required', 'user' => 'required|digits_between:1,11', 'status' => 'required', 'post' => 'required|digits_between:1,11']
-            );
+        );
         if ($validator->fails()) {
             $msg = $validator->messages();
             throw new Exception($msg->first(), 1);
@@ -65,12 +65,16 @@ class PostsReply extends Eloquent
         if (isset($this->toUser)) {
             $toUser = $this->toUser->showInList();
         }
-        $data = ['id' => $this->r_id, 'content' => $this->r_content, 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $user, 'toUser' => $toUser];
+        $post = [];
+        if (isset($this->post)) {
+            $post = $this->post->showInList();
+        }
+        $data = ['id' => $this->r_id, 'content' => $this->r_content, 'reply_time' => $this->created_at->format('Y-m-d H:i:s'), 'user' => $user, 'toUser' => $toUser, 'post' => $post];
         return $data;
     }
 
     // eloquent relations
-    // 
+    //
     public function post()
     {
         return $this->belongsTo('Post', 'p_id', 'p_id');
