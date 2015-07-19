@@ -48,12 +48,16 @@ class User extends Eloquent
         $this->baseValidate();
         // generate token
         $this->u_token = $this->getUniqueToken();
+        if (empty($this->u_school_id)) {
+            throw new Exception("没有传入有效的学校", 1);
+        }
         // chcek if mobile exsits
         if (User::where('u_mobile', '=', $this->u_mobile)->count() > 0) {
             throw new Exception("手机号码已被使用", 1);
         }
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
+        $this->u_nickname = $this->u_mobile;
         $this->save();
         $re = [];
         $re['token'] = $this->u_token;
@@ -62,6 +66,7 @@ class User extends Eloquent
         $re['expire'] = $now->format('Y-m-d H:i:s');
         $re['id'] = $this->u_id;
         $re['name'] = $this->u_name;
+        $re['nickname'] = $this->u_nickname;
         $re['head_img'] = $this->u_head_img;
         return $re;
     }
@@ -156,7 +161,8 @@ class User extends Eloquent
     {
         $data = [];
         $data['id'] = $this->u_id;
-        $data['name'] = $this->u_nickname;
+        $data['name'] = $this->u_name;
+        $date['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->u_head_img;
         $school = [];
         if (isset($this->school)) {

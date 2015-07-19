@@ -44,8 +44,10 @@ class UserController extends \BaseController
     {
         $mobile = Input::get('mobile');
         $pass = Input::get('pass');
+        $school_id = Input::get('school');
         $vCode = Input::get('vcode');
         $user = new User();
+        $user->u_school_id = $school_id;
         $user->u_mobile = $mobile;
         $user->u_password = $pass;
         try {

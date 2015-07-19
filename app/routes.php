@@ -56,3 +56,9 @@ Route::get('verify/code', 'VerificationController@getVCode');
 Route::get('dic/school', 'DicController@getSchools');
 Route::get('dic/city', 'DicController@getCities');
 /* DATA DICTIONARY END*/
+
+/* LBS START*/
+Route::get('lbs/nearby/user', 'LocationController@getNearbyUsers');
+Route::get('lbs/nearby/store', 'LocationController@getNearbyStores');
+Route::get('lbs/nearby/act', 'LocationController@getNearbyActivities');
+/* LBS END*/
