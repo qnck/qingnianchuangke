@@ -3,32 +3,26 @@
 // play ground
 // 
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the Closure to execute when that URI is requested.
-|
-*/
 Route::get('/', 'HomeController@index');
 
 /* USER START*/
-Route::get('user/me', 'UserController@me');
-Route::get('user/me/posts', 'UserController@myPosts');
-Route::get('user/me/reply', 'UserController@myReply');
-Route::get('user/me/praise', 'UserController@myPraise');
-Route::get('user/me/resetpass', 'UserController@resetPass');
-Route::get('user/me/followers', 'UserController@myFollowers');
-Route::get('user/me/followings', 'UserController@myFollowings');
 Route::get('user/search', 'UserController@search');
 Route::get('user/{id}/follow', 'UserController@follow');
 Route::get('user/{id}/followers', 'UserController@followers');
 Route::get('user/{id}/followings', 'UserController@followings');
 Route::resource('user', 'UserController');
 /* USER END*/
+
+/* ME START*/
+Route::get('user/me', 'MeController@me');
+Route::get('user/me/posts', 'MeController@myPosts');
+Route::get('user/me/reply', 'MeController@myReply');
+Route::get('user/me/praise', 'MeController@myPraise');
+Route::get('user/me/resetpass', 'MeController@resetPass');
+Route::get('user/me/followers', 'MeController@myFollowers');
+Route::get('user/me/followings', 'MeController@myFollowings');
+Route::post('user/me/booth', 'MeController@newBooth');
+/* ME END*/
 
 /* POST START*/
 Route::resource('post', 'PostController');
@@ -55,6 +49,7 @@ Route::get('verify/code', 'VerificationController@getVCode');
 /* DATA DICTIONARY START*/
 Route::get('dic/school', 'DicController@getSchools');
 Route::get('dic/city', 'DicController@getCities');
+Route::get('dic/bank', 'DicController@getBanks');
 /* DATA DICTIONARY END*/
 
 /* LBS START*/
