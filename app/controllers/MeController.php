@@ -190,8 +190,6 @@ class MeController extends \BaseController
         // retrive data
         $name = Input::get('name', '');
         $idNum = Input::get('id_num', '');
-        // img include id_img, student_img
-        $imgToken = Input::get('img_token', '');
         // home address
         $homeAddr = Input::get('home_addr');
         // mother name
@@ -263,6 +261,8 @@ class MeController extends \BaseController
         // card holder identy
         $cardHolderID = Input::get('holder_ID', '');
 
+        // img include id_img, student_img
+        $imgToken = Input::get('img_token', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -342,9 +342,27 @@ class MeController extends \BaseController
                     }
                     $repayment = new Repayment();
                     $repayment->f_id = $f_id;
-                    $repayment->f_re_money = $percentage;
+                    $repayment->f_re_money = $amount;
                     $repayment->f_schema = $schema;
                     $repayment->apply();
+                }
+
+                if ($imgToken) {
+                    $imgObj = new Img('user', $imgToken);
+                    $imgs = $imgObj->getSavedImg($u_id, '', true);
+                    $id_img = [];
+                    $student_img = [];
+                    foreach ($imgs as $k => $img) {
+                        if ($k == 'identity_img_front' || $k == 'identity_img_back') {
+                            $id_img[] = $img;
+                        } elseif ($k == 'student_img_front' || $k == 'student_img_back') {
+                            $student_img[] = $img;
+                        }
+                    }
+                    $user_detail = TmpUsersDetails::find($u_id);
+                    $user_detail->u_identity_img = implode(',', $id_img);
+                    $user_detail->u_student_img = implode(',', $student_img);
+                    $user_detail->save();
                 }
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '申请成功'];

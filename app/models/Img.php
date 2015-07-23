@@ -23,13 +23,13 @@ class Img
     {
         $params = ['key' => $this->key, 'hash' => $this->id, 'id' => $newId, 'cate' => $this->category];
         $re = $this->fireGetRequest($params, 'save');
-        if (!$re->result) {
+        if (!$re['result']) {
             throw new Exception("保存图片失败", 2);
         } else {
             $imgs = [];
-            if (is_array($re->data) && !empty($re->data)) {
-                foreach ($re->data as $key => $value) {
-                    $imgs[$key] = $this->imghost.$this->imgpath.$value;
+            if (is_array($re['data']) && !empty($re['data'])) {
+                foreach ($re['data'] as $key => $value) {
+                    $imgs[$key] = $this->imghost.$this->imgpath.'/'.$this->category.'/'.$newId.'/'.$value;
                 }
             }
             return $imgs;
@@ -70,12 +70,12 @@ class Img
     {
         $params = ['key' => $this->key, 'cate' => $this->category, 'id' => $this->id];
         $re = $this->fireGetRequest($params, 'get');
-        if (!$re->result) {
+        if (!$re['result']) {
             return false;
         }
         $imgs = [];
-        if (is_array($re->data) && !empty($re->data)) {
-            foreach ($re->data as $key => $value) {
+        if (is_array($re['data']) && !empty($re['data'])) {
+            foreach ($re['data'] as $key => $value) {
                 $imgs[] = $this->imghost.$this->imgpath.$value;
             }
         }
@@ -95,7 +95,7 @@ class Img
         $response = curl_exec($ch);
         $info = curl_getinfo($ch);
         $error = curl_error($ch);
-        return json_decode($response);
+        return json_decode($response, true);
     }
 
     public function getKey($filename)
