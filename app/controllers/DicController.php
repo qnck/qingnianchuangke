@@ -69,4 +69,34 @@ class DicController extends \BaseController
 
         return Response::json($re);
     }
+
+    public function getBanks()
+    {
+        $key = Input::get('key', '');
+        $ver = Input::get('ver', 0);
+
+        $currentVer = DicBank::VER;
+
+        if ($ver >= $currentVer) {
+            return Response::json(['result' => 2000, 'data' => [], 'info' => '获取银行成功', 'ver' => $currentVer]);
+        }
+        
+        try {
+            $query = DicBank::where('b_id', '>', 0);
+            if ($key) {
+                $query = $query->where('b_name', 'LIKE', '%'.$key.'%');
+            }
+            $list = $query->get();
+            $data = [];
+            foreach ($list as $key => $city) {
+                $data[] = $city->showInList();
+            }
+            $paginate = ['total_record' => $list->count(), 'total_page' => 1, 'per_page' => $list->count(), 'current_page' => 1];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取银行成功', 'ver' => $currentVer, 'pagination' => $paginate];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => '获取银行失败:'.$e->getMessage(), 'ver' => $currentVer];
+        }
+
+        return Response::json($re);
+    }
 }

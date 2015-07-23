@@ -2,7 +2,7 @@
 /**
 *
 */
-class UsersContactPerson extends Eloquent
+class UsersContactPeople extends Eloquent
 {
 
     public $primaryKey = 'u_id';
