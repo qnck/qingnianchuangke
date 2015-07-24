@@ -62,6 +62,25 @@ class UsersFriend extends Eloquent
         return $this->save();
     }
 
+    public static function findLinkById($id_1, $id_2)
+    {
+        if (!$id_1 || !$id_2) {
+            throw new Exception("请传入有效的用户ID", 1);
+        }
+        if ($id_1 < $id_2) {
+            $u_id_1 = $id_1;
+            $u_id_2 = $id_2;
+        } else {
+            $u_id_1 = $id_2;
+            $u_id_2 = $id_1;
+        }
+        $userFriend = UsersFriend::where('u_id_1', '=', $u_id_1)->where('u_id_2', '=', $u_id_2)->first();
+        if (empty($userFriend->t_id)) {
+            throw new Exception("请求的好友不存在", 3001);
+        }
+        return $userFriend;
+    }
+
     public function remove()
     {
         return $this->delete();
