@@ -88,8 +88,8 @@ class DicController extends \BaseController
             }
             $list = $query->get();
             $data = [];
-            foreach ($list as $key => $city) {
-                $data[] = $city->showInList();
+            foreach ($list as $key => $bank) {
+                $data[] = $bank->showInList();
             }
             $paginate = ['total_record' => $list->count(), 'total_page' => 1, 'per_page' => $list->count(), 'current_page' => 1];
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取银行成功', 'ver' => $currentVer, 'pagination' => $paginate];

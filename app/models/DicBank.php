@@ -14,7 +14,7 @@ class DicBank extends Eloquent
         $data = [];
 
         $data['name'] = $this->b_name;
-        $data['logo'] = explode(',', $this->b_logo);
+        $data['logo'] = $this->b_logo;
 
         return $data;
     }
