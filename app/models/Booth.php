@@ -7,6 +7,8 @@ class Booth extends Eloquent
     public $primaryKey = 'b_id';
     public $timestamps = false;
 
+    public static $type = [1 => '便利店', 2 => '创的店', 3 => '创的店与便利店'];
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -19,6 +21,17 @@ class Booth extends Eloquent
         } else {
             return true;
         }
+    }
+
+    public function showInList()
+    {
+        $data = [];
+        $data['id'] = $this->b_id;
+        $data['title'] = $this->b_title;
+        $data['type'] = $this->b_type;
+        $data['category'] = $this->b_product_category;
+
+        return $data;
     }
 
     public function addBooth()

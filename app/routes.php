@@ -22,7 +22,14 @@ Route::get('user/me/resetpass', 'MeController@resetPass');
 Route::get('user/me/followers', 'MeController@myFollowers');
 Route::get('user/me/followings', 'MeController@myFollowings');
 Route::post('user/me/booth', 'MeController@newBooth');
+Route::get('user/me/booth', 'MeController@boothList');
 /* ME END*/
+
+/* ME FRIEND START*/
+Route::get('user/me/friend/remove', 'MeFriendController@remove');
+Route::get('user/me/friend/confirm', 'MeFriendController@confirm');
+Route::post('user/me/friend/invite', 'MeFriendController@invite');
+/* ME FRIEND END*/
 
 /* POST START*/
 Route::resource('post', 'PostController');
