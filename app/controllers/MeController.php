@@ -378,4 +378,24 @@ class MeController extends \BaseController
 
         return Response::json($re);
     }
+
+    public function boothList()
+    {
+        $u_id = Input::get('u_id', '');
+        $token = Input::get('token');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = Booth::where('u_id', '=', $u_id)->get();
+            $list = [];
+            foreach ($data as $key => $booth) {
+                $list[] = $booth->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的所有店铺成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
+        }
+
+        return Response::json($re);
+    }
 }
