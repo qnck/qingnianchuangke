@@ -51,16 +51,26 @@ class MeFriendController extends \BaseController {
         return Response::json($re);
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
+    public function check()
     {
-        //
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+        $friend = Input::get('friend', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $friend = User::find($friend);
+            if (empty($friend->u_id)) {
+                throw new Exception("你查找的用户不存在", 3001);
+            }
+            $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
+            $friendInfo = $friend->showDetail();
+            $data = ['user_info' => $friendInfo, 'is_friend' => $userFriend->t_status];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '好友关系检测成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3001, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
     }
 
 
@@ -90,17 +100,7 @@ class MeFriendController extends \BaseController {
         
         try {
             $user = User::chkUserByToken($token, $u_id);
-            if ($u_id < $friend) {
-                $u_id_1 = $u_id;
-                $u_id_2 = $friend;
-            } else {
-                $u_id_1 = $friend;
-                $u_id_2 = $u_id;
-            }
-            $userFriend = UsersFriend::where('u_id_1', '=', $u_id_1)->where('u_id_2', '=', $u_id_2)->first();
-            if (empty($userFriend->t_id)) {
-                throw new Exception("无法确认不存在的好友", 3001);
-            }
+            $userFriend = UsersDetails::findLinkById($u_id, $friend);
             if ($userFriend->t_status == 2) {
                 throw new Exception("你们已经是好友了", 3001);
             }
@@ -130,17 +130,7 @@ class MeFriendController extends \BaseController {
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            if ($u_id < $friend) {
-                $u_id_1 = $u_id;
-                $u_id_2 = $friend;
-            } else {
-                $u_id_1 = $friend;
-                $u_id_2 = $u_id;
-            }
-            $userFriend = UsersFriend::where('u_id_1', '=', $u_id_1)->where('u_id_2', '=', $u_id_2)->first();
-            if (empty($userFriend->t_id)) {
-                throw new Exception("无法删除不存在的好友", 3001);
-            }
+            $userFriend = UsersFriend::findLinkById($u_id, $friend);
             $userFriend->remove();
             $re = ['result' => 2000, 'data' => [], 'info' => '删除好友成功'];
         } catch (Exception $e) {
