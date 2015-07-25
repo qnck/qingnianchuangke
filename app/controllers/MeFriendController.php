@@ -30,18 +30,28 @@ class MeFriendController extends \BaseController {
             if ($ver >= $sum) {
                 return Response::json(['result' => 2000, 'data' => ['ver' => $ver], 'info' => '获取我的好友列表成功']);
             }
-            $list1 = UsersFriend::where('t_status', '=', 2)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2', 'user2.school'])->get();
-            $list2 = UsersFriend::where('t_status', '=', 2)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1', 'user1.school'])->get();
-            $data = [];
-            foreach ($list1 as $key => $user) {
-                $data[] = $user->user2->showInList();
-            }
-            foreach ($list2 as $key => $user) {
-                $data[] = $user->user1->showInList();
-            }
+            
+            $data = $this->getUserList($u_id, 2);
+
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
         } catch (Exception $e) {
             $re = ['result' => 3001, 'data' => [], 'info' => '获取我的好友列表失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function indexInvite()
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+        $ver = Input::get('ver', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $data = $this->getUserList($u_id, 1);
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取好友邀请列表成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3001, 'data' => [], 'info' => '获取好友邀请列表失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -170,5 +180,39 @@ class MeFriendController extends \BaseController {
             $re = ['result' => 3001, 'data' => [], 'info' => '删除好友失败:'.$e->getMessage()];
         }
         return Response::json($re);
+    }
+
+    public function removeInvite()
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+        $friend = Input::get('friend', 0);
+        $re = ['result' => 2000, 'data' => [], 'info' => '删除好友邀请成功'];
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $userFriend = UsersFriend::findLinkById($u_id, $friend);
+            if ($userFriend->t_status == 1) {
+                $userFriend->remove();
+            }
+        } catch (Exception $e) {
+            if ($e->getCode() == 3001) {
+                $re = ['result' => 3001, 'data' => [], 'info' => '删除好友邀请失败:'.$e->getMessage()];
+            }
+        }
+        return Response::json($re);
+    }
+
+    private function getUserList($u_id, $status = 2)
+    {
+        $list1 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2', 'user2.school'])->get();
+        $list2 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1', 'user1.school'])->get();
+        $data = [];
+        foreach ($list1 as $key => $user) {
+            $data[] = $user->user2->showInList();
+        }
+        foreach ($list2 as $key => $user) {
+            $data[] = $user->user1->showInList();
+        }
+        return $data;
     }
 }

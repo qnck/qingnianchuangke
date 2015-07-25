@@ -30,6 +30,8 @@ Route::get('user/me/friend', 'MeFriendController@index');
 Route::get('user/me/friend/remove', 'MeFriendController@remove');
 Route::get('user/me/friend/confirm', 'MeFriendController@confirm');
 Route::post('user/me/friend/invite', 'MeFriendController@invite');
+Route::get('user/me/friend/invite', 'MeFriendController@indexInvite');
+Route::get('user/me/friend/invite/remove', 'MeFriendController@removeInvite');
 Route::get('user/me/friend/check', 'MeFriendController@check');
 /* ME FRIEND END*/
 
