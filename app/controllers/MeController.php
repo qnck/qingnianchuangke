@@ -398,4 +398,12 @@ class MeController extends \BaseController
 
         return Response::json($re);
     }
+
+    public function convenientBooth()
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+
+        $booths = '';
+    }
 }

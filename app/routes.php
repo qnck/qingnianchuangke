@@ -21,9 +21,14 @@ Route::get('user/me/praise', 'MeController@myPraise');
 Route::get('user/me/resetpass', 'MeController@resetPass');
 Route::get('user/me/followers', 'MeController@myFollowers');
 Route::get('user/me/followings', 'MeController@myFollowings');
+/* ME END*/
+
+/* ME BOOTH START*/
 Route::post('user/me/booth', 'MeController@newBooth');
 Route::get('user/me/booth', 'MeController@boothList');
-/* ME END*/
+Route::get('user/me/convenient', 'MeController@boothList');
+Route::get('user/me/maker', 'MeController@boothList');
+/* ME BOOTH END*/
 
 /* ME FRIEND START*/
 Route::get('user/me/friend', 'MeFriendController@index');
