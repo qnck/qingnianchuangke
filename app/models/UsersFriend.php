@@ -47,6 +47,8 @@ class UsersFriend extends Eloquent
                 } else {
                     $msg = $u_id == $chk->u_id_2 ? '您已经发出了邀请了, 请等待确认' : '对方已经邀请您了, 请及时确认';
                 }
+            } else {
+                $msg = '你们已经是好友了';
             }
             throw new Exception($msg, 3001);
         }
