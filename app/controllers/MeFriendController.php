@@ -28,7 +28,7 @@ class MeFriendController extends \BaseController {
             $sum = $sum1 + $sum2;
 
             if ($ver >= $sum) {
-                return Response::json(['result' => 2000, 'data' => ['ver' => $ver], 'info' => '获取我的好友列表成功']);
+                return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
             }
             
             $data = $this->getUserList($u_id, 2);
@@ -204,8 +204,8 @@ class MeFriendController extends \BaseController {
 
     private function getUserList($u_id, $status = 2)
     {
-        $list1 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2', 'user2.school'])->get();
-        $list2 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1', 'user1.school'])->get();
+        $list1 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2'])->get();
+        $list2 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1'])->get();
         $data = [];
         foreach ($list1 as $key => $user) {
             $data[] = $user->user2->showInList();
