@@ -85,4 +85,14 @@ class UsersFriend extends Eloquent
     {
         return $this->delete();
     }
+
+    public function user1()
+    {
+        return $this->belongsTo('User', 'u_id_1', 'u_id');
+    }
+
+    public function user2()
+    {
+        return $this->belongsTo('User', 'u_id_2', 'u_id');
+    }
 }

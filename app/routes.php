@@ -26,6 +26,7 @@ Route::get('user/me/booth', 'MeController@boothList');
 /* ME END*/
 
 /* ME FRIEND START*/
+Route::get('user/me/friend', 'MeFriendController@index');
 Route::get('user/me/friend/remove', 'MeFriendController@remove');
 Route::get('user/me/friend/confirm', 'MeFriendController@confirm');
 Route::post('user/me/friend/invite', 'MeFriendController@invite');

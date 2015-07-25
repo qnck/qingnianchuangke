@@ -11,6 +11,39 @@ class MeFriendController extends \BaseController {
     {
         $u_id = Input::get('u_id', 0);
         $token = Input::get('token', '');
+        $ver = Input::get('ver', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            // check changes
+            $sum1 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
+                $j->on('users_friends.u_id_1', '=', 'users.u_id')->where('users_friends.t_inviter', '=', 2)->where('users_friends.u_id_2', '=', $u_id);
+            })->sum('users.u_change');
+
+            $sum2 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
+                $j->on('users_friends.u_id_2', '=', 'users.u_id')->where('users_friends.t_inviter', '=', 1)->where('users_friends.u_id_1', '=', $u_id);
+            })->sum('users.u_change');
+
+            $sum = $sum1 + $sum2;
+
+            if ($ver >= $sum) {
+                return Response::json(['result' => 2000, 'data' => ['ver' => $ver], 'info' => '获取我的好友列表成功']);
+            }
+            $list1 = UsersFriend::where('t_status', '=', 2)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2', 'user2.school'])->get();
+            $list2 = UsersFriend::where('t_status', '=', 2)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1', 'user1.school'])->get();
+            $data = [];
+            foreach ($list1 as $key => $user) {
+                $data[] = $user->user2->showInList();
+            }
+            foreach ($list2 as $key => $user) {
+                $data[] = $user->user1->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
+        } catch (Exception $e) {
+            $re = ['result' => 3001, 'data' => [], 'info' => '获取我的好友列表失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
     }
 
 
