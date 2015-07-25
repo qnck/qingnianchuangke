@@ -224,7 +224,11 @@ class MeFriendController extends \BaseController {
             } else {
                 $type = UsersFriend::$RELATION_CONFIRMED;
             }
-            $tmp = $userLink->user2->showInList();
+            if ($userLink->u_id_1 == $u_id) {
+                $tmp = $userLink->user2->showInList();
+            } else {
+                $tmp = $userLink->user1->showInList();
+            }
             $tmp['status'] = $type;
             $data[] = $tmp;
         }
