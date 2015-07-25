@@ -35,4 +35,12 @@ class Repayment extends Eloquent
         $this->f_status = 0;
         return $this->addRepayment();
     }
+
+    public static function clearByFund($f_id)
+    {
+        $re = Repayment::where('f_id', '=', $f_id)->get();
+        foreach ($re as $key => $rp) {
+            $rp->delete();
+        }
+    }
 }
