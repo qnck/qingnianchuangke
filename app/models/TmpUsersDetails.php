@@ -10,7 +10,7 @@ class TmpUsersDetails extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['ID_number' => $this->u_identity_number, 'father_name' => $this->u_father_name, 'father_phone' => $this->u_father_telephone, 'mother_name' => $this->u_mother_name, 'mother_phone' => $this->u_mother_telephone, 'home_address' => $this->u_home_address],
+            ['ID_number' => $this->u_identity_number, 'father_name' => $this->u_father_name, 'father_phone' => $this->u_father_telephone, 'mother_name' => $this->u_mother_name, 'mother_phone' => $this->u_mother_telephone, 'home_address' => $this->u_home_adress],
             ['ID_number' => 'required', 'father_name' => 'required', 'father_phone' => 'required', 'mother_name' => 'required', 'mother_phone' => 'required', 'home_address' => 'required']
         );
         if ($validator->fails()) {

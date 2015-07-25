@@ -17,9 +17,12 @@ Route::get('user/me/followings', 'MeController@myFollowings');
 
 /* ME PROFILE START*/
 Route::get('user/me/profile/check', 'MeController@profileCheck');
-Route::post('user/me/profile/detail', 'MeController@profileDetail');
-Route::post('user/me/profile/contact', 'MeController@profileContact');
-Route::post('user/me/profile/bank', 'MeController@profileBank');
+Route::post('user/me/profile/detail', 'MeController@postDetail');
+Route::post('user/me/profile/contact', 'MeController@postContact');
+Route::post('user/me/profile/card', 'MeController@postCard');
+Route::get('user/me/profile/detail', 'MeController@getDetail');
+Route::get('user/me/profile/contact', 'MeController@getContact');
+Route::get('user/me/profile/card', 'MeController@getCard');
 /* ME PROFILE END*/
 
 /* ME BOOTH START*/
