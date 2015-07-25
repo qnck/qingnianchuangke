@@ -5,14 +5,6 @@
 
 Route::get('/', 'HomeController@index');
 
-/* USER START*/
-Route::get('user/search', 'UserController@search');
-Route::get('user/{id}/follow', 'UserController@follow');
-Route::get('user/{id}/followers', 'UserController@followers');
-Route::get('user/{id}/followings', 'UserController@followings');
-Route::resource('user', 'UserController');
-/* USER END*/
-
 /* ME START*/
 Route::get('user/me', 'MeController@me');
 Route::get('user/me/posts', 'MeController@myPosts');
@@ -39,6 +31,14 @@ Route::get('user/me/friend/invite', 'MeFriendController@indexInvite');
 Route::get('user/me/friend/invite/remove', 'MeFriendController@removeInvite');
 Route::get('user/me/friend/check', 'MeFriendController@check');
 /* ME FRIEND END*/
+
+/* USER START*/
+Route::get('user/search', 'UserController@search');
+Route::get('user/{id}/follow', 'UserController@follow');
+Route::get('user/{id}/followers', 'UserController@followers');
+Route::get('user/{id}/followings', 'UserController@followings');
+Route::resource('user', 'UserController');
+/* USER END*/
 
 /* POST START*/
 Route::resource('post', 'PostController');

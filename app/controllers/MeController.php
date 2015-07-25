@@ -15,11 +15,12 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', 0);
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $user = User::with('bankCards.bank', 'contact')->find($user->u_id);
+            $user = User::with('bankCards.bank', 'contact', 'school')->find($user->u_id);
             $userInfo = $user->showDetail();
             $cards = $user->showBankCards();
             $contact = $user->showContact();
-            $data = ['user_info' => $userInfo, 'cards' => $cards, 'contact' => $contact];
+            $school = $user->showSchool();
+            $data = ['user_info' => $userInfo, 'cards' => $cards, 'contact' => $contact, 'school' => $school];
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data'=> [], 'info' => $e->getMessage()];
