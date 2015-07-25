@@ -10,8 +10,8 @@ class TmpUsersDetails extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['ID_number' => $this->u_identity_number, 'student_number' => $this->u_student_number],
-            ['ID_number' => 'required', 'student_number' => 'required']
+            ['ID_number' => $this->u_identity_number, 'father_name' => $this->u_father_name, 'father_phone' => $this->u_father_telephone, 'mother_name' => $this->u_mother_name, 'mother_phone' => $this->u_mother_telephone, 'home_address' => $this->u_home_address],
+            ['ID_number' => 'required', 'father_name' => 'required', 'father_phone' => 'required', 'mother_name' => 'required', 'mother_phone' => 'required', 'home_address' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -49,5 +49,18 @@ class TmpUsersDetails extends Eloquent
     {
         $record = TmpUsersDetails::find($u_id);
         $record->delete();
+    }
+
+    public static function checkProfile($u_id)
+    {
+        $detail = TmpUsersDetails::find($u_id);
+        if (!isset($detail->u_id)) {
+            return 0;
+        }
+        if ($detail->u_status == 1) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
