@@ -390,9 +390,12 @@ class MeController extends \BaseController
             $data = Booth::where('u_id', '=', $u_id)->get();
             $list = [];
             foreach ($data as $key => $booth) {
-                $list[] = $booth->showInList();
+                $tmp = $booth->showInList();
+                $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
+                $tmp['prodct_count'] = $products_count;
+                $list[] = $tmp;
             }
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的所有店铺成功'];
+            $re = ['result' => 2000, 'data' => $list, 'info' => '获取我的所有店铺成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
         }
@@ -400,12 +403,31 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function convenientBooth()
+    public function booth($id)
     {
         $u_id = Input::get('u_id', 0);
         $token = Input::get('token', '');
-        $b_id = Input::get('b_id', 0);
 
-        $booths = '';
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booth = Booth::find($id);
+            if (empty($booth->b_id) || $booth->u_id != $u_id) {
+                throw new Exception("无法获取到请求的店铺", 1);
+            }
+            $now = new DateTime();
+            $now->modify('-8 hours');
+            $boothInfo = $booth->showDetail();
+            $products = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->where('p_active_at', '<', $now->format('Y-m-d H:i:s'))->with(['quantity'])->paginate(10);
+            $list = [];
+            foreach ($products as $key => $product) {
+                $list[] = $product->showInList();
+            }
+            $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
+            $data = ['booth' => $boothInfo, 'products' => $list, 'pagination' => $pagination];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的店铺成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '获取我的店铺失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
     }
 }

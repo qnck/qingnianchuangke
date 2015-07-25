@@ -18,8 +18,7 @@ Route::get('user/me/followings', 'MeController@myFollowings');
 /* ME BOOTH START*/
 Route::post('user/me/booth', 'MeController@newBooth');
 Route::get('user/me/booth', 'MeController@boothList');
-Route::get('user/me/convenient', 'MeController@boothList');
-Route::get('user/me/maker', 'MeController@boothList');
+Route::get('user/me/booth/{id}', 'MeController@booth');
 /* ME BOOTH END*/
 
 /* ME FRIEND START*/

@@ -34,6 +34,21 @@ class Booth extends Eloquent
         return $data;
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['id'] = $this->b_id;
+        $data['title'] = $this->b_title;
+        $data['type'] = $this->b_type;
+        $data['category'] = $this->b_product_category;
+        $data['imgs'] = explode(',', $this->b_imgs);
+        $data['fans'] = $this->b_fans_count;
+        $data['lng'] = $this->longitude;
+        $data['lat'] = $this->latitude;
+
+        return $data;
+    }
+
     public function addBooth()
     {
         $now = new DateTime();
