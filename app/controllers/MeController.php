@@ -189,42 +189,6 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', '');
         $s_id = Input::get('s_id', '');
         // retrive data
-        $name = Input::get('name', '');
-        $idNum = Input::get('id_num', '');
-        // home address
-        $homeAddr = Input::get('home_addr');
-        // mother name
-        $moName = Input::get('mo_name');
-        // mother phone
-        $moPhone = Input::get('mo_phone');
-        // father name
-        $faName = Input::get('fa_name');
-        // father phone
-        $faPhone = Input::get('fa_phone');
-
-        // shcool id
-        $school = Input::get('school');
-        // shcool entry year
-        $entryYear = Input::get('entry_year');
-        // profession area
-        $profession = Input::get('profession');
-        // graduate degree
-        $degree = Input::get('degree');
-
-        // studen card number
-        $studentNum = Input::get('stu_num');
-        // teacher name
-        $thName = Input::get('th_name');
-        // teacher phone
-        $thPhone = Input::get('th_phone');
-        // friend name 1
-        $frName1 = Input::get('fr_name_1');
-        // friend phone 1
-        $frPhone1 = Input::get('fr_phone_1');
-        // friend name 2
-        $frName2 = Input::get('fr_name_2');
-        // friend phone 2
-        $frPhone2 = Input::get('fr_phone_2');
 
         // booth type
         $boothType = Input::get('type');
@@ -250,17 +214,6 @@ class MeController extends \BaseController
         $loan = Input::get('loan');
         // how to drow loan
         $laonSchema = Input::get('loan_schema');
-
-        // id bank
-        $bankId = Input::get('bank', 0);
-        // bank card number
-        $cardNum = Input::get('card_num', '');
-        // card holder name
-        $cardHolderName = Input::get('card_holder', '');
-        // card holder phone
-        $cardHolderPhone = Input::get('holder_phone', '');
-        // card holder identy
-        $cardHolderID = Input::get('holder_ID', '');
 
         // img include id_img, student_img
         $imgToken = Input::get('img_token', '');
@@ -294,24 +247,7 @@ class MeController extends \BaseController
             if ($withFund == 0) {
                 $b_id = $booth->regWithoutFund();
             } elseif ($withFund == 1) {
-                $user_detail = new TmpUsersDetails();
-                $user_detail->u_id = $u_id;
-                $user_detail->u_identity_number = $idNum;
-                $user_detail->u_student_number = $studentNum;
 
-                $user_contact_people = new TmpUsersContactPeople();
-                $user_contact_people->u_id = $u_id;
-                $user_contact_people->u_teacher_name = $thName;
-                $user_contact_people->u_teacher_telephone = $thPhone;
-                $user_contact_people->u_father_name = $faName;
-                $user_contact_people->u_father_telephone = $faPhone;
-                $user_contact_people->u_mother_name = $moName;
-                $user_contact_people->u_mother_telephone = $moPhone;
-                $user_contact_people->u_frend_name1 = $frName1;
-                $user_contact_people->u_frend_telephone1 = $frPhone1;
-                $user_contact_people->u_frend_name2 = $frName2;
-                $user_contact_people->u_frend_telephone2 = $frPhone2;
-                $user_contact_people->u_home_address = $homeAddr;
 
                 $user_card = new TmpUsersBankCard();
                 $user_card->u_id = $u_id;
@@ -444,6 +380,254 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => ['detail' => $detail, 'contact' => $contact, 'bank' => $bank], 'info' => '获取用户资料验证信息成功'];
         } catch (Exception $e) {
             $re = ['result' => 3002, 'data' => [], 'info' => '获取用户资料验证信息失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function getDetail()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+        
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $detail = TmpUsersDetails::find($u_id);
+            $data = [];
+            $data['name'] = $user->u_name;
+            if (!isset($detail->u_id)) {
+                $data['id_num'] = '';
+                $data['home_addr'] = '';
+                $data['mo_name'] = '';
+                $data['mo_phone'] = '';
+                $data['fa_name'] = '';
+                $data['fa_phone'] = '';
+            } else {
+                $data['id_num'] = $detail->u_identity_number;
+                $data['home_addr'] = $detail->u_home_adress;
+                $data['mo_name'] = $detail->u_mother_name;
+                $data['mo_phone'] = $detail->u_mother_telephone;
+                $data['fa_name'] = $detail->u_father_name;
+                $data['fa_phone'] = $detail->u_father_telephone;
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户详细成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户详细失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function postDetail()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+
+        $name = Input::get('name', '');
+
+        $idNum = Input::get('id_num', '');
+        // home address
+        $homeAddr = Input::get('home_addr');
+        // mother name
+        $moName = Input::get('mo_name');
+        // mother phone
+        $moPhone = Input::get('mo_phone');
+        // father name
+        $faName = Input::get('fa_name');
+        // father phone
+        $faPhone = Input::get('fa_phone');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $user_detail = TmpUsersDetails::find($u_id);
+            if (!isset($user_detail->u_id)) {
+                $user_detail = new TmpUsersDetails();
+            }
+            if ($user_detail->u_status == 1) {
+                throw new Exception("您的审核已经通过", 3002);
+            }
+
+            $user->u_name = $name;
+            $user->save();
+
+            $user_detail->u_id = $u_id;
+            $user_detail->u_identity_number = $idNum;
+            $user_detail->u_home_adress = $homeAddr;
+            $user_detail->u_father_name = $faName;
+            $user_detail->u_father_telephone = $faPhone;
+            $user_detail->u_mother_name = $moName;
+            $user_detail->u_mother_telephone = $moPhone;
+            $user_detail->register();
+            $re = ['result' => 2000, 'data' => [], 'info' => '提交详细信息审核成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => [], 'info' => '提交详细信息审核失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function getContact()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+        
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $contact = TmpUsersContactPeople::find($u_id);
+            $data = [];
+            if (!isset($contact->u_id)) {
+                $data['th_name'] = '';
+                $data['th_phone'] = '';
+                $data['fr_name_1'] = '';
+                $data['fr_phone_1'] = '';
+                $data['fr_name_2'] = '';
+                $data['fr_phone_2'] = '';
+                $data['stu_num'] = '';
+                $data['school'] = '';
+                $data['profession'] = '';
+                $data['degree'] = '';
+                $data['entry_year'] = '';
+            } else {
+                $data['th_name'] = $contact->u_teacher_name;
+                $data['th_phone'] = $contact->u_teacher_telephone;
+                $data['fr_name_1'] = $contact->u_frend_name1;
+                $data['fr_phone_1'] = $contact->u_frend_telephone1;
+                $data['fr_name_2'] = $contact->u_frend_name2;
+                $data['fr_phone_2'] = $contact->u_frend_telephone2;
+                $data['stu_num'] = $contact->u_student_number;
+                $data['school'] = $contact->u_school_id;
+                $data['profession'] = $contact->u_prof;
+                $data['degree'] = $contact->u_degree;
+                $data['entry_year'] = $contact->u_entry_year;
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户详细成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户详细失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function postContact()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+
+        // shcool id
+        $school = Input::get('school');
+        // shcool entry year
+        $entryYear = Input::get('entry_year');
+        // profession area
+        $profession = Input::get('profession');
+        // graduate degree
+        $degree = Input::get('degree');
+
+        // studen card number
+        $studentNum = Input::get('stu_num');
+        // teacher name
+        $thName = Input::get('th_name');
+        // teacher phone
+        $thPhone = Input::get('th_phone');
+        // friend name 1
+        $frName1 = Input::get('fr_name_1');
+        // friend phone 1
+        $frPhone1 = Input::get('fr_phone_1');
+        // friend name 2
+        $frName2 = Input::get('fr_name_2');
+        // friend phone 2
+        $frPhone2 = Input::get('fr_phone_2');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $user_contact_people = TmpUsersContactPeople::find($u_id);
+            if (!isset($user_contact_people->u_id)) {
+                $user_contact_people = new TmpUsersContactPeople();
+            }
+            if ($user_contact_people->u_status == 1) {
+                throw new Exception("您的审核已经通过", 3002);
+            }
+            $user_contact_people->u_id = $u_id;
+            $user_contact_people->u_teacher_name = $thName;
+            $user_contact_people->u_teacher_telephone = $thPhone;
+            $user_contact_people->u_frend_name1 = $frName1;
+            $user_contact_people->u_frend_telephone1 = $frPhone1;
+            $user_contact_people->u_frend_name2 = $frName2;
+            $user_contact_people->u_frend_telephone2 = $frPhone2;
+            $user_contact_people->u_student_number = $studentNum;
+            $user_contact_people->u_school_id = $school;
+            $user_contact_people->u_prof = $profession;
+            $user_contact_people->u_degree = $degree;
+            $user_contact_people->u_entry_year = $entryYear;
+            $user_contact_people->register();
+            $re = ['result' => 2000, 'data' => [], 'info' => '提交学校信息成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => [], 'info' => '提交学校信息失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function getCard()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+        
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            if (!isset($card->u_id)) {
+                $data['bank'] = '';
+                $data['card_num'] = '';
+                $data['card_holder'] = '';
+                $data['holder_phone'] = '';
+                $data['holder_ID'] = '';
+            } else {
+                $data['bank'] = $card->b_id;
+                $data['card_num'] = $card->b_card_num;
+                $data['card_holder'] = $card->b_holder_name;
+                $data['holder_phone'] = $card->u_frend_telephone1;
+                $data['holder_ID'] = $card->b_holder_identity;
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户银行卡成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户银行卡失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function postCard()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+
+        // id bank
+        $bankId = Input::get('bank', 0);
+        // bank card number
+        $cardNum = Input::get('card_num', '');
+        // card holder name
+        $cardHolderName = Input::get('card_holder', '');
+        // card holder phone
+        $cardHolderPhone = Input::get('holder_phone', '');
+        // card holder identy
+        $cardHolderID = Input::get('holder_ID', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            if (!isset($card->u_id)) {
+                $card = new TmpUsersBankCard();
+            }
+            if ($card->u_status == 1) {
+                throw new Exception("您的审核已经通过", 3002);
+            }
+            $card->u_id = $u_id;
+            $card->b_id = $bankId;
+            $card->b_card_num = $cardNum;
+            $card->b_holder_name = $cardHolderName;
+            $card->b_holder_phone = $cardHolderPhone;
+            $card->b_holder_identity = $cardHolderID;
+            $card->register();
+            $re = ['result' => 2000, 'data' => [], 'info' => '提交银行卡信息成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => [], 'info' => '提交银行卡信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
