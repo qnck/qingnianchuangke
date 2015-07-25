@@ -11,8 +11,8 @@ class TmpUsersContactPeople extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['teacher_name' => $this->u_teacher_name, 'teacher_phone' => $this->u_teacher_telephone, 'father_name' => $this->u_father_name, 'father_phone' => $this->u_father_telephone, 'mother_name' => $this->u_mother_name, 'mother_phone' => $this->u_mother_telephone, 'home_address' => $this->u_home_address],
-            ['teacher_name' => 'required', 'teacher_phone' => 'required', 'father_name' => 'required', 'father_phone' => 'required', 'mother_name' => 'required', 'mother_phone' => 'required', 'home_address' => 'required']
+            ['teacher_name' => $this->u_teacher_name, 'teacher_phone' => $this->u_teacher_telephone, 'student_number' => $this->u_student_number],
+            ['teacher_name' => 'required', 'teacher_phone' => 'required', 'student_number' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -40,10 +40,6 @@ class TmpUsersContactPeople extends Eloquent
         $data = [];
         $data['teacher_name'] = $this->u_teacher_name;
         $data['teacher_phone'] = $this->u_teacher_telephone;
-        $data['father_name'] = $this->u_father_name;
-        $data['father_telephone'] = $this->u_father_telephone;
-        $data['mother_name'] = $this->u_mother_name;
-        $data['mother_telephone'] = $this->u_mother_telephone;
         $data['frend_name1'] = $this->u_frend_name1;
         $data['frend_telephone1'] = $this->u_frend_telephone1;
         $data['frend_name2'] = $this->u_frend_name2;
@@ -55,6 +51,19 @@ class TmpUsersContactPeople extends Eloquent
     {
         $record = TmpUsersContactPeople::find($u_id);
         $record->delete();
+    }
+
+    public static function checkProfile($u_id)
+    {
+        $contact = TmpUsersContactPeople::find($u_id);
+        if (!isset($contact->u_id)) {
+            return 0;
+        }
+        if ($contact->u_status == 1) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     // lavaral realtions

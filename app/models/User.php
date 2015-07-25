@@ -141,9 +141,6 @@ class User extends Eloquent
         isset($this->u_sex) ? $user->u_sex = $this->u_sex : '';
         isset($this->u_school_id) ? $user->u_school_id = $this->u_school_id : '';
         isset($this->u_password) ? $user->u_password = Hash::make($this->u_password) : '';
-        isset($this->u_prof) ? $user->u_prof = $this->u_prof : '';
-        isset($this->u_degree) ? $user->u_degree = $this->u_degree : '';
-        isset($this->u_entry_year) ? $user->u_entry_year = $this->u_entry_year : '';
 
         if ($imgToken) {
             $img = new Img('user', $imgToken);
@@ -197,16 +194,7 @@ class User extends Eloquent
         $path = explode(',', $this->u_head_img);
         $path = array_pop($path);
         $data['head_img'] = $path;
-        $data['identity_number'] = $this->u_identity_number;
-        $path = explode(',', $this->u_identity_img);
-        $path = array_pop($path);
-        $data['identity_img'] = $path;
         $data['school_id'] = $this->u_school_id;
-        $data['student_number'] = $this->u_student_number;
-        $path = explode(',', $this->u_student_img);
-        $path = array_pop($path);
-        $data['student_img'] = $path;
-        $data['address'] = $this->u_address;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
         $data['following_count'] = $this->u_following_count;

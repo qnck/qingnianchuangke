@@ -430,4 +430,21 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function profileCheck()
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $bank = TmpUsersBankCard::checkProfile($u_id);
+            $contact = TmpUsersContactPeople::checkProfile($u_id);
+            $detail = TmpUsersDetails::checkProfile($u_id);
+            $re = ['result' => 2000, 'data' => ['detail' => $detail, 'contact' => $contact, 'bank' => $bank], 'info' => '获取用户资料验证信息成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 3002, 'data' => [], 'info' => '获取用户资料验证信息失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
 }
