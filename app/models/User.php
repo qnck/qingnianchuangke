@@ -162,7 +162,7 @@ class User extends Eloquent
         $data = [];
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
-        $date['nickname'] = $this->u_nickname;
+        $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->u_head_img;
         $school = [];
         if (isset($this->school)) {

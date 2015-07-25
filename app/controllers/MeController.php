@@ -403,6 +403,7 @@ class MeController extends \BaseController
     {
         $u_id = Input::get('u_id', 0);
         $token = Input::get('token', '');
+        $b_id = Input::get('b_id', 0);
 
         $booths = '';
     }
