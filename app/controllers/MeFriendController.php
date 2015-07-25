@@ -27,7 +27,7 @@ class MeFriendController extends \BaseController {
 
             $sum = $sum1 + $sum2;
 
-            if ($ver >= $sum) {
+            if ($ver == $sum) {
                 return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
             }
             
