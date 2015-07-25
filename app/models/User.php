@@ -68,6 +68,8 @@ class User extends Eloquent
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
         $re['head_img'] = $this->u_head_img;
+        $school = DicSchool::find($this->u_school_id);
+        $re['site'] = $school->t_city;
         return $re;
     }
 
@@ -93,7 +95,10 @@ class User extends Eloquent
             $re['expire'] = $now->format('Y-m-d H:i:s');
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
+            $re['nickname'] = $user->u_nickname;
             $re['head_img'] = $user->u_head_img;
+            $school = DicSchool::find($user->u_school_id);
+            $re['site'] = $school->t_city;
             return $re;
         }
     }
@@ -216,7 +221,7 @@ class User extends Eloquent
     public static function chkUserByToken($token, $id = 0)
     {
         if (empty($token)) {
-            throw new Exception("please input token", 1);
+            throw new Exception("请传入token", 1);
         }
         $query = User::where('u_token', '=', $token)->where('u_status', '=', 1);
         if ($id > 0) {
@@ -246,6 +251,15 @@ class User extends Eloquent
         $data = [];
         if (isset($this->contact)) {
             $data = $this->contact->showDetail();
+        }
+        return $data;
+    }
+
+    public function showSchool()
+    {
+        $data = [];
+        if (isset($this->school)) {
+            $data = $this->school->showDetail();
         }
         return $data;
     }
@@ -383,7 +397,7 @@ class User extends Eloquent
 
     public function contact()
     {
-        return $this->hasOne('UsersContactPerson', 'u_id', 'u_id');
+        return $this->hasOne('UsersContactPeople', 'u_id', 'u_id');
     }
 
     public function school()
