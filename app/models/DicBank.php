@@ -13,6 +13,7 @@ class DicBank extends Eloquent
     {
         $data = [];
 
+        $data['id'] = $this->b_id;
         $data['name'] = $this->b_name;
         $data['logo'] = $this->b_logo;
 

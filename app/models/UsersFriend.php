@@ -7,6 +7,11 @@ class UsersFriend extends Eloquent
     public $primaryKey = 't_id';
     public $timestamps = false;
 
+    public static $RELATION_NONE = 0;
+    public static $RELATION_INVITED = 1;
+    public static $RELATION_PEDDING_CONFIRM = 2;
+    public static $RELATION_CONFIRMED = 3;
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -37,16 +42,13 @@ class UsersFriend extends Eloquent
             $tmp = $this->u_id_2;
             $this->u_id_2 = $this->u_id_1;
             $this->u_id_1 = $tmp;
-            $this->t_inviter == 1 ? $this->t_inviter = 2 : $this-> t_inviter = 1;
         }
         $chk = UsersFriend::where('u_id_1', '=', $this->u_id_1)->where('u_id_2', '=', $this->u_id_2)->first();
         if (isset($chk->t_id)) {
             if ($chk->t_status == 1) {
-                if ($chk->t_inviter == 1) {
-                    $msg = $u_id == $chk->u_id_1 ? '您已经发出了邀请了, 请等待确认' : '对方已经邀请您了, 请及时确认';
-                } else {
-                    $msg = $u_id == $chk->u_id_2 ? '您已经发出了邀请了, 请等待确认' : '对方已经邀请您了, 请及时确认';
-                }
+                $msg = $chk->t_inviter == $u_id ? '您已经发出了邀请了, 请等待确认' : '对方已经邀请您了, 请及时确认';
+            } else {
+                $msg = '你们已经是好友了';
             }
             throw new Exception($msg, 3001);
         }

@@ -58,6 +58,7 @@ class User extends Eloquent
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_nickname = $this->u_mobile;
+        $this->u_change = 1;
         $this->save();
         $re = [];
         $re['token'] = $this->u_token;

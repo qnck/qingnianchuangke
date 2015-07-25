@@ -18,11 +18,11 @@ class MeFriendController extends \BaseController {
 
             // check changes
             $sum1 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
-                $j->on('users_friends.u_id_1', '=', 'users.u_id')->where('users_friends.t_inviter', '=', 2)->where('users_friends.u_id_2', '=', $u_id);
+                $j->on('users_friends.u_id_1', '=', 'users.u_id')->where('users_friends.u_id_2', '=', $u_id);
             })->sum('users.u_change');
 
             $sum2 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
-                $j->on('users_friends.u_id_2', '=', 'users.u_id')->where('users_friends.t_inviter', '=', 1)->where('users_friends.u_id_1', '=', $u_id);
+                $j->on('users_friends.u_id_2', '=', 'users.u_id')->where('users_friends.u_id_1', '=', $u_id);
             })->sum('users.u_change');
 
             $sum = $sum1 + $sum2;
@@ -48,7 +48,7 @@ class MeFriendController extends \BaseController {
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $data = $this->getUserList($u_id, 1);
+            $data = $this->getUserList($u_id);
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取好友邀请列表成功'];
         } catch (Exception $e) {
             $re = ['result' => 3001, 'data' => [], 'info' => '获取好友邀请列表失败:'.$e->getMessage()];
@@ -84,7 +84,7 @@ class MeFriendController extends \BaseController {
             $userFriend = new UsersFriend();
             $userFriend->u_id_1 = $u_id;
             $userFriend->u_id_2 = $friend;
-            $userFriend->t_inviter = 1;
+            $userFriend->t_inviter = $u_id;
             $userFriend->invite($u_id);
             $re = ['result' => 2000, 'data' => [], 'info' => '邀请好友成功'];
         } catch (Exception $e) {
@@ -100,6 +100,8 @@ class MeFriendController extends \BaseController {
         $token = Input::get('token', '');
         $friend = Input::get('friend', 0);
 
+        $data = ['status' => UsersFriend::$RELATION_NONE];
+        $re = ['result' => 2000, 'data' => $data, 'info' => '好友关系检测成功'];
         try {
             $user = User::chkUserByToken($token, $u_id);
             $friend = User::find($friend);
@@ -108,10 +110,16 @@ class MeFriendController extends \BaseController {
             }
             $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
             $friendInfo = $friend->showDetail();
-            $data = ['user_info' => $friendInfo, 'is_friend' => $userFriend->t_status];
-            $re = ['result' => 2000, 'data' => $data, 'info' => '好友关系检测成功'];
+            if ($userFriend->t_status == 1) {
+                $re['data']['status'] = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+            } else {
+                $re['data']['status'] = UsersFriend::$RELATION_CONFIRMED;
+            }
+            $re['data']['user_info'] = $friendInfo;
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
+            if ($e->getCode() != 30011) {
+                $re = ['result' => 3001, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
+            }
         }
         return Response::json($re);
     }
@@ -143,11 +151,11 @@ class MeFriendController extends \BaseController {
         
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $userFriend = UsersDetails::findLinkById($u_id, $friend);
+            $userFriend = UsersFriend::findLinkById($u_id, $friend);
             if ($userFriend->t_status == 2) {
                 throw new Exception("你们已经是好友了", 3001);
             }
-            if (($userFriend->t_inviter == 1 && $u_id == $userFriend->u_id_1) || ($userFriend->t_inviter == 2 && $u_id == $userFriend->u_id_2)) {
+            if ($userFriend->t_inviter == $u_id) {
                 throw new Exception("您不能自己确认好友邀请", 3001);
             }
             $userFriend->confirm();
@@ -202,16 +210,23 @@ class MeFriendController extends \BaseController {
         return Response::json($re);
     }
 
-    private function getUserList($u_id, $status = 2)
+    private function getUserList($u_id, $status = 0)
     {
-        $list1 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 1)->where('u_id_1', '=', $u_id)->with(['user2'])->get();
-        $list2 = UsersFriend::where('t_status', '=', $status)->where('t_inviter', '=', 2)->where('u_id_2', '=', $u_id)->with(['user1'])->get();
-        $data = [];
-        foreach ($list1 as $key => $user) {
-            $data[] = $user->user2->showInList();
+        $query = UsersFriend::with(['user1', 'user2']);
+        if ($status) {
+            $query->where('t_status', '=', $status);
         }
-        foreach ($list2 as $key => $user) {
-            $data[] = $user->user1->showInList();
+        $list = $query->where('u_id_1', '=', $u_id)->orWhere('u_id_2', '=', $u_id)->get();
+        $data = [];
+        foreach ($list as $key => $userLink) {
+            if ($userLink->t_status == 1) {
+                $type = $userLink->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+            } else {
+                $type = UsersFriend::$RELATION_CONFIRMED;
+            }
+            $tmp = $userLink->user2->showInList();
+            $tmp['status'] = $type;
+            $data[] = $tmp;
         }
         return $data;
     }
