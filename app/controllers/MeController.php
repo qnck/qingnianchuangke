@@ -183,12 +183,9 @@ class MeController extends \BaseController
     public function newBooth()
     {
         // base infos
-        $vcode = Input::get('vcode', '');
-        $mobile = Input::get('mobile', '');
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', '');
         $s_id = Input::get('s_id', '');
-        // retrive data
 
         // booth type
         $boothType = Input::get('type');
@@ -213,22 +210,16 @@ class MeController extends \BaseController
         // loan amount
         $loan = Input::get('loan');
         // how to drow loan
-        $laonSchema = Input::get('loan_schema');
-
-        // img include id_img, student_img
-        $imgToken = Input::get('img_token', '');
+        $laonSchema = Input::get('loan_schema', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
 
-            $phone = new Phone($mobile);
-            // $phone->authVCode($vcode);
+            $chk = Booth::where('u_id', '=', $u_id)->where('b_type', '=', $boothType)->first();
 
-            $user->u_school_id = $school;
-            $user->u_prof = $profession;
-            $user->u_degree = $degree;
-            $user->u_entry_year = $entryYear;
-            $user->update();
+            if (isset($chk->b_id)) {
+                throw new Exception("您已经申请过该类店铺了, 请勿重复提交", 1);
+            }
 
             $booth = new Booth();
             $booth->s_id = $s_id;
@@ -243,22 +234,9 @@ class MeController extends \BaseController
             $booth->b_promo_strategy = $promoStratege;
             $booth->b_with_fund = $withFund;
             $booth->b_type = $boothType;
-
-            if ($withFund == 0) {
-                $b_id = $booth->regWithoutFund();
-            } elseif ($withFund == 1) {
-
-
-                $user_card = new TmpUsersBankCard();
-                $user_card->u_id = $u_id;
-                $user_card->b_id = $bankId;
-                $user_card->b_card_num = $cardNum;
-                $user_card->b_holder_name = $cardHolderName;
-                $user_card->b_holder_phone = $cardHolderPhone;
-                $user_card->b_holder_identity = $cardHolderID;
-
-                $b_id = $booth->regWithFund($user_detail, $user_contact_people, $user_card);
-
+            $b_id = $booth->register();
+            
+            if ($withFund == 1) {
                 $fund = new Fund();
                 $fund->u_id = $u_id;
                 $fund->t_apply_money = $loan;
@@ -268,6 +246,13 @@ class MeController extends \BaseController
 
                 $schema = 0;
                 $allotedAmount = 0;
+
+                $laonSchema = json_decode($laonSchema, true);
+
+                if (!is_array($laonSchema)) {
+                    throw new Exception("请传入正确的提款计划", 1);
+                }
+
                 foreach ($laonSchema as $key => $percentage) {
                     $percentage = $percentage / 100;
                     $schema ++;
@@ -284,33 +269,31 @@ class MeController extends \BaseController
                     $repayment->apply();
                 }
 
-                if ($imgToken) {
-                    $imgObj = new Img('user', $imgToken);
-                    $imgs = $imgObj->getSavedImg($u_id, '', true);
-                    $id_img = [];
-                    $student_img = [];
-                    foreach ($imgs as $k => $img) {
-                        if ($k == 'identity_img_front' || $k == 'identity_img_back') {
-                            $id_img[] = $img;
-                        } elseif ($k == 'student_img_front' || $k == 'student_img_back') {
-                            $student_img[] = $img;
-                        }
-                    }
-                    $user_detail = TmpUsersDetails::find($u_id);
-                    $user_detail->u_identity_img = implode(',', $id_img);
-                    $user_detail->u_student_img = implode(',', $student_img);
-                    $user_detail->save();
-                }
+                // if ($imgToken) {
+                //     $imgObj = new Img('user', $imgToken);
+                //     $imgs = $imgObj->getSavedImg($u_id, '', true);
+                //     $id_img = [];
+                //     $student_img = [];
+                //     foreach ($imgs as $k => $img) {
+                //         if ($k == 'identity_img_front' || $k == 'identity_img_back') {
+                //             $id_img[] = $img;
+                //         } elseif ($k == 'student_img_front' || $k == 'student_img_back') {
+                //             $student_img[] = $img;
+                //         }
+                //     }
+                //     $user_detail = TmpUsersDetails::find($u_id);
+                //     $user_detail->u_identity_img = implode(',', $id_img);
+                //     $user_detail->u_student_img = implode(',', $student_img);
+                //     $user_detail->save();
+                // }
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '申请成功'];
         } catch (Exception $e) {
             // clean up todo
-            TmpUsersDetails::clearByUser($u_id);
-            TmpUsersBankCard::clearByUser($u_id);
-            TmpUsersContactPeople::clearByUser($u_id);
             Booth::clearByUser($u_id);
-            Fund::clearByUser($u_id);
-            $re = ['result' => 2001, 'data' => [], 'info' => '申请失败:'.$e->getMessage()];
+            $f_id = Fund::clearByUser($u_id);
+            Repayment::clearByFund($f_id);
+            $re = ['result' => 7001, 'data' => [], 'info' => '申请失败:'.$e->getMessage()];
         }
 
         return Response::json($re);
@@ -333,7 +316,7 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '获取我的所有店铺成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
+            $re = ['result' => 7001, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
         }
 
         return Response::json($re);
@@ -459,6 +442,7 @@ class MeController extends \BaseController
             $user_detail->register();
             $re = ['result' => 2000, 'data' => [], 'info' => '提交详细信息审核成功'];
         } catch (Exception $e) {
+            TmpUsersDetails::clearByUser($u_id);
             $re = ['result' => 3002, 'data' => [], 'info' => '提交详细信息审核失败:'.$e->getMessage()];
         }
         return Response::json($re);
@@ -559,6 +543,7 @@ class MeController extends \BaseController
             $user_contact_people->register();
             $re = ['result' => 2000, 'data' => [], 'info' => '提交学校信息成功'];
         } catch (Exception $e) {
+            TmpUsersContactPeople::clearByUser($u_id);
             $re = ['result' => 3002, 'data' => [], 'info' => '提交学校信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
@@ -596,6 +581,8 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', '');
+        $vcode = Input::get('vcode', '');
+        $mobile = Input::get('mobile', '');
 
         // id bank
         $bankId = Input::get('bank', 0);
@@ -610,6 +597,9 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+
+            $phone = new Phone($mobile);
+            $phone->authVCode($vcode);
 
             $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
             if (!isset($card->u_id)) {
@@ -627,6 +617,7 @@ class MeController extends \BaseController
             $card->register();
             $re = ['result' => 2000, 'data' => [], 'info' => '提交银行卡信息成功'];
         } catch (Exception $e) {
+            TmpUsersBankCard::clearByUser($u_id);
             $re = ['result' => 3002, 'data' => [], 'info' => '提交银行卡信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
