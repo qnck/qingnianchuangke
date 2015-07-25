@@ -109,13 +109,13 @@ class MeFriendController extends \BaseController {
                 throw new Exception("你查找的用户不存在", 3001);
             }
             $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
-            $friendInfo = $friend->showDetail();
+            $friendInfo = $friend->showInList();
             if ($userFriend->t_status == 1) {
                 $re['data']['status'] = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
             } else {
                 $re['data']['status'] = UsersFriend::$RELATION_CONFIRMED;
             }
-            $re['data']['user_info'] = $friendInfo;
+            $re['data'] = array_merge($re['data'], $friendInfo);
         } catch (Exception $e) {
             if ($e->getCode() != 30011) {
                 $re = ['result' => 3001, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
