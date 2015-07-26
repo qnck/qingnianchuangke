@@ -64,10 +64,24 @@ class Product extends Eloquent
         $now = new DateTime;
         $this->baseValidate();
         $this->created_at = $now->format('Y-m-d H:i:s');
-        $this->p_status = 1;
         $this->p_active_at = $now->format('Y-m-d H:i:s');
         $this->save();
         return $this->p_id;
+    }
+
+    public static function updateSort($sort)
+    {
+        $sql = 'UPDATE t_products SET sort = CASE p_id';
+        $ids = [];
+        foreach ($sort as $id => $sort) {
+            if (!is_numeric($id)) {
+                throw new Exception("无效的排序数据", 1);
+            }
+            $sql .= ' WHEN '.$id.' THEN '.$sort;
+            $ids[] = $id;
+        }
+        $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
+        return DB::statement($sql);
     }
 
     // laravel relation

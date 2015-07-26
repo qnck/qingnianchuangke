@@ -671,6 +671,7 @@ class MeController extends \BaseController
         $prodPrice = Input::get('prod_price', 0);
         $prodDiscount = Input::get('prod_discount', 0);
         $prodStock = Input::get('prod_stock', 0);
+        $publish = Input::get('publish', 1);
 
         $imgToken = Input::get('img_token', '');
 
@@ -686,6 +687,7 @@ class MeController extends \BaseController
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
             $product->sort = 1;
+            $product->p_status = $publish == 1 ? 1 : 2;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;
@@ -697,6 +699,27 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功陪'];
         } catch (Exception $e) {
             $re = ['result' => 7001, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function updateProductSort()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $sort = Input::get('sort', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $sortArray = json_decode($sort, true);
+            if (!is_array($sortArray)) {
+                throw new Exception("请传入正确的排序数据", 1);
+            }
+            $re = Product::updateSort($sortArray);
+            $re = ['result' => 2000, 'data' => [], 'info' => '更新排序成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '更新排序失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
