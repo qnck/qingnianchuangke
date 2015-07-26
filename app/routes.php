@@ -29,6 +29,7 @@ Route::get('user/me/profile/card', 'MeController@getCard');
 Route::post('user/me/booth', 'MeController@newBooth');
 Route::get('user/me/booth', 'MeController@boothList');
 Route::get('user/me/booth/{id}', 'MeController@booth');
+Route::post('user/me/product', 'MeController@postProduct');
 /* ME BOOTH END*/
 
 /* ME FRIEND START*/
