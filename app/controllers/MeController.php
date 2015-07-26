@@ -723,4 +723,25 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function productOn($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $on = Input::get('on', 1);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = Product::find($id);
+            if (!isset($product->p_id)) {
+                throw new Exception("您请求的商品不存在", 1);
+            }
+            $product->p_status = $on == 1 ? 1 : 2;
+            $product->save();
+            $re = ['result' => 2000, 'data' => [], 'info' => '产品操作成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '产品操作失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
 }
