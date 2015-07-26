@@ -30,6 +30,8 @@ Route::post('user/me/booth', 'MeController@newBooth');
 Route::get('user/me/booth', 'MeController@boothList');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::post('user/me/product', 'MeController@postProduct');
+Route::get('user/me/product/{id}', 'MeController@getProduct');
+Route::post('user/me/product/sort', 'MeController@updateProductSort');
 /* ME BOOTH END*/
 
 /* ME FRIEND START*/
