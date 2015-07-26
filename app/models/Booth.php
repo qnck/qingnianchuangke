@@ -76,4 +76,9 @@ class Booth extends Eloquent
     {
         return $this->bleongsTo('User', 'u_id', 'u_id');
     }
+
+    public function products()
+    {
+        return $this->hasMany('Products');
+    }
 }

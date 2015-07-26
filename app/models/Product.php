@@ -34,4 +34,9 @@ class Product extends Eloquent
     {
         return $this->hasOne('ProductQuantity', 'p_id', 'p_id');
     }
+
+    public function booth()
+    {
+        return $this->belongsTo('Booth', 'b_id', 'b_id');
+    }
 }

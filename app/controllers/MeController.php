@@ -268,24 +268,6 @@ class MeController extends \BaseController
                     $repayment->f_schema = $schema;
                     $repayment->apply();
                 }
-
-                // if ($imgToken) {
-                //     $imgObj = new Img('user', $imgToken);
-                //     $imgs = $imgObj->getSavedImg($u_id, '', true);
-                //     $id_img = [];
-                //     $student_img = [];
-                //     foreach ($imgs as $k => $img) {
-                //         if ($k == 'identity_img_front' || $k == 'identity_img_back') {
-                //             $id_img[] = $img;
-                //         } elseif ($k == 'student_img_front' || $k == 'student_img_back') {
-                //             $student_img[] = $img;
-                //         }
-                //     }
-                //     $user_detail = TmpUsersDetails::find($u_id);
-                //     $user_detail->u_identity_img = implode(',', $id_img);
-                //     $user_detail->u_student_img = implode(',', $student_img);
-                //     $user_detail->save();
-                // }
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '申请成功'];
         } catch (Exception $e) {
@@ -379,6 +361,7 @@ class MeController extends \BaseController
             $data['name'] = $user->u_name;
             if (!isset($detail->u_id)) {
                 $data['id_num'] = '';
+                $data['id_img'] = '';
                 $data['home_addr'] = '';
                 $data['mo_name'] = '';
                 $data['mo_phone'] = '';
@@ -386,6 +369,7 @@ class MeController extends \BaseController
                 $data['fa_phone'] = '';
             } else {
                 $data['id_num'] = $detail->u_identity_number;
+                $data['id_img'] = explode(',', $detail->u_identity_img);
                 $data['home_addr'] = $detail->u_home_adress;
                 $data['mo_name'] = $detail->u_mother_name;
                 $data['mo_phone'] = $detail->u_mother_telephone;
@@ -418,6 +402,8 @@ class MeController extends \BaseController
         // father phone
         $faPhone = Input::get('fa_phone');
 
+        $imgToken = Input::get('img_token');
+
         try {
             $user = User::chkUserByToken($token, $u_id);
 
@@ -440,6 +426,21 @@ class MeController extends \BaseController
             $user_detail->u_mother_name = $moName;
             $user_detail->u_mother_telephone = $moPhone;
             $user_detail->register();
+
+            if ($imgToken) {
+                $imgObj = new Img('user', $imgToken);
+                $imgs = $imgObj->getSavedImg($u_id, '', true);
+                $id_img = [];
+                foreach ($imgs as $k => $img) {
+                    if ($k == 'identity_img_front' || $k == 'identity_img_back') {
+                        $id_img[] = $img;
+                    }
+                }
+                $user_detail->u_identity_img = implode(',', $id_img);
+                $user_detail->save();
+            }
+
+
             $re = ['result' => 2000, 'data' => [], 'info' => '提交详细信息审核成功'];
         } catch (Exception $e) {
             TmpUsersDetails::clearByUser($u_id);
@@ -465,6 +466,7 @@ class MeController extends \BaseController
                 $data['fr_name_2'] = '';
                 $data['fr_phone_2'] = '';
                 $data['stu_num'] = '';
+                $data['stu_img'] = '';
                 $data['school'] = '';
                 $data['profession'] = '';
                 $data['degree'] = '';
@@ -477,6 +479,7 @@ class MeController extends \BaseController
                 $data['fr_name_2'] = $contact->u_frend_name2;
                 $data['fr_phone_2'] = $contact->u_frend_telephone2;
                 $data['stu_num'] = $contact->u_student_number;
+                $data['stu_num'] = explode(',', $contact->u_student_img);
                 $data['school'] = $contact->u_school_id;
                 $data['profession'] = $contact->u_prof;
                 $data['degree'] = $contact->u_degree;
@@ -518,6 +521,8 @@ class MeController extends \BaseController
         // friend phone 2
         $frPhone2 = Input::get('fr_phone_2');
 
+        $imgToken = Input::get('img_token', '');
+
         try {
             $user = User::chkUserByToken($token, $u_id);
 
@@ -541,6 +546,20 @@ class MeController extends \BaseController
             $user_contact_people->u_degree = $degree;
             $user_contact_people->u_entry_year = $entryYear;
             $user_contact_people->register();
+
+            if ($imgToken) {
+                $imgObj = new Img('user', $imgToken);
+                $imgs = $imgObj->getSavedImg($u_id, '', true);
+                $student_img = [];
+                foreach ($imgs as $k => $img) {
+                    if ($k == 'student_img_front' || $k == 'student_img_back') {
+                        $student_img[] = $img;
+                    }
+                }
+                $user_contact_people->u_student_img = implode(',', $student_img);
+                $user_contact_people->save();
+            }
+
             $re = ['result' => 2000, 'data' => [], 'info' => '提交学校信息成功'];
         } catch (Exception $e) {
             TmpUsersContactPeople::clearByUser($u_id);
