@@ -642,6 +642,23 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function getProduct($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = Product::find($id);
+            $product->load('quantity');
+            $data = $product->showDetail();
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => $data, 'info' => '获取商品失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
     public function postProduct()
     {
         $token = Input::get('token', '');

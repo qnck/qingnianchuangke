@@ -42,6 +42,23 @@ class Product extends Eloquent
         return $data;
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['prod_name'] = $this->p_title;
+        $data['prod_desc'] = $this->p_desc;
+        $data['prod_cost'] = $this->p_cost;
+        $data['prod_price'] = $this->p_price;
+        $data['prod_discount'] = $this->p_discount;
+        $data['imgs'] = explode(',', $this->p_imgs);
+        $quantity = [];
+        if (isset($this->quantity)) {
+            $quantity = $this->quantity->showInList();
+        }
+        $data['quantity'] = $quantity;
+        return $data;
+    }
+
     public function addProduct()
     {
         $now = new DateTime;
