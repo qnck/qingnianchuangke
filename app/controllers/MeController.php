@@ -641,4 +641,46 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function postProduct()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $b_id = Input::get('b_id', 0);
+
+        $prodName = Input::get('prod_name', '');
+        $prodDesc = Input::get('prod_desc', '');
+        $prodCost = Input::get('prod_cost', 0);
+        $prodPrice = Input::get('prod_price', 0);
+        $prodDiscount = Input::get('prod_discount', 0);
+        $prodStock = Input::get('prod_stock', 0);
+
+        $imgToken = Input::get('img_token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $product = new Product();
+            $product->b_id = $b_id;
+            $product->p_title = $prodName;
+            $product->u_id = $u_id;
+            $product->p_cost = $prodCost;
+            $product->p_price = $prodPrice;
+            $product->p_discount = $prodDiscount;
+            $product->p_desc = $prodDesc;
+            $product->sort = 1;
+            $p_id = $product->addProduct();
+            $quantity = new ProductQuantity();
+            $quantity->p_id = $p_id;
+            $quantity->b_id = $b_id;
+            $quantity->u_id = $u_id;
+            $quantity->q_total = $prodStock;
+            $quantity->addQuantity();
+
+            $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功陪'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
 }
