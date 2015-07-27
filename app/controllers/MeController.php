@@ -325,6 +325,27 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function boothUpateDesc($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $desc = Input::get('desc', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booth = Booth::find($id);
+            if (empty($booth->b_id) || $booth->u_id != $u_id) {
+                throw new Exception("无法获取到请求的店铺", 1);
+            }
+            $booth->b_desc = $desc;
+            $booth->save();
+            $re = ['result' => 2000, 'data' => [], 'info' => '更新店铺描述成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '更新店铺描述失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
     public function profileCheck()
     {
         $u_id = Input::get('u_id', 0);
@@ -824,6 +845,27 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => [], 'info' => '更新排序成功'];
         } catch (Exception $e) {
             $re = ['result' => 7001, 'data' => [], 'info' => '更新排序失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function updateProductDiscount()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $discount = Input::get('discount', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $discountArray = json_decode($discount, true);
+            if (!is_array($discountArray)) {
+                throw new Exception("请传入正确的排序数据", 1);
+            }
+            $re = Product::updateDiscount($discountArray);
+            $re = ['result' => 2000, 'data' => [], 'info' => '更新折扣成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '更新折扣失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
