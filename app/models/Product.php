@@ -94,11 +94,26 @@ class Product extends Eloquent
     {
         $sql = 'UPDATE t_products SET sort = CASE p_id';
         $ids = [];
-        foreach ($sort as $id => $sort) {
+        foreach ($sort as $id => $s) {
             if (!is_numeric($id)) {
                 throw new Exception("无效的排序数据", 1);
             }
-            $sql .= ' WHEN '.$id.' THEN '.$sort;
+            $sql .= ' WHEN '.$id.' THEN '.$s;
+            $ids[] = $id;
+        }
+        $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
+        return DB::statement($sql);
+    }
+
+    public static function updateDiscount($discount)
+    {
+        $sql = 'UPDATE t_products SET p_discount = CASE p_id';
+        $ids = [];
+        foreach ($discount as $id => $d) {
+            if (!is_numeric($id)) {
+                throw new Exception("无效的折扣数据", 1);
+            }
+            $sql .= ' WHEN '.$id.' THEN '.$d;
             $ids[] = $id;
         }
         $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
