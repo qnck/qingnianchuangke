@@ -41,6 +41,7 @@ class Booth extends Eloquent
         $data['title'] = $this->b_title;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
+        $data['source'] = $this->b_product_source;
         $data['imgs'] = explode(',', $this->b_imgs);
         $data['fans'] = $this->b_fans_count;
         $data['lng'] = $this->longitude;

@@ -30,7 +30,9 @@ Route::post('user/me/booth', 'MeController@newBooth');
 Route::get('user/me/booth', 'MeController@boothList');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::post('user/me/product', 'MeController@postProduct');
+Route::get('user/me/product', 'MeController@getProducts');
 Route::get('user/me/product/{id}', 'MeController@getProduct');
+Route::put('user/me/product/{id}', 'MeController@updateProduct');
 Route::get('user/me/product/{id}/on', 'MeController@productOn');
 Route::post('user/me/product/sort', 'MeController@updateProductSort');
 /* ME BOOTH END*/
