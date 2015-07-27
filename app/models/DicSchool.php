@@ -24,4 +24,11 @@ class DicSchool extends Eloquent
         $data['name'] = $this->t_name;
         return $data;
     }
+
+    // laravel relations
+    
+    public function user()
+    {
+        return $this->belongsTo('user', 'u_school_id', 't_id');
+    }
 }

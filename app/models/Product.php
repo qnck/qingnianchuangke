@@ -36,8 +36,13 @@ class Product extends Eloquent
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
         }
-
         $data['quantity'] = $quantity;
+
+        $promo = [];
+        if (!empty($this->promo)) {
+            $promo = $this->promo->showInList();
+        }
+        $data['promo'] = $promo;
 
         return $data;
     }
@@ -56,6 +61,11 @@ class Product extends Eloquent
             $quantity = $this->quantity->showInList();
         }
         $data['quantity'] = $quantity;
+        $promo = [];
+        if (!empty($this->promo)) {
+            $promo = $this->promo->showInList();
+        }
+        $data['promo'] = $promo;
         return $data;
     }
 
@@ -105,5 +115,10 @@ class Product extends Eloquent
     public function booth()
     {
         return $this->belongsTo('Booth', 'b_id', 'b_id');
+    }
+
+    public function promo()
+    {
+        return $this->hasOne('PromotionInfo', 'p_id', 'p_id');
     }
 }
