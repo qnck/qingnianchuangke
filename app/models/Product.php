@@ -69,6 +69,17 @@ class Product extends Eloquent
         return $this->p_id;
     }
 
+    public function saveProduct($stock)
+    {
+        $now = new DateTime;
+        $this->baseValidate();
+        $this->p_active_at = $now->format('Y-m-d H:i:s');
+        $this->save();
+
+        // $quantity = ProductQuantity::where('');
+        return $this->p_id;
+    }
+
     public static function updateSort($sort)
     {
         $sql = 'UPDATE t_products SET sort = CASE p_id';

@@ -283,6 +283,7 @@ class MeController extends \BaseController
 
     public function boothList()
     {
+        // echo 123;exit;
         $u_id = Input::get('u_id', '');
         $token = Input::get('token');
 
@@ -291,8 +292,8 @@ class MeController extends \BaseController
             $data = Booth::where('u_id', '=', $u_id)->get();
             $list = [];
             foreach ($data as $key => $booth) {
-                $tmp = $booth->showInList();
-                $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
+                $tmp = $booth->showDetail();
+                $products_count = Product::where('b_id', '=', $booth->b_id)->count();
                 $tmp['prodct_count'] = $products_count;
                 $list[] = $tmp;
             }
@@ -315,16 +316,8 @@ class MeController extends \BaseController
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取到请求的店铺", 1);
             }
-            $now = new DateTime();
-            $now->modify('-8 hours');
             $boothInfo = $booth->showDetail();
-            $products = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->where('p_active_at', '<', $now->format('Y-m-d H:i:s'))->with(['quantity'])->paginate(10);
-            $list = [];
-            foreach ($products as $key => $product) {
-                $list[] = $product->showInList();
-            }
-            $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
-            $data = ['booth' => $boothInfo, 'products' => $list, 'pagination' => $pagination];
+            $data = ['booth' => $boothInfo];
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的店铺成功'];
         } catch (Exception $e) {
             $re = ['result' => 7001, 'data' => [], 'info' => '获取我的店铺失败:'.$e->getMessage()];
@@ -659,6 +652,26 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function getProducts()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $b_id = Input::get('b_id');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $products = Product::with('quantity')->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->paginate(30);
+            $data = [];
+            foreach ($products as $key => $product) {
+                $data[] = $product->showInList();
+            }
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '获取商品失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
     public function postProduct()
     {
         $token = Input::get('token', '');
@@ -695,6 +708,48 @@ class MeController extends \BaseController
             $quantity->u_id = $u_id;
             $quantity->q_total = $prodStock;
             $quantity->addQuantity();
+
+            $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功陪'];
+        } catch (Exception $e) {
+            $re = ['result' => 7001, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function updateProduct()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $p_id = Input::get('p_id', 0);
+
+        $prodName = Input::get('prod_name', '');
+        $prodDesc = Input::get('prod_desc', '');
+        $prodCost = Input::get('prod_cost', 0);
+        $prodPrice = Input::get('prod_price', 0);
+        $prodDiscount = Input::get('prod_discount', 0);
+        $prodStock = Input::get('prod_stock', 0);
+        $publish = Input::get('publish', 1);
+
+        $imgToken = Input::get('img_token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $product = Product::find($p_id);
+
+            if (!isset($product->p_id)) {
+                throw new Exception("没有找到请求的产品", 1);
+            }
+            $product->b_id = $b_id;
+            $product->p_title = $prodName;
+            $product->u_id = $u_id;
+            $product->p_cost = $prodCost;
+            $product->p_price = $prodPrice;
+            $product->p_discount = $prodDiscount;
+            $product->p_desc = $prodDesc;
+            $product->sort = 1;
+            $product->p_status = $publish == 1 ? 1 : 2;
+            $product->saveProduct($prodStock);
 
             $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功陪'];
         } catch (Exception $e) {
