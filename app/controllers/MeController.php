@@ -678,15 +678,17 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         $b_id = Input::get('b_id');
+        $per_page = Input::get('per_page', 30);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->paginate(30);
+            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->paginate($per_page);
+            $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
             $data = [];
             foreach ($products as $key => $product) {
                 $data[] = $product->showInList();
             }
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功'];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功', 'pagination' => $pagination];
         } catch (Exception $e) {
             $re = ['result' => 7001, 'data' => [], 'info' => '获取商品失败:'.$e->getMessage()];
         }

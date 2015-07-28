@@ -167,6 +167,8 @@ class User extends Eloquent
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->u_head_img;
+        $data['lat'] = $this->latitude;
+        $data['lng'] = $this->longitude;
         $school = [];
         if (isset($this->school)) {
             $school = $this->school->showInList();
