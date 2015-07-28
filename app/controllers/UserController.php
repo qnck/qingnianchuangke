@@ -246,7 +246,7 @@ class UserController extends \BaseController
         }
         try {
             User::chkUserByToken($token, $u_id);
-            $data = User::where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_school_id', 'LIKE', '%'.$keyWord.'%')->get();
+            $data = User::with(['school'])->where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_id', 'LIKE', '%'.$keyWord.'%')->get();
             $list = [];
             foreach ($data as $key => $user) {
                 $list[] = $user->showInList();
