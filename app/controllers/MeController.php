@@ -750,7 +750,7 @@ class MeController extends \BaseController
             if ($imgToken) {
                 $imgObj = new Img('product', $imgToken);
                 $imgs = $imgObj->getSavedImg($p_id, '', true);
-                $product->p_imgs = implode($imgs);
+                $product->p_imgs = implode(',', $imgs);
                 $product->save();
             }
 
@@ -817,7 +817,7 @@ class MeController extends \BaseController
             if ($imgToken) {
                 $imgObj = new Img('product', $imgToken);
                 $imgs = $imgObj->getSavedImg($id, '', true);
-                $product->p_imgs = implode($imgs);
+                $product->p_imgs = implode(',', $imgs);
                 $product->save();
             }
 
