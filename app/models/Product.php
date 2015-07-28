@@ -27,7 +27,7 @@ class Product extends Eloquent
         $data['id'] = $this->p_id;
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
-        $data['imgs'] = $this->p_imgs;
+        $data['imgs'] = explode(',', $this->p_imgs);
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
         $data['sort'] = $this->sort;
