@@ -107,7 +107,11 @@ class UserController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '操作成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
     }
 
@@ -226,7 +230,11 @@ class UserController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => [], 'info' => $msg];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -253,7 +261,11 @@ class UserController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '操作成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }

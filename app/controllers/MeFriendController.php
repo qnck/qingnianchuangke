@@ -35,7 +35,11 @@ class MeFriendController extends \BaseController {
 
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '获取我的好友列表失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取我的好友列表失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -51,7 +55,11 @@ class MeFriendController extends \BaseController {
             $data = $this->getUserList($u_id);
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取好友邀请列表成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '获取好友邀请列表失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取好友邀请列表失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -88,7 +96,11 @@ class MeFriendController extends \BaseController {
             $userFriend->invite($u_id);
             $re = ['result' => 2000, 'data' => [], 'info' => '邀请好友成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '邀请好友失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '邀请好友失败:'.$e->getMessage()];
         }
 
         return Response::json($re);
@@ -117,8 +129,12 @@ class MeFriendController extends \BaseController {
             }
             $re['data'] = array_merge($re['data'], $friendInfo);
         } catch (Exception $e) {
+            $code = 3001;
             if ($e->getCode() != 30011) {
-                $re = ['result' => 3001, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
+                if ($e->getCode() > 2000) {
+                    $code = $e->getCode();
+                }
+                $re = ['result' => $code, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
             }
         }
         return Response::json($re);
@@ -161,7 +177,11 @@ class MeFriendController extends \BaseController {
             $userFriend->confirm();
             $re = ['result' => 2000, 'data' => [], 'info' => '确认好友成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '确认好友失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '确认好友失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -185,7 +205,11 @@ class MeFriendController extends \BaseController {
             $userFriend->remove();
             $re = ['result' => 2000, 'data' => [], 'info' => '删除好友成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3001, 'data' => [], 'info' => '删除好友失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '删除好友失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -203,8 +227,12 @@ class MeFriendController extends \BaseController {
                 $userFriend->remove();
             }
         } catch (Exception $e) {
-            if ($e->getCode() == 3001) {
-                $re = ['result' => 3001, 'data' => [], 'info' => '删除好友邀请失败:'.$e->getMessage()];
+            $code = 3001;
+            if ($e->getCode() != 30011) {
+                if ($e->getCode() > 2000) {
+                    $code = $e->getCode();
+                }
+                $re = ['result' => $code, 'data' => [], 'info' => '删除好友邀请失败:'.$e->getMessage()];
             }
         }
         return Response::json($re);
