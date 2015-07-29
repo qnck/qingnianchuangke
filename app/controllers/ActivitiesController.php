@@ -100,12 +100,16 @@ class ActivitiesController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '活动添加成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
             if ($e->getCode() == 2) {
                 if ($act->ac_id > 0) {
                     $act->delete();
                 }
             }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -160,7 +164,11 @@ class ActivitiesController extends \BaseController
             $reply->addReply();
             $re = ['result' => 2000, 'data' => [], 'info' => '回复成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -214,10 +222,14 @@ class ActivitiesController extends \BaseController
 
             $re = ['result' => 2000, 'data' => [], 'info' => '报名成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
             if ($e->getCode() == 2) {
                 $actSign->delete();
             }
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
 
@@ -248,7 +260,11 @@ class ActivitiesController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '操作成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
@@ -275,7 +291,11 @@ class ActivitiesController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取报名用户成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -302,7 +322,11 @@ class ActivitiesController extends \BaseController
             $actSignUser->confirm();
             $re = ['result' => 2000, 'data' => [], 'info' => '用户报名验证通过'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);

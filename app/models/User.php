@@ -220,7 +220,7 @@ class User extends Eloquent
         }
         $user = $query->first();
         if (!isset($user->u_id)) {
-            throw new Exception('您的登录已过期， 请重新登录', 1);
+            throw new Exception('您的登录已过期， 请重新登录', 3003);
         } else {
             return $user;
         }

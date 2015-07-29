@@ -23,7 +23,11 @@ class MeController extends \BaseController
             $data = ['user_info' => $userInfo, 'cards' => $cards, 'contact' => $contact, 'school' => $school];
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data'=> [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
@@ -58,7 +62,11 @@ class MeController extends \BaseController
             $posts = $user->getPosts();
             $re = ['result' => 2000, 'data' => $posts, 'info' => '获取用户帖子成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -78,7 +86,11 @@ class MeController extends \BaseController
             $data = $this->getUserFollowers($user->u_id);
             $re = ['result' => 2000, 'data' => $data, 'info'=> '获取我的粉丝成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -98,7 +110,11 @@ class MeController extends \BaseController
             $data = $this->getUserFollowings($user->u_id);
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我关注的人成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -128,7 +144,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => [], 'info' => '重置密码成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
@@ -152,7 +172,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '获取我的回复成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -175,7 +199,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '获取的赞成功'];
         } catch (Exception $e) {
-            $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
+            $code = 2001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
         return Response::json($re);
     }
@@ -275,7 +303,11 @@ class MeController extends \BaseController
             Booth::clearByUser($u_id);
             $f_id = Fund::clearByUser($u_id);
             Repayment::clearByFund($f_id);
-            $re = ['result' => 7001, 'data' => [], 'info' => '申请失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
         }
 
         return Response::json($re);
@@ -299,7 +331,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $list, 'info' => '获取我的所有店铺成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取我的所有店铺失败:'.$e->getMessage()];
         }
 
         return Response::json($re);
@@ -320,7 +356,11 @@ class MeController extends \BaseController
             $data = ['booth' => $boothInfo];
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的店铺成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '获取我的店铺失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取我的店铺失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -341,7 +381,11 @@ class MeController extends \BaseController
             $booth->save();
             $re = ['result' => 2000, 'data' => [], 'info' => '更新店铺描述成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '更新店铺描述失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '更新店铺描述失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -358,7 +402,11 @@ class MeController extends \BaseController
             $detail = TmpUsersDetails::checkProfile($u_id);
             $re = ['result' => 2000, 'data' => ['detail' => $detail, 'contact' => $contact, 'bank' => $bank], 'info' => '获取用户资料验证信息成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3002, 'data' => [], 'info' => '获取用户资料验证信息失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取用户资料验证信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -392,7 +440,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户详细成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户详细失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取用户详细失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -458,7 +510,11 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => [], 'info' => '提交详细信息审核成功'];
         } catch (Exception $e) {
             TmpUsersDetails::clearByUser($u_id);
-            $re = ['result' => 3002, 'data' => [], 'info' => '提交详细信息审核失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '提交详细信息审核失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -501,7 +557,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户详细成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户详细失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取用户详细失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -577,7 +637,11 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => [], 'info' => '提交学校信息成功'];
         } catch (Exception $e) {
             TmpUsersContactPeople::clearByUser($u_id);
-            $re = ['result' => 3002, 'data' => [], 'info' => '提交学校信息失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '提交学校信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -605,7 +669,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户银行卡成功'];
         } catch (Exception $e) {
-            $re = ['result' => 3002, 'data' => $data, 'info' => '获取用户银行卡失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取用户银行卡失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -651,7 +719,11 @@ class MeController extends \BaseController
             $re = ['result' => 2000, 'data' => [], 'info' => '提交银行卡信息成功'];
         } catch (Exception $e) {
             TmpUsersBankCard::clearByUser($u_id);
-            $re = ['result' => 3002, 'data' => [], 'info' => '提交银行卡信息失败:'.$e->getMessage()];
+            $code = 3002;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '提交银行卡信息失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -668,7 +740,11 @@ class MeController extends \BaseController
             $data = $product->showDetail();
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => $data, 'info' => '获取商品失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取商品失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -690,7 +766,11 @@ class MeController extends \BaseController
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功', 'pagination' => $pagination];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '获取商品失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '获取商品失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -758,7 +838,11 @@ class MeController extends \BaseController
 
             $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -825,7 +909,11 @@ class MeController extends \BaseController
 
             $re = ['result' => 2000, 'data' => [], 'info' => '更新产品成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '更新产品失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '更新产品失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -846,7 +934,11 @@ class MeController extends \BaseController
             $re = Product::updateSort($sortArray);
             $re = ['result' => 2000, 'data' => [], 'info' => '更新排序成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '更新排序失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '更新排序失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -867,7 +959,11 @@ class MeController extends \BaseController
             $re = Product::updateDiscount($discountArray);
             $re = ['result' => 2000, 'data' => [], 'info' => '更新折扣成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '更新折扣失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '更新折扣失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
@@ -888,7 +984,11 @@ class MeController extends \BaseController
             $product->save();
             $re = ['result' => 2000, 'data' => [], 'info' => '产品操作成功'];
         } catch (Exception $e) {
-            $re = ['result' => 7001, 'data' => [], 'info' => '产品操作失败:'.$e->getMessage()];
+            $code = 7001;
+            if ($e->getCode() > 2000) {
+                $code = $e->getCode();
+            }
+            $re = ['result' => $code, 'data' => [], 'info' => '产品操作失败:'.$e->getMessage()];
         }
         return Response::json($re);
     }
