@@ -335,6 +335,21 @@ class User extends Eloquent
         return $followings;
     }
 
+    public static function filterByDistance($lat, $lng, $distance)
+    {
+        $distance = $distance * $distance;
+        $sql = 'SELECT u_id from t_users WHERE (power(latitude - ?, 2) + power(longitude - ?, 2) * power(111, 2)) < ?';
+        $re = DB::select($sql, [$lat, $lng, $distance]);
+        $ids = [];
+        $ids[] = 0;
+        if (!empty($re)) {
+            foreach ($re as $user) {
+                $ids[] = $user->u_id;
+            }
+        }
+        return $ids;
+    }
+
     // eloquent realtions
     //
     public function posts()

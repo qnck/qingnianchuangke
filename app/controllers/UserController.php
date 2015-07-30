@@ -250,30 +250,44 @@ class UserController extends \BaseController
         $token = Input::get('token', '');
         $keyWord = Input::get('key', '');
         $school = Input::get('school', 0);
-        $range = Input::get('range', '');
-        if (empty($keyWord)) {
-            return Response::json(Tools::reFalse(2001, '搜索用户失败:请传入关键字'));
-        }
+        $range = Input::get('range', 0);
+        $lat = Input::get('lat', 0);
+        $lng = Input::get('lng', 0);
+        $perPage = Input::get('per_page', 30);
         try {
             User::chkUserByToken($token, $u_id);
-            $query = User::with(['school'])->where('u_id', '<>', $u_id)->where(function ($q) use ($keyWord) {
-                $q->where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_mobile', '=', $keyWord);
-            });
+            $query = User::with(['school'])->where('u_id', '<>', $u_id);
 
-                
+            if ($keyWord) {
+                $query = $query->where(function ($q) use ($keyWord) {
+                    $q->where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_mobile', '=', $keyWord)->orWhere('u_nickname', 'LIKE', '%'.$keyWord.'%');
+                });
+            }
+
             if ($school > 0) {
                 $query = $query->where('u_school_id', '=', $school);
             }
 
             if ($range) {
-                $range = explode(',', $range);
+                if (!$lat || !$lng) {
+                    throw new Exception("请传入有效的经纬度", 1);
+                }
+                $distance = ['0' => 0.0, '1' => 0.5, '2' => 1.0, '3' => 1.5, '4' => 3.0, '5' => 5.0];
+                
+                if (!array_key_exists($range, $distance)) {
+                    throw new Exception("请传入有效的距离档位", 1);
+                }
+                $user_ids = User::filterByDistance($lat, $lng, $distance[$range]);
+                $query = $query->whereIn('u_id', $user_ids);
             }
-            $data = $query->get();
+
+            $data = $query->paginate($perPage);
+            $pagination = ['total_record' => $data->getTotal(), 'total_page' => $data->getLastPage(), 'per_page' => $data->getPerPage(), 'current_page' => $data->getCurrentPage()];
             $list = [];
             foreach ($data as $key => $user) {
                 $list[] = $user->showInList();
             }
-            $re = Tools::reTrue('搜索用户成功', $list);
+            $re = Tools::reTrue('搜索用户成功', $list, $pagination);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '搜索用户失败:'.$e->getMessage());
         }

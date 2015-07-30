@@ -4,9 +4,9 @@
 */
 class Tools
 {
-    public static function reTrue($message, $data = [])
+    public static function reTrue($message, $data = [], $paginate = [])
     {
-        $re = ['result' => 2000, 'data' => $data, 'message' => $message];
+        $re = ['result' => 2000, 'data' => $data, 'message' => $message, 'pagination' => $paginate];
         return $re;
     }
 
