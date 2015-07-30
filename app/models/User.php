@@ -100,7 +100,7 @@ class User extends Eloquent
             $re['head_img'] = $user->u_head_img;
             $school = DicSchool::find($user->u_school_id);
             $re['site'] = $school->t_city;
-            $re['school'] = $school->t_id;
+            $re['school'] = $school->showInList();
             return $re;
         }
     }
