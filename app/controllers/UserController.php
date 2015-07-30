@@ -246,26 +246,36 @@ class UserController extends \BaseController
      */
     public function search()
     {
-        $u_id = Input::get('u_id');
-        $token = Input::get('token');
-        $keyWord = Input::get('key');
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+        $keyWord = Input::get('key', '');
+        $school = Input::get('school', 0);
+        $range = Input::get('range', '');
         if (empty($keyWord)) {
-            return Response::json(['result' => 2001, 'data' => [], 'info' => '请输入搜索关键字']);
+            return Response::json(Tools::reFalse(2001, '搜索用户失败:请传入关键字'));
         }
         try {
             User::chkUserByToken($token, $u_id);
-            $data = User::with(['school'])->where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_id', 'LIKE', '%'.$keyWord.'%')->get();
+            $query = User::with(['school'])->where('u_id', '<>', $u_id)->where(function ($q) use ($keyWord) {
+                $q->where('u_name', 'LIKE', '%'.$keyWord.'%')->orWhere('u_mobile', '=', $keyWord);
+            });
+
+                
+            if ($school > 0) {
+                $query = $query->where('u_school_id', '=', $school);
+            }
+
+            if ($range) {
+                $range = explode(',', $range);
+            }
+            $data = $query->get();
             $list = [];
             foreach ($data as $key => $user) {
                 $list[] = $user->showInList();
             }
-            $re = ['result' => 2000, 'data' => $list, 'info' => '操作成功'];
+            $re = Tools::reTrue('搜索用户成功', $list);
         } catch (Exception $e) {
-            $code = 2001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '搜索用户失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

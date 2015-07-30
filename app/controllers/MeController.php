@@ -784,7 +784,7 @@ class MeController extends \BaseController
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('prod_desc', '');
         $prodCost = Input::get('prod_cost', 0);
-        $prodPrice = Input::get('prod_price', 0);
+        $prodPriceOri = Input::get('prod_price', 0);
         $prodDiscount = Input::get('prod_discount', 0);
         $prodStock = Input::get('prod_stock', 0);
         $publish = Input::get('publish', 1);
@@ -797,11 +797,18 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
 
+            if ($prodDiscount > 0) {
+                $prodPrice = $prodPriceOri * $prodDiscount / 100;
+            } else {
+                $prodPrice = $prodPriceOri;
+            }
+
             $product = new Product();
             $product->b_id = $b_id;
             $product->p_title = $prodName;
             $product->u_id = $u_id;
             $product->p_cost = $prodCost;
+            $product->p_price_origin = $prodPriceOri;
             $product->p_price = $prodPrice;
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
