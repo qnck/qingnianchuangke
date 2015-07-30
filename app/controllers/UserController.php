@@ -272,20 +272,22 @@ class UserController extends \BaseController
                 if (!$lat || !$lng) {
                     throw new Exception("请传入有效的经纬度", 1);
                 }
-                $distance = [0 => 0.0, 1 => 0.5, 2 => 1.0, 3 => 1.5, 4 => 3.0, 5 => 5.0];
-                if (!in_array($range, $distance)) {
+                $distance = ['0' => 0.0, '1' => 0.5, '2' => 1.0, '3' => 1.5, '4' => 3.0, '5' => 5.0];
+                
+                if (!array_key_exists($range, $distance)) {
                     throw new Exception("请传入有效的距离档位", 1);
                 }
                 $user_ids = User::filterByDistance($lat, $lng, $distance[$range]);
                 $query = $query->whereIn('u_id', $user_ids);
             }
 
-            $data = $query->get();
+            $data = $query->paginate($perPage);
+            $pagination = ['total_record' => $data->getTotal(), 'total_page' => $data->getLastPage(), 'per_page' => $data->getPerPage(), 'current_page' => $data->getCurrentPage()];
             $list = [];
             foreach ($data as $key => $user) {
                 $list[] = $user->showInList();
             }
-            $re = Tools::reTrue('搜索用户成功', $list);
+            $re = Tools::reTrue('搜索用户成功', $list, $pagination);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '搜索用户失败:'.$e->getMessage());
         }
