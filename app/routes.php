@@ -90,4 +90,5 @@ Route::get('lbs/nearby/user', 'LocationController@getNearbyUsers');
 Route::get('lbs/nearby/store', 'LocationController@getNearbyStores');
 Route::get('lbs/nearby/act', 'LocationController@getNearbyActivities');
 Route::post('lbs/user/{id}', 'LocationController@updateUser');
+Route::post('lbs/booth/{id}', 'LocationController@updateBooth');
 /* LBS END*/

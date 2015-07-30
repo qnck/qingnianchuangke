@@ -28,6 +28,7 @@ class Product extends Eloquent
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
         $data['imgs'] = explode(',', $this->p_imgs);
+        $data['price_origin'] = $this->p_price_origin;
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
         $data['sort'] = $this->sort;
@@ -107,15 +108,19 @@ class Product extends Eloquent
 
     public static function updateDiscount($discount)
     {
-        $sql = 'UPDATE t_products SET p_discount = CASE p_id';
+        $sql = 'UPDATE t_products SET ';
+        $discountSql = ' p_discount = CASE p_id ';
+        $priceSql = ' p_price = CASE p_id ';
         $ids = [];
         foreach ($discount as $id => $d) {
             if (!is_numeric($id)) {
                 throw new Exception("无效的折扣数据", 1);
             }
-            $sql .= ' WHEN '.$id.' THEN '.$d;
+            $discountSql .= ' WHEN '.$id.' THEN '.$d;
+            $priceSql .= ' WHEN '.$id.' THEN p_price_origin*'.$d.'/100';
             $ids[] = $id;
         }
+        $sql = $sql.$discountSql.' END, '.$priceSql;
         $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
         return DB::statement($sql);
     }
