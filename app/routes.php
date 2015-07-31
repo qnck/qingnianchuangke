@@ -1,7 +1,7 @@
 <?php
 
 // play ground
-// 
+//
 
 Route::get('/', 'HomeController@index');
 

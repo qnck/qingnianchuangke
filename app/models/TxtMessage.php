@@ -8,15 +8,25 @@ class TxtMessage extends Eloquent{
 
     private $ch = '';
     private $api = '';
-    private $sendUrl = 'http://222.76.210.200:9999/sms.aspx';
-    private $apiKey = '028qnck';
-    private $apiPass = 'qnck8888';
-    private $apiId = '436';
+    private $sendUrl = '';
+    private $apiKey = '';
+    private $apiPass = '';
+    private $apiId = '';
     private $apiAuth = [];
 
     const SEND_FAST = 1;
     const SEND_NORMAL = 2;
     const SEND_SLOW = 3;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $config = Config::get('app.txtMsg');
+        $this->sendUrl = $config['url'];
+        $this->apiKey = $config['key'];
+        $this->apiPass = $config['pass'];
+        $this->apiId = $config['id'];
+    }
 
     /**
      * validate base information
