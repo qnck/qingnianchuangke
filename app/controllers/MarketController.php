@@ -6,9 +6,10 @@ class MarketController extends \BaseController
 {
     public function index()
     {
-        $site = Input::get('s_id', 0);
+        $site = Input::get('site', 0);
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
+        $range = Input::get('range', 1);
 
         $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
@@ -23,7 +24,7 @@ class MarketController extends \BaseController
                 'product' => function ($q) {
                     $q->with(['promo', 'quantity']);
                 }]);
-            $query = $query->select('promotion_infos.*');
+            $query = $query->select('promotion_infos.*')->where('promotion_infos.p_range', '=', $range);
             $query = $query->leftJoin('products', function ($q) {
                 $q->on('products.p_id', '=', 'promotion_infos.p_id')
                 ->where('products.p_status', '=', 1);
@@ -63,7 +64,8 @@ class MarketController extends \BaseController
 
     public function convenient()
     {
-
+        $school = Input::get('school', 0);
+        
     }
 
     public function maker()

@@ -240,7 +240,7 @@ class User extends Eloquent
 
     public function showContact()
     {
-        $data = [];
+        $data = null;
         if (isset($this->contact)) {
             $data = $this->contact->showDetail();
         }
@@ -249,7 +249,7 @@ class User extends Eloquent
 
     public function showSchool()
     {
-        $data = [];
+        $data = null;
         if (isset($this->school)) {
             $data = $this->school->showDetail();
         }
@@ -304,7 +304,7 @@ class User extends Eloquent
 
     public function getPosts()
     {
-        $posts = [];
+        $posts = null;
         if (isset($this->posts)) {
             foreach ($this->posts as $key => $post) {
                 $posts[] = $post->showInList();
@@ -315,7 +315,7 @@ class User extends Eloquent
 
     public function getFollowers()
     {
-        $followers = [];
+        $followers = null;
         if (isset($this->followers)) {
             foreach ($this->followers as $key => $follower) {
                 $followers[] = $follower->showInList();
@@ -326,7 +326,7 @@ class User extends Eloquent
 
     public function getFollowings()
     {
-        $followings = [];
+        $followings = null;
         if (isset($this->followings)) {
             foreach ($this->followings as $key => $follower) {
                 $followings[] = $follower->showInList();
