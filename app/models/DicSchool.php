@@ -29,6 +29,11 @@ class DicSchool extends Eloquent
     
     public function user()
     {
-        return $this->belongsTo('user', 'u_school_id', 't_id');
+        return $this->hasMany('User', 'u_school_id', 't_id');
+    }
+
+    public function promo()
+    {
+        return $this->hasMany('PromotionInfo', 's_id', 't_id');
     }
 }

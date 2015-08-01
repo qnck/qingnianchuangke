@@ -72,8 +72,15 @@ class Product extends Eloquent
 
     public function addProduct()
     {
+        // get max sort
+        $sort = Product::where('u_id', '=', $this->u_id)->max('sort');
+        if (empty($sort)) {
+            $sort = 0;
+        }
+        $sort += 1;
         $now = new DateTime;
         $this->baseValidate();
+        $this->sort = $sort;
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->p_active_at = $now->format('Y-m-d H:i:s');
         $this->save();

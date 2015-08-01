@@ -213,7 +213,7 @@ class User extends Eloquent
     public static function chkUserByToken($token, $id = 0)
     {
         if (empty($token)) {
-            throw new Exception("请传入token", 1);
+            throw new Exception("请传入token", 3002);
         }
         $query = User::where('u_token', '=', $token)->where('u_status', '=', 1);
         if ($id > 0) {

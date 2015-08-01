@@ -67,6 +67,12 @@ Route::delete('post/reply/{id}', 'PostController@disableReply');
 Route::resource('trade', 'TradeController');
 /* TRADE END*/
 
+/* MAKER START*/
+Route::get('market/hot', 'MarketController@index');
+Route::get('market/convenient', 'MarketController@convenient');
+Route::get('market/maker', 'MarketController@maker');
+/* MAKER END*/
+
 /* ACTIVITIES START*/
 Route::get('activity/{id}/follow', 'ActivitiesController@follow');
 Route::post('activity/{id}/sign', 'ActivitiesController@sign');
