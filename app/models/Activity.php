@@ -86,13 +86,13 @@ class Activity extends Eloquent
 
     public function showInList()
     {
-        $signedUsers = [];
+        $signedUsers = null;
         if (isset($this->signedUsers)) {
             foreach ($this->signedUsers as $key => $signed) {
                 $signedUsers[] = $signed->showInList();
             }
         }
-        $replys = [];
+        $replys = null;
         if (isset($this->replys)) {
             foreach ($this->replys as $key => $reply) {
                 $replys[] = $reply->showInList();

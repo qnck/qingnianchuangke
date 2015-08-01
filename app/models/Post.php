@@ -98,23 +98,23 @@ class Post extends Eloquent
      */
     public function showInList()
     {
-        $replys = [];
+        $replys = null;
         if (isset($this->replys)) {
             foreach ($this->replys as $reply) {
                 $replys[] = $reply->showInList();
             }
         }
-        $priases = [];
+        $priases = null;
         if (isset($this->praises)) {
             foreach ($this->praises as $praise) {
                 $priases[] = $praise->showInList();
             }
         }
-        $imglist = [];
+        $imglist = null;
         if (isset($this->p_content)) {
             $imglist = explode(',', $this->p_content);
         }
-        $user = [];
+        $user = null;
         if (isset($this->user)) {
             $user = $this->user->showInList();
         }
