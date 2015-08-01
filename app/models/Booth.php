@@ -28,6 +28,7 @@ class Booth extends Eloquent
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
+        $data['desc'] = $this->b_desc;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         return $data;
@@ -38,6 +39,7 @@ class Booth extends Eloquent
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
+        $data['desc'] = $this->b_desc;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;

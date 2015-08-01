@@ -50,19 +50,19 @@ class Product extends Eloquent
 
     public function showDetail()
     {
-        $data = [];
+        $data = null;
         $data['prod_name'] = $this->p_title;
         $data['prod_desc'] = $this->p_desc;
         $data['prod_cost'] = $this->p_cost;
         $data['prod_price'] = $this->p_price;
         $data['prod_discount'] = $this->p_discount;
         $data['imgs'] = explode(',', $this->p_imgs);
-        $quantity = [];
+        $quantity = null;
         if (isset($this->quantity)) {
             $quantity = $this->quantity->showInList();
         }
         $data['quantity'] = $quantity;
-        $promo = [];
+        $promo = null;
         if (!empty($this->promo)) {
             $promo = $this->promo->showInList();
         }

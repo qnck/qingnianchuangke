@@ -26,7 +26,7 @@ class Img
         if (!$re['result']) {
             throw new Exception("保存图片失败", 2);
         } else {
-            $imgs = [];
+            $imgs = null;
             if (is_array($re['data']) && !empty($re['data'])) {
                 foreach ($re['data'] as $key => $value) {
                     $imgs[$key] = $this->imghost.$this->imgpath.'/'.$this->category.'/'.$newId.'/'.$value;
@@ -42,7 +42,7 @@ class Img
 
         if ($string) {
             $o = explode(',', $string);
-            $oldImgs = [];
+            $oldImgs = null;
             foreach ($o as $value) {
                 $key = $this->getKey($value);
                 $oldImgs[$key] = $value;
@@ -73,7 +73,7 @@ class Img
         if (!$re['result']) {
             return false;
         }
-        $imgs = [];
+        $imgs = null;
         if (is_array($re['data']) && !empty($re['data'])) {
             foreach ($re['data'] as $key => $value) {
                 $imgs[] = $this->imghost.$this->imgpath.$value;
