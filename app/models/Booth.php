@@ -48,6 +48,12 @@ class Booth extends Eloquent
         $data['lng'] = $this->longitude;
         $data['lat'] = $this->latitude;
 
+        $user = null;
+        if (!empty($this->user)) {
+            $user = $this->user->showInList();
+        }
+        $data['user'] = $user;
+
         return $data;
     }
 
@@ -76,12 +82,12 @@ class Booth extends Eloquent
     
     public function user()
     {
-        return $this->bleongsTo('User', 'u_id', 'u_id');
+        return $this->belongsTo('User', 'u_id', 'u_id');
     }
 
     public function products()
     {
-        return $this->hasMany('Products', 'b_id', 'b_id');
+        return $this->hasMany('Product', 'b_id', 'b_id');
     }
 
     public function promo()

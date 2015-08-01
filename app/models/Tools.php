@@ -4,9 +4,13 @@
 */
 class Tools
 {
-    public static function reTrue($message, $data = [], $paginate = [])
+    public static function reTrue($message, $data = null, $list = null)
     {
-        $re = ['result' => 2000, 'data' => $data, 'message' => $message, 'pagination' => $paginate];
+        $pagination = null;
+        if (!empty($list)) {
+            $pagination = ['per_page' => $list->getPerPage(), 'page' => $list->getCurrentPage(), 'total_record' => $list->getTotal(), 'total_page' => $list->getLastPage()];
+        }
+        $re = ['result' => 2000, 'data' => $data, 'message' => $message, 'pagination' => $pagination];
         return $re;
     }
 
