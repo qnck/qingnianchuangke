@@ -208,7 +208,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function newBooth()
+    public function postBooth()
     {
         // base infos
         $token = Input::get('token', '');

@@ -26,7 +26,7 @@ Route::get('user/me/profile/card', 'MeController@getCard');
 /* ME PROFILE END*/
 
 /* ME BOOTH START*/
-Route::post('user/me/booth', 'MeController@newBooth');
+Route::post('user/me/booth', 'MeController@postBooth');
 Route::get('user/me/booth', 'MeController@boothList');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::put('user/me/booth/{id}/desc', 'MeController@boothUpateDesc');

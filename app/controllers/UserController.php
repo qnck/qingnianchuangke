@@ -282,12 +282,11 @@ class UserController extends \BaseController
             }
 
             $data = $query->paginate($perPage);
-            $pagination = ['total_record' => $data->getTotal(), 'total_page' => $data->getLastPage(), 'per_page' => $data->getPerPage(), 'current_page' => $data->getCurrentPage()];
             $list = [];
             foreach ($data as $key => $user) {
                 $list[] = $user->showInList();
             }
-            $re = Tools::reTrue('搜索用户成功', $list, $pagination);
+            $re = Tools::reTrue('搜索用户成功', $list, $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '搜索用户失败:'.$e->getMessage());
         }
