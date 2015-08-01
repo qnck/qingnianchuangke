@@ -31,11 +31,11 @@ class PostsPraise extends Eloquent
 
     public function showInList()
     {
-        $user = [];
+        $user = null;
         if (isset($this->user)) {
             $user = $this->user->showInList();
         }
-        $post = [];
+        $post = null;
         if (isset($this->post)) {
             $post = $this->post->showInList();
         }

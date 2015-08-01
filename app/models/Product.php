@@ -23,7 +23,7 @@ class Product extends Eloquent
 
     public function showInList()
     {
-        $data = [];
+        $data = null;
         $data['id'] = $this->p_id;
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
@@ -33,13 +33,13 @@ class Product extends Eloquent
         $data['discount'] = $this->p_discount;
         $data['sort'] = $this->sort;
 
-        $quantity = [];
+        $quantity = null;
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
         }
         $data['quantity'] = $quantity;
 
-        $promo = [];
+        $promo = null;
         if (!empty($this->promo)) {
             $promo = $this->promo->showInList();
         }

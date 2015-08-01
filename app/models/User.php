@@ -170,7 +170,7 @@ class User extends Eloquent
         $data['head_img'] = $this->u_head_img;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
-        $school = [];
+        $school = null;
         if (isset($this->school)) {
             $school = $this->school->showInList();
         }

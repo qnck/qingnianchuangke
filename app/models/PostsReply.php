@@ -56,16 +56,16 @@ class PostsReply extends Eloquent
      */
     public function showInList()
     {
-        $data = [];
-        $user = [];
+        $data = null;
+        $user = null;
         if (isset($this->user)) {
             $user = $this->user->showInList();
         }
-        $toUser = [];
+        $toUser = null;
         if (isset($this->toUser)) {
             $toUser = $this->toUser->showInList();
         }
-        $post = [];
+        $post = null;
         if (isset($this->post)) {
             $post = $this->post->showInList();
         }

@@ -59,15 +59,11 @@ class ActivitiesSignUser extends Eloquent
 
     public function showInList()
     {
-        $user = [];
+        $user = null;
         if (isset($this->user->u_id)) {
             $user = $this->user->showInList();
         }
-        if ($this->sign_data_path) {
-            $imgs = explode(',', $this->sign_data_path);
-        } else {
-            $imgs = [];
-        }
+        $imgs = explode(',', $this->sign_data_path);
         return ['id' => $this->r_id, 'user' => $user, 'sign_time' => $this->created_at->format('Y-m-d H:i:s'), 'imgs' => $imgs];
     }
 

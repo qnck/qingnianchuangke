@@ -43,22 +43,22 @@ class PromotionInfo extends Eloquent
 
     public function showInListWithProduct()
     {
-        $data = [];
-        $data['product'] = [];
+        $data = null;
+        $data['product'] = null;
         if (!empty($this->product)) {
             $data['product'] = $this->product->showInList();
         }
-        $data['booth'] = [];
+        $data['booth'] = null;
         if (!empty($this->booth)) {
             $data['booth'] = $this->booth->showDetail();
         }
-        $data['school'] = [];
+        $data['school'] = null;
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
         }
-        $data['praises'] = [];
+        $data['praises'] = null;
         if (!empty($this->praises)) {
-            $tmp = [];
+            $tmp = null;
             foreach ($this->praises as $key => $praise) {
                 $tmp[] = $praise->showInList();
             }
