@@ -37,6 +37,56 @@ class PromotionInfo extends Eloquent
         $data = [];
         $data['content'] = $this->p_content;
         $data['praise_count'] = $this->p_praise_count;
+        $data['reply_count'] = $this->p_reply_count;
         return $data;
+    }
+
+    public function showInListWithProduct()
+    {
+        $data = [];
+        $data['product'] = [];
+        if (!empty($this->product)) {
+            $data['product'] = $this->product->showInList();
+        }
+        $data['booth'] = [];
+        if (!empty($this->booth)) {
+            $data['booth'] = $this->booth->showDetail();
+        }
+        $data['school'] = [];
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
+        }
+        $data['praises'] = [];
+        if (!empty($this->praises)) {
+            $tmp = [];
+            foreach ($this->praises as $key => $praise) {
+                $tmp[] = $praise->showInList();
+            }
+            $data['praises'] = $tmp;
+        }
+        $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
+        return $data;
+    }
+
+    // laravel relation
+    
+    public function product()
+    {
+        return $this->belongsTo('Product', 'p_id', 'p_id');
+    }
+
+    public function booth()
+    {
+        return $this->belongsTo('Booth', 'b_id', 'b_id');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo('DicSchool', 's_id', 't_id');
+    }
+
+    public function praises()
+    {
+        return $this->hasMany('PromotionPraise', 'prom_id', 'p_id');
     }
 }

@@ -758,7 +758,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->paginate($per_page);
+            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->orderBy('sort', 'DESC')->paginate($per_page);
             $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
             $data = [];
             foreach ($products as $key => $product) {
@@ -780,7 +780,7 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         $b_id = Input::get('b_id', '');
-
+        
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('prod_desc', '');
         $prodCost = Input::get('prod_cost', 0);
@@ -812,7 +812,6 @@ class MeController extends \BaseController
             $product->p_price = $prodPrice;
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
-            $product->sort = 1;
             $product->p_status = $publish == 1 ? 1 : 2;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
@@ -862,7 +861,7 @@ class MeController extends \BaseController
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('prod_desc', '');
         $prodCost = Input::get('prod_cost', 0);
-        $prodPrice = Input::get('prod_price', 0);
+        $prodPriceOri = Input::get('prod_price', 0);
         $prodDiscount = Input::get('prod_discount', 0);
         $prodStock = Input::get('prod_stock', 0);
         $publish = Input::get('publish', 1);
@@ -880,8 +879,16 @@ class MeController extends \BaseController
             if (!isset($product->p_id) || $product->u_id != $u_id) {
                 throw new Exception("没有找到请求的产品", 1);
             }
+
+            if ($prodDiscount > 0) {
+                $prodPrice = $prodPriceOri * $prodDiscount / 100;
+            } else {
+                $prodPrice = $prodPriceOri;
+            }
+
             $product->p_title = $prodName;
             $product->p_cost = $prodCost;
+            $product->p_price_origin = $prodPriceOri;
             $product->p_price = $prodPrice;
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;

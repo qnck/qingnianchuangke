@@ -30,7 +30,6 @@ class Booth extends Eloquent
         $data['title'] = $this->b_title;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
-
         return $data;
     }
 
@@ -80,6 +79,11 @@ class Booth extends Eloquent
 
     public function products()
     {
-        return $this->hasMany('Products');
+        return $this->hasMany('Products', 'b_id', 'b_id');
+    }
+
+    public function promo()
+    {
+        return $this->hasMany('PromotionInfo', 'b_id', 'b_id');
     }
 }
