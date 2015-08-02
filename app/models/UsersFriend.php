@@ -78,7 +78,7 @@ class UsersFriend extends Eloquent
         }
         $userFriend = UsersFriend::where('u_id_1', '=', $u_id_1)->where('u_id_2', '=', $u_id_2)->first();
         if (empty($userFriend->t_id)) {
-            throw new Exception("请求的好友不存在", 30011);
+            return UsersFriend::$RELATION_NONE;
         }
         return $userFriend;
     }

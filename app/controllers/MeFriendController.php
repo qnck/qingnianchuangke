@@ -112,30 +112,28 @@ class MeFriendController extends \BaseController {
         $token = Input::get('token', '');
         $friend = Input::get('friend', 0);
 
-        $data = ['status' => UsersFriend::$RELATION_NONE];
-        $re = ['result' => 2000, 'data' => $data, 'info' => '好友关系检测成功'];
         try {
+            $data = ['status' => UsersFriend::$RELATION_NONE];
             $user = User::chkUserByToken($token, $u_id);
             $friend = User::find($friend);
             if (empty($friend->u_id)) {
                 throw new Exception("你查找的用户不存在", 3001);
             }
-            $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
             $friendInfo = $friend->showInList();
-            if ($userFriend->t_status == 1) {
-                $re['data']['status'] = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+            $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+                
             } else {
-                $re['data']['status'] = UsersFriend::$RELATION_CONFIRMED;
+                if ($userFriend->t_status == 1) {
+                    $data['status'] = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+                } else {
+                    $data['status'] = UsersFriend::$RELATION_CONFIRMED;
+                }                
             }
-            $re['data'] = array_merge($re['data'], $friendInfo);
+            $data = array_merge($data, $friendInfo);
+            $re = Tools::reTrue('好友关系检测成功', $data);
         } catch (Exception $e) {
-            $code = 3001;
-            if ($e->getCode() != 30011) {
-                if ($e->getCode() > 2000) {
-                    $code = $e->getCode();
-                }
-                $re = ['result' => $code, 'data' => [], 'info' => '好友关系检测失败:'.$e->getMessage()];
-            }
+            $re = Tools::reFalse($e->getCode(), '好友关系检测失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -168,20 +166,20 @@ class MeFriendController extends \BaseController {
         try {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
-            if ($userFriend->t_status == 2) {
-                throw new Exception("你们已经是好友了", 3001);
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+                throw new Exception("请先邀请好友", 3001);                
+            } else {
+                if ($userFriend->t_status == 2) {
+                    throw new Exception("你们已经是好友了", 3001);
+                }
+                if ($userFriend->t_inviter == $u_id) {
+                    throw new Exception("您不能自己确认好友邀请", 3001);
+                }
+                $userFriend->confirm();
             }
-            if ($userFriend->t_inviter == $u_id) {
-                throw new Exception("您不能自己确认好友邀请", 3001);
-            }
-            $userFriend->confirm();
-            $re = ['result' => 2000, 'data' => [], 'info' => '确认好友成功'];
+            $re = Tools::reTrue('确认好友成功');
         } catch (Exception $e) {
-            $code = 3001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '确认好友失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '确认好友失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -202,14 +200,14 @@ class MeFriendController extends \BaseController {
         try {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
-            $userFriend->remove();
-            $re = ['result' => 2000, 'data' => [], 'info' => '删除好友成功'];
-        } catch (Exception $e) {
-            $code = 3001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+
+            } else {
+                $userFriend->remove();
             }
-            $re = ['result' => $code, 'data' => [], 'info' => '删除好友失败:'.$e->getMessage()];
+            $re = Tools::reTrue('删除好友成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除好友失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -219,21 +217,17 @@ class MeFriendController extends \BaseController {
         $u_id = Input::get('u_id', 0);
         $token = Input::get('token', '');
         $friend = Input::get('friend', 0);
-        $re = ['result' => 2000, 'data' => [], 'info' => '删除好友邀请成功'];
         try {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
-            if ($userFriend->t_status == 1) {
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+
+            } elseif ($userFriend->t_status == 1) {
                 $userFriend->remove();
             }
+            $re = Tools::reTrue('删除好友邀请成功');
         } catch (Exception $e) {
-            $code = 3001;
-            if ($e->getCode() != 30011) {
-                if ($e->getCode() > 2000) {
-                    $code = $e->getCode();
-                }
-                $re = ['result' => $code, 'data' => [], 'info' => '删除好友邀请失败:'.$e->getMessage()];
-            }
+            $re = Tools::reFalse($e->getCode(), '删除好友邀请失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

@@ -27,7 +27,7 @@ Route::get('user/me/profile/card', 'MeController@getCard');
 
 /* ME BOOTH START*/
 Route::post('user/me/booth', 'MeController@postBooth');
-Route::get('user/me/booth', 'MeController@boothList');
+Route::get('user/me/booth', 'MeController@listBooth');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::put('user/me/booth/{id}/desc', 'MeController@boothUpateDesc');
 Route::post('user/me/product', 'MeController@postProduct');
@@ -71,6 +71,10 @@ Route::resource('trade', 'TradeController');
 Route::get('market/hot', 'MarketController@index');
 Route::get('market/convenient', 'MarketController@convenient');
 Route::get('market/maker', 'MarketController@maker');
+Route::get('market/booth', 'MarketController@listBooth');
+Route::get('market/booth/{id}', 'MarketController@getBooth');
+Route::get('market/product', 'MarketController@listProduct');
+Route::get('market/product/{id}', 'MarketController@getProduct');
 /* MAKER END*/
 
 /* ACTIVITIES START*/

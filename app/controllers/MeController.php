@@ -313,7 +313,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function boothList()
+    public function listBooth()
     {
         // echo 123;exit;
         $u_id = Input::get('u_id', '');
