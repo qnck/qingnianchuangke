@@ -147,4 +147,53 @@ class MarketController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listBooth()
+    {
+        $u_id = Input::get('owner', 0);
+
+        try {
+            $data = Booth::where('u_id', '=', $u_id)->where('b_status', '=', 1)->get();
+            $list = [];
+            foreach ($data as $key => $booth) {
+                $tmp = $booth->showDetail();
+                $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
+                $tmp['prodct_count'] = $products_count;
+                $list[] = $tmp;
+            }
+            $re = Tools::reTrue('获取我的所有店铺成功', $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取我的所有店铺失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function getBooth($id)
+    {
+        try {
+            $booth = Booth::find($id);
+            if (empty($booth->b_id) || $booth->u_id != $u_id) {
+                throw new Exception("无法获取到请求的店铺", 7001);
+            }
+            if ($booth->b_status != 1) {
+                throw new Exception("店铺当前不可用", 7001);                
+            }
+            $boothInfo = $booth->showDetail();
+            $data = ['booth' => $boothInfo];
+            $re = Tools::reTrue('获取我的店铺成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取我的店铺失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listProduct()
+    {
+
+    }
+
+    public function getProduct()
+    {
+
+    }
 }
