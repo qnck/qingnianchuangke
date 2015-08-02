@@ -527,6 +527,7 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $contact = TmpUsersContactPeople::find($u_id);
+            $contact->load('school');
             $data = [];
             if (!isset($contact->u_id)) {
                 $data['th_name'] = '';
@@ -549,8 +550,8 @@ class MeController extends \BaseController
                 $data['fr_name_2'] = $contact->u_frend_name2;
                 $data['fr_phone_2'] = $contact->u_frend_telephone2;
                 $data['stu_num'] = $contact->u_student_number;
-                $data['stu_num'] = explode(',', $contact->u_student_img);
-                $data['school'] = $contact->u_school_id;
+                $data['stu_img'] = explode(',', $contact->u_student_img);
+                $data['school'] = $contact->school->showInList();
                 $data['profession'] = $contact->u_prof;
                 $data['degree'] = $contact->u_degree;
                 $data['entry_year'] = $contact->u_entry_year;
