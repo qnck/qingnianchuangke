@@ -189,7 +189,11 @@ class MarketController extends \BaseController
 
     public function listProduct()
     {
-
+        $b_id = Input::get('booth', 0);
+        $key = Input::get('key', '');
+        $site = Input::get('site', 0);
+        $school = Input::get('school', 0);
+        
     }
 
     public function getProduct()
