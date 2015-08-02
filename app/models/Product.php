@@ -54,6 +54,7 @@ class Product extends Eloquent
         $data['prod_name'] = $this->p_title;
         $data['prod_desc'] = $this->p_desc;
         $data['prod_cost'] = $this->p_cost;
+        $data['prod_price_origin'] = $this->p_price_origin;
         $data['prod_price'] = $this->p_price;
         $data['prod_discount'] = $this->p_discount;
         $data['imgs'] = explode(',', $this->p_imgs);
@@ -121,10 +122,14 @@ class Product extends Eloquent
         $ids = [];
         foreach ($discount as $id => $d) {
             if (!is_numeric($id)) {
-                throw new Exception("无效的折扣数据", 1);
+                throw new Exception("无效的折扣数据", 7001);
             }
-            $discountSql .= ' WHEN '.$id.' THEN '.$d;
-            $priceSql .= ' WHEN '.$id.' THEN p_price_origin*'.$d.'/100';
+            if (!strpos($d, '@')) {
+                throw new Exception("无效的折扣/百分比键值对", 7001);
+            }
+            $tmp = explode('@', $d);
+            $discountSql .= ' WHEN '.$id.' THEN '.$tmp[0];
+            $priceSql .= ' WHEN '.$id.' THEN '.$tmp[1];
             $ids[] = $id;
         }
         $sql = $sql.$discountSql.' END, '.$priceSql;

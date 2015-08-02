@@ -736,6 +736,9 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $product = Product::find($id);
+            if ($product->p_status == 2) {
+                throw new Exception("该商品已下架", 7002);
+            }
             $product->load('quantity', 'promo');
             $data = $product->showDetail();
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取商品成功'];
@@ -758,7 +761,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->orderBy('sort', 'DESC')->paginate($per_page);
+            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->where('p_status', '=', 1)->orderBy('sort', 'DESC')->paginate($per_page);
             $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
             $data = [];
             foreach ($products as $key => $product) {
