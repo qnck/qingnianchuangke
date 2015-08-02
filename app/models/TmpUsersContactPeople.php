@@ -72,4 +72,9 @@ class TmpUsersContactPeople extends Eloquent
     {
         return $this->belongsTo('User', 'u_id', 'u_id');
     }
+
+    public function school()
+    {
+        return $this->hasOne('DicSchool', 't_id', 'u_school_id');
+    }
 }

@@ -191,9 +191,31 @@ class MarketController extends \BaseController
     {
         $b_id = Input::get('booth', 0);
         $key = Input::get('key', '');
-        $site = Input::get('site', 0);
-        $school = Input::get('school', 0);
-        
+
+        $page = Input::get('page', 0);
+        $perPage = Input::get('per_page', 30);
+
+        try {
+            if (!$b_id) {
+                throw new Exception("请传入店铺ID", 7001);
+            }
+            $query = Product::with(['promo', 'stock'])->where('b_id', '=', $b_id);
+            if ($key) {
+                $query = $query->where(function ($q) use ($key) {
+                    $q->where('p_title', 'LIKE', '%'.$key.'%')
+                    ->orWhere('p_desc', 'LIKE', '%'.$key.'%');
+                });
+            }
+            $list = $query->paginate($perPage);
+            $data = [];
+            foreach ($list as $key => $product) {
+                $data[] = $product->showInList();
+            }
+            $re = Tools::reTrue('获取产品列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取产品列表:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 
     public function getProduct()
