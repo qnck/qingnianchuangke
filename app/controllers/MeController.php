@@ -294,6 +294,7 @@ class MeController extends \BaseController
                     $repayment->f_id = $f_id;
                     $repayment->f_re_money = $amount;
                     $repayment->f_schema = $schema;
+                    $repayment->f_percentage = $percentage;
                     $repayment->apply();
                 }
             }
@@ -352,9 +353,15 @@ class MeController extends \BaseController
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取到请求的店铺", 1);
             }
+            $booth->load('fund');
+            $fund_info = null;
+            if (!empty($booth->fund)) {
+                $booth->fund->load('loans');
+                $fund_info = $booth->fund->showDetail();
+            }
             $boothInfo = $booth->showDetail();
-            $data = ['booth' => $boothInfo];
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的店铺成功'];
+            $boothInfo['fund_info'] = $fund_info;
+            $re = ['result' => 2000, 'data' => $boothInfo, 'info' => '获取我的店铺成功'];
         } catch (Exception $e) {
             $code = 7001;
             if ($e->getCode() > 2000) {

@@ -21,6 +21,15 @@ class Repayment extends Eloquent
         }
     }
 
+    public function showInList()
+    {
+        $data = [];
+        $data['id'] = $this->t_id;
+        $data['percentage'] = $this->f_percentage;
+        $data['amount'] = $this->f_re_money;
+        return $data;
+    }
+
     public function addRepayment()
     {
         $now = new DateTime();
