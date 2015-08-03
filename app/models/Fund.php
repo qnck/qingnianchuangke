@@ -21,6 +21,23 @@ class Fund extends Eloquent
         }
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['id'] = $this->t_id;
+        $data['profit'] = $this->t_profit_rate;
+        $data['loan'] = $this->t_apply_money;
+        $data['status'] = $this->t_status;
+        $loans = null;
+        if (!empty($this->loans)) {
+            foreach ($this->loans as $key => $loan) {
+                $loans[] = $loan->showInList();
+            }
+        }
+        $data['loans'] = $loans;
+        return $data;
+    }
+
     public function addFund()
     {
         $now = new DateTime();
@@ -42,5 +59,12 @@ class Fund extends Eloquent
         $f_id = $record->t_id;
         $record->delete();
         return $f_id;
+    }
+
+    // laravel relations
+
+    public function loans()
+    {
+        return $this->hasMany('Repayment', 'f_id', 't_id');
     }
 }

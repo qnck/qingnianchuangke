@@ -294,6 +294,7 @@ class MeController extends \BaseController
                     $repayment->f_id = $f_id;
                     $repayment->f_re_money = $amount;
                     $repayment->f_schema = $schema;
+                    $repayment->f_percentage = $percentage;
                     $repayment->apply();
                 }
             }
@@ -352,9 +353,15 @@ class MeController extends \BaseController
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取到请求的店铺", 1);
             }
+            $booth->load('fund');
+            $fund_info = null;
+            if (!empty($booth->fund)) {
+                $booth->fund->load('loans');
+                $fund_info = $booth->fund->showDetail();
+            }
             $boothInfo = $booth->showDetail();
-            $data = ['booth' => $boothInfo];
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的店铺成功'];
+            $boothInfo['fund_info'] = $fund_info;
+            $re = ['result' => 2000, 'data' => $boothInfo, 'info' => '获取我的店铺成功'];
         } catch (Exception $e) {
             $code = 7001;
             if ($e->getCode() > 2000) {
@@ -655,26 +662,23 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            $card->load('bank');
             if (!isset($card->u_id)) {
-                $data['bank'] = '';
+                $data['bank'] = null;
                 $data['card_num'] = '';
                 $data['card_holder'] = '';
                 $data['holder_phone'] = '';
                 $data['holder_ID'] = '';
             } else {
-                $data['bank'] = $card->b_id;
+                $data['bank'] = $card->bank->showInList();
                 $data['card_num'] = $card->b_card_num;
                 $data['card_holder'] = $card->b_holder_name;
                 $data['holder_phone'] = $card->u_frend_telephone1;
                 $data['holder_ID'] = $card->b_holder_identity;
             }
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户银行卡成功'];
+            $re = Tools::reTrue('获取用户银行卡成功', $data);
         } catch (Exception $e) {
-            $code = 3002;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '获取用户银行卡失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '获取用户银行卡失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

@@ -48,6 +48,9 @@ class Booth extends Eloquent
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
         $data['lat'] = $this->latitude;
+        $data['cust_group'] = $this->b_customer_group;
+        $data['promo_strategy'] = $this->b_promo_strategy;
+        $data['fund'] = $this->b_with_fund;
 
         $user = null;
         if (!empty($this->user)) {
@@ -94,5 +97,10 @@ class Booth extends Eloquent
     public function promo()
     {
         return $this->hasMany('PromotionInfo', 'b_id', 'b_id');
+    }
+
+    public function fund()
+    {
+        return $this->hasOne('Fund', 'b_id', 'b_id');
     }
 }
