@@ -43,6 +43,19 @@ class TmpUsersBankCard extends Eloquent
         return $this->addBankCard();
     }
 
+    public static function checkProfile($u_id)
+    {
+        $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+        if (!isset($card->t_id)) {
+            return 0;
+        }
+        if ($card->b_status == 1) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     // laravel relations
 
     public function user()
@@ -59,18 +72,5 @@ class TmpUsersBankCard extends Eloquent
     {
         $record = TmpUsersBankCard::where('u_id', '=', $u_id)->where('b_status', '=', 0)->first();
         $record->delete();
-    }
-
-    public static function checkProfile($u_id)
-    {
-        $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
-        if (!isset($card->t_id)) {
-            return 0;
-        }
-        if ($card->b_status == 1) {
-            return 1;
-        } else {
-            return 0;
-        }
     }
 }

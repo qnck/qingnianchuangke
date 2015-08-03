@@ -176,7 +176,7 @@ class MarketController extends \BaseController
                 throw new Exception("无法获取到请求的店铺", 7001);
             }
             if ($booth->b_status != 1) {
-                throw new Exception("店铺当前不可用", 7001);                
+                throw new Exception("店铺当前不可用", 7001);
             }
             $boothInfo = $booth->showDetail();
             $data = ['booth' => $boothInfo];

@@ -655,26 +655,23 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            $card->load('bank');
             if (!isset($card->u_id)) {
-                $data['bank'] = '';
+                $data['bank'] = null;
                 $data['card_num'] = '';
                 $data['card_holder'] = '';
                 $data['holder_phone'] = '';
                 $data['holder_ID'] = '';
             } else {
-                $data['bank'] = $card->b_id;
+                $data['bank'] = $card->bank->showInList();
                 $data['card_num'] = $card->b_card_num;
                 $data['card_holder'] = $card->b_holder_name;
                 $data['holder_phone'] = $card->u_frend_telephone1;
                 $data['holder_ID'] = $card->b_holder_identity;
             }
-            $re = ['result' => 2000, 'data' => $data, 'info' => '获取用户银行卡成功'];
+            $re = Tools::reTrue('获取用户银行卡成功', $data);
         } catch (Exception $e) {
-            $code = 3002;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '获取用户银行卡失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '获取用户银行卡失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
