@@ -153,7 +153,7 @@ class MarketController extends \BaseController
         $u_id = Input::get('owner', 0);
 
         try {
-            $data = Booth::where('u_id', '=', $u_id)->where('b_status', '=', 1)->get();
+            $data = Booth::with(['user'])->where('u_id', '=', $u_id)->where('b_status', '=', 1)->get();
             $list = [];
             foreach ($data as $key => $booth) {
                 $tmp = $booth->showDetail();
@@ -163,7 +163,7 @@ class MarketController extends \BaseController
             }
             $re = Tools::reTrue('获取我的所有店铺成功', $list);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取我的所有店铺失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取他的所有店铺失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -172,17 +172,18 @@ class MarketController extends \BaseController
     {
         try {
             $booth = Booth::find($id);
-            if (empty($booth->b_id) || $booth->u_id != $u_id) {
+            if (empty($booth->b_id)) {
                 throw new Exception("无法获取到请求的店铺", 7001);
             }
             if ($booth->b_status != 1) {
                 throw new Exception("店铺当前不可用", 7001);
             }
+            $booth->load('user');
             $boothInfo = $booth->showDetail();
             $data = ['booth' => $boothInfo];
-            $re = Tools::reTrue('获取我的店铺成功', $data);
+            $re = Tools::reTrue('获取他的店铺成功', $data);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取我的店铺失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取他的店铺失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -199,7 +200,7 @@ class MarketController extends \BaseController
             if (!$b_id) {
                 throw new Exception("请传入店铺ID", 7001);
             }
-            $query = Product::with(['promo', 'stock'])->where('b_id', '=', $b_id);
+            $query = Product::with(['promo', 'quantity'])->where('b_id', '=', $b_id);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
                     $q->where('p_title', 'LIKE', '%'.$key.'%')
@@ -211,9 +212,9 @@ class MarketController extends \BaseController
             foreach ($list as $key => $product) {
                 $data[] = $product->showInList();
             }
-            $re = Tools::reTrue('获取产品列表成功', $data);
+            $re = Tools::reTrue('获取产品列表成功', $data, $list);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取产品列表:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取产品列表失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
