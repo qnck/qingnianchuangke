@@ -44,7 +44,7 @@ class Img
             $o = explode(',', $string);
             $oldImgs = null;
             foreach ($o as $value) {
-                $key = $this->getKey($value);
+                $key = Img::getKey($value);
                 $oldImgs[$key] = $value;
             }
             foreach ($imgs as $key => $i) {
@@ -98,12 +98,29 @@ class Img
         return json_decode($response, true);
     }
 
-    public function getKey($filename)
+    public static function getKey($filename)
     {
-        if (!$tmp = explode(',', $filename)) {
+        if (!$tmp = explode('.', $filename)) {
             return false;
         }
 
-        return array_pop($tmp);
+        return $tmp[0];
+    }
+
+    public static function toArray($string)
+    {
+        $crud = explode(',', $string);
+        if (empty($crud)) {
+            return [];
+        }
+        $array = [];
+        foreach ($crud as $img) {
+            $key = Img::getKey($img);
+            if (!$key) {
+                continue;
+            }
+            $array[$key] = $img;
+        }
+        return $array;
     }
 }

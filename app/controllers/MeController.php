@@ -372,7 +372,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function boothUpateDesc($id)
+    public function putBoothDesc($id)
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
@@ -382,7 +382,7 @@ class MeController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $booth = Booth::find($id);
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
-                throw new Exception("无法获取到请求的店铺", 1);
+                throw new Exception("无法获取到请求的店铺", 7001);
             }
             $booth->b_desc = $desc;
             $booth->save();
@@ -393,6 +393,37 @@ class MeController extends \BaseController
                 $code = $e->getCode();
             }
             $re = ['result' => $code, 'data' => [], 'info' => '更新店铺描述失败:'.$e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
+    public function putBoothStatus($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $open = Input::get('open', 1);
+        $openFrom = Input::get('open_from', '');
+        $openTo = Input::get('open_to', '');
+        $openOn = Input::get('open_on');
+        $logo = Input::get('logo', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booth = Booth::find($id);
+            if (empty($booth->b_id) || $booth->u_id != $u_id) {
+                throw new Exception("无法获取到请求的店铺", 7001);
+            }
+            $imgs = Img::toArray($booth->b_imgs);
+            $imgs['logo'] = 'logo.'.$logo;
+            $booth->b_imgs = implode(',', $imgs);
+            $booth->b_open = $open;
+            $booth->b_open_from = $openFrom;
+            $booth->b_open_to = $openTo;
+            $booth->b_open_on = $openOn;
+            $booth->save();
+            $re = Tools::reTrue('保存店铺状态成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '保存店铺状态失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

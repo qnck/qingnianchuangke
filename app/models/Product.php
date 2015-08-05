@@ -27,11 +27,12 @@ class Product extends Eloquent
         $data['id'] = $this->p_id;
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
-        $data['imgs'] = explode(',', $this->p_imgs);
+        $data['imgs'] = Img::toArray($this->p_imgs);
         $data['price_origin'] = $this->p_price_origin;
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
         $data['sort'] = $this->sort;
+        $data['reply_count'] = $this->p_reply_count;
 
         $quantity = null;
         if (!empty($this->quantity)) {
@@ -57,17 +58,31 @@ class Product extends Eloquent
         $data['prod_price_origin'] = $this->p_price_origin;
         $data['prod_price'] = $this->p_price;
         $data['prod_discount'] = $this->p_discount;
-        $data['imgs'] = explode(',', $this->p_imgs);
+        $data['imgs'] = Img::toArray($this->p_imgs);
+        $data['reply_count'] = $this->p_reply_count;
+
         $quantity = null;
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
         }
         $data['quantity'] = $quantity;
+
         $promo = null;
         if (!empty($this->promo)) {
             $promo = $this->promo->showDetail();
         }
         $data['promo'] = $promo;
+
+        $replies = null;
+        if (!empty($this->replies)) {
+            $list = [];
+            foreach ($this->replies as $key => $reply) {
+                $list[] = $reply->showInList();
+            }
+            $replies = $list;
+        }
+        $data['replies'] = $replies;
+
         return $data;
     }
 
@@ -82,6 +97,7 @@ class Product extends Eloquent
         $now = new DateTime;
         $this->baseValidate();
         $this->sort = $sort;
+        $this->p_reply_count = 0;
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->p_active_at = $now->format('Y-m-d H:i:s');
         $this->save();
@@ -152,5 +168,10 @@ class Product extends Eloquent
     public function promo()
     {
         return $this->hasOne('PromotionInfo', 'p_id', 'p_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany('ProductReply', 'p_id', 'p_id');
     }
 }

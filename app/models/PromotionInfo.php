@@ -37,7 +37,6 @@ class PromotionInfo extends Eloquent
         $data = [];
         $data['content'] = $this->p_content;
         $data['praise_count'] = $this->p_praise_count;
-        $data['reply_count'] = $this->p_reply_count;
         $data['praises'] = null;
         if (!empty($this->praises)) {
             $tmp = null;
@@ -54,7 +53,6 @@ class PromotionInfo extends Eloquent
         $data = [];
         $data['content'] = $this->p_content;
         $data['praise_count'] = $this->p_praise_count;
-        $data['reply_count'] = $this->p_reply_count;
         return $data;
     }
 
