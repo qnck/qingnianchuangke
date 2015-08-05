@@ -17,7 +17,9 @@ class MarketController extends \BaseController
         try {
             $query = PromotionInfo::with([
                 'school',
-                'booth',
+                'booth' => function ($q) {
+                    $q->with(['user']);
+                },
                 'praises' => function ($q) {
                     $q->take(3);
                 },

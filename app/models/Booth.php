@@ -31,6 +31,10 @@ class Booth extends Eloquent
         $data['desc'] = $this->b_desc;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
+        $data['user'] = null;
+        if (!empty($this->user)) {
+            $data['user'] = $this->user->showInList();
+        }
         return $data;
     }
 
