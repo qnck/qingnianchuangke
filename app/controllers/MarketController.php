@@ -219,8 +219,19 @@ class MarketController extends \BaseController
         return Response::json($re);
     }
 
-    public function getProduct()
+    public function getProduct($id)
     {
-
+        try {
+            $product = Product::find($id);
+            $product->load('quantity', 'promo');
+            if (!empty($product->promo)) {
+                $product->promo->load('praises');
+            }
+            $data = $product->showDetail();
+            $re = Tools::reTrue('获取产品成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 }

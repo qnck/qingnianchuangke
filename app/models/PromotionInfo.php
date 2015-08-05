@@ -32,6 +32,23 @@ class PromotionInfo extends Eloquent
         return $this->p_id;
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['content'] = $this->p_content;
+        $data['praise_count'] = $this->p_praise_count;
+        $data['reply_count'] = $this->p_reply_count;
+        $data['praises'] = null;
+        if (!empty($this->praises)) {
+            $tmp = null;
+            foreach ($this->praises as $key => $praise) {
+                $tmp[] = $praise->showInList();
+            }
+            $data['praises'] = $tmp;
+        }
+        return $data;
+    }
+
     public function showInList()
     {
         $data = [];
