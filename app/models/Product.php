@@ -59,13 +59,13 @@ class Product extends Eloquent
         $data['prod_discount'] = $this->p_discount;
         $data['imgs'] = explode(',', $this->p_imgs);
         $quantity = null;
-        if (isset($this->quantity)) {
+        if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
         }
         $data['quantity'] = $quantity;
         $promo = null;
         if (!empty($this->promo)) {
-            $promo = $this->promo->showInList();
+            $promo = $this->promo->showDetail();
         }
         $data['promo'] = $promo;
         return $data;
