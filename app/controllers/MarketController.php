@@ -224,8 +224,13 @@ class MarketController extends \BaseController
     public function getProduct($id)
     {
         try {
-            $product = Product::find($id);
-            $product->load('quantity', 'promo');
+            $product = Product::with(['quantity',
+                'promo',
+                'replies' => function ($q) {
+                    $q->with(['user', 'children' => function ($qq) {
+                        $qq->where('r_status', '=', 1)->orderBy('created_at', 'DESC');
+                    }])->where('to_r_id', '=', 0)->where('r_status', '=', 1)->where('to_u_id', '=', 0)->orderBy('created_at', 'DESC');
+                }])->find($id);
             if (!empty($product->promo)) {
                 $product->promo->load('praises');
             }
@@ -233,6 +238,90 @@ class MarketController extends \BaseController
             $re = Tools::reTrue('获取产品成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postPromoPraise($id)
+    {
+        $token = Input::get('token');
+        $u_id = Input::get('u_id');
+        $type = Input::get('type');
+        $promo = PromotionInfo::find($id);
+        try {
+            if (empty($promo->p_id)) {
+                throw new Exception("请求的促销信息不存在", 7001);
+            }
+            $user = User::chkUserByToken($token, $u_id);
+            $result = 2000;
+            if ($type == 1) {
+                $promo->p_praise_count += 1;
+                $praise = new PromotionPraise();
+                $praise->prom_id = $id;
+                $praise->u_id = $user->u_id;
+                $praise->u_name = $user->u_nickname;
+                $praise->addPraise();
+                $info = '点赞成功';
+            } elseif ($type == 2) {
+                if ($promo->p_praise_count > 0) {
+                    $promo->p_praise_count -= 1;
+                }
+                $praise = PromotionPraise::where('prom_id', '=', $id)->where('u_id', '=', $user->u_id)->first();
+                if (!empty($praise->t_id)) {
+                    $praise->delete();
+                }
+                $info = '取消赞成功';
+            } else {
+                throw new Exception("请求的操作不存在", 7001);
+            }
+            $promo->save();
+            $re = Tools::reTrue($info);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '点赞失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postProductReply($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $content = Input::get('content', '');
+        $to = Input::get('to', 0);
+        $parent = Input::get('parent', 0);
+
+        try {
+            $product = Product::find($id);
+            $product->p_reply_count += 1;
+
+            $user = User::chkUserByToken($token, $u_id);
+            $reply = new ProductReply();
+            $reply->p_id = $id;
+            $reply->r_content = $content;
+            $reply->u_id = $u_id;
+            $reply->u_name = $user->u_nickname;
+
+            if ($to > 0) {
+                $toUser = User::find($to);
+                if (empty($toUser->u_id)) {
+                    throw new Exception("回复用户不存在", 7001);
+                }
+                $reply->to_u_name = $toUser->u_nickname;
+            }
+            $reply->to_u_id = $to;
+
+            if ($parent > 0) {
+                $parentReply = ProductReply::find($parent);
+                if (empty($parentReply->r_id)) {
+                    throw new Exception("回复对象不存在", 7001);
+                }
+            }
+            $reply->to_r_id = $parent;
+            $reply->addReply();
+            $product->save();
+            $re = Tools::reTrue('回复成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '恢复失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

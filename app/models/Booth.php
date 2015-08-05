@@ -47,7 +47,11 @@ class Booth extends Eloquent
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
-        $data['imgs'] = explode(',', $this->b_imgs);
+        $data['imgs'] = Img::toArray($this->b_imgs);
+        if ($data['imgs']['logo']) {
+            $tmp = explode('.', $data['imgs']['logo']);
+            $data['imgs']['logo'] = array_pop($tmp);
+        }
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
@@ -55,6 +59,10 @@ class Booth extends Eloquent
         $data['cust_group'] = $this->b_customer_group;
         $data['promo_strategy'] = $this->b_promo_strategy;
         $data['fund'] = $this->b_with_fund;
+        $data['open'] = $this->b_open;
+        $data['open_from'] = $this->b_open_from;
+        $data['open_to'] = $this->b_open_to;
+        $data['open_on'] = $this->open_on;
 
         $user = null;
         if (!empty($this->user)) {
