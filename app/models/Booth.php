@@ -48,7 +48,7 @@ class Booth extends Eloquent
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
         $data['imgs'] = Img::toArray($this->b_imgs);
-        if ($data['imgs']['logo']) {
+        if (!empty($data['imgs']['logo'])) {
             $tmp = explode('.', $data['imgs']['logo']);
             $data['imgs']['logo'] = array_pop($tmp);
         }
