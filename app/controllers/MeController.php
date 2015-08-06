@@ -822,6 +822,7 @@ class MeController extends \BaseController
         
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('prod_desc', '');
+        $prodBrief = Input::get('prod_brief', '');
         $prodCost = Input::get('prod_cost', 0);
         $prodPriceOri = Input::get('prod_price', 0);
         $prodDiscount = Input::get('prod_discount', 0);
@@ -851,6 +852,7 @@ class MeController extends \BaseController
             $product->p_price = $prodPrice;
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
+            $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
@@ -898,6 +900,7 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', 0);
 
         $prodName = Input::get('prod_name', '');
+        $prodBrief = Input::get('prod_brief', '');
         $prodDesc = Input::get('prod_desc', '');
         $prodCost = Input::get('prod_cost', 0);
         $prodPriceOri = Input::get('prod_price', 0);
@@ -932,6 +935,7 @@ class MeController extends \BaseController
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
             $product->sort = 1;
+            $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
             $product->saveProduct($prodStock);
 
