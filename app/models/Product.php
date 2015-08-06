@@ -27,7 +27,9 @@ class Product extends Eloquent
         $data['id'] = $this->p_id;
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
+        $data['brief'] = $this->p_brief;
         $data['imgs'] = Img::toArray($this->p_imgs);
+        $data['imgs'] = Img::filterKey('prod_img_', $data['imgs']);
         $data['price_origin'] = $this->p_price_origin;
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
@@ -54,11 +56,13 @@ class Product extends Eloquent
         $data = null;
         $data['prod_name'] = $this->p_title;
         $data['prod_desc'] = $this->p_desc;
+        $data['prod_brief'] = $this->p_brief;
         $data['prod_cost'] = $this->p_cost;
         $data['prod_price_origin'] = $this->p_price_origin;
         $data['prod_price'] = $this->p_price;
         $data['prod_discount'] = $this->p_discount;
         $data['imgs'] = Img::toArray($this->p_imgs);
+        $data['imgs'] = Img::filterKey('prod_img_', $data['imgs']);
         $data['reply_count'] = $this->p_reply_count;
 
         $quantity = null;

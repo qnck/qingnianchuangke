@@ -107,6 +107,17 @@ class Img
         return $tmp[0];
     }
 
+    public static function getFileName($url)
+    {
+        if (strpos($url, '/') === false) {
+            return $url;
+        }
+
+        $tmp = explode('/', $url);
+        $filename = array_pop($tmp);
+        return $filename;
+    }
+
     public static function toArray($string)
     {
         $crud = explode(',', $string);
@@ -115,12 +126,24 @@ class Img
         }
         $array = [];
         foreach ($crud as $img) {
-            $key = Img::getKey($img);
+            $name = Img::getFileName($img);
+            $key = Img::getKey($name);
             if (!$key) {
                 continue;
             }
             $array[$key] = $img;
         }
         return $array;
+    }
+
+    public static function filterKey($needle, $array = [])
+    {
+        $re = [];
+        foreach ($array as $key => $img) {
+            if (strpos($key, $needle) !== false) {
+                $re[] = $img;
+            }
+        }
+        return $re;
     }
 }
