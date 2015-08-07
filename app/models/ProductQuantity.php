@@ -25,8 +25,8 @@ class ProductQuantity extends Eloquent
     {
         $data = [];
         $data['id'] = $this->q_id;
-        $data['sold'] = $this->q_sold;
-        $data['total'] = $this->q_total;
+        $data['sold'] = (int)$this->q_sold + (int)$this->q_cart;
+        $data['total'] = (int)$this->q_total;
 
         return $data;
     }

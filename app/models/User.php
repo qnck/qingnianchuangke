@@ -413,4 +413,9 @@ class User extends Eloquent
     {
         return $this->hasOne('DicSchool', 't_id', 'u_school_id');
     }
+
+    public function carts()
+    {
+        return $this->hasMany('Cart', 'u_id', 'u_id');
+    }
 }

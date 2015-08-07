@@ -356,18 +356,104 @@ class MarketController extends \BaseController
         return Response::json($re);
     }
 
+    public function listCarts()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = Cart::where('u_id', '=', $u_id)->whereIn('c_status', [0,1])->get();
+            $data = [];
+            foreach ($list as $key => $cart) {
+                $data[] = $cart->showInList();
+            }
+            $re = Tools::reTrue('获取购物车列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取购物车列表失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function postCart()
     {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $p_id = Input::get('product');
+        $b_id = Input::get('booth');
+        $quantity = Input::get('quantity');
 
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $cart = Cart::where('p_id', '=', $p_id)->where('u_id', '=', $u_id)->where('c_status', '=', 1)->first();
+            // add new when there is not any cart before
+            if (empty($cart->c_id)) {
+                $cart = new Cart();
+                $cart->b_id = $b_id;
+                $cart->u_id = $u_id;
+                $cart->p_id = $p_id;
+                $cart->c_quantity = $quantity;
+                $cart->addCart();
+            // cumilate quantity
+            } else {
+                $quantityOri = $cart->c_quantity;
+                $cart->c_quantity += $quantity;
+                $cart->updateCart($quantityOri);
+            }
+
+            $re = Tools::reTrue('添加购物车成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), $e->getMessage());
+        }
+        return Response::json($re);
     }
 
     public function putCart($id)
     {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $quantity = Input::get('quantity');
 
+        try {
+            if ($quantity == 0) {
+                throw new Exception("请传入有效的库存", 7001);
+            }
+            $user = User::chkUserByToken($token, $u_id);
+            $cart = Cart::find($id);
+            if (empty($cart->c_id)) {
+                throw new Exception("无法获取到购物车", 7001);
+            }
+            if ($cart->c_status != 1 || $cart->u_id != $u_id) {
+                throw new Exception("该购物车已经失效", 7001);
+            }
+            $cart->c_quantity = $quantity;
+            $cart->updateCart();
+            $re = Tools::reTrue('添加购物车成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '添加购物车失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 
     public function delCart($id)
     {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
 
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $cart = Cart::find($id);
+            if (empty($cart->c_id)) {
+                throw new Exception("无法获取到购物车", 7001);
+            }
+            if ($cart->c_status != 1 || $cart->u_id != $u_id) {
+                throw new Exception("该购物车已经失效", 7001);
+            }
+            $cart->removeCart();
+            $re = Tools::reTrue('删除购物车成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除购物车失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 }
