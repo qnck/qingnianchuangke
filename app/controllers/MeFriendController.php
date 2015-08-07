@@ -31,7 +31,7 @@ class MeFriendController extends \BaseController {
                 return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
             }
             
-            $data = $this->getUserList($u_id, 2);
+            $data = $this->getUserList($u_id, 3);
 
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
         } catch (Exception $e) {
@@ -122,13 +122,12 @@ class MeFriendController extends \BaseController {
             $friendInfo = $friend->showInList();
             $userFriend = UsersFriend::findLinkById($u_id, $friend->u_id);
             if ($userFriend === UsersFriend::$RELATION_NONE) {
-                
             } else {
                 if ($userFriend->t_status == 1) {
                     $data['status'] = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
                 } else {
                     $data['status'] = UsersFriend::$RELATION_CONFIRMED;
-                }                
+                }
             }
             $data = array_merge($data, $friendInfo);
             $re = Tools::reTrue('好友关系检测成功', $data);
@@ -167,7 +166,7 @@ class MeFriendController extends \BaseController {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
             if ($userFriend === UsersFriend::$RELATION_NONE) {
-                throw new Exception("请先邀请好友", 3001);                
+                throw new Exception("请先邀请好友", 3001);
             } else {
                 if ($userFriend->t_status == 2) {
                     throw new Exception("你们已经是好友了", 3001);
@@ -201,7 +200,6 @@ class MeFriendController extends \BaseController {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
             if ($userFriend === UsersFriend::$RELATION_NONE) {
-
             } else {
                 $userFriend->remove();
             }
@@ -221,7 +219,6 @@ class MeFriendController extends \BaseController {
             $user = User::chkUserByToken($token, $u_id);
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
             if ($userFriend === UsersFriend::$RELATION_NONE) {
-
             } elseif ($userFriend->t_status == 1) {
                 $userFriend->remove();
             }
