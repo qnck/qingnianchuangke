@@ -30,7 +30,7 @@ Route::post('user/me/booth', 'MeController@postBooth');
 Route::get('user/me/booth', 'MeController@listBooth');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::put('user/me/booth/{id}/desc', 'MeController@putBoothDesc');
-ROute::put('user/me/booth/{id}/status', 'MeController@putBoothStatus');
+Route::put('user/me/booth/{id}/status', 'MeController@putBoothStatus');
 Route::post('user/me/product', 'MeController@postProduct');
 Route::get('user/me/product', 'MeController@getProducts');
 Route::get('user/me/product/{id}', 'MeController@getProduct');
@@ -74,10 +74,14 @@ Route::get('market/convenient', 'MarketController@convenient');
 Route::get('market/maker', 'MarketController@maker');
 Route::get('market/booth', 'MarketController@listBooth');
 Route::get('market/booth/{id}', 'MarketController@getBooth');
+Route::post('market/booth/{id}/follow', 'MarketController@postBoothFollow');
 Route::get('market/product', 'MarketController@listProduct');
 Route::get('market/product/{id}', 'MarketController@getProduct');
 Route::post('market/product/{id}/reply', 'MarketController@postProductReply');
 Route::post('market/promotion/{id}/praise', 'MarketController@postPromoPraise');
+Route::post('market/cart', 'MarketController@postCart');
+Route::put('market/cart/{id}', 'MarketController@putCart');
+Route::delete('market/cart/{id}', 'MarketController@delCart');
 /* MAKER END*/
 
 /* ACTIVITIES START*/
