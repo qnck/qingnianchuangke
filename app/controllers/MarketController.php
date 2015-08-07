@@ -234,6 +234,9 @@ class MarketController extends \BaseController
             if (!empty($product->promo)) {
                 $product->promo->load('praises');
             }
+            if (empty($product->p_id)) {
+                throw new Exception("无法找到请求的产品", 7001);
+            }
             $data = $product->showDetail();
             $re = Tools::reTrue('获取产品成功', $data);
         } catch (Exception $e) {
@@ -324,5 +327,45 @@ class MarketController extends \BaseController
             $re = Tools::reFalse($e->getCode(), '恢复失败:'.$e->getMessage());
         }
         return Response::json($re);
+    }
+
+    public function postBoothFollow($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 1);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $follow = new BoothFollow();
+            $follow->b_id = $id;
+            $follow->u_id = $u_id;
+            if ($type == 1) {
+                $msg = '关注成功';
+                $follow->follow();
+            } elseif ($type == 2) {
+                $msg = '取消关注成功';
+                $follow->unfollow();
+            }
+            $re = Tools::reTrue($msg);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '关注操作失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postCart()
+    {
+
+    }
+
+    public function putCart($id)
+    {
+
+    }
+
+    public function delCart($id)
+    {
+        
     }
 }
