@@ -79,6 +79,7 @@ Route::get('market/product', 'MarketController@listProduct');
 Route::get('market/product/{id}', 'MarketController@getProduct');
 Route::post('market/product/{id}/reply', 'MarketController@postProductReply');
 Route::post('market/promotion/{id}/praise', 'MarketController@postPromoPraise');
+Route::get('market/cart', 'MarketController@listCarts');
 Route::post('market/cart', 'MarketController@postCart');
 Route::put('market/cart/{id}', 'MarketController@putCart');
 Route::delete('market/cart/{id}', 'MarketController@delCart');

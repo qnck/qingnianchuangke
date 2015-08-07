@@ -36,17 +36,14 @@ class Product extends Eloquent
         $data['sort'] = $this->sort;
         $data['reply_count'] = $this->p_reply_count;
 
-        $quantity = null;
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
+            $data['quantity'] = $quantity;
         }
-        $data['quantity'] = $quantity;
-
-        $promo = null;
         if (!empty($this->promo)) {
             $promo = $this->promo->showInList();
+            $data['promo'] = $promo;
         }
-        $data['promo'] = $promo;
 
         return $data;
     }

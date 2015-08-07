@@ -827,7 +827,7 @@ class MeController extends \BaseController
         $prodBrief = Input::get('prod_brief', '');
         $prodCost = Input::get('prod_cost', 0);
         $prodPriceOri = Input::get('prod_price', 0);
-        $prodDiscount = Input::get('prod_discount', 0);
+        $prodDiscount = Input::get('prod_discount', 100);
         $prodStock = Input::get('prod_stock', 0);
         $publish = Input::get('publish', 1);
 
