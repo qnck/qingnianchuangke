@@ -213,6 +213,7 @@ class MeController extends \BaseController
         // base infos
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', '');
+        // s_id 在 数据里面存为c_id 用来标识所在城市, 而数据库中的 s_id 实际意义为 学校id
         $s_id = Input::get('s_id', '');
 
         // booth type
@@ -250,7 +251,8 @@ class MeController extends \BaseController
             }
 
             $booth = new Booth();
-            $booth->s_id = $s_id;
+            $booth->c_id = $s_id;
+            $booth->s_id = $user->u_school_id;
             $booth->u_id = $u_id;
             $booth->b_title = $boothTitle;
             $booth->b_desc = '';
