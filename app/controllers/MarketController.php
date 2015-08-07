@@ -143,9 +143,9 @@ class MarketController extends \BaseController
                 $detail['prodcts'] = $products;
                 $data[] = $detail;
             }
-            $re = Tools::reTrue('获取便利店成功', $data, $list);
+            $re = Tools::reTrue('获取创的店成功', $data, $list);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取便利店失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取创的店失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -182,6 +182,8 @@ class MarketController extends \BaseController
             }
             $booth->load('user');
             $boothInfo = $booth->showDetail();
+            $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
+            $boothInfo['prodct_count'] = (int)$products_count;
             $data = ['booth' => $boothInfo];
             $re = Tools::reTrue('获取他的店铺成功', $data);
         } catch (Exception $e) {
