@@ -37,6 +37,9 @@ class BoothFollow extends Eloquent
         if (!empty($chk->f_id)) {
             throw new Exception("您已经关注过了", 7001);
         }
+        $booth = Booth::find($this->b_id);
+        $booth->b_fans_count += 1;
+        $booth->save();
         return $this->addFollow();
     }
 
@@ -46,6 +49,12 @@ class BoothFollow extends Eloquent
         if (!empty($chk->f_id)) {
             return $chk->delete();
         }
+        $booth = Booth::find($this->b_id);
+        $booth->b_fans_count -= 1;
+        if ($booth->b_fans_count <= 0) {
+            $booth->b_fans_count = 0;
+        }
+        $booth->save();
         return true;
     }
 
