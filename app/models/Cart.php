@@ -70,6 +70,9 @@ class Cart extends Eloquent
 
     public function loadProduct()
     {
+        if ($this->c_quantity > 0 && $this->_quntityOri == 0) {
+            throw new Exception("产品数量修改不匹配", 7003);
+        }
         if (!$this->p_id || !$this->c_quantity) {
             throw new Exception("购买数量不能为0", 7001);
         }
@@ -121,6 +124,11 @@ class Cart extends Eloquent
             $product->quantity->q_cart = 0;
         }
         $product->quantity->save();
+    }
+
+    public static function bindOrder($order_ids)
+    {
+        
     }
 
     public function checkout()

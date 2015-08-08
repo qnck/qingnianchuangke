@@ -426,8 +426,9 @@ class MarketController extends \BaseController
             if ($cart->c_status != 1 || $cart->u_id != $u_id) {
                 throw new Exception("该购物车已经失效", 7001);
             }
+            $quantityOri = $cart->c_quantity;
             $cart->c_quantity = $quantity;
-            $cart->updateCart();
+            $cart->updateCart($quantityOri);
             $re = Tools::reTrue('添加购物车成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '添加购物车失败:'.$e->getMessage());
@@ -455,5 +456,70 @@ class MarketController extends \BaseController
             $re = Tools::reFalse($e->getCode(), '删除购物车失败:'.$e->getMessage());
         }
         return Response::json($re);
+    }
+
+    public function postOrder()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $amount_origin = Input::get('amount_origin', 0);
+        $amount = Input::get('amount', 0);
+        $shipping_fee = Input::get('shipping_fee', 0);
+        $shipping_name = Input::get('shipping_name', '');
+        $shipping_phone = Input::get('shipping_phone', '');
+        $shipping_address = Input::get('shipping_address', '');
+        $shipping = Input::get('shipping', 1);
+        $delivery_time = Input::get('delivery_time', '');
+        $remark = Input::get('remark', '');
+
+        $carts = Input::get('carts', '');
+
+        try {
+            $carts = explode(',', $carts);
+            if (!is_array($carts) || empty($carts)) {
+                throw new Exception("请传入有效的购物车", 1);
+            }
+            $user = User::chkUserByToken($token, $u_id);
+            $list = Cart::whereIn('c_id', $carts)->get();
+            $groups = [];
+            $total_amount = 0;
+            $total_amount_origin = 0;
+            foreach ($list as $key => $cart) {
+                $cart->updateCart($cart->c_quantity);
+                $groups[$cart->b_id]['carts'][] = $cart;
+                $groups[$cart->b_id]['amount_origin'] += $cart->c_amount_origin;
+                $groups[$cart->b_id]['amount'] += $cart->c_amount;
+                $groups[$cart->b_id]['carts_ids'] = $cart->c_id;
+                $total_amount += $cart->c_amount;
+                $total_amount_origin += $cart->c_amount_origin;
+            }
+
+            if (($total_amount_origin != $amount_origin) || ($total_amount != $amount)) {
+                throw new Exception("支付金额已刷新, 请重新提交订单", 9001);
+            }
+            $order_no = Order::generateOrderNo($u_id);
+            $order_ids = [];
+            foreach ($groups as $key => $group) {
+                $order = new Order();
+                $order->u_id = $u_id;
+                $order->o_amount_origin = $group['amount_origin'];
+                $order->o_amount = $group['amount'];
+                $order->o_shipping_fee = $shipping_fee;
+                $order->o_shipping_name = $shipping_name;
+                $order->o_shipping_phone = $shipping_phone;
+                $order->o_shipping_address = $shipping_address;
+                $order->o_delivery_time = $delivery_time;
+                $order->o_shipping = $shipping;
+                $order->o_remark = $remark;
+                $order->o_number = $order_no;
+                $o_id = $order->addOrder();
+                $order_ids[$o_id] = $group['carts_ids'];
+            }
+            Cart::bindOrder($order_ids);
+
+        } catch (Exception $e) {
+            
+        }
+
     }
 }

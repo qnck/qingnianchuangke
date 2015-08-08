@@ -83,6 +83,7 @@ Route::get('market/cart', 'MarketController@listCarts');
 Route::post('market/cart', 'MarketController@postCart');
 Route::put('market/cart/{id}', 'MarketController@putCart');
 Route::delete('market/cart/{id}', 'MarketController@delCart');
+Route::post('market/order', 'MarketController@postOrder');
 /* MAKER END*/
 
 /* ACTIVITIES START*/
