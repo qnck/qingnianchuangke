@@ -46,9 +46,9 @@ class Cart extends Eloquent
         $now = new DateTime();
         $this->loadProduct();
         $this->baseValidate();
-        $this->c_price = $this->c_price_origin * $this->discount /100;
+        $this->c_price = $this->c_price_origin * $this->discount / 100;
         $this->c_amount_origin = $this->c_price_origin * $this->c_quantity;
-        $this->c_amount = $this->c_amount_origin * $this->c_discount /100;
+        $this->c_amount = $this->c_amount_origin * $this->c_discount / 100;
         $this->c_status = 1;
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->save();
@@ -70,9 +70,6 @@ class Cart extends Eloquent
 
     public function loadProduct()
     {
-        if ($this->c_quantity > 0 && $this->_quntityOri == 0) {
-            throw new Exception("产品数量修改不匹配", 7003);
-        }
         if (!$this->p_id || !$this->c_quantity) {
             throw new Exception("购买数量不能为0", 7001);
         }
@@ -128,7 +125,15 @@ class Cart extends Eloquent
 
     public static function bindOrder($order_ids)
     {
-        
+        if (empty($order_ids)) {
+            throw new Exception("购物车数据无效", 7001);
+        }
+
+        foreach ($order_ids as $o_id => $carts) {
+            Cart::whereIn('c_id', $carts)->update(['o_id' => $o_id, 'c_status' => 2]);
+        }
+
+        return true;
     }
 
     public function checkout()

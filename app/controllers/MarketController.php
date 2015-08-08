@@ -516,10 +516,10 @@ class MarketController extends \BaseController
                 $order_ids[$o_id] = $group['carts_ids'];
             }
             Cart::bindOrder($order_ids);
-
+            $re = Tools::reTrue('提交订单成功');
         } catch (Exception $e) {
-            
+            $re = Tools::reFalse($e->getCode(), $e->getMessage());
         }
-
+        return Response::json($re);
     }
 }
