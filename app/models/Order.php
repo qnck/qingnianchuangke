@@ -47,7 +47,7 @@ class Order extends Eloquent
 
         $part3 = rand(100, 999);
 
-        return $part1.$part2.$part3;
+        return '1'.$part1.$part2.$part3;
     }
 
     // laravel relation

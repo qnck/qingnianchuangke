@@ -46,7 +46,7 @@ class Cart extends Eloquent
         $now = new DateTime();
         $this->loadProduct();
         $this->baseValidate();
-        $this->c_price = $this->c_price_origin * $this->discount / 100;
+        $this->c_price = $this->c_price_origin * $this->c_discount / 100;
         $this->c_amount_origin = $this->c_price_origin * $this->c_quantity;
         $this->c_amount = $this->c_amount_origin * $this->c_discount / 100;
         $this->c_status = 1;
