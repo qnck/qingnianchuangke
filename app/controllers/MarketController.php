@@ -460,6 +460,7 @@ class MarketController extends \BaseController
 
     public function postOrder()
     {
+        $now = new DateTime();
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         $amount_origin = Input::get('amount_origin', 0);
@@ -469,7 +470,7 @@ class MarketController extends \BaseController
         $shipping_phone = Input::get('shipping_phone', '');
         $shipping_address = Input::get('shipping_address', '');
         $shipping = Input::get('shipping', 1);
-        $delivery_time = Input::get('delivery_time', '');
+        $delivery_time = Input::get('delivery_time', $now->format('Y-m-d H:i:s'));
         $remark = Input::get('remark', '');
 
         $carts = Input::get('carts', '');
@@ -485,11 +486,17 @@ class MarketController extends \BaseController
             $total_amount = 0;
             $total_amount_origin = 0;
             foreach ($list as $key => $cart) {
+                if (empty($groups[$cart->b_id])) {
+                    $groups[$cart->b_id]['carts'] = [];
+                    $groups[$cart->b_id]['amount_origin'] = 0;
+                    $groups[$cart->b_id]['amount'] = 0;
+                    $groups[$cart->b_id]['carts_ids'] = '';
+                }
                 $cart->updateCart($cart->c_quantity);
                 $groups[$cart->b_id]['carts'][] = $cart;
                 $groups[$cart->b_id]['amount_origin'] += $cart->c_amount_origin;
                 $groups[$cart->b_id]['amount'] += $cart->c_amount;
-                $groups[$cart->b_id]['carts_ids'] = $cart->c_id;
+                $groups[$cart->b_id]['carts_ids'][] = $cart->c_id;
                 $total_amount += $cart->c_amount;
                 $total_amount_origin += $cart->c_amount_origin;
             }
