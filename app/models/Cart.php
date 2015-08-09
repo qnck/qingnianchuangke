@@ -46,9 +46,6 @@ class Cart extends Eloquent
         $now = new DateTime();
         $this->loadProduct();
         $this->baseValidate();
-        $this->c_price = $this->c_price_origin * $this->c_discount / 100;
-        $this->c_amount_origin = $this->c_price_origin * $this->c_quantity;
-        $this->c_amount = $this->c_amount_origin * $this->c_discount / 100;
         $this->c_status = 1;
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->save();
@@ -94,6 +91,9 @@ class Cart extends Eloquent
         $product->quantity->save();
         $this->c_price_origin = $product->p_price_origin;
         $this->c_discount = $product->p_discount;
+        $this->c_price = $this->c_price_origin * $this->c_discount / 100;
+        $this->c_amount_origin = $this->c_price_origin * $this->c_quantity;
+        $this->c_amount = $this->c_amount_origin * $this->c_discount / 100;
 
         $this->p_name = $product->p_title;
 
