@@ -50,6 +50,11 @@ class Order extends Eloquent
         return '1'.$part1.$part2.$part3;
     }
 
+    public function pay()
+    {
+        
+    }
+
     // laravel relation
     
     public function carts()
