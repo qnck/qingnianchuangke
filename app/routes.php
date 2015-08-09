@@ -25,7 +25,7 @@ Route::get('user/me/profile/contact', 'MeController@getContact');
 Route::get('user/me/profile/card', 'MeController@getCard');
 /* ME PROFILE END*/
 
-/* ME BOOTH START*/
+/* ME MARKET START*/
 Route::post('user/me/booth', 'MeController@postBooth');
 Route::get('user/me/booth', 'MeController@listBooth');
 Route::get('user/me/booth/{id}', 'MeController@booth');
@@ -38,7 +38,10 @@ Route::put('user/me/product/{id}', 'MeController@updateProduct');
 Route::get('user/me/product/{id}/on', 'MeController@productOn');
 Route::post('user/me/product/sort', 'MeController@updateProductSort');
 Route::post('user/me/product/discount', 'MeController@updateProductDiscount');
-/* ME BOOTH END*/
+Route::get('user/me/orders', 'MeController@listOrders');
+Route::post('user/me/order/deliver', 'MeController@deliverOrder');
+Route::post('user/me/order/confirm', 'MeController@confirmOrder');
+/* ME MARKET END*/
 
 /* ME FRIEND START*/
 Route::get('user/me/friend', 'MeFriendController@index');
@@ -83,6 +86,7 @@ Route::get('market/cart', 'MarketController@listCarts');
 Route::post('market/cart', 'MarketController@postCart');
 Route::put('market/cart/{id}', 'MarketController@putCart');
 Route::delete('market/cart/{id}', 'MarketController@delCart');
+Route::get('market/order', 'MarketController@listOrders');
 Route::post('market/order', 'MarketController@postOrder');
 /* MAKER END*/
 

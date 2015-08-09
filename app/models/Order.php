@@ -6,6 +6,10 @@ class Order extends Eloquent
 {
     public $primaryKey = 'o_id';
     public $timestamps = false;
+
+    public static $SHIPPING_STATUS_PREPARE = 1;
+    public static $SHIPPING_STATUS_DELIVERING = 5;
+    public static $SHIPPING_STATUS_FINISHED = 10;
     
     private function baseValidate()
     {
@@ -21,10 +25,39 @@ class Order extends Eloquent
         }
     }
 
+    public function showInList()
+    {
+        $data = [];
+        return $data;
+    }
+
+    public function showDetail()
+    {
+        $data = [];
+        $data['id'] = $this->o_id;
+        $data['amount_origin'] = $this->o_amount_origin;
+        $data['amount'] = $this->o_amount;
+        $data['amount_paied'] = $this->o_amount_paied;
+        $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
+        $data['status'] = $this->o_status;
+        $data['shipping_status'] = $this->o_shipping_status;
+        $data['number'] = $this->o_number;
+
+        if (!empty($this->carts)) {
+            $carts = [];
+            foreach ($this->carts as $key => $cart) {
+                $carts[] = $cart->showInList();
+            }
+            $data['carts'] = $carts;
+        }
+        return $data;
+    }
+
     public function addOrder()
     {
         $now = new DateTime();
         $this->o_status = 1;
+        $this->o_shipping_status = Order::$SHIPPING_STATUS_PREPARE;
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->save();
         return $this->o_id;
@@ -48,6 +81,15 @@ class Order extends Eloquent
         $part3 = rand(100, 999);
 
         return '1'.$part1.$part2.$part3;
+    }
+
+    public static function updateShippingStatus($order_ids, $status)
+    {
+        if (!is_array($order_ids) || empty($order_ids)) {
+            throw new Exception("无效的订单数据", 7001);
+        }
+        $re = Order::whereIn('o_id', $order_ids)->update(['o_shipping_status' => $status]);
+        return $re;
     }
 
     public function pay()
