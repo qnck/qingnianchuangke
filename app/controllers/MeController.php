@@ -1051,4 +1051,83 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listOrders()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $shipping_status = Input::get('shipping', 0);
+        $order_status = Input::get('order', 0);
+        $key_word = Input::get('key', '');
+
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $query = Order::with(['carts'])->leftJoin('carts', function ($j) {
+                $j->on('orders.o_id', '=', 'carts.o_id');
+            });
+            if ($key_word) {
+                $query = $query->where(function ($q) use ($key_word) {
+                    $q->where('carts.p_name', 'LIKE', '%'.$key_word.'%')->orWhere('orders.o_number', 'LIKE', '%'.$key_word.'%');
+                });
+            }
+            if ($shipping_status) {
+                $query = $query->where('orders.o_shipping_status', '=', $shipping_status);
+            }
+            if ($order_status) {
+                $query = $query->where('orders.o_status', '=', $order_status);
+            }
+            $list = $query->groupBy('carts.o_id')->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $order) {
+                $data[] = $order->showDetail();
+            }
+            $re = Tools::reTrue('获取订单成功', $data, $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function deliverOrder()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $orders = Input::get('orders', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $orders = explode(',', $orders);
+            if (empty($orders)) {
+                throw new Exception("无效的订单数据", 7001);
+            }
+            Order::updateShippingStatus($orders, Order::$SHIPPING_STATUS_DELIVERING);
+            $re = Tools::reTrue('发货成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '发货失败:'.$e->getMessage());
+        }
+        return $re;
+    }
+
+    public function confirmOrder()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $orders = Input::get('orders', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $orders = explode(',', $orders);
+            if (empty($orders)) {
+                throw new Exception("无效的订单数据", 7001);
+            }
+            Order::updateShippingStatus($orders, Order::$SHIPPING_STATUS_FINISHED);
+            $re = Tools::reTrue('发货成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '发货失败:'.$e->getMessage());
+        }
+        return $re;
+    }
 }
