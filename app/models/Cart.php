@@ -38,6 +38,10 @@ class Cart extends Eloquent
         if (!empty($this->product)) {
             $data['product'] = $this->product->showInList();
         }
+
+        if (!empty($this->booth)) {
+            $data['booth'] = $this->booth->showInList();
+        }
         return $data;
     }
 
@@ -151,5 +155,10 @@ class Cart extends Eloquent
     public function product()
     {
         return $this->hasOne('product', 'p_id', 'p_id');
+    }
+
+    public function booth()
+    {
+        return $this->hasOne('booth', 'b_id', 'b_id');
     }
 }
