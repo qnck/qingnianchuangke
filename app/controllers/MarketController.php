@@ -363,7 +363,7 @@ class MarketController extends \BaseController
         
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = Cart::where('u_id', '=', $u_id)->whereIn('c_status', [0,1])->get();
+            $list = Cart::with(['product', 'booth'])->where('u_id', '=', $u_id)->whereIn('c_status', [0,1])->get();
             $data = [];
             foreach ($list as $key => $cart) {
                 $data[] = $cart->showInList();
