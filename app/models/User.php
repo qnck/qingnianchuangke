@@ -418,4 +418,9 @@ class User extends Eloquent
     {
         return $this->hasMany('Cart', 'u_id', 'u_id');
     }
+
+    public function promoPraises()
+    {
+        return $this->hasMany('PromotionPraise', 'u_id', 'u_id');
+    }
 }
