@@ -1130,4 +1130,34 @@ class MeController extends \BaseController
         }
         return $re;
     }
+
+    public function listPraisePromo()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = DB::table('promotion_praises')->where('u_id', '=', $u_id)->lists('prom_id');
+            $re = Tools::reTrue('获取我赞的产品成功', $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取我赞的产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listFollowingBooth()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = DB::table('booth_follows')->where('u_id', '=', $u_id)->lists('b_id');
+            $re = Tools::reTrue('获取我收藏的店铺成功', $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取我收藏的店铺失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

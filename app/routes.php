@@ -41,6 +41,8 @@ Route::post('user/me/product/discount', 'MeController@updateProductDiscount');
 Route::get('user/me/orders', 'MeController@listOrders');
 Route::post('user/me/order/deliver', 'MeController@deliverOrder');
 Route::post('user/me/order/confirm', 'MeController@confirmOrder');
+Route::get('user/me/praise/promo', 'MeController@listPraisePromo');
+Route::get('user/me/following/booth', 'MeController@listFollowingBooth');
 /* ME MARKET END*/
 
 /* ME FRIEND START*/
