@@ -2,7 +2,7 @@
 /**
 *
 */
-class DicBank extends Eloquent
+class DicBank extends \Eloquent
 {
     public $primaryKey = 'b_id';
     public $timestamps = false;

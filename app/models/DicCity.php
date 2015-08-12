@@ -2,7 +2,7 @@
 /**
 *
 */
-class DicCity extends Eloquent
+class DicCity extends \Eloquent
 {
     public $primaryKey = 'c_name';
     public $timestamps = false;

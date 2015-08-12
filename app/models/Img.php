@@ -124,6 +124,16 @@ class Img
         if (empty($crud)) {
             return [];
         }
+        $array = Img::attachKey($crud);        
+        return $array;
+    }
+
+    public static function attachKey($crud = [])
+    {
+        if (empty($crud)) {
+            return [];
+        }
+
         $array = [];
         foreach ($crud as $img) {
             $name = Img::getFileName($img);
@@ -133,6 +143,7 @@ class Img
             }
             $array[$key] = $img;
         }
+
         return $array;
     }
 

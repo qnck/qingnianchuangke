@@ -1160,4 +1160,76 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getUserBase()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $img_obj = new Img('user', $u_id);
+            $imgs = $img_obj->getList();
+            $user = User::chkUserByToken($token, $u_id);
+            $data = [];
+            $user_detail = UsersContactPeople::find($u_id);
+            if (empty($user_detail->u_id)) {
+                $entry_year = '';
+            } else {
+                $entry_year = $user_detail->u_entry_year;
+            }
+            $imgs = Img::attachKey($imgs);
+            $data['id'] = $user->u_id;
+            $data['name'] = $user->u_name;
+            $data['hoem_imgs'] = Img::filterKey('home_img_', $imgs);
+            $data['entry_year'] = $entry_year;
+            $data['gender'] = $user->u_sex;
+            $data['biograph'] = $user->u_biograph;
+            $data['school'] = $user->u_school_id;
+            $brith_date = new DateTime($user->u_birthday);
+            $data['birth'] = $brith_date->format('Y-m-d');
+            $date['interests'] = $user->u_interests;
+            $re = Tools::reTrue('获取用户基本信息成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户基本信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function putUserBase()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $name = Input::get('name', '');
+        $birth = Input::get('birth', '');
+        $gender = Input::get('gender', 0);
+        $biograph = Input::get('biograph', '');
+        $entry_year = Input::get('entry_year', '');
+        $interests = Input::get('interests', '');
+
+        $img_token = Input::get('img_token');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $user_detail = UsersContactPeople::find($u_id);
+            if (empty($user_detail->u_id)) {
+                $user_detail = new UsersContactPeople();
+                $user_detail->u_id = $u_id;
+            }
+            $user_detail->u_entry_year = $entry_year;
+            $user_detail->save();
+
+            $birth_date = new DateTime($birth);
+            $user->u_name = $name;
+            $user->u_birthday = $birth_date;
+            $user->u_sex = $gender;
+            $user->u_biograph = $biograph;
+            $user->u_interests = $interests;
+            $user->save();
+            $re = Tools::reTrue('编辑基本信息成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '编辑信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

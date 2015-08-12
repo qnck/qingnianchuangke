@@ -1,9 +1,8 @@
 <?php
-
 /**
 *
 */
-class DicSchool extends Eloquent
+class DicSchool extends \Eloquent
 {
     public $primaryKey = 't_id';
     public $timestamps = false;

@@ -2,6 +2,11 @@
 /**
 *
 */
+namespace Api;
+
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Response;
+
 class DicController extends \BaseController
 {
     public function getSchools()
@@ -11,7 +16,7 @@ class DicController extends \BaseController
         $city = Input::get('city', '');
 
         try {
-            $query = DicSchool::where('t_type', '=', '1');
+            $query = \DicSchool::where('t_type', '=', '1');
             if ($key) {
                 $query = $query->where('t_name', 'LIKE', '%'.$key.'%');
             }
@@ -42,14 +47,14 @@ class DicController extends \BaseController
         $province = Input::get('province', '');
         $ver = Input::get('ver', 0);
 
-        $currentVer = DicCity::VER;
+        $currentVer = \DicCity::VER;
 
         if ($ver >= $currentVer) {
             return Response::json(['result' => 2000, 'data' => [], 'info' => '获取城市成功', 'ver' => $currentVer]);
         }
         
         try {
-            $query = DicCity::where('c_id', '>', 0);
+            $query = \DicCity::where('c_id', '>', 0);
             if ($key) {
                 $query = $query->where('c_name', 'LIKE', '%'.$key.'%');
             }
@@ -75,14 +80,14 @@ class DicController extends \BaseController
         $key = Input::get('key', '');
         $ver = Input::get('ver', 0);
 
-        $currentVer = DicBank::VER;
+        $currentVer = \DicBank::VER;
 
         if ($ver >= $currentVer) {
             return Response::json(['result' => 2000, 'data' => [], 'info' => '获取银行成功', 'ver' => $currentVer]);
         }
         
         try {
-            $query = DicBank::where('b_id', '>', 0);
+            $query = \DicBank::where('b_id', '>', 0);
             if ($key) {
                 $query = $query->where('b_name', 'LIKE', '%'.$key.'%');
             }

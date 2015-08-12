@@ -5,6 +5,8 @@
 
 Route::get('/', 'HomeController@index');
 
+/*********** API ***********/
+
 /* ME START*/
 Route::get('user/me', 'MeController@me');
 Route::get('user/me/posts', 'MeController@myPosts');
@@ -23,6 +25,8 @@ Route::post('user/me/profile/card', 'MeController@postCard');
 Route::get('user/me/profile/detail', 'MeController@getDetail');
 Route::get('user/me/profile/contact', 'MeController@getContact');
 Route::get('user/me/profile/card', 'MeController@getCard');
+Route::put('user/me/profile/base', 'MeController@putUserBase');
+Route::get('user/me/profile/base', 'MeController@getUserBase');
 /* ME PROFILE END*/
 
 /* ME MARKET START*/
@@ -105,9 +109,9 @@ Route::get('verify/code', 'VerificationController@getVCode');
 /* VERIFY END*/
 
 /* DATA DICTIONARY START*/
-Route::get('dic/school', 'DicController@getSchools');
-Route::get('dic/city', 'DicController@getCities');
-Route::get('dic/bank', 'DicController@getBanks');
+Route::get('dic/school', 'Api\DicController@getSchools');
+Route::get('dic/city', 'Api\DicController@getCities');
+Route::get('dic/bank', 'Api\DicController@getBanks');
 /* DATA DICTIONARY END*/
 
 /* LBS START*/
@@ -117,3 +121,9 @@ Route::get('lbs/nearby/act', 'LocationController@getNearbyActivities');
 Route::post('lbs/user/{id}', 'LocationController@updateUser');
 Route::post('lbs/booth/{id}', 'LocationController@updateBooth');
 /* LBS END*/
+
+/*********** BACK ***********/
+Route::get('back/sys/user', 'Admin\SysUserController@listUsers');
+Route::post('back/sys/user', 'Admin\SysUserController@postUser');
+Route::put('back/sys/user/{id}', 'Admin\SysUserController@putUser');
+Route::delete('back/sys/user{id}', 'Admin\SysUserController@delUser');
