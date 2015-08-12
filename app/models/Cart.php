@@ -154,11 +154,11 @@ class Cart extends Eloquent
 
     public function product()
     {
-        return $this->hasOne('product', 'p_id', 'p_id');
+        return $this->hasOne('Product', 'p_id', 'p_id');
     }
 
     public function booth()
     {
-        return $this->hasOne('booth', 'b_id', 'b_id');
+        return $this->hasOne('Booth', 'b_id', 'b_id');
     }
 }
