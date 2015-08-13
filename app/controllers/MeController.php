@@ -1167,24 +1167,32 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', 0);
 
         try {
-            $img_obj = new Img('user', $u_id);
-            $imgs = $img_obj->getList();
-            $user = User::chkUserByToken($token, $u_id);
             $data = [];
-            $user_detail = UsersContactPeople::find($u_id);
-            if (empty($user_detail->u_id)) {
+            $user = User::chkUserByToken($token, $u_id);
+            $user->load('school');
+            $user_contact = UsersContactPeople::find($u_id);
+            if (empty($user_contact->u_id)) {
                 $entry_year = '';
+                $stu_imgs = '';
             } else {
-                $entry_year = $user_detail->u_entry_year;
+                $entry_year = $user_contact->u_entry_year;
+                $stu_imgs = explode(',', $user_contact->u_student_img);
             }
-            $imgs = Img::attachKey($imgs);
+            $user_detail = UsersDetail::find($u_id);
+            if (empty($user_detail->u_id)) {
+                $id_imgs = '';
+            } else {
+                $id_imgs = explode(',', $user_detail->u_identity_img);
+            }
             $data['id'] = $user->u_id;
             $data['name'] = $user->u_name;
-            $data['hoem_imgs'] = Img::filterKey('home_img_', $imgs);
+            $data['home_imgs'] = explode(',', $user->u_home_img);
+            $data['stu_imgs'] = $stu_imgs;
+            $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
             $data['gender'] = $user->u_sex;
             $data['biograph'] = $user->u_biograph;
-            $data['school'] = $user->u_school_id;
+            $data['school'] = $user->school->showInList();
             $brith_date = new DateTime($user->u_birthday);
             $data['birth'] = $brith_date->format('Y-m-d');
             $date['interests'] = $user->u_interests;
@@ -1211,13 +1219,17 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $user_detail = UsersContactPeople::find($u_id);
+            $user_contact = UsersContactPeople::find($u_id);
+            if (empty($user_contact->u_id)) {
+                $user_contact = new UsersContactPeople();
+                $user_contact->u_id = $u_id;
+            }
+            $user_detail = UsersDetail::find($u_id);
             if (empty($user_detail->u_id)) {
-                $user_detail = new UsersContactPeople();
+                $user_detail = new UsersDetail();
                 $user_detail->u_id = $u_id;
             }
-            $user_detail->u_entry_year = $entry_year;
-            $user_detail->save();
+            $user_contact->u_entry_year = $entry_year;
 
             $birth_date = new DateTime($birth);
             $user->u_name = $name;
@@ -1225,6 +1237,18 @@ class MeController extends \BaseController
             $user->u_sex = $gender;
             $user->u_biograph = $biograph;
             $user->u_interests = $interests;
+            if ($img_token) {
+                $imgObj = new Img('user', $img_token);
+                $imgs = $imgObj->getSavedImg($u_id, '', true);
+                $home_imgs = Img::filterKey('home_img_', $imgs);
+                $stu_imgs = Img::filterKey('student_img_', $imgs);
+                $id_imgs = Img::filterKey('identity_img_', $imgs);
+                $user->u_home_img = implode(',', $home_imgs);
+                $user_contact->u_student_img = implode(',', $stu_imgs);
+                $user_detail->u_identity_img = implode(',', $id_imgs);
+            }
+            $user_contact->save();
+            $user_detail->save();
             $user->save();
             $re = Tools::reTrue('编辑基本信息成功');
         } catch (Exception $e) {
