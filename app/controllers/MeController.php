@@ -399,6 +399,34 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function getBoothStatus($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booth = Booth::find($id);
+            if ($booth->u_id != $u_id) {
+                throw new Exception("没有权限操作改店铺", 7001);
+            }
+            $data = [];
+            $data['open'] = $booth->b_open;
+            $data['open_from'] = $booth->b_open_from;
+            $data['open_to'] = $booth->b_open_to;
+            $data['open_on'] = explode(',', $booth->b_open_on);
+            $imgs = Img::toArray($booth->b_imgs);
+            if (empty($imgs['logo'])) {
+                $imgs['logo'] = '';
+            }
+            $data['logo'] = $imgs['logo'];
+            $re = Tools::reTrue('获取店铺状态信息成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取店铺状态信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function putBoothStatus($id)
     {
         $token = Input::get('token', '');
