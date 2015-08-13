@@ -35,6 +35,7 @@ Route::get('user/me/booth', 'MeController@listBooth');
 Route::get('user/me/booth/{id}', 'MeController@booth');
 Route::put('user/me/booth/{id}/desc', 'MeController@putBoothDesc');
 Route::put('user/me/booth/{id}/status', 'MeController@putBoothStatus');
+Route::get('user/me/booth/{id}/status', 'MeController@getBoothStatus');
 Route::post('user/me/product', 'MeController@postProduct');
 Route::get('user/me/product', 'MeController@getProducts');
 Route::get('user/me/product/{id}', 'MeController@getProduct');

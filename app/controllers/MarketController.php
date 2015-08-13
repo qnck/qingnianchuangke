@@ -10,11 +10,15 @@ class MarketController extends \BaseController
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
         $range = Input::get('range', 1);
+        $u_id = Input::get('u_id');
 
         $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
 
         try {
+            if (!$u_id) {
+                throw new Exception("请传入有效的用户id", 2001);
+            }
             $query = PromotionInfo::with([
                 'school',
                 'booth' => function ($q) {
@@ -53,8 +57,24 @@ class MarketController extends \BaseController
             }
             $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($perPage);
             $data = [];
+            $promo_ids = [];
             foreach ($list as $key => $product) {
                 $data[] = $product->showInListWithProduct();
+                $promo_ids[] = $product['p_id'];
+            }
+            if (!empty($promo_ids)) {
+                $praises = PromotionPraise::where('u_id', '=', $u_id)->whereIn('prom_id', $promo_ids)->lists('prom_id');
+            } else {
+                $praises = [];
+            }
+            foreach ($data as $key => $product) {
+                if (in_array($product['product']['id'], $praises)) {
+                    $chk = 1;
+                } else {
+                    $chk = 0;
+                }
+                $product['is_praised'] = $chk;
+                $data[$key] = $product;
             }
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
