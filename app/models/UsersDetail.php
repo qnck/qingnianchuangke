@@ -2,7 +2,7 @@
 /**
 *
 */
-class UsersDetails extends Eloquent
+class UsersDetail extends Eloquent
 {
     public $primaryKey = 'u_id';
     public $timestamps = false;

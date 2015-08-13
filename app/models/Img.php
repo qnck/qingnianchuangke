@@ -124,7 +124,7 @@ class Img
         if (empty($crud)) {
             return [];
         }
-        $array = Img::attachKey($crud);        
+        $array = Img::attachKey($crud);
         return $array;
     }
 
