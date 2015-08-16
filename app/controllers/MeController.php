@@ -417,9 +417,9 @@ class MeController extends \BaseController
             $data['open_on'] = explode(',', $booth->b_open_on);
             $imgs = Img::toArray($booth->b_imgs);
             if (empty($imgs['logo'])) {
-                $imgs['logo'] = '';
+                $imgs['logo'] = null;
             }
-            $data['logo'] = $imgs['logo'];
+            $data['logo'] = (array)$imgs['logo'];
             $re = Tools::reTrue('获取店铺状态信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取店铺状态信息失败:'.$e->getMessage());
@@ -1206,12 +1206,19 @@ class MeController extends \BaseController
                 $entry_year = $user_contact->u_entry_year;
                 $stu_imgs = explode(',', $user_contact->u_student_img);
             }
+            if (empty($stu_imgs)) {
+                $stu_imgs = null;
+            }
             $user_detail = UsersDetail::find($u_id);
             if (empty($user_detail->u_id)) {
                 $id_imgs = '';
             } else {
                 $id_imgs = explode(',', $user_detail->u_identity_img);
             }
+            if (empty($id_imgs)) {
+                $id_imgs = null;
+            }
+
             $data['id'] = $user->u_id;
             $data['name'] = $user->u_name;
             $data['home_imgs'] = explode(',', $user->u_home_img);
