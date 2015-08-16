@@ -1093,7 +1093,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $query = Order::with(['carts'])->leftJoin('carts', function ($j) {
+            $query = Order::select('orders.*')->with(['carts'])->leftJoin('carts', function ($j) {
                 $j->on('orders.o_id', '=', 'carts.o_id');
             });
             if ($key_word) {
