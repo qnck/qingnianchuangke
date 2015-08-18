@@ -47,11 +47,7 @@ class Booth extends Eloquent
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
-        $data['imgs'] = Img::toArray($this->b_imgs);
-        if (!empty($data['imgs']['logo'])) {
-            $tmp = explode('.', $data['imgs']['logo']);
-            $data['imgs']['logo'] = array_pop($tmp);
-        }
+        $data['logo'] = $this->getLogo();
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
@@ -86,6 +82,19 @@ class Booth extends Eloquent
     {
         $this->b_status = 0;
         return $this->addBooth();
+    }
+
+    public function getLogo()
+    {
+        $imgs = Img::toArray($this->b_imgs);
+        if (empty($imgs['logo'])) {
+            $logo = null;
+        } elseif (strpos($imgs['logo'], 'http://')) {
+            $logo = $imgs['logo'];
+        } else {
+            $logo = substr($imgs['logo'], 5);
+        }
+        return $logo;
     }
 
     public static function clearByUser($u_id)

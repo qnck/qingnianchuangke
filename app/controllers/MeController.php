@@ -415,11 +415,7 @@ class MeController extends \BaseController
             $data['open_from'] = $booth->b_open_from;
             $data['open_to'] = $booth->b_open_to;
             $data['open_on'] = explode(',', $booth->b_open_on);
-            $imgs = Img::toArray($booth->b_imgs);
-            if (empty($imgs['logo'])) {
-                $imgs['logo'] = null;
-            }
-            $data['logo'] = (array)$imgs['logo'];
+            $data['logo'] = $booth->getLogo();
             $re = Tools::reTrue('获取店铺状态信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取店铺状态信息失败:'.$e->getMessage());
@@ -499,7 +495,8 @@ class MeController extends \BaseController
                 $data['fa_phone'] = '';
             } else {
                 $data['id_num'] = $detail->u_identity_number;
-                $data['id_img'] = explode(',', $detail->u_identity_img);
+                $imgs = Img::toArray($detail->u_identity_img);
+                $data['id_img'] = $imgs;
                 $data['home_addr'] = $detail->u_home_adress;
                 $data['mo_name'] = $detail->u_mother_name;
                 $data['mo_phone'] = $detail->u_mother_telephone;
@@ -618,7 +615,8 @@ class MeController extends \BaseController
                 $data['fr_name_2'] = $contact->u_frend_name2;
                 $data['fr_phone_2'] = $contact->u_frend_telephone2;
                 $data['stu_num'] = $contact->u_student_number;
-                $data['stu_img'] = explode(',', $contact->u_student_img);
+                $imgs = Img::toArray($contact->u_student_img);
+                $data['stu_img'] = $imgs;
                 $data['school'] = $contact->school->showInList();
                 $data['profession'] = $contact->u_prof;
                 $data['degree'] = $contact->u_degree;
@@ -1204,7 +1202,7 @@ class MeController extends \BaseController
                 $stu_imgs = '';
             } else {
                 $entry_year = $user_contact->u_entry_year;
-                $stu_imgs = explode(',', $user_contact->u_student_img);
+                $stu_imgs = Img::toArray($user_contact->u_student_img);
             }
             if (empty($stu_imgs)) {
                 $stu_imgs = null;
@@ -1213,7 +1211,7 @@ class MeController extends \BaseController
             if (empty($user_detail->u_id)) {
                 $id_imgs = '';
             } else {
-                $id_imgs = explode(',', $user_detail->u_identity_img);
+                $id_imgs = Img::toArray($user_detail->u_identity_img);
             }
             if (empty($id_imgs)) {
                 $id_imgs = null;
@@ -1221,7 +1219,7 @@ class MeController extends \BaseController
 
             $data['id'] = $user->u_id;
             $data['name'] = $user->u_name;
-            $data['home_imgs'] = explode(',', $user->u_home_img);
+            $data['home_imgs'] = Img::toArray($user->u_home_img);
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
