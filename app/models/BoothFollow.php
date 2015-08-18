@@ -65,8 +65,8 @@ class BoothFollow extends Eloquent
         return $this->belongsTo('Booth', 'b_id', 'b_id');
     }
 
-    public function fans()
+    public function follower()
     {
-        return $this->hasMany('user', 'u_id', 'u_id');
+        return $this->hasOne('user', 'u_id', 'u_id');
     }
 }

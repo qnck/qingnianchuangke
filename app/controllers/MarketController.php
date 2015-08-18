@@ -549,4 +549,50 @@ class MarketController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listBoothFollow($id)
+    {
+        $u_id = Input::get('u_id', 0);
+        $school = Input::get('school', 0);
+        $profession = Input::get('prof', 0);
+        $entry_year = Input::get('entry_year', 0);
+        $gender = Input::get('gender', 0);
+
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $user = User::find($u_id);
+            $user_contact = UsersContactPeople::find($u_id);
+            $query = BoothFollow::with(['follower', 'follower.school'])->where('b_id', '=', $id)->select('booth_follows.*')
+            ->leftJoin('users', function ($q) {
+                $q->on('users.u_id', '=', 'booth_follows.u_id');
+            })->leftJoin('users_contact_peoples', function ($q) {
+                $q->on('users_contact_peoples.u_id', '=', 'booth_follows.u_id');
+            });
+
+            if ($school) {
+                $query = $query->where('users.u_school_id', '=', $user->u_school_id);
+            }
+            if (!empty($user_contact)) {
+                if ($profession) {
+                    $query = $query->where('users_contact_peoples.u_prof', '=', $user_contact->u_prof);
+                }
+                if ($entry_year) {
+                    $query = $query->where('users_contact_peoples.u_entry_year', '=', $user_contact->u_entry_year);
+                }
+            }
+            if ($gender) {
+                $query = $query->where('users.gender', '=', $gender);
+            }
+            $list = $query->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $follow) {
+                $data[] = $follow->follower->showInList();
+            }
+            $re = Tools::reTrue('获取粉丝成功', $data, $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取粉丝失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

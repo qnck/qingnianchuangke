@@ -125,6 +125,9 @@ class Img
             return [];
         }
         $array = Img::attachKey($crud);
+        if (empty($array)) {
+            return null;
+        }
         return $array;
     }
 
@@ -141,7 +144,7 @@ class Img
             if (!$key) {
                 continue;
             }
-            $array[$key] = $img;
+            $array[$key] = trim($img);
         }
 
         return $array;

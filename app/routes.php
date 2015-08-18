@@ -85,6 +85,7 @@ Route::get('market/maker', 'MarketController@maker');
 Route::get('market/booth', 'MarketController@listBooth');
 Route::get('market/booth/{id}', 'MarketController@getBooth');
 Route::post('market/booth/{id}/follow', 'MarketController@postBoothFollow');
+Route::get('market/booth/{id}/follow', 'MarketController@listBoothFollow');
 Route::get('market/product', 'MarketController@listProduct');
 Route::get('market/product/{id}', 'MarketController@getProduct');
 Route::post('market/product/{id}/reply', 'MarketController@postProductReply');
