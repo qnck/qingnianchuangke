@@ -582,7 +582,7 @@ class MarketController extends \BaseController
                 }
             }
             if ($gender) {
-                $query = $query->where('users.gender', '=', $gender);
+                $query = $query->where('users.u_sex', '=', $gender);
             }
             $list = $query->paginate($per_page);
             $data = [];
