@@ -570,6 +570,7 @@ class MarketController extends \BaseController
         $profession = Input::get('prof', 0);
         $entry_year = Input::get('entry_year', 0);
         $gender = Input::get('gender', 0);
+        $key = Input::get('key', '');
 
         $per_page = Input::get('per_page', 30);
 
@@ -581,6 +582,8 @@ class MarketController extends \BaseController
                 $q->on('users.u_id', '=', 'booth_follows.u_id');
             })->leftJoin('users_contact_peoples', function ($q) {
                 $q->on('users_contact_peoples.u_id', '=', 'booth_follows.u_id');
+            })->leftJoin('dic_schools', function ($q) {
+                $q->on('users.u_school_id', '=', 'dic_schools.t_id');
             });
 
             if ($school) {
@@ -597,7 +600,10 @@ class MarketController extends \BaseController
             if ($gender) {
                 $query = $query->where('users.u_sex', '=', $gender);
             }
-            $list = $query->paginate($per_page);
+            if ($key) {
+                $query = $query->where('users.u_name', 'LIKE', '%'.$key.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$key.'%')->orWhere('dic_schools.t_name', 'LIKE', '%'.$key.'%');
+            }
+            $list = $query->groupBy('users.u_id')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $follow) {
                 $data[] = $follow->follower->showInList();

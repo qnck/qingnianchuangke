@@ -1115,7 +1115,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $query = Order::select('orders.*')->with(['carts'])->leftJoin('carts', function ($j) {
+            $query = Order::select('orders.*')->with(['carts'])->where('orders.u_id', '=', $u_id)->leftJoin('carts', function ($j) {
                 $j->on('orders.o_id', '=', 'carts.o_id');
             });
             if ($key_word) {
@@ -1148,6 +1148,98 @@ class MeController extends \BaseController
             $re = Tools::reTrue('获取订单成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listSellOrders()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $shipping_status = Input::get('shipping', 0);
+        $order_status = Input::get('order', 0);
+        $key_word = Input::get('key', '');
+        $finish = Input::get('finish', 0);
+        $from = Input::get('from', '');
+        $to = Input::get('to', '');
+
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booths = Booth::where('u_id', '=', $u_id)->lists('b_id');
+            if (empty($booths)) {
+                throw new Exception("您还没有任何店铺", 7001);
+            }
+            $query = Order::select('orders.*')->with(['carts'])->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($j) {
+                $j->on('orders.o_id', '=', 'carts.o_id');
+            });
+            if ($key_word) {
+                $query = $query->where(function ($q) use ($key_word) {
+                    $q->where('carts.p_name', 'LIKE', '%'.$key_word.'%')->orWhere('orders.o_number', 'LIKE', '%'.$key_word.'%');
+                });
+            }
+            if ($shipping_status) {
+                $query = $query->where('orders.o_shipping_status', '=', $shipping_status);
+            }
+            if ($order_status) {
+                $query = $query->where('orders.o_status', '=', $order_status);
+            }
+            if ($from) {
+                $query = $query->where('orders.created_at', '>', $from);
+            }
+            if ($to) {
+                $query = $query->where('orders.created_at', '<', $to);
+            }
+            if ($finish == 1) {
+                $query = $query->where('orders.o_shipping_status', '<', 10);
+            } elseif ($finish == 2) {
+                $query = $query->where('orders.o_shipping_status', '=', 10);
+            }
+            $list = $query->groupBy('carts.o_id')->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $order) {
+                $data[] = $order->showDetail();
+            }
+            $re = Tools::reTrue('获取订单成功', $data, $list);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function countSellOrders()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $booths = Booth::where('u_id', '=', $u_id)->lists('b_id');
+            if (empty($booths)) {
+                throw new Exception("您还没有任何店铺", 7001);
+            }
+            $count_nonshipping = Order::where('orders.o_shipping_status', '=', 1)->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($q) {
+                $q->on('carts.o_id', '=', 'orders.o_id');
+            })->groupBy('carts.o_id')->count();
+            $count_shipped = Order::where('orders.o_shipping_status', '=', 5)->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($q) {
+                $q->on('carts.o_id', '=', 'orders.o_id');
+            })->groupBy('carts.o_id')->count();
+            $count_nonpay = Order::where('orders.o_status', '=', 1)->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($q) {
+                $q->on('carts.o_id', '=', 'orders.o_id');
+            })->groupBy('carts.o_id')->count();
+            $count_paied = Order::where('orders.o_status', '=', 2)->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($q) {
+                $q->on('carts.o_id', '=', 'orders.o_id');
+            })->groupBy('carts.o_id')->count();
+            $count_finished = Order::where('orders.o_shipping_status', '=', 10)->whereIn('carts.b_id', $booths)->leftJoin('carts', function ($q) {
+                $q->on('carts.o_id', '=', 'orders.o_id');
+            })->groupBy('carts.o_id')->count();
+            $count_nonfinished = $count_nonshipping + $count_shipped;
+            $data = ['nonshipping' => $count_nonshipping, 'shipped' => $count_shipped, 'nonpay' => $count_nonpay, 'paied' => $count_paied, 'nonfinished' => $count_nonfinished, 'finished' => $count_finished];
+            $re = Tools::reTrue('获取订单统计成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单统计失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
