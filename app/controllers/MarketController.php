@@ -192,7 +192,12 @@ class MarketController extends \BaseController
 
     public function getBooth($id)
     {
+        $u_id = Input::get('u_id', 0);
+
         try {
+            if (!$u_id) {
+                throw new Exception("需要传入用户ID", 2001);
+            }
             $booth = Booth::find($id);
             if (empty($booth->b_id)) {
                 throw new Exception("无法获取到请求的店铺", 7001);
@@ -203,7 +208,15 @@ class MarketController extends \BaseController
             $booth->load('user');
             $boothInfo = $booth->showDetail();
             $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
+            $chk = BoothFollow::where('b_id', '=', $booth->b_id)->where('u_id', '=', $u_id)->first();
+            if (empty($chk)) {
+                $is_follow = 0;
+            } else {
+                $is_follow = 1;
+            }
+
             $boothInfo['prodct_count'] = (int)$products_count;
+            $boothInfo['is_follow'] = $is_follow;
             $data = ['booth' => $boothInfo];
             $re = Tools::reTrue('获取他的店铺成功', $data);
         } catch (Exception $e) {

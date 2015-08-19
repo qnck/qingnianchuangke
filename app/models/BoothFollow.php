@@ -35,7 +35,7 @@ class BoothFollow extends Eloquent
         $this->baseValidate();
         $chk = BoothFollow::where('b_id', '=', $this->b_id)->where('u_id', '=', $this->u_id)->first();
         if (!empty($chk->f_id)) {
-            throw new Exception("您已经关注过了", 7001);
+            throw new Exception("您已经关注过了", 7004);
         }
         $booth = Booth::find($this->b_id);
         $booth->b_fans_count += 1;
