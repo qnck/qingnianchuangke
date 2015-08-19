@@ -1078,6 +1078,27 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function countOrders()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $count_nonshipping = Order::where('u_id', '=', $u_id)->where('o_shipping_status', '=', 1)->count();
+            $count_shipped = Order::where('u_id', '=', $u_id)->where('o_shipping_status', '=', 5)->count();
+            $count_nonpay = Order::where('u_id', '=', $u_id)->where('o_status', '=', 1)->count();
+            $count_paied = Order::where('u_id', '=', $u_id)->where('o_status', '=', 2)->count();
+            $count_finished = Order::where('u_id', '=', $u_id)->where('o_shipping_status', '=', 10)->count();
+            $count_nonfinished = $count_nonshipping + $count_shipped;
+            $data = ['nonshipping' => $count_nonshipping, 'shipped' => $count_shipped, 'nonpay' => $count_nonpay, 'paied' => $count_paied, 'nonfinished' => $count_nonfinished, 'finished' => $count_finished];
+            $re = Tools::reTrue('获取订单统计成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单统计失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function listOrders()
     {
         $token = Input::get('token', '');
@@ -1086,6 +1107,9 @@ class MeController extends \BaseController
         $shipping_status = Input::get('shipping', 0);
         $order_status = Input::get('order', 0);
         $key_word = Input::get('key', '');
+        $finish = Input::get('finish', 0);
+        $from = Input::get('from', '');
+        $to = Input::get('to', '');
 
         $per_page = Input::get('per_page', 30);
 
@@ -1104,6 +1128,17 @@ class MeController extends \BaseController
             }
             if ($order_status) {
                 $query = $query->where('orders.o_status', '=', $order_status);
+            }
+            if ($from) {
+                $query = $query->where('orders.created_at', '>', $from);
+            }
+            if ($to) {
+                $query = $query->where('orders.created_at', '<', $to);
+            }
+            if ($finish == 1) {
+                $query = $query->where('orders.o_shipping_status', '<', 10);
+            } elseif ($finish == 2) {
+                $query = $query->where('orders.o_shipping_status', '=', 10);
             }
             $list = $query->groupBy('carts.o_id')->paginate($per_page);
             $data = [];

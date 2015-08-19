@@ -44,6 +44,7 @@ Route::get('user/me/product/{id}/on', 'MeController@productOn');
 Route::post('user/me/product/sort', 'MeController@updateProductSort');
 Route::post('user/me/product/discount', 'MeController@updateProductDiscount');
 Route::get('user/me/orders', 'MeController@listOrders');
+Route::get('user/me/orders/count', 'MeController@countOrders');
 Route::post('user/me/order/deliver', 'MeController@deliverOrder');
 Route::post('user/me/order/confirm', 'MeController@confirmOrder');
 Route::get('user/me/praise/promo', 'MeController@listPraisePromo');
