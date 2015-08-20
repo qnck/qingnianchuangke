@@ -128,7 +128,7 @@ Route::post('lbs/booth/{id}', 'LocationController@updateBooth');
 /* LBS END*/
 
 /*********** BACK ***********/
-Route::get('back/sys/user', 'Admin\SysUserController@listUsers');
-Route::post('back/sys/user', 'Admin\SysUserController@postUser');
-Route::put('back/sys/user/{id}', 'Admin\SysUserController@putUser');
-Route::delete('back/sys/user{id}', 'Admin\SysUserController@delUser');
+Route::get('office/sys/user', 'SysUserController@listUsers');
+Route::post('office/sys/user', 'SysUserController@postUser');
+Route::put('office/sys/user/{id}', 'SysUserController@putUser');
+Route::delete('office/sys/user/{id}', 'SysUserController@delUser');
