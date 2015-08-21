@@ -1403,7 +1403,9 @@ class MeController extends \BaseController
                 $home_imgs = Img::filterKey('home_img_', $imgs);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);
+                $head_img = Img::filterKey('head_img', $imgs);
                 $user->u_home_img = implode(',', $home_imgs);
+                $user->u_head_img = implode(',', $head_img);
                 $user_contact->u_student_img = implode(',', $stu_imgs);
                 $user_detail->u_identity_img = implode(',', $id_imgs);
             }
