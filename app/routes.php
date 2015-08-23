@@ -128,7 +128,18 @@ Route::post('lbs/booth/{id}', 'LocationController@updateBooth');
 /* LBS END*/
 
 /*********** BACK ***********/
+
+/* SYS USER START*/
 Route::get('office/sys/user', 'SysUserController@listUsers');
 Route::post('office/sys/user', 'SysUserController@postUser');
 Route::put('office/sys/user/{id}', 'SysUserController@putUser');
 Route::delete('office/sys/user/{id}', 'SysUserController@delUser');
+/* SYS USER END*/
+
+/* WEB USER START*/
+Route::get('office/user/profile', 'WebUserController@listUserProfiles');
+Route::get('office/user/profile/{id}', 'WebUserController@getUserProfile');
+Route::put('office/user/profile/{id}/censor/detail', 'WebUserController@censorUserProfileDetail');
+Route::put('office/user/profile/{id}/censor/contact', 'WebUserController@censorUserProfileContact');
+Route::put('office/user/profile/{id}/censor/bank', 'WebUserController@censorUserProfileBank');
+/* WEB USER END*/

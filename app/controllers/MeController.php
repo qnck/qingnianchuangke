@@ -485,6 +485,8 @@ class MeController extends \BaseController
             $detail = TmpUsersDetails::find($u_id);
             $data = [];
             $data['name'] = $user->u_name;
+            $data['bio'] = $user->u_biograph;
+            $data['interests'] = $user->u_interests;
             if (!isset($detail->u_id)) {
                 $data['id_num'] = '';
                 $data['id_img'] = '';

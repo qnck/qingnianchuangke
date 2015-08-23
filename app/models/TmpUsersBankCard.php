@@ -30,6 +30,20 @@ class TmpUsersBankCard extends Eloquent
         return $data;
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $this->load('bank');
+        $data['id'] = $this->t_id;
+        $data['card_number'] = $this->b_card_num;
+        $data['bank'] = $this->bank->showInList();
+        $data['holder_name'] = $this->b_holder_name;
+        $data['holder_phone'] = $this->b_holder_phone;
+        $dada['holder_identity_number'] = $this->b_holder_identity;
+        $dada['status'] = $this->b_status;
+        return $data;
+    }
+
     public function addBankCard()
     {
         $this->baseValidate();

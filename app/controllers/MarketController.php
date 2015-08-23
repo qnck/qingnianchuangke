@@ -172,15 +172,25 @@ class MarketController extends \BaseController
 
     public function listBooth()
     {
-        $u_id = Input::get('owner', 0);
+        $owner_id = Input::get('owner', 0);
+        $u_id = Input::get('u_id', 0);
 
         try {
-            $data = Booth::with(['user'])->where('u_id', '=', $u_id)->where('b_status', '=', 1)->get();
+            if (!$u_id) {
+                throw new Exception("请传入有效的用户id", 7001);
+            }
+            $data = Booth::with(['user'])->where('u_id', '=', $owner_id)->where('b_status', '=', 1)->get();
             $list = [];
             foreach ($data as $key => $booth) {
                 $tmp = $booth->showDetail();
                 $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
                 $tmp['prodct_count'] = $products_count;
+                $chk_follow = BoothFollow::where('u_id', '=', $u_id)->where('b_id', '=', $booth->b_id)->first();
+                if (empty($chk_follow)) {
+                    $tmp['is_follow'] = 0;
+                } else {
+                    $tmp['is_follow'] = 1;
+                }
                 $list[] = $tmp;
             }
             $re = Tools::reTrue('获取我的所有店铺成功', $list);

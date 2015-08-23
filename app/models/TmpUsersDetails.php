@@ -26,6 +26,20 @@ class TmpUsersDetails extends Eloquent
 
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['identity_number'] = $this->u_identity_number;
+        $data['identity_imgs'] = Img::toArray($this->u_identity_img);
+        $data['home_adress'] = $this->u_home_adress;
+        $data['father_name'] = $this->u_father_name;
+        $data['father_telephone'] = $this->u_father_telephone;
+        $data['mother_name'] = $this->u_mother_name;
+        $data['mother_telephone'] = $this->u_mother_telephone;
+        $data['status'] = $this->u_status;
+        return $data;
+    }
+
     public function addUserDetail()
     {
         $this->baseValidate();
