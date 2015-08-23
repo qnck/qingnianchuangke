@@ -102,6 +102,14 @@ class User extends Eloquent
             $school = DicSchool::find($user->u_school_id);
             $re['site'] = $school->t_city;
             $re['school'] = $school->showInList();
+            $user->load('booths');
+            $booths = null;
+            if (!empty($user->booths)) {
+                foreach ($user->booths as $key => $booth) {
+                    $booths[] = $booth->showInList();
+                }
+            }
+            $re['boohts'] = $booths;
             return $re;
         }
     }
@@ -422,5 +430,10 @@ class User extends Eloquent
     public function promoPraises()
     {
         return $this->hasMany('PromotionPraise', 'u_id', 'u_id');
+    }
+
+    public function booths()
+    {
+        return $this->hasMany('Booth', 'u_id', 'u_id');
     }
 }

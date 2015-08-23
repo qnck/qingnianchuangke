@@ -8,12 +8,8 @@ class UsersContactPeople extends Eloquent
     public $primaryKey = 'u_id';
     public $timestamps = false;
 
-    public function user()
+    public function showDetail()
     {
-        return $this->belongsTo('User', 'u_id', 'u_id');
-    }
-
-    public function showDetail(){
         $data = [];
         $data['teacher_name'] = $this->u_teacher_name;
         $data['teacher_phone'] = $this->u_teacher_telephone;
@@ -26,5 +22,12 @@ class UsersContactPeople extends Eloquent
         $data['frend_name2'] = $this->u_frend_name2;
         $data['frend_telephone2'] = $this->u_frend_telephone2;
         return $data;
+    }
+
+    // laravel relations
+
+    public function user()
+    {
+        return $this->belongsTo('User', 'u_id', 'u_id');
     }
 }

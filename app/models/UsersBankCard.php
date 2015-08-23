@@ -5,7 +5,7 @@
 class UsersBankCard extends Eloquent
 {
 
-    public $priamryKey = 't_id';
+    public $primaryKey = 't_id';
     public $timestamps = false;
 
     public function user()
