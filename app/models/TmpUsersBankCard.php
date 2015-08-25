@@ -39,8 +39,8 @@ class TmpUsersBankCard extends Eloquent
         $data['bank'] = $this->bank->showInList();
         $data['holder_name'] = $this->b_holder_name;
         $data['holder_phone'] = $this->b_holder_phone;
-        $dada['holder_identity_number'] = $this->b_holder_identity;
-        $dada['status'] = $this->b_status;
+        $data['holder_identity_number'] = $this->b_holder_identity;
+        $data['status'] = $this->b_status;
         return $data;
     }
 

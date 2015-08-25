@@ -23,6 +23,7 @@ class WebUserController extends \BaseController
             foreach ($array['data'] as $key => $userProfile) {
                 $data['rows'][] = $userProfile;
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取用户信息成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取用户信息失败:'.$e->getMessage());
