@@ -1349,6 +1349,7 @@ class MeController extends \BaseController
             $data['id'] = $user->u_id;
             $data['name'] = $user->u_name;
             $data['home_imgs'] = Img::toArray($user->u_home_img);
+            $data['head_img'] = $user->u_head_img;
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
