@@ -1357,7 +1357,7 @@ class MeController extends \BaseController
             $data['school'] = $user->school->showInList();
             $brith_date = new DateTime($user->u_birthday);
             $data['birth'] = $brith_date->format('Y-m-d');
-            $date['interests'] = $user->u_interests;
+            $data['interests'] = $user->u_interests;
             $re = Tools::reTrue('获取用户基本信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取用户基本信息失败:'.$e->getMessage());
