@@ -1306,10 +1306,16 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
+        $per_page = Input::get('per_page');
+
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = DB::table('booth_follows')->where('u_id', '=', $u_id)->lists('b_id');
-            $re = Tools::reTrue('获取我收藏的店铺成功', $list);
+            $list = BoothFollow::with(['booth'])->where('u_id', '=', $u_id)->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $follow) {
+                $data[] = $follow->showInList();
+            }
+            $re = Tools::reTrue('获取我收藏的店铺成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取我收藏的店铺失败:'.$e->getMessage());
         }

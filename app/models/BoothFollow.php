@@ -21,6 +21,17 @@ class BoothFollow extends Eloquent
         }
     }
 
+    public function showInList()
+    {
+        $data = null;
+        if (!empty($this->booth)) {
+            $data = $this->booth->showDetail();
+            $data['b_id'] = $data['id'];
+        }
+        $data['id'] = $this->f_id;
+        return $data;
+    }
+
     public function addFollow()
     {
         $now = new DateTime();
