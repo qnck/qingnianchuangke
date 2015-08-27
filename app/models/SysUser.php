@@ -38,7 +38,7 @@ class SysUser extends \Eloquent
         $now = new DateTime();
         $this->baseValidate();
         // chk exist
-        $chk = SysUser::where('account', '=', $this->account);
+        $chk = SysUser::where('account', '=', $this->account)->first();
         if (!empty($chk)) {
             throw new Exception("账号已经存在", 10001);
         }
