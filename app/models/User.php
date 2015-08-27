@@ -106,7 +106,7 @@ class User extends Eloquent
             $booths = null;
             if (!empty($user->booths)) {
                 foreach ($user->booths as $key => $booth) {
-                    $booths[] = $booth->showInList();
+                    $booths[] = $booth->showInLogin();
                 }
             }
             $re['boohts'] = $booths;
