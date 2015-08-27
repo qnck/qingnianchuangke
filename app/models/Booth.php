@@ -23,6 +23,26 @@ class Booth extends Eloquent
         }
     }
 
+    public function showInLogin()
+    {
+        $data = [];
+        $data['id'] = $this->b_id;
+        $data['title'] = $this->b_title;
+        $data['desc'] = $this->b_desc;
+        $data['type'] = $this->b_type;
+        $data['category'] = $this->b_product_category;
+        $data['logo'] = $this->getLogo();
+        $data['fans'] = $this->b_fans_count;
+        $data['status'] = $this->b_status;
+        $data['open'] = $this->b_open;
+        $data['open_from'] = $this->b_open_from;
+        $data['open_to'] = $this->b_open_to;
+        $data['open_on'] = $this->open_on;
+
+        return $data;
+
+    }
+
     public function showInList()
     {
         $data = [];

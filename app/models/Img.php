@@ -39,20 +39,18 @@ class Img
     public function getSavedImg($newId, $string = '', $array = false)
     {
         $imgs = $this->save($newId);
-
+        
         if ($string) {
             $o = explode(',', $string);
-            $oldImgs = null;
-            foreach ($o as $value) {
-                $key = Img::getKey($value);
-                $oldImgs[$key] = $value;
-            }
-            foreach ($imgs as $key => $i) {
-                if (array_key_exists($key, $oldImgs)) {
-                    unset($oldImgs[$key]);
+            $oldImgs = Img::attachKey($o);
+            if (!empty($imgs)) {
+                foreach ($imgs as $key => $i) {
+                    if (array_key_exists($key, $oldImgs)) {
+                        unset($oldImgs[$key]);
+                    }
                 }
             }
-            if (!empty($odlImgs)) {
+            if (!empty($oldImgs)) {
                 foreach ($oldImgs as $key => $img) {
                     $imgs[$key] = $img;
                 }

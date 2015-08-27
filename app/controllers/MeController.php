@@ -433,6 +433,8 @@ class MeController extends \BaseController
         $openOn = Input::get('open_on');
         $logo = Input::get('logo', 0);
 
+        $img_token = Input::get('img_token', '');
+
         try {
             $user = User::chkUserByToken($token, $u_id);
             $booth = Booth::find($id);
@@ -446,7 +448,14 @@ class MeController extends \BaseController
             $booth->b_open_from = $openFrom;
             $booth->b_open_to = $openTo;
             $booth->b_open_on = $openOn;
+            if ($booth->b_type == 2 && $img_token) {
+                $imgObj = new Img('booth', $img_token);
+                $imgs = $imgObj->getSavedImg($id, $booth->b_imgs, true);
+                $booth->b_imgs = implode(',', $imgs);
+            }
             $booth->save();
+
+
             $re = Tools::reTrue('保存店铺状态成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '保存店铺状态失败:'.$e->getMessage());
@@ -989,7 +998,7 @@ class MeController extends \BaseController
 
             if ($imgToken) {
                 $imgObj = new Img('product', $imgToken);
-                $imgs = $imgObj->getSavedImg($id, '', true);
+                $imgs = $imgObj->getSavedImg($id, $product->p_imgs, true);
                 $product->p_imgs = implode(',', $imgs);
                 $product->save();
             }
@@ -1305,12 +1314,19 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 0);
 
         $per_page = Input::get('per_page');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = BoothFollow::with(['booth'])->where('u_id', '=', $u_id)->paginate($per_page);
+            $query = BoothFollow::select('booth_follows.*')->with(['booth'])->where('booth_follows.u_id', '=', $u_id)->leftJoin('booths', function ($q) use ($type) {
+                $q->on('booths.b_id', '=', 'booth_follows.b_id');
+            });
+            if ($type) {
+                $query->where('booths.b_type', '=', $type);
+            }
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $follow) {
                 $data[] = $follow->showInList();
@@ -1408,7 +1424,7 @@ class MeController extends \BaseController
             $user->u_interests = $interests;
             if ($img_token) {
                 $imgObj = new Img('user', $img_token);
-                $imgs = $imgObj->getSavedImg($u_id, '', true);
+                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$user->u_home_img, $user->u_head_img, $user_contact->u_student_img, $user_detail->u_identity_img]), true);
                 $home_imgs = Img::filterKey('home_img_', $imgs);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);
