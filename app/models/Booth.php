@@ -106,6 +106,7 @@ class Booth extends Eloquent
 
     public function getLogo()
     {
+        $logo = null;
         $imgs = Img::toArray($this->b_imgs);
         if (empty($imgs['logo'])) {
             $logo = null;

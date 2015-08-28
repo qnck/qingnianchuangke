@@ -431,7 +431,7 @@ class MeController extends \BaseController
         $openFrom = Input::get('open_from', '');
         $openTo = Input::get('open_to', '');
         $openOn = Input::get('open_on');
-        $logo = Input::get('logo', 0);
+        $logo = Input::get('logo', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -441,9 +441,6 @@ class MeController extends \BaseController
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取到请求的店铺", 7001);
             }
-            $imgs = Img::toArray($booth->b_imgs);
-            $imgs['logo'] = 'logo.'.$logo;
-            $booth->b_imgs = implode(',', $imgs);
             $booth->b_open = $open;
             $booth->b_open_from = $openFrom;
             $booth->b_open_to = $openTo;
@@ -451,6 +448,10 @@ class MeController extends \BaseController
             if ($booth->b_type == 2 && $img_token) {
                 $imgObj = new Img('booth', $img_token);
                 $imgs = $imgObj->getSavedImg($id, $booth->b_imgs, true);
+                $booth->b_imgs = implode(',', $imgs);
+            } elseif ($img_token) {
+                $imgs = Img::toArray($booth->b_imgs);
+                $imgs['logo'] = 'logo.'.$logo;
                 $booth->b_imgs = implode(',', $imgs);
             }
             $booth->save();
