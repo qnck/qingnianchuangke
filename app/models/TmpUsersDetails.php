@@ -37,6 +37,9 @@ class TmpUsersDetails extends Eloquent
         $data['mother_name'] = $this->u_mother_name;
         $data['mother_telephone'] = $this->u_mother_telephone;
         $data['status'] = $this->u_status;
+        if ($this->u_status == 2) {
+            $data['remark'] = $this->remark;
+        }
         return $data;
     }
 

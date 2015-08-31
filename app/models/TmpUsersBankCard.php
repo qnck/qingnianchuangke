@@ -41,6 +41,9 @@ class TmpUsersBankCard extends Eloquent
         $data['holder_phone'] = $this->b_holder_phone;
         $data['holder_identity_number'] = $this->b_holder_identity;
         $data['status'] = $this->b_status;
+        if ($this->b_status == 2) {
+            $data['remark'] = $this->remark;
+        }
         return $data;
     }
 

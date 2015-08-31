@@ -79,8 +79,15 @@ class WebUserController extends \BaseController
     public function censorUserProfileDetail($id)
     {
         $check = Input::get('check', 0);
+        $remark = Input::get('remark', '');
 
         try {
+            if ($check == 0) {
+                if (!$remark) {
+                    throw new Exception("备注不能为空", 10001);
+                }
+            }
+
             $tmp_detail = TmpUsersDetails::find($id);
             if (empty($tmp_detail)) {
                 throw new Exception("查找的用户信息不存在", 10001);
@@ -110,6 +117,7 @@ class WebUserController extends \BaseController
             } else {
                 $tmp_detail->u_status = 2;
             }
+            $tmp_detail->remark = $remark;
             $tmp_detail->save();
             $re = Tools::reTrue('审核用户基本信息成功');
         } catch (Exception $e) {
@@ -121,8 +129,15 @@ class WebUserController extends \BaseController
     public function censorUserProfileContact($id)
     {
         $check = Input::get('check', 0);
+        $remark = Input::get('remark', '');
 
         try {
+            if ($check == 0) {
+                if (!$remark) {
+                    throw new Exception("备注不能为空", 10001);
+                }
+            }
+
             $tmp_contact = TmpUsersContactPeople::find($id);
             if (empty($tmp_contact)) {
                 throw new Exception("查找的用户信息不存在", 10001);
@@ -156,6 +171,7 @@ class WebUserController extends \BaseController
             } else {
                 $tmp_contact->u_status = 2;
             }
+            $tmp_contact->remark = $remark;
             $tmp_contact->save();
             $re = Tools::reTrue('审核用户联系人信息成功');
         } catch (Exception $e) {
@@ -167,8 +183,15 @@ class WebUserController extends \BaseController
     public function censorUserProfileBank($id)
     {
         $check = Input::get('check', 0);
+        $remark = Input::get('remark', '');
 
         try {
+            if ($check == 0) {
+                if (!$remark) {
+                    throw new Exception("备注不能为空", 10001);
+                }
+            }
+
             $tmp_bank = TmpUsersBankCard::find($id);
             if (empty($tmp_bank)) {
                 throw new Exception("查找的用户信息不存在", 10001);
@@ -196,6 +219,7 @@ class WebUserController extends \BaseController
             } else {
                 $tmp_bank->b_status = 2;
             }
+            $tmp_bank->remark = $remark;
             $tmp_bank->save();
             $re = Tools::reTrue('审核用户银行信息成功');
         } catch (Exception $e) {

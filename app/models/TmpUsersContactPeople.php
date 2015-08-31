@@ -53,6 +53,9 @@ class TmpUsersContactPeople extends Eloquent
         $data['degree'] = $this->u_degree;
         $data['entry_year'] = $this->u_entry_year;
         $data['status'] = $this->u_status;
+        if ($this->u_status == 2) {
+            $data['remark'] = $this->remark;
+        }
         return $data;
     }
 
