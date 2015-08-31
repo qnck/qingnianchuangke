@@ -53,6 +53,9 @@ class TmpUsersContactPeople extends Eloquent
         $data['degree'] = $this->u_degree;
         $data['entry_year'] = $this->u_entry_year;
         $data['status'] = $this->u_status;
+        if ($this->u_status == 2) {
+            $data['remark'] = $this->remark;
+        }
         return $data;
     }
 
@@ -73,6 +76,30 @@ class TmpUsersContactPeople extends Eloquent
         } else {
             return 0;
         }
+    }
+
+    public function addCensorLog($content)
+    {
+        $log = new LogUserProfileCensors();
+        $log->u_id = $this->u_id;
+        $log->cate = 'contact';
+        $log->content = $content;
+        $log->admin_id = Tools::getAdminId();
+        $log->addLog();
+    }
+
+    public function censor()
+    {
+        $old_status = '审核之前的状态为: '.$this->getOriginal('u_status').', 审核之后的状态为: '.$this->u_status.'.';
+        if ($this->u_status == 2) {
+            $content = '用户联系人信息审核未通过, '.$old_status;
+        } elseif ($this->u_status == 1) {
+            $content = '用户联系人信息审核通过, '.$old_status;
+        } else {
+            $content = '审核联系人信息记录, '.$old_status;
+        }
+        $this->addCensorLog($content);
+        return $this->save();
     }
 
     // lavaral realtions
