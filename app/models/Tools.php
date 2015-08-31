@@ -36,4 +36,9 @@ class Tools
         $s = round($s * 10000) / 10000;
         return $s;
     }
+
+    public static function getAdminId()
+    {
+        return 1;
+    }
 }

@@ -73,6 +73,30 @@ class TmpUsersBankCard extends Eloquent
         }
     }
 
+    public function addCensorLog($content)
+    {
+        $log = new LogUserProfileCensors();
+        $log->u_id = $this->u_id;
+        $log->cate = 'bank_card';
+        $log->content = $content;
+        $log->admin_id = Tools::getAdminId();
+        $log->addLog();
+    }
+
+    public function censor()
+    {
+        $old_status = '审核之前的状态为: '.$this->getOriginal('b_status').', 银行卡记录id为'.$this->t_id.', 审核之后的状态为: '.$this->b_status.'.';
+        if ($this->b_status == 2) {
+            $content = '用户银行卡信息审核未通过, '.$old_status;
+        } elseif ($this->b_status == 1) {
+            $content = '用户银行卡信息审核通过, '.$old_status;
+        } else {
+            $content = '审核银行卡信息记录, '.$old_status;
+        }
+        $this->addCensorLog($content);
+        return $this->save();
+    }
+
     // laravel relations
 
     public function user()

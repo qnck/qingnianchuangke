@@ -101,7 +101,7 @@ class WebUserController extends \BaseController
             if (empty($detail)) {
                 $detail = new UsersDetail();
             }
-
+            $old_status = $tmp_detail->u_status;
             if ($check == 1) {
                 $detail->u_id = $tmp_detail->u_id;
                 $detail->u_identity_number = $tmp_detail->u_identity_number;
@@ -114,11 +114,12 @@ class WebUserController extends \BaseController
                 $detail->u_status = 1;
                 $detail->save();
                 $tmp_detail->u_status = 1;
+                $tmp_detail->remark = '';
             } else {
                 $tmp_detail->u_status = 2;
+                $tmp_detail->remark = $remark;
             }
-            $tmp_detail->remark = $remark;
-            $tmp_detail->save();
+            $tmp_detail->censor();
             $re = Tools::reTrue('审核用户基本信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '审核用户基本信息失败:'.$e->getMessage());
@@ -168,11 +169,12 @@ class WebUserController extends \BaseController
                 $contact->u_entry_year = $tmp_contact->u_entry_year;
                 $contact->save();
                 $tmp_contact->u_status = 1;
+                $tmp_contact->remark = '';
             } else {
                 $tmp_contact->u_status = 2;
+                $tmp_contact->remark = $remark;
             }
-            $tmp_contact->remark = $remark;
-            $tmp_contact->save();
+            $tmp_contact->censor();
             $re = Tools::reTrue('审核用户联系人信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '审核用户联系人信息失败:'.$e->getMessage());
@@ -216,11 +218,12 @@ class WebUserController extends \BaseController
                 $bank->b_holder_identity = $tmp_bank->b_holder_identity;
                 $bank->save();
                 $tmp_bank->b_status = 1;
+                $tmp_bank->remark = '';
             } else {
                 $tmp_bank->b_status = 2;
+                $tmp_bank->remark = $remark;
             }
-            $tmp_bank->remark = $remark;
-            $tmp_bank->save();
+            $tmp_bank->censor();
             $re = Tools::reTrue('审核用户银行信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '审核用户银行信息失败:'.$e->getMessage());
