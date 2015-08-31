@@ -78,6 +78,8 @@ class WebUserController extends \BaseController
 
     public function censorUserProfileDetail($id)
     {
+        $check = Input::get('check', 0);
+
         try {
             $tmp_detail = TmpUsersDetails::find($id);
             if (empty($tmp_detail)) {
@@ -93,17 +95,21 @@ class WebUserController extends \BaseController
                 $detail = new UsersDetail();
             }
 
-            $detail->u_id = $tmp_detail->u_id;
-            $detail->u_identity_number = $tmp_detail->u_identity_number;
-            $detail->u_identity_img = $tmp_detail->u_identity_img;
-            $detail->u_home_adress = $tmp_detail->u_home_adress;
-            $detail->u_father_name = $tmp_detail->u_father_name;
-            $detail->u_father_telephone = $tmp_detail->u_father_telephone;
-            $detail->u_mother_name = $tmp_detail->u_mother_name;
-            $detail->u_mother_telephone = $tmp_detail->u_mother_telephone;
-            $detail->u_status = 1;
-            $detail->save();
-            $tmp_detail->u_status = 1;
+            if ($check == 1) {
+                $detail->u_id = $tmp_detail->u_id;
+                $detail->u_identity_number = $tmp_detail->u_identity_number;
+                $detail->u_identity_img = $tmp_detail->u_identity_img;
+                $detail->u_home_adress = $tmp_detail->u_home_adress;
+                $detail->u_father_name = $tmp_detail->u_father_name;
+                $detail->u_father_telephone = $tmp_detail->u_father_telephone;
+                $detail->u_mother_name = $tmp_detail->u_mother_name;
+                $detail->u_mother_telephone = $tmp_detail->u_mother_telephone;
+                $detail->u_status = 1;
+                $detail->save();
+                $tmp_detail->u_status = 1;
+            } else {
+                $tmp_detail->u_status = 2;
+            }
             $tmp_detail->save();
             $re = Tools::reTrue('审核用户基本信息成功');
         } catch (Exception $e) {
@@ -114,6 +120,8 @@ class WebUserController extends \BaseController
 
     public function censorUserProfileContact($id)
     {
+        $check = Input::get('check', 0);
+
         try {
             $tmp_contact = TmpUsersContactPeople::find($id);
             if (empty($tmp_contact)) {
@@ -129,21 +137,25 @@ class WebUserController extends \BaseController
                 $contact = new UsersContactPeople();
             }
 
-            $contact->u_id = $tmp_contact->u_id;
-            $contact->u_teacher_name = $tmp_contact->u_teacher_name;
-            $contact->u_teacher_telephone = $tmp_contact->u_teacher_telephone;
-            $contact->u_frend_name1 = $tmp_contact->u_frend_name1;
-            $contact->u_frend_telephone1 = $tmp_contact->u_frend_telephone1;
-            $contact->u_frend_name2 = $tmp_contact->u_frend_name2;
-            $contact->u_frend_telephone2 = $tmp_contact->u_frend_telephone2;
-            $contact->u_student_img = $tmp_contact->u_student_img;
-            $contact->u_student_number = $tmp_contact->u_student_number;
-            $contact->u_school_id = $tmp_contact->u_school_id;
-            $contact->u_prof = $tmp_contact->u_prof;
-            $contact->u_degree = $tmp_contact->u_degree;
-            $contact->u_entry_year = $tmp_contact->u_entry_year;
-            $contact->save();
-            $tmp_contact->u_status = 1;
+            if ($check == 1) {
+                $contact->u_id = $tmp_contact->u_id;
+                $contact->u_teacher_name = $tmp_contact->u_teacher_name;
+                $contact->u_teacher_telephone = $tmp_contact->u_teacher_telephone;
+                $contact->u_frend_name1 = $tmp_contact->u_frend_name1;
+                $contact->u_frend_telephone1 = $tmp_contact->u_frend_telephone1;
+                $contact->u_frend_name2 = $tmp_contact->u_frend_name2;
+                $contact->u_frend_telephone2 = $tmp_contact->u_frend_telephone2;
+                $contact->u_student_img = $tmp_contact->u_student_img;
+                $contact->u_student_number = $tmp_contact->u_student_number;
+                $contact->u_school_id = $tmp_contact->u_school_id;
+                $contact->u_prof = $tmp_contact->u_prof;
+                $contact->u_degree = $tmp_contact->u_degree;
+                $contact->u_entry_year = $tmp_contact->u_entry_year;
+                $contact->save();
+                $tmp_contact->u_status = 1;
+            } else {
+                $tmp_contact->u_status = 2;
+            }
             $tmp_contact->save();
             $re = Tools::reTrue('审核用户联系人信息成功');
         } catch (Exception $e) {
@@ -154,6 +166,8 @@ class WebUserController extends \BaseController
 
     public function censorUserProfileBank($id)
     {
+        $check = Input::get('check', 0);
+
         try {
             $tmp_bank = TmpUsersBankCard::find($id);
             if (empty($tmp_bank)) {
@@ -169,15 +183,19 @@ class WebUserController extends \BaseController
                 $bank = new UsersBankCard();
             }
 
-            $bank->t_id = $tmp_bank->t_id;
-            $bank->u_id = $tmp_bank->u_id;
-            $bank->b_id = $tmp_bank->b_id;
-            $bank->b_card_num = $tmp_bank->b_card_num;
-            $bank->b_holder_name = $tmp_bank->b_holder_name;
-            $bank->b_holder_phone = $tmp_bank->b_holder_phone;
-            $bank->b_holder_identity = $tmp_bank->b_holder_identity;
-            $bank->save();
-            $tmp_bank->b_status = 1;
+            if ($check == 1) {
+                $bank->t_id = $tmp_bank->t_id;
+                $bank->u_id = $tmp_bank->u_id;
+                $bank->b_id = $tmp_bank->b_id;
+                $bank->b_card_num = $tmp_bank->b_card_num;
+                $bank->b_holder_name = $tmp_bank->b_holder_name;
+                $bank->b_holder_phone = $tmp_bank->b_holder_phone;
+                $bank->b_holder_identity = $tmp_bank->b_holder_identity;
+                $bank->save();
+                $tmp_bank->b_status = 1;
+            } else {
+                $tmp_bank->b_status = 2;
+            }
             $tmp_bank->save();
             $re = Tools::reTrue('审核用户银行信息成功');
         } catch (Exception $e) {
