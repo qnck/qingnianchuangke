@@ -10,6 +10,11 @@ Route::get('/', 'HomeController@index');
 
 /* V1 */
 Route::group(['domain' => Config::get('app.subdomain.api')], function () {
+
+    /* APP CONFIG START*/
+    Route::get('app/config', 'AppController@getConfig');
+    /* APP CONFIG END*/
+
     /* ME START*/
     Route::get('v0/user/me', 'MeController@me');
     Route::get('v0/user/me/posts', 'MeController@myPosts');
