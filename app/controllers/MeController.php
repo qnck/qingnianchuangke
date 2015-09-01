@@ -415,7 +415,9 @@ class MeController extends \BaseController
             $data['open_from'] = $booth->b_open_from;
             $data['open_to'] = $booth->b_open_to;
             $data['open_on'] = explode(',', $booth->b_open_on);
+            $data['desc'] = $booth->b_desc;
             $data['logo'] = $booth->getLogo();
+            $data['title'] = $booth->b_title;
             $re = Tools::reTrue('获取店铺状态信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取店铺状态信息失败:'.$e->getMessage());
@@ -432,6 +434,8 @@ class MeController extends \BaseController
         $openTo = Input::get('open_to', '');
         $openOn = Input::get('open_on');
         $logo = Input::get('logo', '');
+        $desc = Input::get('desc', '');
+        $title = Input::get('title', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -445,11 +449,13 @@ class MeController extends \BaseController
             $booth->b_open_from = $openFrom;
             $booth->b_open_to = $openTo;
             $booth->b_open_on = $openOn;
+            $booth->b_desc = $desc;
+            $booth->b_title = $title;
             if ($booth->b_type == 2 && $img_token) {
                 $imgObj = new Img('booth', $img_token);
                 $imgs = $imgObj->getSavedImg($id, $booth->b_imgs, true);
                 $booth->b_imgs = implode(',', $imgs);
-            } elseif ($img_token) {
+            } elseif (!$img_token) {
                 $imgs = Img::toArray($booth->b_imgs);
                 $imgs['logo'] = 'logo.'.$logo;
                 $booth->b_imgs = implode(',', $imgs);
