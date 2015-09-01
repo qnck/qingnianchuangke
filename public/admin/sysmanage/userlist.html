@@ -1,14 +1,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
 <script type="text/javascript" src="../easyui/jquery.min.js"></script>
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
 <title></title>
 <script>
-	//Ò³Ãæ¼ÓÔØ
+	//页面加载
 	$(document).ready(function () {
 		BindData();
 		$("#tt").datagrid('getPager').pagination({
@@ -19,67 +20,66 @@
 			}
 		});
 	});
-	//°ó¶¨Êý¾Ý
+	//绑定数据
 	function BindData() {
 		var pageNumber = $("#tt").datagrid('getPager').data("pagination").options.pageNumber;
 		var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
 		$.ajax({
 			type: "get",
-			url: 'http://www.qnck.dev/back/sys/user',
+			url: _url+'office/sys/user',
 			data: {},
 			dataType: "text",
 			success: function (result) {
-				alert(result);
+				$("#tt").datagrid("loadData", JSON.parse(result).data);
 			},
 			error: function () {
-				alert("¼ÓÔØÊ§°Ü!");
+				alert("加载失败!");
 			}
 		});
-//		$("#tt").datagrid("loadData", data);
 	}
-	//²Ëµ¥°´Å¥µã»÷ÊÂ¼þ
+	//功能菜单按钮点击事件
 	function toolBarClick(ty) {
 		$("#displayinfo").attr("fnty", ty);
 		switch (ty) {
-			case "resh"://Ë¢ÐÂ
+			case "resh"://刷新
 				BindData();
 				break;
-			case "add"://ÐÂÔö
-				$('#user-dlg').dialog({ title: "ÐÂÔöÓÃ»§" });
+			case "add"://添加
+				$('#user-dlg').dialog({ title: "添加用户" });
 				clearAllInputValue();//
 				$('#user-dlg').dialog('open');
 				break;
-			case "upd"://ÐÞ¸Ä
+			case "upd"://更新
 				var sdata = $("#tt").datagrid("getSelected");
 				if (sdata) {
 					clearAllInputValue();
 					putDataToWindow(sdata);
-					$('#user-dlg').dialog({ title: "ÐÞ¸ÄÓÃ»§" });
+					$('#user-dlg').dialog({ title: "编辑用户" });
 					$('#user-dlg').dialog('open');
 				} else {
-					$.messager.alert("ÌáÊ¾", "ÇëÑ¡ÔñÒ»¸öÓÃ»§", "alert");
+					$.messager.alert("提示", "请选择要编辑的用户！", "alert");
 				}
 				break;
-			case "del"://É¾³ý
+			case "del"://删除
 				deleteUser();
 				break;
 			default:
 				break;
 		}
 	}
-	//Çå¿Õ´°ÌåÔªËØÖµ
+	//清空页面元素
 	function clearAllInputValue(){
-		$("#account").val("");//ÓÃ»§ÕËºÅ
-		$("#username").val("");//ÓÃ»§Ãû³Æ
-		$("#password").val("");//ÓÃ»§ÃÜÂë
-		$("#okpassword").val("");//ÓÃ»§ÃÜÂë
+		$("#account").val("");//账号
+		$("#username").val("");//姓名
+		$("#password").val("");//密码
+		$("#okpassword").val("");//确认密码
 	}
-	//°ó¶¨Ñ¡ÖÐÊý¾ÝÖÁÒ³ÃæÔªËØÖÐ
+	//绑定页面元素
 	function putDataToWindow(data) {
-		$("#account").val(data.account);//ÓÃ»§ÕËºÅ
-		$("#username").val(data.username);//ÓÃ»§Ãû³Æ
+		$("#account").val(data.account);//账号
+		$("#username").val(data.username);//姓名
 	}
-	//ÑéÖ¤´°ÌåÔªËØÊäÈëÖµ
+	//输入检查
 	function ckeckValue(obj) {
 		var sid = $(obj).attr("id");
 		var __val = $(obj).val();
@@ -91,12 +91,12 @@
 				clearError(obj);
 				return true;
 			}
-		} else if (sid == "okpassword") {//ÑéÖ¤ÃÜÂë
+		} else if (sid == "okpassword") {//确认密码
 			if (__val == "") {
-				$(obj).parent().next().children().html("ÇëÔÙ´ÎÊäÈëÃÜÂë!").show();
+				$(obj).parent().next().children().html("请输入确认密码!").show();
 				return false;
 			} else if ($("#password").val() != __val) {
-				$(obj).parent().next().children().html("ÃÜÂë²»Ò»ÖÂ!").show();
+				$(obj).parent().next().children().html("确认密码输入错误!").show();
 				return false;
 			} else {
 				clearError(obj);
@@ -104,72 +104,113 @@
 			}
 		} 
 	}
-	//Çå³ý´íÎóÌáÊ¾
+	//清空错误信息
 	function clearError(obj){
 		$(obj).parent().next().children().hide();
 	}
-	//É¾³ýÓÃ»§
+	//删除用户
 	function deleteUser() {
 		var sdata = $("#tt").datagrid("getSelected");
 		if (sdata) {
-			$.messager.confirm("ÌáÊ¾", "È·ÈÏÉ¾³ý´Ë¼ÇÂ¼£¿", function (r) {
+			$.messager.confirm("提示", "确认删除选中用户！", function (r) {
 				if (r) {
-					//µ÷ÓÃÉ¾³ýÓÃ»§½Ó¿Ú
-					
-					//·µ»ØÖµ´¦Àí
-					if (true) {
-						$("#tt").datagrid("deleteRow", rowindex);
-					}
-					else {
-						$.messager.alert('ÌáÊ¾', 'É¾³ýÊ§°Ü£¡', 'info');
-					}
+					$.ajax({
+						type: "delete",
+						url: _url+'office/sys/user/{'+sdata.id+'}',
+						data: {},
+						dataType: "text",
+						success: function (r) {
+							alert(r);
+							//var result = JSON.parse(r);
+							//$.messager.alert('提示', result.message, 'info');
+							//BindData();
+						},
+						error: function () {
+							alert("操作失败!");
+						}
+					});
 				}
 			});
 		} else {
-			$.messager.alert("ÌáÊ¾", "ÇëÑ¡ÔñÒ»¸öÓÃ»§", "alert");
+			$.messager.alert("提示", "请选择要删除的用户！", "alert");
 		}
 	}
-	//»ñÈ¡Öµ
+	//获取页面元素值
 	function getDataFromWindow(){
 		var rsData = { data: "", flag: true };
 		var userObj = {};
-		if (ckeckValue($("#account"))) {//ÓÃ»§´úÂë
+		if (ckeckValue($("#account"))) {//账号
 			userObj.account = $("#account").val();
 		} else {
 			rsData.flag = false;
 		}
+		if (ckeckValue($("#username"))) {//姓名
+			userObj.u_name = $("#username").val();
+		} else {
+			rsData.flag = false;
+		}
+		if (ckeckValue($("#password"))) {//密码
+			userObj.password = $("#password").val();
+		} else {
+			rsData.flag = false;
+		}
+		rsData.data = userObj;
+		return rsData;
 	}
-	//±£´æ²Ù×÷
+	//保存按钮点击事件
 	function saveUserClick(){
-		var fnty = $("#displayinfo").attr("fnty");//·½·¨ÀàÐÍ
+		var fnty = $("#displayinfo").attr("fnty");//读取操作类型
 		var rsData = getDataFromWindow();
 		if (rsData.flag) {
-			//ÐÂÔö
+			//添加
 			if (fnty == "add") {
-				//¹Ø±Õµ¯³ö´°Ìå
-				$("#user-dlg").dialog("close");
-				//µ÷ÓÃÐÂÔö·½·¨½Ó¿Ú
-			} else if (fnty == "upd") {
-				//±à¼­µÄÊý¾Ý
+				//调用后台添加接口
+				$.ajax({
+					type: "post",
+					url: _url+'office/sys/user',
+					data: {name:rsData.data.u_name,pass:rsData.data.password,account:rsData.data.account},
+					dataType: "text",
+					success: function (r) {
+						var result = JSON.parse(r);
+						alert(result.message);
+						if(result.result=="2000"){
+							$("#user-dlg").dialog("close");
+							BindData();
+						}
+					},
+					error: function () {
+						alert("操作失败!");
+					}
+				});
+				//关闭窗口
+			} else if (fnty == "upd") {//编辑
+				//获取选中用户
 				var sdata = $("#tt").datagrid("getSelected");
-				//±à¼­Êý¾ÝµÄË÷Òý
+				//获取选中用户索引
 				var rowindex = $("#tt").datagrid("getRowIndex", sdata);
-				//±à¼­Êý¾ÝµÄid
+				//设置修改用户id
 				rsData.data.id = sdata.id;
-				//¹Ø±Õµ¯³ö´°Ìå
+				//调用后台编辑接口
+				//关闭窗口
 				$("#user-dlg").dialog("close");
-				//µ÷ÓÃÐÞ¸Ä·½·¨½Ó¿Ú
 			}
 		}
 	}
 	function formatHandle(value, row) {
-		return rs = '<a class="alink-edit" href="#">[ÉèÖÃ½ÇÉ«]</a>';
+
+		var rs  = row.status=='1' ? '<a class="alink-edit" href="#">[禁用]</a>' : '<a class="alink-edit" href="#">[启用]</a>';//''
+		rs += '<a class="alink-edit" href="#">[设置角色]</a>';
+		return rs;
+	}
+	function formatStatus(value, row){
+		if(value=="0") return "禁用";
+		else return "可用"
 	}
 </script>
 </head>
 
 <body>
-<table id="tt" title="ÓÃ»§ÁÐ±í" class="easyui-datagrid" data-options="
+<table id="tt" title="用户列表" class="easyui-datagrid" data-options="
             rownumbers:true,
             fit:true,
             singleSelect:true,
@@ -179,24 +220,26 @@
             toolbar:'#menuTollbar'">
     <thead>
         <tr>
-            <th data-options="field:'username',width:120,align:'left',halign:'center',sortable:true">ÓÃ»§Ãû³Æ</th>
-            <th data-options="field:'account',width:80,align:'left',halign:'center',sortable:true">ÓÃ»§ÕÊºÅ</th>
-            <th data-options="field:'password',width:80,align:'left',halign:'center',sortable:true">ÓÃ»§ÃÜÂë</th>
-            <th data-options="field:'createdate',width:180,align:'center',halign:'center',sortable:true">´´½¨Ê±¼ä</th>
-            <th data-options="field:'updatedate',width:180,align:'center',sortable:true">×îºóÐÞ¸ÄÊ±¼ä</th>
-            <th data-options="field:'options',width:120,align:'center',formatter:formatHandle">²Ù×÷</th>
+            <th data-options="field:'id',width:120,align:'left',halign:'center',sortable:true">id</th>
+            <th data-options="field:'u_name',width:120,align:'left',halign:'center',sortable:true">姓名</th>
+            <th data-options="field:'account',width:80,align:'left',halign:'center',sortable:true">账号</th>
+            <th data-options="field:'last_local',width:80,align:'left',halign:'center',sortable:true">最后登录IP</th>
+            <th data-options="field:'last_time',width:120,align:'left',halign:'center',sortable:true">最后登录时间</th>
+            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">是否可用</th>
+            <th data-options="field:'is_del',width:80,align:'left',halign:'center',sortable:true">已删除</th>
+            <th data-options="field:'options',width:140,align:'center',formatter:formatHandle">操作</th>
         </tr>
     </thead>
 </table>
 <div id="menuTollbar" style="height: auto;">
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">Ë¢ÐÂ</a>
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="toolBarClick('add');">ÐÂÔö</a>
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" onclick="toolBarClick('upd');">ÐÞ¸Ä</a>
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" onclick="toolBarClick('del');">É¾³ý</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="toolBarClick('add');">添加</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" onclick="toolBarClick('upd');">编辑</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" onclick="toolBarClick('del');">删除</a>
 </div>
 
-<!-- ÐÂÔö/±à¼­ÓÃ»§´°ÌåStart -->
-<div id="user-dlg" class="easyui-dialog" title=" ÓÃ»§ÐÂÔö" style="width: 400px; height: 330px; padding: 5px"
+<!-- 添加/编辑窗口 Start -->
+<div id="user-dlg" class="easyui-dialog" title="添加用户" style="width: 400px; height: 330px; padding: 5px"
     data-options="
         closed:true,
         modal:true,
@@ -204,47 +247,47 @@
         buttons: '#user-dlg-buttons'
     ">
     <div>
-        <div id="displayinfo" fnty="add" style="display: none;">Òþ²ØµÄ´æ´¢ÐÅÏ¢²ã</div>
+        <div id="displayinfo" fnty="add" style="display: none;">信息存储隐藏层</div>
         <table class="userTab">
             <tr>
-                <td class="td-key">ÓÃ»§ÕÊºÅ</td>
+                <td class="td-key">账号</td>
                 <td style="width: 100px;">
                     <input id="account" next="username" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td>
-                    <div style="color: red; display: none;">ÓÃ»§ÕÊºÅ²»¿ÉÒÔÎª¿Õ!</div>
+                    <div style="color: red; display: none;">请输入账号!</div>
                 </td>
             </tr>
             <tr>
-                <td class="td-key">ÓÃ»§Ãû³Æ</td>
+                <td class="td-key">姓名</td>
                 <td>
                     <input id="username" next="password" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td>
-                    <div style="color: red; display: none;">ÓÃ»§Ãû³Æ²»¿ÉÒÔÎª¿Õ!</div>
+                    <div style="color: red; display: none;">请输入姓名!</div>
                 </td>
             </tr>
             <tr>
-                <td class="td-key">ÓÃ»§ÃÜÂë</td>
+                <td class="td-key">密码</td>
                 <td>
                     <input id="password" next="okpassword" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td style="text-align: left;">
-                    <div style="color: red; display: none;">ÓÃ»§ÃÜÂë²»¿ÉÒÔÎª¿Õ!</div>
+                    <div style="color: red; display: none;">请输入密码!</div>
                 </td>
             </tr>
             <tr>
-                <td class="td-key">È·ÈÏÃÜÂë</td>
+                <td class="td-key">确认密码</td>
                 <td>
                     <input id="okpassword" next="pid" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td style="text-align: left;">
-                    <div style="color: red; display: none;">ÇëÔÙ´ÎÊäÈëÃÜÂë!</div>
+                    <div style="color: red; display: none;">请输入确认密码!</div>
                 </td>
             </tr>
         </table>
     </div>
 </div>
 <div id="user-dlg-buttons">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="saveUserClick();">È·¶¨</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#user-dlg').dialog('close');">È¡Ïû</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="saveUserClick();">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#user-dlg').dialog('close');">取消</a>
 </div>
-<!-- ÐÂÔö/±à¼­ÓÃ»§´°ÌåEnd -->
+<!-- 添加/编辑窗口 End -->
 </body>
 </html>
