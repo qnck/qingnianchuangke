@@ -1,6 +1,4 @@
-$(function(){
-	alert("获取当前用户是否登录！");
-});
+	var _url="http://www.qnck.dev/";
 	$pintuercheck=function(element,type,value){
 		$pintu=value.replace(/(^\s*)|(\s*$)/g, "");
 		switch(type){
