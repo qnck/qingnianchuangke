@@ -110,7 +110,7 @@ class Booth extends Eloquent
         $imgs = Img::toArray($this->b_imgs);
         if (empty($imgs['logo'])) {
             $logo = null;
-        } elseif (strpos($imgs['logo'], 'http://')) {
+        } elseif (strpos($imgs['logo'], 'http://') !== false) {
             $logo = $imgs['logo'];
         } else {
             $logo = substr($imgs['logo'], 5);
