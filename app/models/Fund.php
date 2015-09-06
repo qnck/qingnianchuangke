@@ -27,6 +27,25 @@ class Fund extends Eloquent
         $data['id'] = $this->t_id;
         $data['profit'] = $this->t_profit_rate;
         $data['loan'] = $this->t_apply_money;
+
+        if ($this->t_repay_start_date) {
+            $startObj = new DateTime($this->t_repay_start_date);
+            $start = $startObj->getTimestamp();
+            $data['loan_start'] = $startObj->format('Y-m-d H:i:s');
+        } else {
+            $start = 0;
+            $data['loan_start'] = null;
+        }
+        // if ($this->t_repay_end_date) {
+        //     $endObj = new DateTime($this->t_repay_end_date);
+        //     $end = $endObj->getTimestamp();
+        //     $data['loan_end'] = $endObj->format('Y-m-d H:i:s');
+        // } else {
+        //     $end = 0;
+        //     $data['loan_end'] = null;
+        // }
+        // $data['loan_period'] = ceil(($end - $start) / (3600 * 24));
+
         $data['status'] = $this->t_status;
         $loans = null;
         if (!empty($this->loans)) {
@@ -35,6 +54,7 @@ class Fund extends Eloquent
             }
         }
         $data['loans'] = $loans;
+        $data['loan_period'] = count($loans);
         return $data;
     }
 

@@ -152,3 +152,8 @@ Route::put('office/user/profile/{id}/censor/detail', 'OfficeWebUserController@ce
 Route::put('office/user/profile/{id}/censor/contact', 'OfficeWebUserController@censorUserProfileContact');
 Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@censorUserProfileBank');
 /* WEB USER END*/
+
+/* BOOTH START*/
+Route::get('office/booth', 'OfficeBoothController@listBooths');
+Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
+/* BOOTH END*/
