@@ -2,7 +2,7 @@
 /**
 *
 */
-class SysUserController extends \BaseController
+class OfficeSysUserController extends \BaseController
 {
     public function listUsers()
     {

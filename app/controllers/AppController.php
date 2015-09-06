@@ -6,7 +6,7 @@ class AppController extends \BaseController
 {
     public function getConfig()
     {
-        $init['app_ver'] = '0.0.1';
+        $init['app_ver'] = '0.01';
         $init['api_ver'] = 'v0';
         $init['force_upgrade'] = 1;
         $init['init_img'] = 'http://img.54qnck.com/img/sys/load.png';

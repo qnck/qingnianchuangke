@@ -139,16 +139,16 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 /*********** BACK ***********/
 
 /* SYS USER START*/
-Route::get('office/sys/user', 'SysUserController@listUsers');
-Route::post('office/sys/user', 'SysUserController@postUser');
-Route::put('office/sys/user/{id}', 'SysUserController@putUser');
-Route::delete('office/sys/user/{id}', 'SysUserController@delUser');
+Route::get('office/sys/user', 'OfficeSysUserController@listUsers');
+Route::post('office/sys/user', 'OfficeSysUserController@postUser');
+Route::put('office/sys/user/{id}', 'OfficeSysUserController@putUser');
+Route::delete('office/sys/user/{id}', 'OfficeSysUserController@delUser');
 /* SYS USER END*/
 
 /* WEB USER START*/
-Route::get('office/user/profile', 'WebUserController@listUserProfiles');
-Route::get('office/user/profile/{id}', 'WebUserController@getUserProfile');
-Route::put('office/user/profile/{id}/censor/detail', 'WebUserController@censorUserProfileDetail');
-Route::put('office/user/profile/{id}/censor/contact', 'WebUserController@censorUserProfileContact');
-Route::put('office/user/profile/{id}/censor/bank', 'WebUserController@censorUserProfileBank');
+Route::get('office/user/profile', 'OfficeWebUserController@listUserProfiles');
+Route::get('office/user/profile/{id}', 'OfficeWebUserController@getUserProfile');
+Route::put('office/user/profile/{id}/censor/detail', 'OfficeWebUserController@censorUserProfileDetail');
+Route::put('office/user/profile/{id}/censor/contact', 'OfficeWebUserController@censorUserProfileContact');
+Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@censorUserProfileBank');
 /* WEB USER END*/
