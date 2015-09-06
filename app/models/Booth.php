@@ -89,6 +89,19 @@ class Booth extends Eloquent
         return $data;
     }
 
+    public function showInAdmin()
+    {
+        $data = $this->showInList();
+        $data['source'] = $this->b_product_source;
+        $data['cust_group'] = $this->b_customer_group;
+        $data['promo_strategy'] = $this->b_promo_strategy;
+        $data['status'] = $this->b_status;
+        if (!empty($this->fund)) {
+            $data['fund'] = $this->fund->showDetail();
+        }
+        return $data;
+    }
+
     public function addBooth()
     {
         $now = new DateTime();

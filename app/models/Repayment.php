@@ -25,6 +25,7 @@ class Repayment extends Eloquent
     {
         $data = [];
         $data['id'] = $this->t_id;
+        $data['schema'] = $this->f_schema;
         $data['percentage'] = $this->f_percentage;
         $data['amount'] = $this->f_re_money;
         return $data;
