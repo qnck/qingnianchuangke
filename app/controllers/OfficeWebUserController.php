@@ -2,7 +2,7 @@
 /**
 *
 */
-class WebUserController extends \BaseController
+class OfficeWebUserController extends \BaseController
 {
     public function listUserProfiles()
     {
