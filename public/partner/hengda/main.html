@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="images/splash/splash-icon.png">
+<link rel="apple-touch-startup-image" href="images/splash/splash-screen.png"            media="screen and (max-device-width: 320px)" />  
+<link rel="apple-touch-startup-image" href="images/splash/splash-screen_402x.png"       media="(max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" /> 
+<link rel="apple-touch-startup-image" sizes="640x1096" href="images/splash/splash-screen_403x.png" />
+<link rel="apple-touch-startup-image" sizes="1024x748" href="images/splash/splash-screen-ipad-landscape" media="screen and (min-device-width : 481px) and (max-device-width : 1024px) and (orientation : landscape)" />
+<link rel="apple-touch-startup-image" sizes="768x1004" href="images/splash/splash-screen-ipad-portrait.png" media="screen and (min-device-width : 481px) and (max-device-width : 1024px) and (orientation : portrait)" />
+<link rel="apple-touch-startup-image" sizes="1536x2008" href="images/splash/splash-screen-ipad-portrait-retina.png"   media="(device-width: 768px)  and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)"/>
+<link rel="apple-touch-startup-image" sizes="1496x2048" href="images/splash/splash-screen-ipad-landscape-retina.png"   media="(device-width: 768px) and (orientation: landscape)    and (-webkit-device-pixel-ratio: 2)"/>
+
+<title>Ciuten</title>
+
+<link href="styles/style.css"           rel="stylesheet" type="text/css">
+<link href="styles/framework.css"       rel="stylesheet" type="text/css">
+<link href="styles/owl.carousel.css"     rel="stylesheet" type="text/css">
+<link href="styles/owl.theme.css"       rel="stylesheet" type="text/css">
+<link href="styles/swipebox.css"         rel="stylesheet" type="text/css">
+<link href="styles/colorbox.css"         rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="scripts/jquery.js"></script>
+<script type="text/javascript" src="scripts/jqueryui.js"></script>
+<script type="text/javascript" src="scripts/owl.carousel.min.js"></script>
+<script type="text/javascript" src="scripts/jquery.swipebox.js"></script>
+<script type="text/javascript" src="scripts/colorbox.js"></script>
+<script type="text/javascript" src="scripts/snap.js"></script>
+<script type="text/javascript" src="scripts/contact.js"></script>
+<script type="text/javascript" src="scripts/custom.js"></script>
+<script type="text/javascript" src="scripts/framework.js"></script>
+<script type="text/javascript" src="scripts/framework.launcher.js"></script>
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+var _access_token = "";
+var _appid = "wxa1ce376d0c94b323";
+var _secret = "ce27baba319863ab94672c51e2c924b3";
+var userObj=[];
+var num = 0;
+var timer;
+window.onload=function (){ 
+    getUsers();
+} 
+function getUsers(){
+    if(_access_token=="")
+    {
+        $.ajax({
+            type: "get",
+            url: "https://api.weixin.qq.com/cgi-bin/token",
+            data: {grant_type:"client_credential",appid:_appid,secret:_secret},
+            dataType: "json",
+            async: false,
+            success: function (result) {
+                _access_token = result.access_token;
+            },
+            error: function () {
+                alert("加载失败!");
+            }
+        });
+    }
+    userObj=[];
+    $.ajax({
+            type: "get",
+            url: "https://api.weixin.qq.com/cgi-bin/user/get",
+            data: {access_token:_access_token,next_openid:""},
+            dataType: "json",
+            async: false,
+            success: function (result) {
+                var total = result.total;
+                var userids  = result.data.openid;
+                for(var i=0;i<total;i++){
+                    var _openid = userids[i];
+                    $.ajax({
+                        type: "get",
+                        url: "https://api.weixin.qq.com/cgi-bin/user/info",
+                        data: {access_token:_access_token,openid:_openid,lang:"zh_CN"},
+                        dataType: "json",
+                        async: false,
+                        success: function (result) {
+                            var user={nickname:result.nickname,headimgurl:result.headimgurl,subscribe_time:result.subscribe_time};
+                            var newTime = new Date(parseInt(user.subscribe_time) * 1000).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ").replace(" GMT+8",""); 
+                            var dateTime = newTime.substring(0,newTime.indexOf(" ")); 
+
+                            var nowTime = new Date().toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ").replace(" GMT+8","");
+                            var nowDate = nowTime.substring(0,nowTime.indexOf(" ")); 
+                            if(dateTime==nowDate){
+                                bindUser(user);
+                                userObj.push(user);
+                            }
+                        },
+                        error: function () {
+                            alert("加载失败!");
+                        }
+                    });
+                }
+                num = userObj.length-1;
+                if(userObj.length>0){
+                    var htmlButton = "<div class=\"clear\"></div><input type=\"submit\" class=\"buttonWrap button button-green contactSubmitButton\" value=\"开始抽奖\" id=\"btnCJ\" onclick=\"btnCJClick()\"/>";
+                    $("#contentDiv").html($("#contentDiv").html()+htmlButton);
+                }
+                else{
+                    $("#contentDiv").html("<h2>无满足抽奖条件的用户[无当天关注用户]</h2>");
+                }
+            },
+            error: function () {
+                alert("加载失败!");
+            }
+        });
+}
+function bindUser(user){
+        var htmlContent = "<div style=\"float:left;padding:5px;\"><img src=\""+user.headimgurl+"\" style=\"width:80px;height:80px\"/>"+user.nickname+"</div>";
+        $("#contentDiv").html($("#contentDiv").html()+htmlContent);
+}
+function btnCJClick(){
+    $("#cjDiv").show();
+    $("#descDiv").hide();
+    start();
+}
+function change(){
+    var user = userObj[GetRnd(0,num)];
+    var htmlContent = "<img src=\""+user.headimgurl+"\" style=\"margin:auto;width:80px;height:80px\"/>"+user.nickname;
+    $("#contentDiv").html(htmlContent);
+}
+function start(){   
+    clearInterval(timer);   
+    timer = setInterval('change()',100); 
+}
+function stop(){
+    if($("#btnStop").val()=="重新抽取"){
+        start();
+        $("#btnStop").val("停止");
+    }   
+    else{
+        clearInterval(timer);
+        $("#btnStop").val("重新抽取");
+    }
+} 
+function GetRnd(min,max){   
+    return parseInt(Math.random()*(max-min+1));   
+}
+</script>
+
+</head>
+<body>
+
+<div id="preloader">
+    <div id="status">
+        <p class="center-text">
+            页面加载中...
+        </p>
+    </div>
+</div>
+
+<div class="top-deco"></div>
+
+<div class="content">
+    <div class="header">
+        <a class="landing-logo" href="#" style="text-align:center;">
+            <span style="color:black;font-size:20px">恒大·华置广场</span>
+            <br>
+            <em>关注微信 · 参与抽奖</em>
+        </a>
+    </div>
+    <div class="decoration"></div>
+</div>
+
+<div class="content">
+    <div id="descDiv">可参与抽奖用户:</div>
+    <div style="padding-bottom:20px;text-align:center" id="contentDiv">
+    </div>
+    <div style="padding-top:20px;padding-bottom:20px;display:none;" id="cjDiv">
+        <input type="submit" class="buttonWrap button button-green contactSubmitButton" id="btnStop" value="停止" onclick="stop()"/>
+    </div>
+    <div class="decoration"></div>            
+    <div class="footer">
+        <a href="#" class="contact-call">Phone: 185 0823 7273</a>
+        <div class="clear"></div>
+        <p class="copyright">
+            COPYRIGHT 2015.<br>
+            ALL RIGHTS RESERVED
+        </p>
+    </div> 
+    
+</div>
+
+<div class="bottom-deco"></div>
+</body>
+</html>
