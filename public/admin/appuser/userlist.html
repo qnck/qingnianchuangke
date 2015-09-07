@@ -105,10 +105,14 @@ table.altrowstable td {
 		$("#mqdh").text(detail.mother_telephone);
 		if(detail.status=="1")
 			$("#detailOptTd").html("此项已审核通过");
-		else
+		else if(detail.status=="0"){
 			$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+		}
+		else if(detail.status=="2"){
+			$("#detailOptTd").html("审核不通过，原因【<span style='color:red;'>"+detail.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+		}
 	}
-	function censor(type, opt){
+	function censor(type, opt, bankid){
 		var remark = "";
 		if(opt=="0")
 			remark = prompt("请输入审核不通过的原因：", ""); 
@@ -118,14 +122,26 @@ table.altrowstable td {
 		}
 
 		var sdata = $("#tt").datagrid("getSelected");
+		var _id = sdata.id;
+		if(type=="bank")
+			_id = bankid;
 		if (sdata) {
 			$.ajax({
 				type: "put",
-				url: _url+'office/user/profile/'+sdata.id+'/censor/'+type,
-				data: {check:opt},
+				url: _url+'office/user/profile/'+_id+'/censor/'+type,
+				data: {check:opt,remark:remark},
 				dataType: "text",
 				success: function (r) {
-					alert(r);
+					var result = JSON.parse(r);
+					alert(result.message);
+					if(result.result =="2000"){
+						//审核成功
+						var tdid = type+"OptTd";
+						if(opt=="1")
+							$("#"+tdid).html("此项已审核通过");
+						else
+							$("#"+tdid).html("审核不通过，原因【<span style='color:red;'>"+remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('"+type+"','1','"+_id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('"+type+"','0','"+_id+"')\">[审核不通过]</a>");
+					}
 				},
 				error: function () {
 					alert("操作失败!");
@@ -144,14 +160,19 @@ table.altrowstable td {
 	}
 	function putBankToWindow(bank){
 		$("#khh").text(bank.card_number);
-		$("#kh").text(bank.bank.name);
+		if(bank.bank !=null)
+			$("#kh").text(bank.bank.name);
 		$("#hzxm").text(bank.holder_name);
 		$("#hzdh").text(bank.holder_phone);
 		$("#hzsfz").text(bank.holder_identity_number);
 		if(bank.status=="1")
 			$("#bankOptTd").html("此项已审核通过");
-		else
-			$("#bankOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('bank','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0')\">[审核不通过]</a>");
+		else if(bank.status=="0"){
+			$("#bankOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+		}
+		else if(bank.status=="2"){
+			$("#bankOptTd").html("审核不通过，原因【<span style='color:red;'>"+bank.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+		}
 	}
 	function clearContactWindowData(){
 		$("#xxmc").text("");
@@ -168,7 +189,8 @@ table.altrowstable td {
 		$("#hydh2").text("");
 	}
 	function putContactToWindow(contact){
-		$("#xxmc").text(contact.school.school_name);
+		if(contact.school!=null)
+			$("#xxmc").text(contact.school.school_name);
 		$("#xh").text(contact.student_number);
 		if(contact.student_img!=null)
 			$("#xszzp").attr("src",contact.student_img);
@@ -183,12 +205,18 @@ table.altrowstable td {
 		$("#hydh2").text(contact.frend_telephone2);
 		if(contact.status=="1")
 			$("#contactOptTd").html("此项已审核通过");
-		else
+		else if(contact.status=="0"){
 			$("#contactOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+		}
+		else if(contact.status=="2"){
+			$("#contactOptTd").html("审核不通过，原因【<span style='color:red;'>"+contact.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+		}
 	}
 	function formatStatus(value, row){
 		if(row.detail_status=="1" && row.contact_status=="1" && row.bank_status=="1")
 			return "已通过审核";
+		else if(row.detail_status=="1" || row.contact_status=="1" || row.bank_status=="1")
+			return "部分通过审核";
 		else
 			return "未通过审核";
 	}
@@ -350,7 +378,7 @@ table.altrowstable td {
     </div>
 </div>
 <div id="userdetail-dlg-buttons">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#userdetail-dlg').dialog('close');">关闭</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#userdetail-dlg').dialog('close');BindData();">关闭</a>
 </div>
 
 </body>
