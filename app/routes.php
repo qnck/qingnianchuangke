@@ -134,6 +134,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/lbs/user/{id}', 'LocationController@updateUser');
     Route::post('v0/lbs/booth/{id}', 'LocationController@updateBooth');
     /* LBS END*/
+
 });
 
 /*********** BACK ***********/
@@ -157,3 +158,7 @@ Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@cens
 Route::get('office/booth', 'OfficeBoothController@listBooths');
 Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 /* BOOTH END*/
+
+/* WECHAT START*/
+Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
+/* WECHAT END*/
