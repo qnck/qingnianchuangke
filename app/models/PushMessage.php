@@ -15,22 +15,19 @@ class PushMessage extends Eloquent
     }
 
 
-    public function push($content)
+    public function pushMessage($content)
     {
         // $this->baseValidate();
         $this->initCurl();
-        $send = ['where' => ['u_id' => $this->_u_id], 'data' => ['alert' => $content]];
-        $data = json_encode($data);
-        $this->setPostData($data);
+        $data = ["fun" => 0, "action" => "makerck.PUSH", "alert" => $content];
+        $send = ['where' => ['userId' => (string)$this->_u_id], 'data' => $data];
+        $send = json_encode($send);
+        $this->setPostData($send);
         $re = $this->execCurl();
-        if ($re->returnstatus == 'Success') {
+        if (!empty($re->objectId)) {
             return true;
         } else {
-            if (is_object($re)) {
-                throw new Exception($re->message, 1);
-            } else {
-                throw new Exception("推送消息失败", 1);
-            }
+            throw new Exception("推送消息失败", 1);
         }
     }
 
@@ -41,12 +38,13 @@ class PushMessage extends Eloquent
      */
     private function initCurl()
     {
+        $config = Config::get('app.leancloud');
         $this->ch = curl_init();
 
         curl_setopt($this->ch, CURLOPT_POST, 1);
         curl_setopt($this->ch, CURLOPT_URL, $this->_send_url);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['X-AVOSCloud-Application-Id: cw7h66rl18j9gbftcrqhdkqi16xmezj8wd7d2fxjs5b2qll', 'X-AVOSCloud-Application-Key: 3beeo9ca54fln7xynpy81neyv9trrl4zfe8n294g0hpx4p5t', 'Content-Type: application/json']);
+        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['X-AVOSCloud-Application-Id:'.$config['id'], 'X-AVOSCloud-Application-Key:'.$config['key'], 'Content-Type: application/json']);
     }
     
     /**
@@ -57,7 +55,7 @@ class PushMessage extends Eloquent
     private function execCurl()
     {
         $re = curl_exec($this->ch);
-        $re = new SimpleXMLElement($re);
+        $re = json_decode($re);
         return $re;
     }
 
