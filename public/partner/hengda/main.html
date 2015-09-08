@@ -35,11 +35,6 @@
 <script type="text/javascript" src="scripts/framework.launcher.js"></script>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script>
-var _access_token = "";
-// var _appid = "wxa1ce376d0c94b323";
-// var _secret = "ce27baba319863ab94672c51e2c924b3";
-var _appid = 'wx0d02829c6679eff0';
-var _secret = 'f649cec4caf0b7f91b340a122b7aca4d';
 var userObj=[];
 var num = 0;
 var timer;
@@ -47,70 +42,41 @@ window.onload=function (){
     getUsers();
 } 
 function getUsers(){
-    if(_access_token=="")
-    {
-        $.ajax({
-            type: "get",
-            url: "https://api.weixin.qq.com/cgi-bin/token",
-            data: {grant_type:"client_credential",appid:_appid,secret:_secret},
-            dataType: "json",
-            async: false,
-            success: function (result) {
-                _access_token = result.access_token;
-            },
-            error: function () {
-                alert("加载失败!");
-            }
-        });
-    }
+    var todayTime = new Date().toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+    var todayDate = todayTime.substring(0,todayTime.indexOf(" ")); 
+
+    var tomorrowTime = new Date((new Date()/1000+86400)*1000).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+    var tomorrowDate = tomorrowTime.substring(0,tomorrowTime.indexOf(" ")); 
+
     userObj=[];
     $.ajax({
-            type: "get",
-            url: "https://api.weixin.qq.com/cgi-bin/user/get",
-            data: {access_token:_access_token,next_openid:""},
-            dataType: "json",
-            async: false,
-            success: function (result) {
-                var total = result.total;
-                var userids  = result.data.openid;
-                for(var i=0;i<total;i++){
-                    var _openid = userids[i];
-                    $.ajax({
-                        type: "get",
-                        url: "https://api.weixin.qq.com/cgi-bin/user/info",
-                        data: {access_token:_access_token,openid:_openid,lang:"zh_CN"},
-                        dataType: "json",
-                        async: false,
-                        success: function (result) {
-                            var user={nickname:result.nickname,headimgurl:result.headimgurl,subscribe_time:result.subscribe_time};
-                            var newTime = new Date(parseInt(user.subscribe_time) * 1000).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ").replace(" GMT+8",""); 
-                            var dateTime = newTime.substring(0,newTime.indexOf(" ")); 
-
-                            var nowTime = new Date().toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ").replace(" GMT+8","");
-                            var nowDate = nowTime.substring(0,nowTime.indexOf(" ")); 
-                            if(dateTime==nowDate){
-                                bindUser(user);
-                                userObj.push(user);
-                            }
-                        },
-                        error: function () {
-                            alert("加载失败!");
-                        }
-                    });
+        type: "get",
+        url: "http://www.54qnck.com/wechat/hengda/user",
+        data: {start:todayDate,end:tomorrowDate},
+        dataType: "json",
+        async: false,
+        success: function (result) {
+            if(result.result=="2000"){
+                var datas = result.data;
+                for(var i=0;i<datas.length;i++){
+                    var user={nickname:datas[i].nickname,headimgurl:datas[i].headimgurl,subscribe_time:datas[i].subscribe_time};
+                    bindUser(user);
+                    userObj.push(user);
                 }
-                num = userObj.length-1;
-                if(userObj.length>0){
-                    var htmlButton = "<div class=\"clear\"></div><input type=\"submit\" class=\"buttonWrap button button-green contactSubmitButton\" value=\"开始抽奖\" id=\"btnCJ\" onclick=\"btnCJClick()\"/>";
-                    $("#contentDiv").html($("#contentDiv").html()+htmlButton);
-                }
-                else{
-                    $("#contentDiv").html("<h2>无满足抽奖条件的用户[无当天关注用户]</h2>");
-                }
-            },
-            error: function () {
-                alert("加载失败!");
             }
-        });
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+    num = userObj.length-1;
+    if(userObj.length>0){
+        var htmlButton = "<div class=\"clear\"></div><input type=\"submit\" class=\"buttonWrap button button-green contactSubmitButton\" value=\"开始抽奖\" id=\"btnCJ\" onclick=\"btnCJClick()\"/>";
+        $("#contentDiv").html($("#contentDiv").html()+htmlButton);
+    }
+    else{
+        $("#contentDiv").html("<h2>无满足抽奖条件的用户[无当天关注用户]</h2>");
+    }
 }
 function bindUser(user){
         var htmlContent = "<div style=\"float:left;padding:5px;\"><img src=\""+user.headimgurl+"\" style=\"width:80px;height:80px\"/>"+user.nickname+"</div>";
