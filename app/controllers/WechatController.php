@@ -19,15 +19,20 @@ class WechatController extends \BaseController
             $wecht = new WechatApi('hengda');
             $re = $wecht->getFollowUser();
             $re = $wecht->getUsers($re['data']['openid']);
+            $data = [];
             foreach ($re as $key => $user) {
+                $check = true;
                 if ($date_start && ($user['subscribe_time'] < $date_start)) {
-                    unset($re[$key]);
+                    $check = false;
                 }
                 if ($date_end && ($user['subscribe_time'] > $date_end)) {
-                    unset($re[$key]);
+                    $check = false;
+                }
+                if ($check) {
+                    $data[] = $user;
                 }
             }
-            $re = Tools::reTrue('获取恒大微信用户成功', $re);
+            $re = Tools::reTrue('获取恒大微信用户成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取恒大微信用户失败:'.$e->getMessage());
         }
