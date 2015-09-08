@@ -87,14 +87,14 @@ class TmpUsersBankCard extends Eloquent
     {
         $old_status = '审核之前的状态为: '.$this->getOriginal('b_status').', 银行卡记录id为'.$this->t_id.', 审核之后的状态为: '.$this->b_status.'.';
         if ($this->b_status == 2) {
-            $pushMsgObj = new PushMessage($this->u_id);
-            $pushMsgObj->pushMessage('您的用户银行卡信息审核未通过');
             $content = '用户银行卡信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->b_status == 1) {
             $content = '用户银行卡信息审核通过, '.$old_status;
         } else {
             $content = '审核银行卡信息记录, '.$old_status;
         }
+        $pushMsgObj = new PushMessage($this->u_id);
+        $pushMsgObj->pushMessage($content);
         $this->addCensorLog($content);
         return $this->save();
     }

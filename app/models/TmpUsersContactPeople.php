@@ -92,14 +92,14 @@ class TmpUsersContactPeople extends Eloquent
     {
         $old_status = '审核之前的状态为: '.$this->getOriginal('u_status').', 审核之后的状态为: '.$this->u_status.'.';
         if ($this->u_status == 2) {
-            $pushMsgObj = new PushMessage($this->u_id);
-            $pushMsgObj->pushMessage('您的用户联系人信息审核未通过');
             $content = '用户联系人信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->u_status == 1) {
             $content = '用户联系人信息审核通过, '.$old_status;
         } else {
             $content = '审核联系人信息记录, '.$old_status;
         }
+        $pushMsgObj = new PushMessage($this->u_id);
+        $pushMsgObj->pushMessage($content);
         $this->addCensorLog($content);
         return $this->save();
     }

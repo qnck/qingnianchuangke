@@ -76,8 +76,11 @@ class Fund extends Eloquent
     public static function clearByUser($u_id)
     {
         $record = Fund::where('u_id', '=', $u_id)->where('t_status', '=', 0)->first();
-        $f_id = $record->t_id;
-        $record->delete();
+        $f_id = 0;
+        if (!empty($record)) {
+            $f_id = $record->t_id;
+            $record->delete();
+        }
         return $f_id;
     }
 
