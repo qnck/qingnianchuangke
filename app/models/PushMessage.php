@@ -11,6 +11,10 @@ class PushMessage extends Eloquent
 
     public function __construct($u_id)
     {
+        if (!$u_id) {
+            throw new Exception("需要传入有效地的消息接收人", 2002);
+            
+        }
         $this->_u_id = $u_id;
     }
 
@@ -27,7 +31,7 @@ class PushMessage extends Eloquent
         if (!empty($re->objectId)) {
             return true;
         } else {
-            throw new Exception("推送消息失败", 1);
+            throw new Exception("推送消息失败", 2002);
         }
     }
 
@@ -39,6 +43,9 @@ class PushMessage extends Eloquent
     private function initCurl()
     {
         $config = Config::get('app.leancloud');
+        if (!$config['id'] || !$config['key']) {
+            throw new Exception("没有有效的leancloud配置", 2002);
+        }
         $this->ch = curl_init();
 
         curl_setopt($this->ch, CURLOPT_POST, 1);

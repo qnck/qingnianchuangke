@@ -67,6 +67,34 @@ class Fund extends Eloquent
         return $this->t_id;
     }
 
+    public function censorPass($interview)
+    {
+        if ($interview == 1) {
+            $re = $this->censorPassNeedInterview();
+        } else {
+            $re = $this->censorPassNoInterview();
+        }
+        return $re;
+    }
+
+    public function censorPassNeedInterview()
+    {
+        $this->t_status = 2;
+        return $this->save();
+    }
+
+    public function censorPassNoInterview()
+    {
+        $this->t_status = 3;
+        return $this->save();
+    }
+
+    public function censorFailed()
+    {
+        $this->t_status = 1;
+        return $this->save();
+    }
+
     public function apply()
     {
         $this->t_status = 0;

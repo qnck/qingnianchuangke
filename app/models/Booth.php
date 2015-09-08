@@ -132,11 +132,11 @@ class Booth extends Eloquent
     {
         $old_status = '审核之前的状态为: '.$this->getOriginal('b_status').', 审核之后的状态为: '.$this->b_status.'.';
         if ($this->b_status == 2) {
-            $content = '用户详细信息审核未通过, '.$old_status.' 备注: '.$this->remark;
+            $content = '店铺审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->b_status == 1) {
-            $content = '用户详细信息审核通过, '.$old_status;
+            $content = '店铺审核通过, '.$old_status;
         } else {
-            $content = '审核用户信息记录, '.$old_status;
+            $content = '审核店铺记录, '.$old_status;
         }
         $pushMsgObj = new PushMessage($this->u_id);
         $pushMsgObj->pushMessage($content);

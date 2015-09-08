@@ -28,6 +28,7 @@ class Repayment extends Eloquent
         $data['schema'] = $this->f_schema;
         $data['percentage'] = $this->f_percentage;
         $data['amount'] = $this->f_re_money;
+        $data['status'] = $this->f_status;
         return $data;
     }
 
@@ -44,6 +45,34 @@ class Repayment extends Eloquent
     {
         $this->f_status = 0;
         return $this->addRepayment();
+    }
+
+    public function allocate()
+    {
+        $this->f_status = 1;
+        $fund = Fund::find($this->f_id);
+        if (empty($fund)) {
+            throw new Exception("没有找到相关的基金信息", 1001);
+        }
+        // do transaction
+        $userBankCard = UsersBankCard::find('u_id', '=', $fund->u_id)->first();
+        if (empty($userBankCard)) {
+            throw new Exception("没有找到用户相关的银行卡信息", 10001);
+        }
+        
+        return $this->save();
+    }
+
+    public function repayAll()
+    {
+        $this->f_status = 3;
+        return $this->save();
+    }
+
+    public function repayPartial()
+    {
+        $this->f_status = 2;
+        return $this->save();
     }
 
     public static function clearByFund($f_id)
