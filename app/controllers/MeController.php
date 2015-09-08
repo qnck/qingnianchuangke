@@ -239,15 +239,16 @@ class MeController extends \BaseController
         // loan amount
         $loan = Input::get('loan');
         // how to drow loan
-        $laonSchema = Input::get('loan_schema', '');
+        $loanSchema = Input::get('loan_schema', '');
 
+        DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
 
             $chk = Booth::where('u_id', '=', $u_id)->where('b_type', '=', $boothType)->first();
 
-            if (isset($chk->b_id)) {
-                throw new Exception("您已经申请过该类店铺了, 请勿重复提交", 1);
+            if (!empty($chk->b_id)) {
+                throw new Exception("您已经申请过该类店铺了, 请勿重复提交", 7001);
             }
 
             $booth = new Booth();
@@ -277,16 +278,15 @@ class MeController extends \BaseController
                 $schema = 0;
                 $allotedAmount = 0;
 
-                $laonSchema = json_decode($laonSchema, true);
-
-                if (!is_array($laonSchema)) {
-                    throw new Exception("请传入正确的提款计划", 1);
+                $loanSchema = json_decode($loanSchema, true);
+                if (!is_array($loanSchema)) {
+                    throw new Exception("请传入正确的提款计划", 7001);
                 }
 
-                foreach ($laonSchema as $key => $percentage) {
+                foreach ($loanSchema as $key => $percentage) {
                     $percentage = $percentage / 100;
                     $schema ++;
-                    if ($schema == count($laonSchema)) {
+                    if ($schema == count($loanSchema)) {
                         $amount = $loan - $allotedAmount;
                     } else {
                         $amount = $loan * $percentage;
@@ -296,21 +296,15 @@ class MeController extends \BaseController
                     $repayment->f_id = $f_id;
                     $repayment->f_re_money = $amount;
                     $repayment->f_schema = $schema;
-                    $repayment->f_percentage = $percentage;
+                    $repayment->f_percentage = $percentage * 100;
                     $repayment->apply();
                 }
             }
-            $re = ['result' => 2000, 'data' => [], 'info' => '申请成功'];
+            $re = Tools::reTrue('申请成功');
+            DB::commit();
         } catch (Exception $e) {
-            // clean up todo
-            Booth::clearByUser($u_id);
-            $f_id = Fund::clearByUser($u_id);
-            Repayment::clearByFund($f_id);
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
+            DB::rollback();
+            $re = Tools::reFalse($e->getCode(), '申请失败:'.$e->getMessage());
         }
 
         return Response::json($re);

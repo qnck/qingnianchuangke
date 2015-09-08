@@ -118,6 +118,32 @@ class Booth extends Eloquent
         return $this->addBooth();
     }
 
+    public function addCensorLog($content)
+    {
+        $log = new LogUserProfileCensors();
+        $log->u_id = $this->u_id;
+        $log->cate = 'booth';
+        $log->content = $content;
+        $log->admin_id = Tools::getAdminId();
+        $log->addLog();
+    }
+
+    public function censor()
+    {
+        $old_status = '审核之前的状态为: '.$this->getOriginal('b_status').', 审核之后的状态为: '.$this->b_status.'.';
+        if ($this->b_status == 2) {
+            $content = '用户详细信息审核未通过, '.$old_status.' 备注: '.$this->remark;
+        } elseif ($this->b_status == 1) {
+            $content = '用户详细信息审核通过, '.$old_status;
+        } else {
+            $content = '审核用户信息记录, '.$old_status;
+        }
+        $pushMsgObj = new PushMessage($this->u_id);
+        $pushMsgObj->pushMessage($content);
+        $this->addCensorLog($content);
+        return $this->save();
+    }
+
     public function getLogo()
     {
         $logo = null;
@@ -135,7 +161,9 @@ class Booth extends Eloquent
     public static function clearByUser($u_id)
     {
         $record = Booth::where('u_id', '=', $u_id)->where('b_status', '=', 0)->first();
-        $record->delete();
+        if (!empty($record)) {
+            $record->delete();
+        }
     }
 
     // laravel relations

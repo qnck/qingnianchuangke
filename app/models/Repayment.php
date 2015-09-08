@@ -49,8 +49,10 @@ class Repayment extends Eloquent
     public static function clearByFund($f_id)
     {
         $re = Repayment::where('f_id', '=', $f_id)->get();
-        foreach ($re as $key => $rp) {
-            $rp->delete();
+        if (!empty($re)) {
+            foreach ($re as $key => $rp) {
+                $rp->delete();
+            }
         }
     }
 }
