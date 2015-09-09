@@ -34,14 +34,71 @@
 <script type="text/javascript" src="scripts/framework.js"></script>
 <script type="text/javascript" src="scripts/framework.launcher.js"></script>
 <script>
-function btnLoginClick(){
-    var pwd = $("#txtpassword").val();
-    if(pwd!="hdadmin")
-        alert("密码输入错误了哦~~~");
+var userObj=[];
+var num = 0;
+var timer;
+window.onload=function (){ 
+    getUsers();
+} 
+function getUsers(){
+    var todayTime = new Date().toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+    var todayDate = todayTime.substring(0,todayTime.indexOf(" ")); 
+
+    var tomorrowTime = new Date((new Date()/1000+86400)*1000).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+    var tomorrowDate = tomorrowTime.substring(0,tomorrowTime.indexOf(" ")); 
+
+    userObj=[];
+    $.ajax({
+        type: "get",
+        url: "http://www.54qnck.com/wechat/hengda/user",
+        data: {start:todayDate,end:tomorrowDate},
+        dataType: "json",
+        async: false,
+        success: function (result) {
+            if(result.result=="2000"){
+                var datas = result.data;
+                for(var i=0;i<datas.length;i++){
+                    var user={nickname:datas[i].nickname,headimgurl:datas[i].headimgurl,subscribe_time:datas[i].subscribe_time};
+                    bindUser(user);
+                    userObj.push(user);
+                }
+            }
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+    num = userObj.length-1;
+}
+function bindUser(user){
+        var htmlContent = "<div style=\"float:left;padding:5px;\"><img src=\""+user.headimgurl+"\" style=\"width:80px;height:80px\"/>"+user.nickname+"</div>";
+        $("#kcycjyhdiv").html($("#kcycjyhdiv").html()+htmlContent);
+}
+function change(){
+    var user = userObj[GetRnd(0,num)];
+    var htmlContent = "<img src=\""+user.headimgurl+"\" style=\"margin:auto;width:80px;height:80px\"/>"+user.nickname;
+    $("#contentDiv").html(htmlContent);
+}
+function start(){   
+    clearInterval(timer);   
+    timer = setInterval('change()',100); 
+}
+function GetRnd(min,max){   
+    return parseInt(Math.random()*(max-min+1));   
+}
+function btnCJClick(){
+    if($("#btnCj").val()=="开始抽奖" || $("#btnCj").val()=="重新抽取"){
+        start();
+        $("#btnCj").val("停止");
+    }   
     else{
-        window.location.href="cj.html";
+        clearInterval(timer);
+        $("#btnCj").val("重新抽取");
     }
 }
+function stop(){
+    clearInterval(timer);
+} 
 </script>
 
 </head>
@@ -67,20 +124,19 @@ function btnLoginClick(){
 </div>
 
 <div class="content">
-    <div style="padding-bottom:20px;margin:auto;max-width:766px;">
-        <label class="field-title contactNameField" for="contactNameField">通关密文:</label>
-        <input type="password" name="txtpassword" value="" class="contactField requiredField" id="txtpassword"/>
-        <input type="submit" class="buttonWrap button button-green contactSubmitButton" id="contactSubmitButton" value="提取参与用户，前往抽奖" id="btnLogin" onclick="btnLoginClick()"/>
-        <label style="color:red;padding-top:5px;">提取参与用户可能需要1~3分钟。需要解析用户提取满足抽奖条件[当天关注公众号]的用户</label>
+    <div style="margin:auto;text-align:center;max-width:766px;" id="contentDiv">
+        <img src="" style="margin:auto;width:80px;height:80px"/>恒大·华置广场
+    </div>
+    <div style="padding-top:20px;max-width:766px;margin:auto;" id="cjDiv">
+        <input type="submit" class="buttonWrap button button-green contactSubmitButton" id="btnCj" value="开始抽奖" onclick="btnCJClick()"/>
+    </div>
+    <div style="max-width:766px;margin:auto;">
+        <a href="#" class="deploy-toggle-1">查看可参与抽奖的用户</a>
+        <div class="toggle-content" style="margin:auto;text-align:center;" id="kcycjyhdiv">
+        </div>
     </div>
     <div class="decoration"></div>            
     <div class="content">
-        <!-- <a href="#" class="contact-call">Phone: 185 0823 7273</a>
-        <div class="clear"></div>
-        <p class="copyright">
-            COPYRIGHT 2015.<br>
-            ALL RIGHTS RESERVED
-        </p> -->
         <a class="landing-footer"><img src="footer.png"></img></a>
     </div> 
     

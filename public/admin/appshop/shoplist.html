@@ -34,6 +34,132 @@ table.altrowstable td {
 	background-color:#c3dde0;
 }
 </style>
+<script>
+//页面加载
+$(document).ready(function () {
+    BindData();
+    $("#tt").datagrid('getPager').pagination({
+        onSelectPage:function(pageNum, pageSize){
+            opts.pageNumber = pageNum;
+            opts.pageSize = pageSize;
+            BindData();
+        }
+    });
+});
+//绑定数据
+function BindData() {
+    var pageNumber = $("#tt").datagrid('getPager').data("pagination").options.pageNumber;
+    var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
+    $.ajax({
+        type: "get",
+        url: _url+'office/booth',
+        data: {},
+        dataType: "text",
+        success: function (result) {
+            $("#tt").datagrid("loadData", JSON.parse(result).data);
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+}
+function formatYslrl(value,row){
+    return row.fund.profit;
+}
+function formatXqzj(value,row){
+    return row.fund.loan;
+}
+function formatYszq(value,row){
+    return row.fund.loan_period;
+}
+function formatTkjh(value,row){
+    var result = "";
+    for (var i =  0; i < row.fund.loans.length; i++) {
+        result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
+    };
+    return result.substring(0,result.length-1);
+}
+function formatTjyh(value,row){
+    return row.user.name;
+}
+function formatStatus(value,row){
+    var result = "";
+    if(row.status=="0")
+        result = "未审核";
+    else if(row.status=="2")
+        result = "审核未通过";
+    else if(row.status=="1"){
+        if(row.is_fund=="0"){
+            result = "审核通过"
+        }
+        else{
+            if(row.fund.status=="2")
+                result = "审核通过，需要面试";
+            else if(row.fund.status=="3")
+                result = "审核通过，未放款";
+            else if(row.fund.status=="4")
+                result = "审核通过，部分放款";
+            else if(row.fund.status=="5")
+                result = "审核通过，放款完成";
+            else if(row.fund.status=="6")
+                result = "审核通过，追加放款";
+        }
+    }
+
+    return result;
+}
+function formatDplx(value,row){
+    var result = "";
+    switch(row.type){
+        case 1:
+            result="便利店";
+            break;
+        case 2:
+            result="创的店";
+            break;
+        default:
+            result=row.type;
+            break;
+    }
+    return result;
+}
+function formatKdfs(value,row){
+    if(value=="1")
+        return "基金开店";
+    else
+        return "自费开店";
+}
+function formatOpt(value,row){
+    return "<a href=\"#\" onclick=\"censorInfo('1')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0')\">[审批不通过]</a>";
+}
+function censorInfo(check){
+    var remark="";
+    var is_talk="0";
+    if(check=="0")
+        remark = prompt("请输入审核不通过的原因：", ""); 
+    if(check == "0" && remark==""){
+        $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
+        return;
+    }
+    if(check=="1"){
+        $('#ts-dlg').dialog('open');
+    }
+    else
+    {
+        censor("",remark,check);
+    }
+}
+function censor(is_talk,remark,check){
+    if(check=="0"){
+        alert(remark);
+    }
+    else if(check=="1")
+    {
+        alert(is_talk);
+    }
+    
+}
+</script>
 </head>
 
 <body>
@@ -47,25 +173,43 @@ table.altrowstable td {
             toolbar:'#menuTollbar'">
     <thead>
         <tr>
-            <th data-options="field:'id',width:120,align:'left',halign:'center',sortable:true">id</th>
-            <th data-options="field:'u_mobile',width:120,align:'left',halign:'center',sortable:true">店铺类型</th>
-            <th data-options="field:'u_name',width:80,align:'left',halign:'center',sortable:true">商品类别</th>
-            <th data-options="field:'t_name',width:200,align:'left',halign:'center',sortable:true">店铺名称</th>
-            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true">货品来源</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">消费人群</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">推广方式</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">预算利润率</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">需求资金</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">预算周期</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">提款计划</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">提交用户</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">状态</th>
-            <th data-options="field:'options',width:80,align:'left',halign:'center',sortable:true">操作</th>
+            <th data-options="field:'id',width:40,align:'left',halign:'center',sortable:true">id</th>
+            <th data-options="field:'is_fund',width:80,align:'left',halign:'center',sortable:true,formatter:formatKdfs">开店方式</th>
+            <th data-options="field:'type',width:80,align:'left',halign:'center',sortable:true,formatter:formatDplx">店铺类型</th>
+            <th data-options="field:'category',width:80,align:'left',halign:'center',sortable:true">商品类别</th>
+            <th data-options="field:'title',width:200,align:'left',halign:'center',sortable:true">店铺名称</th>
+            <th data-options="field:'source',width:80,align:'left',halign:'center',sortable:true">货品来源</th>
+            <th data-options="field:'cust_group',width:80,align:'left',halign:'center',sortable:true">消费人群</th>
+            <th data-options="field:'promo_strategy',width:80,align:'left',halign:'center',sortable:true">推广方式</th>
+            <th data-options="field:'yslrl',width:80,align:'left',halign:'center',sortable:true,formatter:formatYslrl">预算利润率</th>
+            <th data-options="field:'xqzj',width:80,align:'left',halign:'center',sortable:true,formatter:formatXqzj">需求资金</th>
+            <th data-options="field:'yszq',width:80,align:'left',halign:'center',sortable:true,formatter:formatYszq">预算周期(月)</th>
+            <th data-options="field:'tkjh',width:250,align:'left',halign:'center',sortable:true,formatter:formatTkjh">提款计划</th>
+            <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
+            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
+            <th data-options="field:'options',width:140,align:'left',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
     </thead>
 </table>
 <div id="menuTollbar" style="height: auto;">
     <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
 </div>
+
+
+<div id="ts-dlg" class="easyui-dialog" title="提示信息" style="width: 250px; height: 120px; padding: 5px"
+    data-options="
+        closed: true,
+        modal: true,
+        iconCls: 'icon-tip',
+        buttons: '#ts-dlg-buttons'
+    ">
+    <div style="display:none" id="displayCheck"></div>
+    此项目是否需要面谈？
+</div>
+<div id="ts-dlg-buttons" style="text-align:center">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="$('#ts-dlg').dialog('close');censor('1','','1');">需要</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#ts-dlg').dialog('close');censor('0','','1');">不需要</a>
+</div>
+
 </body>
 </html>
