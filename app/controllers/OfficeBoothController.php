@@ -32,7 +32,7 @@ class OfficeBoothController extends \BaseController
         $remark = Input::get('remark', '');
         $interview = Input::get('interview', 0);
 
-        DB::startbeginTransaction();
+        DB::beginTransaction();
         try {
             $booth = Booth::find($id);
             if (empty($booth)) {
