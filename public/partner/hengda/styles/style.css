@@ -9,7 +9,14 @@ body{
 }
 
 .landing-logo img{
-	width:110px;	
+	width:100%;	
+	max-width: 766px;
+	margin-left:auto;
+	margin-right:auto;
+}
+.landing-footer img{
+	width:100%;	
+	max-width: 824px;
 	margin-left:auto;
 	margin-right:auto;
 }
