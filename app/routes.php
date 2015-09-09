@@ -162,3 +162,7 @@ Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
 /* WECHAT END*/
+
+/* PAYMENT START*/
+Route::post('pay/alipay/watchdog', 'PayController@callbackAlipay');
+/* PAYMENT END*/

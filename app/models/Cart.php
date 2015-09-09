@@ -142,7 +142,13 @@ class Cart extends Eloquent
 
     public function checkout()
     {
-
+        $now = new DateTime();
+        $this->checkout_at = $now->format('Y-m-d H:i:s');
+        $this->c_status = 3;
+        if (!$this->save()) {
+            throw new Exception("结算购物车失败", 9005);
+        }
+        return true;
     }
 
     // laravel relation

@@ -86,15 +86,26 @@ class Order extends Eloquent
     public static function updateShippingStatus($order_ids, $status)
     {
         if (!is_array($order_ids) || empty($order_ids)) {
-            throw new Exception("无效的订单数据", 7001);
+            throw new Exception("无效的订单数据", 9002);
         }
         $re = Order::whereIn('o_id', $order_ids)->update(['o_shipping_status' => $status]);
         return $re;
     }
 
-    public function pay()
+    public function pay($amount, $payment_type)
     {
-        
+        if ($this->o_status >= 2) {
+            return true;
+        }
+        $now = new DateTime();
+        $this->o_status = 2;
+        $this->paied_at = $now->format('Y-m-d H:i:s');
+        $this->o_amount_paied = $amount;
+        $this->o_payment = $payment_type;
+        if (!$this->save()) {
+            throw new Exception("结算订单失败", 9004);
+        }
+        return true;
     }
 
     // laravel relation

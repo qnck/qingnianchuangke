@@ -303,8 +303,8 @@ class MeController extends \BaseController
             $re = Tools::reTrue('申请成功');
             DB::commit();
         } catch (Exception $e) {
-            DB::rollback();
             $re = Tools::reFalse($e->getCode(), '申请失败:'.$e->getMessage());
+            DB::rollback();
         }
 
         return Response::json($re);

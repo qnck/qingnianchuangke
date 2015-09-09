@@ -517,7 +517,7 @@ class MarketController extends \BaseController
         $remark = Input::get('remark', '');
 
         $carts = Input::get('carts', '');
-
+        DB::beginTransaction();
         try {
             $carts = explode(',', $carts);
             if (!is_array($carts) || empty($carts)) {
@@ -545,7 +545,7 @@ class MarketController extends \BaseController
             }
 
             if (($total_amount_origin != $amount_origin) || ($total_amount != $amount)) {
-                throw new Exception("支付金额已刷新, 请重新提交订单", 9001);
+                throw new Exception("支付金额已刷新, 请重新提交订单", 9003);
             }
             $order_no = Order::generateOrderNo($u_id);
             $order_ids = [];
@@ -567,8 +567,10 @@ class MarketController extends \BaseController
             }
             Cart::bindOrder($order_ids);
             $re = Tools::reTrue('提交订单成功');
+            DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), $e->getMessage());
+            DB::rollback();
         }
         return Response::json($re);
     }
