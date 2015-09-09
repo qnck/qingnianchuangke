@@ -122,10 +122,10 @@ table.altrowstable td {
 		}
 
 		var sdata = $("#tt").datagrid("getSelected");
-		var _id = sdata.id;
-		if(type=="bank")
-			_id = bankid;
 		if (sdata) {
+			var _id = sdata.id;
+			if(type=="bank")
+				_id = bankid;
 			$.ajax({
 				type: "put",
 				url: _url+'office/user/profile/'+_id+'/censor/'+type,

@@ -130,34 +130,50 @@ function formatKdfs(value,row){
         return "自费开店";
 }
 function formatOpt(value,row){
-    return "<a href=\"#\" onclick=\"censorInfo('1')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0')\">[审批不通过]</a>";
+    if(row.status=="0")
+        return "<a href=\"#\" onclick=\"censorInfo('1')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0')\">[审批不通过]</a>";
+    else return "此项目已审核过";
 }
 function censorInfo(check){
-    var remark="";
-    var is_talk="0";
-    if(check=="0")
-        remark = prompt("请输入审核不通过的原因：", ""); 
-    if(check == "0" && remark==""){
-        $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
-        return;
-    }
-    if(check=="1"){
-        $('#ts-dlg').dialog('open');
-    }
-    else
-    {
-        censor("",remark,check);
-    }
+    $.messager.confirm('提示', '确认对选择店铺进行审批操作?', function(r){
+        if (r){
+            var remark="";
+            var is_talk="0";
+            if(check=="0")
+                remark = prompt("请输入审核不通过的原因：", ""); 
+            if(check == "0" && remark==""){
+                $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
+                return;
+            }
+            if(check=="1"){
+                $('#ts-dlg').dialog('open');
+            }
+            else
+            {
+                censor("",remark,check);
+            }
+        }
+    });
 }
-function censor(is_talk,remark,check){
-    if(check=="0"){
-        alert(remark);
-    }
-    else if(check=="1")
-    {
-        alert(is_talk);
-    }
-    
+function censor(is_talk,remark,opt){
+    var sdata = $("#tt").datagrid("getSelected");
+    if (sdata) {
+        var shop_id = sdata.id;
+        $.ajax({
+            type: "put",
+            url: _url+'office/booth/'+shop_id+'/censor',
+            data: {check:opt,interview:is_talk,remark:remark},
+            dataType: "text",
+            success: function (result) {
+                BindData();
+            },
+            error: function () {
+                alert("操作失败!");
+            }
+        });
+    } else {
+            $.messager.alert("提示", "获取选中的用户信息失败！", "alert");
+        }
 }
 </script>
 </head>
