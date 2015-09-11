@@ -11,6 +11,7 @@ class MarketController extends \BaseController
         $key = Input::get('key', '');
         $range = Input::get('range', 1);
         $u_id = Input::get('u_id');
+        $is_follow = Input::get('is_follow', 0);
 
         $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
@@ -38,6 +39,12 @@ class MarketController extends \BaseController
                 $q->on('booths.b_id', '=', 'promotion_infos.b_id')
                 ->where('booths.b_status', '=', 1);
             });
+            if ($is_follow) {
+                $query = $query->rightJoin('booth_follows', function ($q) use ($u_id) {
+                    $q->on('booths.b_id', '=', 'booth_follows.b_id')
+                    ->where('booth_follows.u_id', '=', $u_id);
+                });
+            }
             if ($school) {
                 $query = $query->where('promotion_infos.s_id', '=', $school);
             }
