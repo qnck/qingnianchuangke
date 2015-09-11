@@ -22,15 +22,20 @@ class OfficeFundController extends \BaseController
     
     public function allocateRepayment($id)
     {
+        $comment = Input::get('comment', '');
+
+        DB::beginTransaction();
         try {
             $repay = Repayment::find($id);
             if (empty($repay)) {
                 throw new Exception("没有找到放款明细", 10001);
             }
-            $repay->allocate();
+            $repay->allocate($comment);
             $re = Tools::reTrue('放款成功');
+            DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '放款失败:'.$e->getMessage());
+            DB::rollback();
         }
         return Response::json($re);
     }

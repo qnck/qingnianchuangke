@@ -159,6 +159,14 @@ Route::get('office/booth', 'OfficeBoothController@listBooths');
 Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 /* BOOTH END*/
 
+/* FUND START*/
+Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');
+/* FUND END*/
+
+/* LOAN START*/
+Route::get('office/loan/{id}/alloc', 'OfficeFundController@allocateRepayment');
+/* LOAN END*/
+
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
 /* WECHAT END*/
