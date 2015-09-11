@@ -1164,6 +1164,29 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function getOrder($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $order = Order::find($id);
+            if (empty($order)) {
+                throw new Exception("没有找到该订单", 9002);
+            }
+            if ($order->u_id != $u_id) {
+                throw new Exception("没有权限操作该订单", 9006);
+            }
+            $order->load(['carts']);
+            $data = $order->showDetail();
+            $re = Tools::reTrue('获取订单成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function listSellOrders()
     {
         $token = Input::get('token', '');

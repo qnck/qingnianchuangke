@@ -65,22 +65,19 @@ class Order extends Eloquent
 
     public static function generateOrderNo($u_id)
     {
-        $timestamp = time();
-        $part1 = substr($timestamp, -6, 6);
-
-        $len = strlen($u_id);
-        if ($len < 6) {
-            $part2 = $u_id;
-            for ($i=0; $i < 6 - strlen($u_id); $i++) {
-                $part2 = '0'.$part2;
+        $order_no = Tools::generateDateUserRandomNo($u_id);
+        $chk = Order::where('o_number', '=', $order_no)->first();
+        $count = 0;
+        while (!empty($chk)) {
+            $order_no = Tools::generateDateUserRandomNo($u_id);
+            $chk = Order::where('o_number', '=', $order_no)->first();
+            $count++;
+            if ($count >= 10) {
+                throw new Exception("无法生成订单号", 9001);
+                break;
             }
-        } else {
-            $part2 = substr($u_id, -6, 6);
         }
-
-        $part3 = rand(100, 999);
-
-        return '1'.$part1.$part2.$part3;
+        return $order_no;
     }
 
     public static function updateShippingStatus($order_ids, $status)

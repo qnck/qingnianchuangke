@@ -41,4 +41,24 @@ class Tools
     {
         return 1;
     }
+
+    public static function generateDateUserRandomNo($u_id)
+    {
+        $now = new DateTime();
+        $part1 = $now->format('YmdHi');
+
+        $len = strlen($u_id);
+        if ($len < 6) {
+            $part2 = $u_id;
+            for ($i=0; $i < 8 - strlen($u_id); $i++) {
+                $part2 = '0'.$part2;
+            }
+        } else {
+            $part2 = substr($u_id, -6, 6);
+        }
+
+        $part3 = rand(10, 99);
+
+        return $part1.$part2.$part3;
+    }
 }

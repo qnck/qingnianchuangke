@@ -52,6 +52,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');
     Route::get('v0/user/me/orders', 'MeController@listOrders');
+    Route::get('v0/user/me/order/{id}', 'MeController@getOrder');
     Route::get('v0/user/me/orders/count', 'MeController@countOrders');
     Route::get('v0/user/me/sells', 'MeController@listSellOrders');
     Route::get('v0/user/me/sells/count', 'MeController@countSellOrders');
@@ -105,7 +106,6 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/market/cart', 'MarketController@postCart');
     Route::put('v0/market/cart/{id}', 'MarketController@putCart');
     Route::delete('v0/market/cart/{id}', 'MarketController@delCart');
-    Route::get('v0/market/order', 'MarketController@listOrders');
     Route::post('v0/market/order', 'MarketController@postOrder');
     /* MAKER END*/
 
