@@ -18,7 +18,7 @@ class Alipay
         $verify_result = $alipayNotify->verifyNotify();
 
         if (!$verify_result) {
-            throw new Exception("支付宝验证失败", 1);
+            throw new Exception("支付宝验证失败", 9001);
         } else {
             return true;
         }

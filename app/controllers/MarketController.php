@@ -525,48 +525,43 @@ class MarketController extends \BaseController
             }
             $user = User::chkUserByToken($token, $u_id);
             $list = Cart::whereIn('c_id', $carts)->get();
-            $groups = [];
             $total_amount = 0;
             $total_amount_origin = 0;
+            $group['amount_origin'] = 0;
+            $group['amount'] = 0;
+            $group['carts_ids'] = '';
             foreach ($list as $key => $cart) {
-                if (empty($groups[$cart->b_id])) {
-                    $groups[$cart->b_id]['carts'] = [];
-                    $groups[$cart->b_id]['amount_origin'] = 0;
-                    $groups[$cart->b_id]['amount'] = 0;
-                    $groups[$cart->b_id]['carts_ids'] = '';
+                if ($cart->u_id != $u_id) {
+                    throw new Exception("没有权限操作该购物车", 7001);
+                }
+                if ($cart->c_status > 1) {
+                    throw new Exception("购物车无效", 7005);
                 }
                 $cart->updateCart($cart->c_quantity);
-                $groups[$cart->b_id]['carts'][] = $cart;
-                $groups[$cart->b_id]['amount_origin'] += $cart->c_amount_origin;
-                $groups[$cart->b_id]['amount'] += $cart->c_amount;
-                $groups[$cart->b_id]['carts_ids'][] = $cart->c_id;
-                $total_amount += $cart->c_amount;
-                $total_amount_origin += $cart->c_amount_origin;
+                $group['amount_origin'] += $cart->c_amount_origin;
+                $group['amount'] += $cart->c_amount;
+                $group['carts_ids'][] = $cart->c_id;
             }
 
-            if (($total_amount_origin != $amount_origin) || ($total_amount != $amount)) {
+            if (($group['amount_origin'] != $amount_origin) || ($group['amount'] != $amount)) {
                 throw new Exception("支付金额已刷新, 请重新提交订单", 9003);
             }
             $order_no = Order::generateOrderNo($u_id);
-            $order_ids = [];
-            foreach ($groups as $key => $group) {
-                $order = new Order();
-                $order->u_id = $u_id;
-                $order->o_amount_origin = $group['amount_origin'];
-                $order->o_amount = $group['amount'];
-                $order->o_shipping_fee = $shipping_fee;
-                $order->o_shipping_name = $shipping_name;
-                $order->o_shipping_phone = $shipping_phone;
-                $order->o_shipping_address = $shipping_address;
-                $order->o_delivery_time = $delivery_time;
-                $order->o_shipping = $shipping;
-                $order->o_remark = $remark;
-                $order->o_number = $order_no;
-                $o_id = $order->addOrder();
-                $order_ids[$o_id] = $group['carts_ids'];
-            }
-            Cart::bindOrder($order_ids);
-            $re = Tools::reTrue('提交订单成功');
+            $order = new Order();
+            $order->u_id = $u_id;
+            $order->o_amount_origin = $group['amount_origin'];
+            $order->o_amount = $group['amount'];
+            $order->o_shipping_fee = $shipping_fee;
+            $order->o_shipping_name = $shipping_name;
+            $order->o_shipping_phone = $shipping_phone;
+            $order->o_shipping_address = $shipping_address;
+            $order->o_delivery_time = $delivery_time;
+            $order->o_shipping = $shipping;
+            $order->o_remark = $remark;
+            $order->o_number = $order_no;
+            $o_id = $order->addOrder();
+            Cart::bindOrder([$order->o_id => $group['carts_ids']]);
+            $re = Tools::reTrue('提交订单成功', ['order_id' => $o_id, 'order_no' => $order_no]);
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), $e->getMessage());
