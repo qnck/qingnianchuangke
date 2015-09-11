@@ -47,18 +47,34 @@ class Repayment extends Eloquent
         return $this->addRepayment();
     }
 
-    public function allocate()
+    public function addAllocLog($comment)
     {
+        $comment = '状态变化:'.$this->getOriginal('f_status').'->'.$this->f_status.'; 备注:'.$comment;
+        $log = new LogRepaymentsAllocate();
+        $log->repayment_id = $this->t_id;
+        $log->admin_id = Tools::getAdminId();
+        $log->comment = $comment;
+        $log->addLog();
+    }
+
+    public function allocate($comment)
+    {
+        if ($this->f_status == 1) {
+            throw new Exception("该借款已放", 10001);
+            
+        }
         $this->f_status = 1;
         $fund = Fund::find($this->f_id);
         if (empty($fund)) {
-            throw new Exception("没有找到相关的基金信息", 1001);
+            throw new Exception("没有找到相关的基金信息", 10001);
         }
         // do transaction
-        $userBankCard = UsersBankCard::find('u_id', '=', $fund->u_id)->first();
+        $userBankCard = UsersBankCard::where('u_id', '=', $fund->u_id)->first();
         if (empty($userBankCard)) {
             throw new Exception("没有找到用户相关的银行卡信息", 10001);
         }
+        
+        $this->addAllocLog($comment);
         
         return $this->save();
     }
@@ -73,15 +89,5 @@ class Repayment extends Eloquent
     {
         $this->f_status = 2;
         return $this->save();
-    }
-
-    public static function clearByFund($f_id)
-    {
-        $re = Repayment::where('f_id', '=', $f_id)->get();
-        if (!empty($re)) {
-            foreach ($re as $key => $rp) {
-                $rp->delete();
-            }
-        }
     }
 }
