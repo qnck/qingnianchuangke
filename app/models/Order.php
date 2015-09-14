@@ -53,6 +53,13 @@ class Order extends Eloquent
         return $data;
     }
 
+    public function mapOrderStatus()
+    {
+        if ($this->o_status) {
+            
+        }
+    }
+
     public function addOrder()
     {
         $now = new DateTime();
