@@ -1134,35 +1134,37 @@ class MeController extends \BaseController
                     $q->where('carts.p_name', 'LIKE', '%'.$key_word.'%')->orWhere('orders.o_number', 'LIKE', '%'.$key_word.'%');
                 });
             }
-            // unfinished
-            if ($status == 1) {
-                $query = $query->where('orders.o_shipping_status', '<>', 10)->where('orders.o_status', '<>', 2);
-            // finished
-            } elseif ($status == 2) {
-                $query = $query->where('orders.o_shipping_status', '=', 10)->where('orders.o_status', '=', 2);
-            // packed
-            } elseif ($status == 3) {
-                $query = $query->where('orders.o_shipping_status', '=', 1);
-            // shipped
-            } elseif ($status == 4) {
-                $query = $query->where('orders.o_shipping_status', '=', 5);
-            // orderd
-            } elseif ($status == 5) {
-                $query = $query->where('orders.o_status', '=', 1);
-            // paied
-            } elseif ($status == 6) {
-                $query = $query->where('orders.o_status', '=', 2);
-            }
             if ($from) {
                 $query = $query->where('orders.created_at', '>', $from);
             }
             if ($to) {
                 $query = $query->where('orders.created_at', '<', $to);
             }
+            // unfinished
+            if ($status == Order::$STATUS_UNFINISHED) {
+                $query = $query->where('orders.o_shipping_status', '<>', 10)->where('orders.o_status', '<>', 2);
+            // finished
+            } elseif ($status == Order::$STATUS_FINISHED) {
+                $query = $query->where('orders.o_shipping_status', '=', 10)->where('orders.o_status', '=', 2);
+            // packed
+            } elseif ($status == Order::$STATUS_PACKED) {
+                $query = $query->where('orders.o_shipping_status', '=', 1);
+            // shipped
+            } elseif ($status == Order::$STATUS_SHIPPED) {
+                $query = $query->where('orders.o_shipping_status', '=', 5);
+            // orderd
+            } elseif ($status == Order::$STATUS_ORDERED) {
+                $query = $query->where('orders.o_status', '=', 1);
+            // paied
+            } elseif ($status == Order::$STATUS_PAIED) {
+                $query = $query->where('orders.o_status', '=', 2);
+            }
+            // filter out invalide orders
+            $query = $query->where('orders.o_status', '<>', 0)->where('orders.o_status', '<>', 3);
             $list = $query->groupBy('carts.o_id')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $order) {
-                $data[] = $order->showDetail();
+                $data[] = $order->showDetail(true);
             }
             $re = Tools::reTrue('获取订单成功', $data, $list);
         } catch (Exception $e) {
