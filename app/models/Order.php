@@ -10,7 +10,15 @@ class Order extends Eloquent
     public static $SHIPPING_STATUS_PREPARE = 1;
     public static $SHIPPING_STATUS_DELIVERING = 5;
     public static $SHIPPING_STATUS_FINISHED = 10;
-    
+
+    public static $STATUS_INVALIDE = 0;
+    public static $STATUS_UNFINISHED = 1;
+    public static $STATUS_FINISHED = 2;
+    public static $STATUS_PACKED = 3;
+    public static $STATUS_SHIPPED = 4;
+    public static $STATUS_ORDERED = 5;
+    public static $STATUS_PAIED = 6;
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -31,7 +39,7 @@ class Order extends Eloquent
         return $data;
     }
 
-    public function showDetail()
+    public function showDetail($mask_status = false)
     {
         $data = [];
         $data['id'] = $this->o_id;
@@ -39,9 +47,14 @@ class Order extends Eloquent
         $data['amount'] = $this->o_amount;
         $data['amount_paied'] = $this->o_amount_paied;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
-        $data['status'] = $this->o_status;
-        $data['shipping_status'] = $this->o_shipping_status;
         $data['number'] = $this->o_number;
+
+        if ($mask_status) {
+            $data['status'] = $this->mapOrderStatus();
+        } else {
+            $data['status'] = $this->o_status;
+            $data['shipping_status'] = $this->o_shipping_status;
+        }
 
         if (!empty($this->carts)) {
             $carts = [];
@@ -51,6 +64,45 @@ class Order extends Eloquent
             $data['carts'] = $carts;
         }
         return $data;
+    }
+
+    public function mapOrderStatus()
+    {
+        $invalide = false;
+        $shipped = false;
+        $paied = false;
+        if (in_array($this->o_status, [0, 3])) {
+            $invalide = true;
+        } elseif ($this->o_status == 1) {
+            $paied = false;
+        } elseif ($this->o_status == 2) {
+            $paied = true;
+        }
+        if (in_array($this->o_shipping_status, [1, 5])) {
+            $shipped = false;
+        } elseif ($this->o_shipping_status == 10) {
+            $shipped = true;
+        }
+
+        if ($invalide) {
+            return Order::$STATUS_INVALIDE;
+        }
+        if ($shipped && $paied) {
+            return Order::$STATUS_FINISHED;
+        }
+        if (!$shipped) {
+            return Order::$STATUS_PACKED;
+        }
+        if (!$paied) {
+            return Order::$STATUS_ORDERED;
+        }
+        if ($shipped) {
+            return Order::$STATUS_SHIPPED;
+        }
+        if ($paied) {
+            return Order::$STATUS_PAIED;
+        }
+        return 1;
     }
 
     public function addOrder()
