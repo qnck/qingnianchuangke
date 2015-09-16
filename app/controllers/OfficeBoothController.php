@@ -7,13 +7,22 @@ class OfficeBoothController extends \BaseController
     public function listBooths()
     {
         $per_page = Input::get('per_page', 30);
+        $alloc = Input::get('alloc', 0);
 
         try {
             $query = Booth::with(['fund' => function ($q) {
-
             },
             'fund.loans',
-            'user']);
+            'user'])->select('booths.*');
+
+            if ($alloc == 1) {
+                $query = $query->join('funds', function ($q) {
+                    $q->on('funds.b_id', '=', 'booths.b_id')
+                    ->where('funds.t_status', '>', 2)
+                    ->where('booths.b_status', '=', 1);
+                });
+            }
+
             $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
