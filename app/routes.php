@@ -4,6 +4,7 @@
 //
 
 Route::get('/', 'HomeController@index');
+Route::get('about', 'HomeController@about');
 
 /*********** API ***********/
 
@@ -60,6 +61,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/order/confirm', 'MeController@confirmOrder');
     Route::get('v0/user/me/praise/promo', 'MeController@listPraisePromo');
     Route::get('v0/user/me/following/booth', 'MeController@listFollowingBooth');
+    Route::get('v0/user/me/wallet', 'MeController@showWallet');
     /* ME MARKET END*/
 
     /* ME FRIEND START*/

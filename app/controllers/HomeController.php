@@ -25,4 +25,9 @@ class HomeController extends BaseController {
         $p = null;
         echo '<a href="qnckinterface.sinaapp.com">http://qnckinterface.sinaapp.com/</a>';
     }
+
+    public function about()
+    {
+        echo "ABOUT US";
+    }
 }

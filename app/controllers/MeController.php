@@ -1476,4 +1476,23 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function showWallet()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $bankCards = UsersBankCard::where('u_id', '=', $u_id)->first();
+            $data['bank'] = $bankCards->showInList();
+            $data['alipay'] = null;
+            $data['wechat'] = null;
+            $data['balance'] = '0.00';
+            $re = Tools::reTrue('获取钱包信息成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取钱包信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
