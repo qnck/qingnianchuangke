@@ -165,7 +165,9 @@ function censor(is_talk,remark,opt){
             data: {check:opt,interview:is_talk,remark:remark},
             dataType: "text",
             success: function (result) {
-                BindData();
+                alert(JSON.parse(result).message);
+                if(JSON.parse(result).result=="2000")
+                    BindData();
             },
             error: function () {
                 alert("操作失败!");
@@ -202,7 +204,7 @@ function censor(is_talk,remark,opt){
             <th data-options="field:'yszq',width:80,align:'left',halign:'center',sortable:true,formatter:formatYszq">预算周期(月)</th>
             <th data-options="field:'tkjh',width:250,align:'left',halign:'center',sortable:true,formatter:formatTkjh">提款计划</th>
             <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
-            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
+            <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
             <th data-options="field:'options',width:140,align:'left',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
     </thead>
