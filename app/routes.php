@@ -163,6 +163,7 @@ Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 
 /* FUND START*/
 Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');
+Route::get('office/fund/{id}/interview', 'OfficeFundController@interviewFund')
 /* FUND END*/
 
 /* LOAN START*/

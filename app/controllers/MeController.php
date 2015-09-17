@@ -1164,7 +1164,11 @@ class MeController extends \BaseController
             $list = $query->groupBy('carts.o_id')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $order) {
-                $data[] = $order->showDetail(true);
+                $tmp = $order->showDetail(true);
+                if ($status) {
+                    $tmp['status'] = $status;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取订单成功', $data, $list);
         } catch (Exception $e) {
@@ -1433,7 +1437,7 @@ class MeController extends \BaseController
         $entry_year = Input::get('entry_year', '');
         $interests = Input::get('interests', '');
 
-        $img_token = Input::get('img_token');
+        $img_token = Input::get('img_token', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
