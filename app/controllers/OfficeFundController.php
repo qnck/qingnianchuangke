@@ -37,6 +37,12 @@ class OfficeFundController extends \BaseController
                 $fund->t_status = 3;
             } else {
                 $fund->t_status = 1;
+                $booth = Booth::find($fund->b_id);
+                if (empty($booth)) {
+                    throw new Exception("无与基金相关的店铺数据", 10001);
+                }
+                $booth->b_status = 2;
+                $booth->save();
             }
             $fund->remark = $remark;
             $fund->interview();
