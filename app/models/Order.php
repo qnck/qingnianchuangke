@@ -71,6 +71,7 @@ class Order extends Eloquent
         $invalide = false;
         $shipped = false;
         $paied = false;
+        $received = false;
         if (in_array($this->o_status, [0, 3])) {
             $invalide = true;
         } elseif ($this->o_status == 1) {
@@ -78,31 +79,34 @@ class Order extends Eloquent
         } elseif ($this->o_status == 2) {
             $paied = true;
         }
-        if (in_array($this->o_shipping_status, [1, 5])) {
+        if ($this->o_shipping_status == 1) {
             $shipped = false;
-        } elseif ($this->o_shipping_status == 10) {
+        } else {
             $shipped = true;
+        }
+        if ($this->o_shipping_status == 10) {
+            $received = true;
         }
 
         if ($invalide) {
             return Order::$STATUS_INVALIDE;
         }
-        if ($shipped && $paied) {
+        if ($shipped && $paied && $received) {
             return Order::$STATUS_FINISHED;
         }
-        if (!$shipped) {
-            return Order::$STATUS_PACKED;
-        }
-        if (!$paied) {
+        if (!$paied && !$shipped) {
             return Order::$STATUS_ORDERED;
         }
-        if ($shipped) {
-            return Order::$STATUS_SHIPPED;
+        if ($paied && !$shipped) {
+            return Order::$STATUS_PACKED;
         }
-        if ($paied) {
+        if (!$paied && $shipped) {
             return Order::$STATUS_PAIED;
         }
-        return 1;
+        if ($shipped && !$received) {
+            return Order::$STATUS_SHIPPED;
+        }
+        return Order::$STATUS_UNFINISHED;
     }
 
     public function addOrder()

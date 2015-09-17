@@ -67,6 +67,32 @@ class Fund extends Eloquent
         return $this->t_id;
     }
 
+    public function addCensorLog($content)
+    {
+        $log = new LogUserProfileCensors();
+        $log->u_id = $this->u_id;
+        $log->cate = 'fund';
+        $log->content = $content;
+        $log->admin_id = Tools::getAdminId();
+        $log->addLog();
+    }
+
+    public function interview()
+    {
+        $old_status = '审核之前的状态为: '.$this->getOriginal('t_status').', 审核之后的状态为: '.$this->t_status.'.';
+        if ($this->t_status == 1) {
+            $content = '基金审核未通过, '.$old_status.' 备注: '.$this->remark;
+        } elseif ($this->t_status == 3) {
+            $content = '基金审核通过, '.$old_status;
+        } else {
+            $content = '审核基金记录, '.$old_status;
+        }
+        $pushMsgObj = new PushMessage($this->u_id);
+        $pushMsgObj->pushMessage($content);
+        $this->addCensorLog($content);
+        return $this->save();
+    }
+
     public function censorPass($interview)
     {
         if ($interview == 1) {

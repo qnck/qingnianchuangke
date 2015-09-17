@@ -8,19 +8,23 @@ class OfficeBoothController extends \BaseController
     {
         $per_page = Input::get('per_page', 30);
         $alloc = Input::get('alloc', 0);
+        $interview = Input::get('interview', 0);
 
         try {
             $query = Booth::with(['fund' => function ($q) {
             },
             'fund.loans',
             'user'])->select('booths.*');
+            $query = $query->join('funds', function ($q) {
+                    $q->on('funds.b_id', '=', 'booths.b_id');
+                });
+            }
 
             if ($alloc == 1) {
-                $query = $query->join('funds', function ($q) {
-                    $q->on('funds.b_id', '=', 'booths.b_id')
-                    ->where('funds.t_status', '>', 2)
-                    ->where('booths.b_status', '=', 1);
-                });
+                $query = $query->where('funds.t_status', '>', 2)->where('booths.b_status', '=', 1);
+            }
+            if ($interview == 1) {
+                $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '=', 1);
             }
 
             $list = $query->paginate($per_page);

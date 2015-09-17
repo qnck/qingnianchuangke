@@ -24,7 +24,7 @@ class Img
         $params = ['key' => $this->key, 'hash' => $this->id, 'id' => $newId, 'cate' => $this->category];
         $re = $this->fireGetRequest($params, 'save');
         if (!$re['result']) {
-            throw new Exception("保存图片失败", 2);
+            throw new Exception("保存图片失败", 2003);
         } else {
             $imgs = null;
             if (is_array($re['data']) && !empty($re['data'])) {

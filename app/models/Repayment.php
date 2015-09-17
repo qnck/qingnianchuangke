@@ -61,7 +61,6 @@ class Repayment extends Eloquent
     {
         if ($this->f_status == 1) {
             throw new Exception("该借款已放", 10001);
-            
         }
         $this->f_status = 1;
         $fund = Fund::find($this->f_id);
