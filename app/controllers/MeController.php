@@ -1488,14 +1488,82 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $bankCards = UsersBankCard::where('u_id', '=', $u_id)->first();
-            $data['bank'] = $bankCards->showInList();
-            $data['alipay'] = null;
-            $data['wechat'] = null;
+            $bank = UsersBankCard::where('u_id', '=', $u_id)->first();
+            $alipay = UsersAlipayPayment::find($u_id);
+            $wechat = UsersWechatPayment::find($u_id);
+            if (empty($bank)) {
+                $data['bank'] = null;
+            } else {
+                $data['bank'] = $bank->showInList();
+            }
+            if (empty($alipay)) {
+                $data['alipay'] = null;
+            } else {
+                $data['alipay'] = $alipay->showInList();
+            }
+            if (empty($wechat)) {
+                $data['wechat'] = null;
+            } else {
+                $data['wechat'] = $wechat->showInList();
+            }
             $data['balance'] = '0.00';
             $re = Tools::reTrue('获取钱包信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取钱包信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postPaymentWechat()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $account = Input::get('account', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $wechat = UsersWechatPayment::where('t_account', '=', $account)->first();
+            if (!empty($wechat)) {
+                throw new Exception("该微信号码已被绑定", 9007);
+            }
+            $wechat = UsersWechatPayment::find($u_id);
+            if (empty($wechat)) {
+                $wechat = new UsersWechatPayment();
+                $wechat->u_id = $u_id;
+            }
+            $wechat->t_account = $account;
+            $wechat->save();
+            $re = Tools::reTrue('绑定成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postPaymentAlipay()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $account = Input::get('account', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $wechat = UsersAlipayPayment::where('t_account', '=', $account)->first();
+            if (!empty($wechat)) {
+                throw new Exception("该微信号码已被绑定", 9007);
+            }
+            $wechat = UsersAlipayPayment::find($u_id);
+            if (empty($wechat)) {
+                $wechat = new UsersAlipayPayment();
+                $wechat->u_id = $u_id;
+            }
+            $wechat->t_account = $account;
+            $wechat->save();
+            $re = Tools::reTrue('绑定成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

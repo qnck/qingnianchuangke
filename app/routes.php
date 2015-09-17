@@ -62,6 +62,8 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/praise/promo', 'MeController@listPraisePromo');
     Route::get('v0/user/me/following/booth', 'MeController@listFollowingBooth');
     Route::get('v0/user/me/wallet', 'MeController@showWallet');
+    Route::post('v0/user/me/payment/wechat', 'MeController@postPaymentWechat');
+    Route::post('v0/user/me/payment/alipay', 'MeController@postPaymentAlipay');
     /* ME MARKET END*/
 
     /* ME FRIEND START*/
@@ -163,7 +165,7 @@ Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 
 /* FUND START*/
 Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');
-Route::get('office/fund/{id}/interview', 'OfficeFundController@interviewFund')
+Route::get('office/fund/{id}/interview', 'OfficeFundController@interviewFund');
 /* FUND END*/
 
 /* LOAN START*/
