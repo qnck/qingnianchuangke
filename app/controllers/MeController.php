@@ -2,6 +2,8 @@
 /**
 *
 */
+use Illuminate\Support\Collection;
+
 class MeController extends \BaseController
 {
     /**
@@ -1596,6 +1598,113 @@ class MeController extends \BaseController
             $re = Tools::reTrue('绑定成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function financialReport()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $day = Input::get('day', 0);
+        $month = Input::get('month', 0);
+        $year = Input::get('year', 0);
+        $b_id = Input::get('b_id', 0);
+
+        try {
+            // $user = User::chkUserByToken($token, $u_id);
+            $booth = Booth::find($b_id);
+            if (empty($booth)) {
+                throw new Exception("请求的店铺无效", 7001);
+            }
+            $query = DB::table('products')->leftJoin('carts', function ($q) {
+                $q->on('products.p_id', '=', 'carts.p_id');
+            })->select('products.p_id as id', 'products.p_title as title', 'products.p_cost as cost', 'carts.c_quantity as quantity', 'carts.c_amount as amount');
+            
+            $query = $query->where('carts.b_id', '=', $b_id);
+
+            $date_obj = new DateTime();
+            $today = $date_obj->format('Y-m-d');
+
+            if ($day) {
+                $date_obj->modify('+1 day');
+                $tomorrow = $date_obj->format('Y-m-d');
+                $query = $query->where('carts.checkout_at', '>', $today)->where('carts.checkout_at', '<', $tomorrow);
+            }
+            if ($month) {
+                $date_obj->modify('-1 month');
+                $one_month_ago = $date_obj->format('Y-m-d');
+                $query = $query->where('carts.checkout_at', '>', $one_month_ago)->where('carts.checkout_at', '<', $today);
+            }
+            if ($year) {
+                $date_obj->modify('-1 year');
+                $one_year_ago = $date_obj->format('Y-m-d');
+                $query = $query->where('carts.checkout_at', '>', $one_year_ago)->where('carts.checkout_at', '<', $today);
+            }
+            $list = $query->get();
+            $report = [];
+            $total_quantity = 0;
+            $total_cost = 0;
+            $total_amount = 0;
+            $total_profit = 0;
+            foreach ($list as $key => $product) {
+                if (empty($report[$product->id])) {
+                    $report[$product->id]['title'] ='';
+                    $report[$product->id]['quantity'] ='';
+                    $report[$product->id]['cost'] ='';
+                    $report[$product->id]['amount'] ='';
+                }
+                $report[$product->id]['title'] = $product->title;
+                $report[$product->id]['quantity'] += $product->quantity;
+                $report[$product->id]['cost'] += ($product->cost * $product->quantity);
+                $report[$product->id]['amount'] += $product->amount;
+            }
+            foreach ($report as $key => $product) {
+                $report[$key]['id'] = $key;
+                $report[$key]['profit'] = $product['amount'] - $product['cost'];
+                $total_quantity += $product['quantity'];
+                $total_cost += $product['cost'];
+                $total_amount += $product['amount'];
+                $total_profit += $report[$key]['profit'];
+            }
+            $report = array_values($report);
+            $data = ['report' => $report, 'total_quantity' => $total_quantity, 'total_cost' => $total_cost, 'total_amount' => $total_amount, 'total_profit' => $total_profit];
+            $re = Tools::reTrue('获取报表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), $e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function walletDraw()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $amount = Input::get('amount');
+        $payment = Input::get('payment', '');
+        $account = Input::get('account', '');
+
+        $b_id = Input::get('b_id', 0);
+        $holder = Input::get('holder', '');
+
+        try {
+            if ($payment == 1 && (!$b_id || !$holder)) {
+                throw new Exception("提现到银行卡需要填写持卡人姓名并选择银行", 9008);
+            }
+            $user = User::chkUserByToken($token, $u_id);
+            $draw = new UsersDraw();
+            $draw->u_id = $u_id;
+            $draw->d_payment = $payment;
+            $draw->d_account = $account;
+            $draw->d_amount = $amount;
+            $draw->b_id = $b_id;
+            $draw->b_holder_name = $holder;
+            $draw->addDraw();
+            $re = Tools::reTrue('提现申请成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '提现申请失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

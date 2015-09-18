@@ -6,9 +6,10 @@ class OfficeBoothController extends \BaseController
 {
     public function listBooths()
     {
-        $per_page = Input::get('per_page', 30);
         $alloc = Input::get('alloc', 0);
         $interview = Input::get('interview', 0);
+
+        $per_page = Input::get('per_page', 30);
 
         try {
             $query = Booth::with(['fund' => function ($q) {
@@ -84,5 +85,22 @@ class OfficeBoothController extends \BaseController
             DB::rollback();
         }
         return Response::json($re);
+    }
+
+    public function listLoans($id)
+    {
+        // try {
+            $booth = Booth::with(['fund', 'fund.loans'])->find($id);
+            if (empty($booth)) {
+                throw new Exception("没有找到请求的店铺", 10001);
+            }
+            $income = $booth->fund->getCurrentPeriodIncome();
+
+            $boothData = $booth->showDetail();
+            $fundData = $booth->fund->showDetail();
+            var_dump($income, $boothData, $fundData);
+        // } catch (Exception $e) {
+            
+        // }
     }
 }
