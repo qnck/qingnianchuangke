@@ -49,7 +49,7 @@ class DicController extends \BaseController
 
         $currentVer = \DicCity::VER;
 
-        if ($ver >= $currentVer) {
+        if ($ver >= $currentVer && !$key) {
             return Response::json(['result' => 2000, 'data' => [], 'info' => '获取城市成功', 'ver' => $currentVer]);
         }
         

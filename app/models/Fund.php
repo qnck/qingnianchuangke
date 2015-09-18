@@ -127,6 +127,42 @@ class Fund extends Eloquent
         return $this->addFund();
     }
 
+    public function getCurrentPeriodIncome()
+    {
+        $lastDate = $this->getLastRepayDate();
+        $income = Cart::sumIncome($lastDate, null, $this->b_id);
+        return $income;
+    }
+
+    public function getAllIncome()
+    {
+
+    }
+
+    public function getLastRepayDate()
+    {
+        if (empty($this->loans)) {
+            throw new Exception("该基金下没有借款", 6001);
+        }
+        $lastDate = null;
+        foreach ($this->loans as $key => $loan) {
+            if (!$loan->repaied_at) {
+                continue;
+            }
+            $date = new DateTime($this->repaied_at);
+            if ($lastDate == '') {
+                $lastDate = $date;
+            }
+            if ($lastDate < $date) {
+                $lastDate = $data;
+            }
+        }
+        if ($lastDate) {
+            $lastDate = $lastDate->format('Y-m-d');
+        }
+        return $lastDate;
+    }
+
     public static function clearByUser($u_id)
     {
         $record = Fund::where('u_id', '=', $u_id)->where('t_status', '=', 0)->first();

@@ -151,6 +151,25 @@ class Cart extends Eloquent
         return true;
     }
 
+    public static function sumIncome($from = null, $to = null, $b_id = null, $u_id = null, $owner_id = null)
+    {
+        $query = Cart::where('c_status', '=', 3);
+        if ($from) {
+            $query = $query->where('checkout_at', '>', $from);
+        }
+        if ($to) {
+            $query = $query->where('checkout_at', '<', $to);
+        }
+        if ($b_id) {
+            $query = $query->where('b_id', '=', $b_id);
+        }
+        if ($u_id) {
+            $query = $query->where('u_id', '=', $u_id);
+        }
+        $amount = $query->sum('c_amount');
+        return $amount;
+    }
+
     // laravel relation
 
     public function user()

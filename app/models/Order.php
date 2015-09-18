@@ -161,6 +161,20 @@ class Order extends Eloquent
         return true;
     }
 
+    public static function sumIncome($to = null, $from = null, $b_id = null, $u_id = null, $owner_id = null)
+    {
+        $query = Order::sum('o_amount_paied');
+        if ($from) {
+            $query = $query->where('created_at', '>', $from);
+        }
+        if ($to) {
+            $query = $query->where('created_at', '<', $to);
+        }
+        if ($b_id) {
+            $query = $query->where('b_id', '=', $b_id);
+        }
+    }
+
     // laravel relation
     
     public function carts()
