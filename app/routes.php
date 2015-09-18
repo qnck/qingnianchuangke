@@ -64,6 +64,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/wallet', 'MeController@showWallet');
     Route::post('v0/user/me/payment/wechat', 'MeController@postPaymentWechat');
     Route::post('v0/user/me/payment/alipay', 'MeController@postPaymentAlipay');
+    Route::post('v0/user/me/payment/bank', 'MeController@postPaymentBank');
     /* ME MARKET END*/
 
     /* ME FRIEND START*/
