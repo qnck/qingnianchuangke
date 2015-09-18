@@ -10,7 +10,7 @@ class Tools
         if (!empty($list)) {
             $pagination = ['per_page' => $list->getPerPage(), 'page' => $list->getCurrentPage(), 'total_record' => $list->getTotal(), 'total_page' => $list->getLastPage()];
         }
-        $re = ['result' => 2000, 'data' => $data, 'message' => $message, 'pagination' => $pagination];
+        $re = ['result' => 2000, 'data' => $data, 'info' => $message, 'pagination' => $pagination];
         return $re;
     }
 
@@ -20,7 +20,7 @@ class Tools
             $code = 2001;
         }
 
-        $re = ['result' => $code, 'data' => [], 'message' => $message];
+        $re = ['result' => $code, 'data' => [], 'info' => $message];
         return $re;
     }
 
