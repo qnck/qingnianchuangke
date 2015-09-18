@@ -1489,6 +1489,7 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $bank = UsersBankCard::where('u_id', '=', $u_id)->first();
+            $bank->load('bank');
             $alipay = UsersAlipayPayment::find($u_id);
             $wechat = UsersWechatPayment::find($u_id);
             if (empty($bank)) {
@@ -1524,7 +1525,7 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $wechat = UsersWechatPayment::where('t_account', '=', $account)->first();
-            if (!empty($wechat)) {
+            if (!empty($wechat) && $wechat->u_id != $u_id) {
                 throw new Exception("该微信号码已被绑定", 9007);
             }
             $wechat = UsersWechatPayment::find($u_id);
@@ -1550,17 +1551,48 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $wechat = UsersAlipayPayment::where('t_account', '=', $account)->first();
-            if (!empty($wechat)) {
+            $alipay = UsersAlipayPayment::where('t_account', '=', $account)->first();
+            if (!empty($alipay) && $alipay->u_id != $u_id) {
                 throw new Exception("该微信号码已被绑定", 9007);
             }
-            $wechat = UsersAlipayPayment::find($u_id);
-            if (empty($wechat)) {
-                $wechat = new UsersAlipayPayment();
-                $wechat->u_id = $u_id;
+            $alipay = UsersAlipayPayment::find($u_id);
+            if (empty($alipay)) {
+                $alipay = new UsersAlipayPayment();
+                $alipay->u_id = $u_id;
             }
-            $wechat->t_account = $account;
-            $wechat->save();
+            $alipay->t_account = $account;
+            $alipay->save();
+            $re = Tools::reTrue('绑定成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postPaymentBank()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $card_num = Input::get('card_num', '');
+        $holder = Input::get('holder', '');
+        $bank = Input::get('bank', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $card = UsersBankCard::where('b_card_num', '=', $card_num)->first();
+            if (!empty($card) && $card->u_id != $u_id) {
+                throw new Exception("该卡号不可用", 9007);
+            }
+            $card = UsersBankCard::where('u_id', '=', $u_id)->first();
+            if (empty($card)) {
+                $card = new UsersBankCard();
+                $card->u_id = $u_id;
+            }
+            $card->b_card_num = $card_num;
+            $card->b_holder_name = $holder;
+            $card->b_id = $bank;
+            $card->save();
             $re = Tools::reTrue('绑定成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
