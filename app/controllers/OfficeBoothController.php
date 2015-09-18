@@ -15,10 +15,10 @@ class OfficeBoothController extends \BaseController
             },
             'fund.loans',
             'user'])->select('booths.*');
+
             $query = $query->join('funds', function ($q) {
-                    $q->on('funds.b_id', '=', 'booths.b_id');
-                });
-            }
+                $q->on('funds.b_id', '=', 'booths.b_id');
+            });
 
             if ($alloc == 1) {
                 $query = $query->where('funds.t_status', '>', 2)->where('booths.b_status', '=', 1);
