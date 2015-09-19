@@ -1620,7 +1620,7 @@ class MeController extends \BaseController
             }
             $query = DB::table('products')->leftJoin('carts', function ($q) {
                 $q->on('products.p_id', '=', 'carts.p_id');
-            })->select('products.p_id as id', 'products.p_title as title', 'products.p_cost as cost', 'carts.c_quantity as quantity', 'carts.c_amount as amount');
+            })->select('products.p_id as id', 'products.p_title as title', 'products.p_cost as cost', 'carts.c_quantity as quantity', 'carts.c_amount as amount', 'carts.c_id');
             
             $query = $query->where('carts.b_id', '=', $b_id);
 
@@ -1648,6 +1648,7 @@ class MeController extends \BaseController
             $total_cost = 0;
             $total_amount = 0;
             $total_profit = 0;
+            $cart_ids = [];
             foreach ($list as $key => $product) {
                 if (empty($report[$product->id])) {
                     $report[$product->id]['title'] ='';
@@ -1659,6 +1660,7 @@ class MeController extends \BaseController
                 $report[$product->id]['quantity'] += $product->quantity;
                 $report[$product->id]['cost'] += ($product->cost * $product->quantity);
                 $report[$product->id]['amount'] += $product->amount;
+                $cart_ids[] = $product->c_id;
             }
             foreach ($report as $key => $product) {
                 $report[$key]['id'] = $key;
@@ -1669,7 +1671,7 @@ class MeController extends \BaseController
                 $total_profit += $report[$key]['profit'];
             }
             $report = array_values($report);
-            $data = ['report' => $report, 'total_quantity' => $total_quantity, 'total_cost' => $total_cost, 'total_amount' => $total_amount, 'total_profit' => $total_profit];
+            $data = ['report' => $report, 'carts' => implode(',', $cart_ids), 'total_quantity' => $total_quantity, 'total_cost' => $total_cost, 'total_amount' => $total_amount, 'total_profit' => $total_profit];
             $re = Tools::reTrue('获取报表成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), $e->getMessage());
@@ -1677,7 +1679,24 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function walletDraw()
+    public function confirmFinancialReport()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $carts = Input::get('carts', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            Cart::whereIn('c_id', explode(',', $carts))->update(['c_comfirmed' => 1]);
+            $re = Tools::reTrue('确认交易记录成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '确认交易记录失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postWalletDraw()
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
@@ -1705,6 +1724,47 @@ class MeController extends \BaseController
             $re = Tools::reTrue('提现申请成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提现申请失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listWalletDraw()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = UsersDraw::with(['bank'])->where('u_id', '=', $u_id)->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $draw) {
+                $data[] = $draw->showInList();
+            }
+            $re = Tools::reTrue('获取提现记录成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取提现记录失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function getWalletDraw($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $draw = UsersDraw::find($id);
+            if (empty($draw)) {
+                throw new Exception("请求的记录不存在", 9008);
+            }
+            $draw->load('bank');
+            $data = $draw->showInList();
+            $re = Tools::reTrue('获取提现记录成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取提现记录失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

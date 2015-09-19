@@ -62,11 +62,14 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/praise/promo', 'MeController@listPraisePromo');
     Route::get('v0/user/me/following/booth', 'MeController@listFollowingBooth');
     Route::get('v0/user/me/wallet', 'MeController@showWallet');
-    Route::post('v0/user/me/wallet/draw', 'MeController@walletDraw');
+    Route::post('v0/user/me/wallet/draw', 'MeController@postWalletDraw');
+    Route::get('v0/user/me/wallet/draw', 'MeController@listWalletDraw');
+    Route::get('v0/user/me/wallet/draw/{id}', 'MeController@getWalletDraw');
     Route::post('v0/user/me/payment/wechat', 'MeController@postPaymentWechat');
     Route::post('v0/user/me/payment/alipay', 'MeController@postPaymentAlipay');
     Route::post('v0/user/me/payment/bank', 'MeController@postPaymentBank');
     Route::get('v0/user/me/financial/report', 'MeController@financialReport');
+    Route::post('v0/user/me/financial/report/confirm', 'MeController@confirmFinancialReport');
     /* ME MARKET END*/
 
     /* ME FRIEND START*/
