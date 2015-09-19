@@ -21,6 +21,23 @@ class UsersDraw extends Eloquent
         }
     }
 
+    public function showInList()
+    {
+        $data = [];
+        $data['id'] = $this->d_id;
+        $data['payment'] = $this->d_payment;
+        $data['account'] = $this->d_account;
+        $data['amount'] = $this->d_amount;
+        $date = new DateTime($this->created_at);
+        $data['draw_at'] = $date->format('Y-m-d H:i:s');
+        if (!empty($this->bank)) {
+            $data['bank'] = $this->bank->showInList();
+            $data['holder'] = $this->b_holder_name;
+        }
+        $data['status'] = $this->d_status;
+        return $data;
+    }
+
     public function addDraw()
     {
         $this->baseValidate();
@@ -29,5 +46,11 @@ class UsersDraw extends Eloquent
         $this->d_status = 0;
 
         return $this->save();
+    }
+
+    // relations
+    public function bank()
+    {
+        return $this->hasOne('DicBank', 'b_id', 'b_id');
     }
 }
