@@ -1509,7 +1509,7 @@ class MeController extends \BaseController
             } else {
                 $data['wechat'] = $wechat->showInList();
             }
-            $data['balance'] = '0.00';
+            $data['balance'] = '1000.00';
             $re = Tools::reTrue('获取钱包信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取钱包信息失败:'.$e->getMessage());
@@ -1720,8 +1720,9 @@ class MeController extends \BaseController
             $draw->d_amount = $amount;
             $draw->b_id = $b_id;
             $draw->b_holder_name = $holder;
-            $draw->addDraw();
-            $re = Tools::reTrue('提现申请成功');
+            $d_id = $draw->addDraw();
+            $data['id'] = $d_id;
+            $re = Tools::reTrue('提现申请成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提现申请失败:'.$e->getMessage());
         }
