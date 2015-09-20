@@ -179,6 +179,14 @@ Route::get('office/fund/{id}/interview', 'OfficeFundController@interviewFund');
 Route::get('office/loan/{id}/alloc', 'OfficeFundController@allocateRepayment');
 /* LOAN END*/
 
+/* DRAW START*/
+Route::get('office/draw', 'OfficeDrawContoller@listDraw');
+Route::get('office/draw/{id}', 'OfficeDrawContoller@getDraw');
+Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
+/* DRAW END*/
+
+/*********** PROTAL **********/
+
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
 /* WECHAT END*/

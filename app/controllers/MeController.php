@@ -1509,7 +1509,16 @@ class MeController extends \BaseController
             } else {
                 $data['wechat'] = $wechat->showInList();
             }
-            $data['balance'] = '1000.00';
+            $balance = UsersWalletBalances::find($u_id);
+            if (empty($balance)) {
+                $amount = '0.00';
+                $freez = '0.00';
+            } else {
+                $amount = $balance->w_balance;
+                $freez = $balance->w_freez;
+            }
+            $data['balance'] = $amount;
+            $data['freez'] = $freez;
             $re = Tools::reTrue('获取钱包信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取钱包信息失败:'.$e->getMessage());
