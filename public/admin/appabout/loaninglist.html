@@ -139,23 +139,23 @@ function formatOpt(value,row){
         var fk = "";
         $(row.fund.loans).each(function(){
             if(this.status==0){
-                fk = "<a href=\"#\" onclick=\"provideSure('"+this.schema+"','"+this.amount+"')\">[放款]</a>";
+                fk = "<a href=\"#\" onclick=\"provideSure('"+this.schema+"','"+this.amount+"','"+this.id+"')\">[放款]</a>";
                 return false;
             }
         });
         return fk+"&nbsp;&nbsp;"+zjfk;
     }
 }
-function provideSure(schema,amount){
+function provideSure(schema,amount,id){
     $.messager.confirm('提示', '确认已对选择项目进行了第'+schema+'次[金额：'+amount+']放款?', function(r){
         if (r){
+            $('#provide-dlg').attr('loanid',id);
             $('#provide-dlg').dialog('open');
         }
     });
 }
 function provide(){
-    var sdata = $("#tt").datagrid("getSelected");
-    alert();
+    var loanid = $('#provide-dlg').attr('loanid');
     var pzimgvalue = $("#pzimg").val();
     if(pzimgvalue.indexOf(".gif")==-1 && pzimgvalue.indexOf(".jpg")==-1 && pzimgvalue.indexOf(".png")==-1 && pzimgvalue.indexOf(".jpeg")==-1){
         $.messager.alert("提示", "只能选择图片格式文件", "alert");
@@ -176,11 +176,15 @@ function provide(){
             var remark = $("#txtReamrk").val();
             $.ajax({
                 type: "get",
-                url: _url+"office/loan/"+sdata.id+"/alloc",
+                url: _url+"office/loan/"+loanid+"/alloc",
                 data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
                 dataType: "text",
                 success: function (result) {
-                    alert(result);
+                    if(result.result="2000"){
+                        $('#provide-dlg').dialog('close');
+                        $.messager.alert("提示", "操作成功", "alert");
+                        BindData();
+                    }
                 },
                 error: function () {
                     alert("加载失败!");
@@ -227,7 +231,7 @@ function provide(){
 
 <div id="provide-dlg" class="easyui-dialog" title="提示信息" style="width: 460px; height: 230px; padding: 5px"
     data-options="
-        closed: false,
+        closed: true,
         modal: true,
         iconCls: 'icon-tip',
         buttons: '#provide-dlg-buttons'
