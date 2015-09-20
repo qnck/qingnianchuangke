@@ -46,6 +46,8 @@ class OfficeDrawContoller extends \BaseController
         $confirm = Input::get('confirm', 0);
         $comment = Input::get('comment', '');
 
+        $img_token = Input::get('img_token', '');
+
         DB::beginTransaction();
 
         try {
@@ -68,6 +70,12 @@ class OfficeDrawContoller extends \BaseController
                 throw new Exception("只有确认提现/不确认提现", 10001);
             }
             $draw->confirm($comment);
+            if ($img_token) {
+                $imgObj = new Img('draw', $img_token);
+                $imgs = $imgObj->getSavedImg($draw->d_id);
+                $draw->imgs = $imgs;
+                $draw->save();
+            }
             $re = Tools::reTrue('确认提现成功');
             DB::commit();
         } catch (Exception $e) {
