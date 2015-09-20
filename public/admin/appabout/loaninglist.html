@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script type="text/javascript" src="../js/Generation_Guid.js"></script>
+<title>放款页面</title>
+<style type="text/css">
+table.altrowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;	
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse;
+}
+table.altrowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+.rightTd{
+	width: 580px;
+	background-color:#d4e3e5;
+	border-bottom:1px solid red
+}
+.leftTd{
+	text-align: right;
+	width: 150px;
+	background-color:#c3dde0;
+}
+</style>
+<script>
+//页面加载
+$(document).ready(function () {
+    BindData();
+    $("#tt").datagrid('getPager').pagination({
+        onSelectPage:function(pageNum, pageSize){
+            opts.pageNumber = pageNum;
+            opts.pageSize = pageSize;
+            BindData();
+        }
+    });
+});
+//绑定数据
+function BindData() {
+    var pageNumber = $("#tt").datagrid('getPager').data("pagination").options.pageNumber;
+    var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
+    $.ajax({
+        type: "get",
+        url: _url+'office/booth',
+        data: {alloc:1},
+        dataType: "text",
+        success: function (result) {
+            $("#tt").datagrid("loadData", JSON.parse(result).data);
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+}
+function formatYslrl(value,row){
+    return row.fund.profit;
+}
+function formatXqzj(value,row){
+    return row.fund.loan;
+}
+function formatYszq(value,row){
+    return row.fund.loan_period;
+}
+function formatTkjh(value,row){
+    var result = "";
+    for (var i =  0; i < row.fund.loans.length; i++) {
+        result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
+    };
+    return result.substring(0,result.length-1);
+}
+function formatTjyh(value,row){
+    return row.user.name;
+}
+function formatStatus(value,row){
+    var result = "";
+    if(row.status=="0")
+        result = "未审核";
+    else if(row.status=="2")
+        result = "审核未通过";
+    else if(row.status=="1"){
+        if(row.is_fund=="0"){
+            result = "审核通过"
+        }
+        else{
+            if(row.fund.status=="2")
+                result = "审核通过，需要面试";
+            else if(row.fund.status=="3")
+                result = "审核通过，未放款";
+            else if(row.fund.status=="4")
+                result = "审核通过，部分放款";
+            else if(row.fund.status=="5")
+                result = "审核通过，放款完成";
+            else if(row.fund.status=="6")
+                result = "审核通过，追加放款";
+        }
+    }
+
+    return result;
+}
+function formatDplx(value,row){
+    var result = "";
+    switch(row.type){
+        case 1:
+            result="便利店";
+            break;
+        case 2:
+            result="创的店";
+            break;
+        default:
+            result=row.type;
+            break;
+    }
+    return result;
+}
+function formatKdfs(value,row){
+    if(value=="1")
+        return "基金开店";
+    else
+        return "自费开店";
+}
+function formatOpt(value,row){
+    var zjfk = "<a href=\"#\" onclick=\"censorInfo('0')\">[追加放款]</a>";
+    if(row.fund.status=="5")
+        return "已完成三次放款"+zjfk;
+    else{
+        var fk = "";
+        $(row.fund.loans).each(function(){
+            if(this.status==0){
+                fk = "<a href=\"#\" onclick=\"provideSure('"+this.schema+"','"+this.amount+"')\">[放款]</a>";
+                return false;
+            }
+        });
+        return fk+"&nbsp;&nbsp;"+zjfk;
+    }
+}
+function provideSure(schema,amount){
+    $.messager.confirm('提示', '确认已对选择项目进行了第'+schema+'次[金额：'+amount+']放款?', function(r){
+        if (r){
+            $('#provide-dlg').dialog('open');
+        }
+    });
+}
+function provide(){
+    var sdata = $("#tt").datagrid("getSelected");
+    alert();
+    var pzimgvalue = $("#pzimg").val();
+    if(pzimgvalue.indexOf(".gif")==-1 && pzimgvalue.indexOf(".jpg")==-1 && pzimgvalue.indexOf(".png")==-1 && pzimgvalue.indexOf(".jpeg")==-1){
+        $.messager.alert("提示", "只能选择图片格式文件", "alert");
+        return;
+    }
+    var img_file_1="receipt";
+    var img_token=Guid.NewGuid().ToString();
+    var cate="loan";
+    var f = document.createElement("form");
+    f.action = "http://img.54qnck.com/upload.php?img_token="+img_token+"&cate="+cate;
+    f.method = "post";
+    f.enctype="multipart/form-data";
+    $("#pzimg").appendTo(f);
+
+    $(f).ajaxSubmit(function(s){
+        if(s.result=="2000");
+        {
+            var remark = $("#txtReamrk").val();
+            $.ajax({
+                type: "get",
+                url: _url+"office/loan/"+sdata.id+"/alloc",
+                data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                dataType: "text",
+                success: function (result) {
+                    alert(result);
+                },
+                error: function () {
+                    alert("加载失败!");
+                }
+            });
+        }
+    });
+}
+</script>
+</head>
+
+<body>
+<table id="tt" title="店铺列表" class="easyui-datagrid" data-options="
+            rownumbers:true,
+            fit:true,
+            singleSelect:true,
+            pagination:true,
+            pageSize:20,
+            idField:'id',
+            toolbar:'#menuTollbar'">
+    <thead>
+        <tr>
+            <th data-options="field:'id',width:40,align:'left',halign:'center',sortable:true">id</th>
+            <th data-options="field:'type',width:80,align:'left',halign:'center',sortable:true,formatter:formatDplx">店铺类型</th>
+            <th data-options="field:'category',width:80,align:'left',halign:'center',sortable:true">商品类别</th>
+            <th data-options="field:'title',width:200,align:'left',halign:'center',sortable:true">店铺名称</th>
+            <th data-options="field:'source',width:80,align:'left',halign:'center',sortable:true">货品来源</th>
+            <th data-options="field:'cust_group',width:80,align:'left',halign:'center',sortable:true">消费人群</th>
+            <th data-options="field:'promo_strategy',width:80,align:'left',halign:'center',sortable:true">推广方式</th>
+            <th data-options="field:'yslrl',width:80,align:'left',halign:'center',sortable:true,formatter:formatYslrl">预算利润率</th>
+            <th data-options="field:'xqzj',width:80,align:'left',halign:'center',sortable:true,formatter:formatXqzj">需求资金</th>
+            <th data-options="field:'yszq',width:80,align:'left',halign:'center',sortable:true,formatter:formatYszq">预算周期(月)</th>
+            <th data-options="field:'tkjh',width:250,align:'left',halign:'center',sortable:true,formatter:formatTkjh">提款计划</th>
+            <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
+            <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
+            <th data-options="field:'options',width:145,align:'left',halign:'center',sortable:true,formatter:formatOpt">操作</th>
+        </tr>
+    </thead>
+</table>
+<div id="menuTollbar" style="height: auto;">
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
+</div>
+
+
+<div id="provide-dlg" class="easyui-dialog" title="提示信息" style="width: 460px; height: 230px; padding: 5px"
+    data-options="
+        closed: false,
+        modal: true,
+        iconCls: 'icon-tip',
+        buttons: '#provide-dlg-buttons'
+    ">
+    <table class="altrowstable">
+        <tr>
+            <td class="leftTd">描述信息</td><td class="rightTd"><textarea style="width:100%;height:80px;" id="txtReamrk"></textarea></td>
+        </tr>
+        <tr>
+            <td class="leftTd">转账凭证<span style='color:red'>*</span></td><td class="rightTd"><input type="file" name="receipt" id="pzimg"/></td>
+        </tr>
+    </table>
+</div>
+<div id="provide-dlg-buttons" style="text-align:center">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="provide();">确认</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#provide-dlg').dialog('close');">取消</a>
+</div>
+
+</body>
+</html>
