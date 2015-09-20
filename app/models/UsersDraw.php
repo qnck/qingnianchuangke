@@ -45,7 +45,9 @@ class UsersDraw extends Eloquent
         $this->created_at = $now->format('Y-m-d H:i:s');
         $this->d_status = 0;
 
-        return $this->save();
+        $this->save();
+
+        return $this->d_id;
     }
 
     // relations
