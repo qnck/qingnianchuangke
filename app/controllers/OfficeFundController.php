@@ -80,4 +80,25 @@ class OfficeFundController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listRepaiedFund()
+    {
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $query = Fund::with(['booth', 'loans'])->where('t_status', '>', 2);
+            $list = $query->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $fund) {
+                $tmp = $fund->showDetail();
+                $tmp['last_income'] = $fund->getCurrentPeriodIncome();
+                $data[] = $tmp;
+            }
+            $re = Tools::reTrue('获取基金收入列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取基金收入列表成功:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+    
 }
