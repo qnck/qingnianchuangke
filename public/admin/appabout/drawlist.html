@@ -54,8 +54,8 @@ function BindData() {
     var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
     $.ajax({
         type: "get",
-        url: _url+'office/booth',
-        data: {alloc:1},
+        url: _url+'office/draw',
+        data: {interview:1},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);
@@ -69,97 +69,27 @@ function BindData() {
         }
     });
 }
-function formatYslrl(value,row){
-    return row.fund.profit;
-}
-function formatXqzj(value,row){
-    return row.fund.loan;
-}
-function formatYszq(value,row){
-    return row.fund.loan_period;
-}
-function formatTkjh(value,row){
-    var result = "";
-    for (var i =  0; i < row.fund.loans.length; i++) {
-        result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
-    };
-    return result.substring(0,result.length-1);
-}
-function formatTjyh(value,row){
-    return row.user.name;
-}
-function formatStatus(value,row){
-    var result = "";
-    if(row.status=="0")
-        result = "未审核";
-    else if(row.status=="2")
-        result = "审核未通过";
-    else if(row.status=="1"){
-        if(row.is_fund=="0"){
-            result = "审核通过"
-        }
-        else{
-            if(row.fund.status=="2")
-                result = "审核通过，需要面试";
-            else if(row.fund.status=="3")
-                result = "审核通过，未放款";
-            else if(row.fund.status=="4")
-                result = "审核通过，部分放款";
-            else if(row.fund.status=="5")
-                result = "审核通过，放款完成";
-            else if(row.fund.status=="6")
-                result = "审核通过，追加放款";
-        }
-    }
-
-    return result;
-}
-function formatDplx(value,row){
-    var result = "";
-    switch(row.type){
-        case 1:
-            result="便利店";
-            break;
-        case 2:
-            result="创的店";
-            break;
-        default:
-            result=row.type;
-            break;
-    }
-    return result;
-}
-function formatKdfs(value,row){
+function formatTkfs(value,row){
     if(value=="1")
-        return "基金开店";
-    else
-        return "自费开店";
+        return "银行卡";
+    else if(value=="2")
+        return "支付宝";
+    else if(value=="3")
+        return "微信";
 }
 function formatOpt(value,row){
-    var zjfk = "<a href=\"#\" onclick=\"censorInfo('0')\">[追加放款]</a>";
-    if(row.fund.status=="5")
-        return "已完成三次放款"+zjfk;
-    else{
-        var fk = "";
-        $(row.fund.loans).each(function(){
-            if(this.status==0){
-                fk = "<a href=\"#\" onclick=\"provideSure('"+this.schema+"','"+this.amount+"','"+this.id+"')\">[放款]</a>";
-                return false;
-            }
-        });
-        return fk+"&nbsp;&nbsp;"+zjfk;
-    }
+    if(row.status=="0")
+        return "<a href=\"#\" onclick=\"payToUser('1','"+row.id+"')\">[支付完成]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"payToUser('0','"+row.id+"')\">[支付未完成]</a>";
+    else 
+        return "已处理";
 }
-function provideSure(schema,amount,id){
-    $.messager.confirm('提示', '确认已对选择项目进行了第'+schema+'次[金额：'+amount+']放款?', function(r){
-        if (r){
-            $('#provide-dlg').attr('loanid',id);
-            $('#provide-dlg').dialog('open');
-        }
-    });
+function payToUser(ty,id){
+    $('#provide-dlg').attr('ty',ty);
+    $('#provide-dlg').attr('payid',id);
+    $('#provide-dlg').dialog('open');
 }
+
 function provide(){
-    var loanid = $('#provide-dlg').attr('loanid');
     var pzimgvalue = $("#pzimg").val();
     if(pzimgvalue.indexOf(".gif")==-1 && pzimgvalue.indexOf(".jpg")==-1 && pzimgvalue.indexOf(".png")==-1 && pzimgvalue.indexOf(".jpeg")==-1){
         $.messager.alert("提示", "只能选择图片格式文件", "alert");
@@ -167,7 +97,7 @@ function provide(){
     }
     var img_file_1="receipt";
     var img_token=Guid.NewGuid().ToString();
-    var cate="loan";
+    var cate="draw";
     var f = document.createElement("form");
     f.action = "http://img.54qnck.com/upload.php?img_token="+img_token+"&cate="+cate;
     f.method = "post";
@@ -177,11 +107,13 @@ function provide(){
     $(f).ajaxSubmit(function(s){
         if(s.result=="2000");
         {
+            var ty = $('#provide-dlg').attr('ty');
+            var payid = $('#provide-dlg').attr('payid');
             var remark = $("#txtReamrk").val();
             $.ajax({
                 type: "get",
-                url: _url+"office/loan/"+loanid+"/alloc",
-                data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                url: _url+"office/draw/"+payid,
+                data: {confirm:ty,comment:remark,receipt:img_file_1,img_token:img_token,cate:cate},
                 dataType: "text",
                 success: function (result) {
                     if(result.result="2000"){
@@ -197,11 +129,19 @@ function provide(){
         }
     });
 }
+function formatStatus(value,row){
+    if(value=="1")
+        return "提现成功";
+    else if(value=="0")
+        return "待处理";
+    else if(value=="0")
+        return "提现失败";
+}
 </script>
 </head>
 
 <body>
-<table id="tt" title="店铺列表" class="easyui-datagrid" data-options="
+<table id="tt" title="提款计划列表" class="easyui-datagrid" data-options="
             rownumbers:true,
             fit:true,
             singleSelect:true,
@@ -212,18 +152,13 @@ function provide(){
     <thead>
         <tr>
             <th data-options="field:'id',width:40,align:'left',halign:'center',sortable:true">id</th>
-            <th data-options="field:'type',width:80,align:'left',halign:'center',sortable:true,formatter:formatDplx">店铺类型</th>
-            <th data-options="field:'category',width:80,align:'left',halign:'center',sortable:true">商品类别</th>
-            <th data-options="field:'title',width:200,align:'left',halign:'center',sortable:true">店铺名称</th>
-            <th data-options="field:'source',width:80,align:'left',halign:'center',sortable:true">货品来源</th>
-            <th data-options="field:'cust_group',width:80,align:'left',halign:'center',sortable:true">消费人群</th>
-            <th data-options="field:'promo_strategy',width:80,align:'left',halign:'center',sortable:true">推广方式</th>
-            <th data-options="field:'yslrl',width:80,align:'left',halign:'center',sortable:true,formatter:formatYslrl">预算利润率</th>
-            <th data-options="field:'xqzj',width:80,align:'left',halign:'center',sortable:true,formatter:formatXqzj">需求资金</th>
-            <th data-options="field:'yszq',width:80,align:'left',halign:'center',sortable:true,formatter:formatYszq">预算周期(月)</th>
-            <th data-options="field:'tkjh',width:250,align:'left',halign:'center',sortable:true,formatter:formatTkjh">提款计划</th>
-            <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
-            <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
+            <th data-options="field:'payment',width:80,align:'left',halign:'center',sortable:true,formatter:formatTkfs">提款方式</th>
+            <th data-options="field:'account',width:200,align:'left',halign:'center',sortable:true">收款方账户</th>
+            <th data-options="field:'amount',width:80,align:'left',halign:'center',sortable:true">金额</th>
+            <th data-options="field:'draw_at',width:200,align:'left',halign:'center',sortable:true">申请时间</th>
+            <th data-options="field:'bankname',width:80,align:'left',halign:'center',sortable:true">银行名称</th>
+            <th data-options="field:'holder',width:80,align:'left',halign:'center',sortable:true">持卡人姓名</th>
+            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
             <th data-options="field:'options',width:145,align:'left',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
     </thead>
@@ -231,7 +166,6 @@ function provide(){
 <div id="menuTollbar" style="height: auto;">
     <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="BindData();">刷新</a>
 </div>
-
 
 <div id="provide-dlg" class="easyui-dialog" title="提示信息" style="width: 460px; height: 230px; padding: 5px"
     data-options="

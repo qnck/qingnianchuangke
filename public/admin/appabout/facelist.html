@@ -57,8 +57,12 @@ function BindData() {
         url: _url+'office/booth',
         data: {interview:1},
         dataType: "text",
-        success: function (result) {
-            $("#tt").datagrid("loadData", JSON.parse(result).data);
+        success: function (r) {
+            var result = JSON.parse(r);
+            if(result.result=="2000")
+                $("#tt").datagrid("loadData", result.data);
+            else 
+                $.messager.alert("提示", result.info, "alert");
         },
         error: function () {
             alert("加载失败!");
@@ -200,7 +204,7 @@ function censorInfo(check,id){
     </thead>
 </table>
 <div id="menuTollbar" style="height: auto;">
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="BindData();">刷新</a>
 </div>
 
 

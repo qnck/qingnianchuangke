@@ -54,8 +54,12 @@ table.altrowstable td {
 			url: _url+'office/user/profile',
 			data: {},
 			dataType: "text",
-			success: function (result) {
-				$("#tt").datagrid("loadData", JSON.parse(result).data);
+			success: function (r) {	
+				var result = JSON.parse(r);
+				if(result.result=="2000")
+                	$("#tt").datagrid("loadData", result.data);
+				else 
+					$.messager.alert("提示", result.info, "alert");
 			},
 			error: function () {
 				alert("加载失败!");
@@ -268,7 +272,7 @@ table.altrowstable td {
     </thead>
 </table>
 <div id="menuTollbar" style="height: auto;">
-    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="BindData();">刷新</a>
 </div>
 
 <div id="userdetail-dlg" class="easyui-dialog" title="用户明细" style="width: 800px; height: 430px; padding: 5px"
