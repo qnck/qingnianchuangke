@@ -1433,6 +1433,7 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', 0);
 
         $name = Input::get('name', '');
+        $nickname = Input::get('nickname', '');
         $birth = Input::get('birth', '');
         $gender = Input::get('gender', 0);
         $biograph = Input::get('biograph', '');
@@ -1461,6 +1462,7 @@ class MeController extends \BaseController
             $user->u_sex = $gender;
             $user->u_biograph = $biograph;
             $user->u_interests = $interests;
+            $user->u_nickname = $nickname;
             if ($img_token) {
                 $imgObj = new Img('user', $img_token);
                 $imgs = $imgObj->getSavedImg($u_id, implode(',', [$user->u_home_img, $user->u_head_img, $user_contact->u_student_img, $user_detail->u_identity_img]), true);
