@@ -16,7 +16,7 @@ class UsersWalletBalances extends Eloquent
     public function getOut($amount)
     {
         $this->w_balance -= $amount;
-        if ($this->w_balance < -0) {
+        if ($this->w_balance < 0) {
             throw new Exception("账户没有足够多的余额", 9009);
         }
         return $this->save();
@@ -38,7 +38,7 @@ class UsersWalletBalances extends Eloquent
         if ($this->w_freez < 0) {
             throw new Exception("无法解冻更多的资金", 1);
         }
-        $this->w_balance =+ $amount;
+        $this->w_balance += $amount;
         return $this->save();
     }
 }

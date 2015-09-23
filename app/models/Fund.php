@@ -180,4 +180,9 @@ class Fund extends Eloquent
     {
         return $this->hasMany('Repayment', 'f_id', 't_id');
     }
+
+    public function booth()
+    {
+        return $this->belongsTo('Booth', 'b_id', 'b_id');
+    }
 }

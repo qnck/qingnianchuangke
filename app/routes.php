@@ -173,6 +173,8 @@ Route::get('office/booth/{id}/loans', 'OfficeBoothController@listLoans');
 /* FUND START*/
 Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');
 Route::get('office/fund/{id}/interview', 'OfficeFundController@interviewFund');
+Route::get('office/fund/repaied', 'OfficeFundController@listRepaiedFund');
+// Route::get('office/fund/');
 /* FUND END*/
 
 /* LOAN START*/
