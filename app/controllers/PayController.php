@@ -36,4 +36,29 @@ class PayController extends \BaseController
         }
         exit;
     }
+
+    public function wechatPayPreOrder()
+    {
+        $order_no = Input::get('order_no', '');
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_d', 0);
+
+        // try {
+            $user = User::chkUserByToken($token, $u_id);
+            $order = Order::getOrderByNo($order_no);
+            $product_names = Cart::where('o_id', '=', $order->o_id)->lists('p_name');
+            $wechat = new WechatPay();
+            $body = $product_names[0].'等商品';
+            $params = [
+                'out_trade_no' => $order_no,
+                'total_fee' => $order->o_amount,
+                'body' => $body,
+                'detail' => implode(',', $product_names)
+            ];
+            $re = $wechat->preOrder($params);
+            var_dump($re);
+        // } catch (Exception $e) {
+            
+        // }
+    }
 }

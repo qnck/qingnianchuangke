@@ -175,6 +175,19 @@ class Order extends Eloquent
         }
     }
 
+    public static function getOrderByNo($no)
+    {
+        $order = Order::where('o_number', '=', $no)->get();
+        if (count($order) > 1) {
+            throw new Exception("订单数据有误", 9010);
+        }
+        $order = $order->first();
+        if (empty($order)) {
+            throw new Exception("没有找到订单", 9002);
+        }
+        return $order;
+    }
+
     // laravel relation
     
     public function carts()
