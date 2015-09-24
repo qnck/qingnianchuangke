@@ -161,6 +161,14 @@ class Order extends Eloquent
         return true;
     }
 
+    public function checkoutCarts()
+    {
+        $carts = Cart::where('o_id', '=', $this->o_id)->where('c_status', '=', 2)->get();
+        foreach ($carts as $key => $cart) {
+            $cart->checkout();
+        }
+    }
+
     public static function sumIncome($to = null, $from = null, $b_id = null, $u_id = null, $owner_id = null)
     {
         $query = Order::sum('o_amount_paied');
