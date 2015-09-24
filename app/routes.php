@@ -196,4 +196,5 @@ Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
 
 /* PAYMENT START*/
 Route::post('pay/alipay/watchdog', 'PayController@callbackAlipay');
+Route::post('pay/wechat/watchdog', 'PayController@callbackWechat');
 /* PAYMENT END*/
