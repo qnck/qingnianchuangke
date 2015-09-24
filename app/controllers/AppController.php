@@ -6,11 +6,11 @@ class AppController extends \BaseController
 {
     public function getConfig()
     {
-        $init['app_ver'] = '0.02';
+        $init['app_ver'] = '0.03';
         $init['api_ver'] = 'v0';
         $init['force_upgrade'] = 1;
         $init['init_img'] = 'http://img.54qnck.com/img/sys/load.png';
-        $init['app_download_link'] = 'http://img.54qnck.com/download/CK_002.apk';
+        $init['app_download_link'] = 'http://img.54qnck.com/download/CK_003.apk';
         $init['desc'] = '新加了个若干功能, 修复了若干bug';
 
         $data['init'] = $init;
