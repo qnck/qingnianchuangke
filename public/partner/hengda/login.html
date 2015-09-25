@@ -36,17 +36,26 @@
 <script>
 function btnLoginClick(){
     var pwd = $("#txtpassword").val();
-    if(pwd!="hdadmin")
+    if(pwd!="wdadmin")
         alert("密码输入错误了哦~~~");
     else{
-        window.location.href="cj.html";
+        window.location.href="wdcj.html";
     }
 }
 </script>
-
+<style>
+.test {
+background: url("111.jpg") no-repeat;
+background-size: cover;
+max-width:504px;
+margin:auto;
+margin-top: -50px;
+margin-bottom: -20px;
+}
+</style>
 </head>
 <body>
-
+    
 <div id="preloader">
     <div id="status">
         <p class="center-text">
@@ -56,11 +65,10 @@ function btnLoginClick(){
 </div>
 
 <div class="top-deco"></div>
-
-<div class="content">
+<div class="test">
+<div class="content" style="height:500px;">
     <div class="header">
         <a class="landing-logo" href="#">
-        <img src="banner.png" alt="img">
     </a>
     </div>
     <div class="decoration"></div>
@@ -75,17 +83,11 @@ function btnLoginClick(){
     </div>
     <div class="decoration"></div>            
     <div class="content">
-        <!-- <a href="#" class="contact-call">Phone: 185 0823 7273</a>
-        <div class="clear"></div>
-        <p class="copyright">
-            COPYRIGHT 2015.<br>
-            ALL RIGHTS RESERVED
-        </p> -->
-        <a class="landing-footer"><img src="footer.png"></img></a>
+        <a class="landing-footer" style="padding-bottom:25px;"><img src="2222.png"></img></a>
     </div> 
     
 </div>
-
+</div>
 <div class="bottom-deco"></div>
 </body>
 </html>
