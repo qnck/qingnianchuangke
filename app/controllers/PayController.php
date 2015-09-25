@@ -37,7 +37,7 @@ class PayController extends \BaseController
         $return_msg = Input::get('return_msg', '没有获取到返回');
 
         $wechat = new WechatPay();
-
+        $wechat->log->INFO('callback start');
         DB::beginTransaction();
         try {
             if ($return_code == 'FAIL') {
@@ -51,11 +51,13 @@ class PayController extends \BaseController
             $wechat->_notify->SetReturn_msg('OK');
             DB::commit();
         } catch (Exception $e) {
+            $wechat->log->ERROR('exeception caught:'.$e->getMessage());
             $wechat->_notify->SetReturn_code('FAIL');
             $wechat->_notify->SetReturn_msg($e->getMessage());
             DB::rollback();
         }
         $re = $wechat->_notify->ToXml();
+        $wechat->log->INFO('XML:'.$re);
         WxpayApi::replyNotify($re);
         exit;
     }
