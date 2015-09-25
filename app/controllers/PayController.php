@@ -78,11 +78,10 @@ class PayController extends \BaseController
                 'out_trade_no' => $order_no,
                 'total_fee' => $order->o_amount,
                 'body' => $body,
-                'detail' => implode(',', $product_names)
+                'detail' => implode(',', $product_names),
             ];
             $re = $wechat->preOrder($params);
-            $data = ['prepay_id' => $re['prepay_id'], 'sign' => $re['sign']];
-            $re = Tools::reTrue('微信预支付成功', $data);
+            $re = Tools::reTrue('微信预支付成功', $re);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '微信预支付失败:'.$e->getMessage());
         }
