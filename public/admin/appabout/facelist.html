@@ -158,7 +158,7 @@ function censorInfo(check,id){
                     data: {check:check,remark:remark},
                     dataType: "text",
                     success: function (result) {
-                        alert(JSON.parse(result).message);
+                        alert(JSON.parse(result).info);
                         if(JSON.parse(result).result=="2000")
                             BindData();
                     },

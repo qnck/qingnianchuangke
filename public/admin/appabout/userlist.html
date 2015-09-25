@@ -7,6 +7,7 @@
 <script type="text/javascript" src="../easyui/jquery.min.js"></script>
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/jquery.jsonp.js"></script>
 <title>用户审核页面</title>
 <style type="text/css">
 table.altrowstable {
@@ -137,7 +138,7 @@ $(document).ready(function () {
 				dataType: "text",
 				success: function (r) {
 					var result = JSON.parse(r);
-					alert(result.message);
+					alert(result.info);
 					if(result.result =="2000"){
 						//审核成功
 						var tdid = type+"OptTd";
@@ -240,7 +241,7 @@ $(document).ready(function () {
 					$('#userdetail-dlg').dialog('open');
 				}
 				else{
-					$.messager.alert("提示", result.message , "alert");
+					$.messager.alert("提示", result.info , "alert");
 				}
 			},
 			error: function () {
