@@ -3,20 +3,24 @@
 /**
 *
 */
-class WechatPay extends Eloquent
+class WechatPay
 {
     const PAYMENT_TAG = 2;
 
     public $_notify = null;
     private $_notify_url = '';
+    public $log = null;
 
     public function __construct()
     {
         $basePath = base_path();
         require_once($basePath."/vendor/wechatpay/lib/WxPay.Api.php");
+        require_once($basePath."/vendor/wechatpay/lib/log.php");
 
         $this->_notify_url = Config::get('app.pay.wechat.notify_url');
         $this->_notify = new WxPayNotifyReply();
+        $logHandler= new CLogFileHandler($basePath."/vendor/wechatpay/logs/".date('Y-m-d').'.log');
+        $this->log = Log::Init($logHandler, 15);
     }
 
     public function preOrder($param)
@@ -41,9 +45,12 @@ class WechatPay extends Eloquent
     public function verifyNotify()
     {
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        $this->log->INFO('POSTED DATE FRON WX SERVER:'.json_encode($xml));
 
         $re = WxPayResults::Init($xml);
+        $this->log->INFO('RESULTS FROM XML:'.json_encode($re));
         if ($re['return_code'] == 'FAIL') {
+            $this->log->ERROR($re['return_msg'].'|'.$re['err_code_des']);
             throw new Exception("微信 preorder 错误-".$re['return_msg'], 9001);
         }
         return $re;
