@@ -20,7 +20,7 @@ class WechatPay
         $this->_notify_url = Config::get('app.pay.wechat.notify_url');
         $this->_notify = new WxPayNotifyReply();
         $logHandler= new CLogFileHandler($basePath."/vendor/wechatpay/logs/".date('Y-m-d').'.log');
-        $this->log = Log::Init($logHandler, 15);
+        $this->log = WXPayLog::Init($logHandler, 15);
     }
 
     public function preOrder($param)
