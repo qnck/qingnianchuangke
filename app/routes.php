@@ -6,6 +6,19 @@
 Route::get('/', 'HomeController@index');
 Route::get('about', 'HomeController@about');
 
+/*********** FILTER ***********/
+Route::filter('office', function () {
+    $path = Request::path();
+    if ($path != 'office/login') {
+        if (!SysUser::chkLogin()) {
+            $re = Tools::reFalse(10003, '请先登录');
+            return Response::json($re);
+        }
+    }
+});
+Route::when('office/*', 'office');
+/*********** FILTER ***********/
+
 /*********** API ***********/
 
 
@@ -155,7 +168,28 @@ Route::get('office/sys/user', 'OfficeSysUserController@listUsers');
 Route::post('office/sys/user', 'OfficeSysUserController@postUser');
 Route::put('office/sys/user/{id}', 'OfficeSysUserController@putUser');
 Route::delete('office/sys/user/{id}', 'OfficeSysUserController@delUser');
+
+Route::post('office/sys/user/{id}/role', 'OfficeSysUserController@addUserRole');
+Route::delete('office/sys/user/{id}/role', 'OfficeSysUserController@delUserRole');
+
+Route::post('office/sys/role/{id}/menu', 'OfficeMenuController@addRoleMenu');
+Route::delete('office/sys/role/{id}/menu', 'OfficeMenuController@delRoleMenu');
+
+Route::get('office/sys/role', 'OfficeMenuController@listRole');
+Route::post('office/sys/role', 'OfficeMenuController@postRole');
+Route::put('office/sys/role/{id}', 'OfficeMenuController@putRole');
+Route::delete('office/sys/role/{id}', 'OfficeMenuController@delRole');
+Route::get('office/sys/menu', 'OfficeMenuController@listMenu');
+Route::post('office/sys/menu', 'OfficeMenuController@postMenu');
+Route::put('office/sys/menu/{id}', 'OfficeMenuController@putMenu');
+Route::delete('office/sys/menu/{id}', 'OfficeMenuController@delMenu');
 /* SYS USER END*/
+
+/* OFFICE START*/
+Route::post('office/login', 'OfficeController@login');
+Route::get('office/logout', 'OfficeController@logout');
+Route::get('office/menu', 'OfficeController@getMenu');
+/* OFFICE END*/
 
 /* WEB USER START*/
 Route::get('office/user/profile', 'OfficeWebUserController@listUserProfiles');
@@ -180,6 +214,7 @@ Route::get('office/fund/repaied', 'OfficeFundController@listRepaiedFund');
 
 /* LOAN START*/
 Route::get('office/loan/{id}/alloc', 'OfficeFundController@allocateRepayment');
+Route::get('office/loan/{id}/retrive', 'OfficeFundController@retriveLoan');
 /* LOAN END*/
 
 /* DRAW START*/

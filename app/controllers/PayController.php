@@ -35,6 +35,7 @@ class PayController extends \BaseController
     {
         $return_code = Input::get('return_code', 'FAIL');
         $return_msg = Input::get('return_msg', '没有获取到返回');
+        
 
         $wechat = new WechatPay();
         $wechat->log->INFO('callback start');

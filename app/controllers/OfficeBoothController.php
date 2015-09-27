@@ -89,7 +89,7 @@ class OfficeBoothController extends \BaseController
 
     public function listLoans($id)
     {
-        // try {
+        try {
             $booth = Booth::with(['fund', 'fund.loans'])->find($id);
             if (empty($booth)) {
                 throw new Exception("没有找到请求的店铺", 10001);
@@ -98,9 +98,11 @@ class OfficeBoothController extends \BaseController
 
             $boothData = $booth->showDetail();
             $fundData = $booth->fund->showDetail();
-            var_dump($income, $boothData, $fundData);
-        // } catch (Exception $e) {
-            
-        // }
+            $data = ['last_income' => $income, 'booth' => $boothData, 'fund' => $fundData];
+            $re = Tools::reTrue('获取店铺贷款信息成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取店铺信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 }

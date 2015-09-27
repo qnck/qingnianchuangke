@@ -100,5 +100,63 @@ class OfficeFundController extends \BaseController
         }
         return Response::json($re);
     }
-    
+
+    public function retriveLoan($id)
+    {
+        DB::beginTransaction();
+        try {
+            $current_loan = Repayment::find($id);
+            if (empty($current_loan)) {
+                throw new Exception("没有找到请求的放款", 6001);
+            }
+            $fund = Fund::find($current_loan->f_id);
+            if (empty($fund)) {
+                throw new Exception("没有找到相关的基金", 6001);
+            }
+            $current_income = $fund->getCurrentPeriodIncome();
+            $current_loan->f_money = $current_income;
+            $profit = $current_income - $current_loan->f_re_money;
+            if ($profit > 0) {
+                $wallet = UsersWalletBalances::find($fund->u_id);
+                if (empty($wallet)) {
+                    throw new Exception("没有获取到用户钱包", 6001);
+                }
+                $wallet->putIn($profit);
+                $current_loan->f_status = 4;
+            } elseif ($profit == 0) {
+                $current_loan->f_status = 3;
+            } elseif ($profit < 0) {
+                $current_loan->f_status = 2;
+            }
+            $current_loan->save();
+            $fund->load('loans');
+            $all_repaied = true;
+            $total_loan = 0;
+            $total_repay = 0;
+            foreach ($fund->loans as $key => $loan) {
+                if ($loan->f_status < 3) {
+                    $all_repaied = false;
+                }
+                $total_loan += $loan->f_re_money;
+                $total_repay += $loan->f_money;
+            }
+            if ($all_repaied) {
+                $total_profit = $total_repay - $total_loan;
+                if ($profit > 0) {
+                    $qnck_profit = ($total_loan * (100 + $fund->t_profit_rate)) / 500;
+                    $wallet = UsersWalletBalances::find($fund->u_id);
+                    if (empty($wallet)) {
+                        throw new Exception("没有获取到用户钱包", 6001);
+                    }
+                    $wallet->getOut($qnck_profit);
+                }
+            }
+            $re = Tools::reTrue('回收放款成功');
+            DB::commit();
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '回收放款失败:'.$e->getMessage());
+            DB::rollback();
+        }
+        return Response::json($re);
+    }
 }
