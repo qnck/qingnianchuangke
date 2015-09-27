@@ -43,11 +43,68 @@ class OfficeSysUserController extends \BaseController
 
     public function putUser($id)
     {
-        echo '成功';
+        $request = Request::instance();
+        $ip = $request->ip();
+
+        $name = Input::get('name', '');
+        $pass = Input::get('pass', '');
+        $account = Input::get('account', '');
+
+        try {
+            $user = SysUser::find($id);
+            $user->u_name = $name;
+            $user->password = $pass;
+            $user->account = $account;
+            $user->last_local = $ip;
+            $user->save();
+            $re = Tools::reTrue('编辑user成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '编辑user失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 
     public function delUser($id)
     {
-        echo '成功';
+        $user = SysUser::find($id);
+        if (!empty($user)) {
+            $user->delete();
+        }
+        return Tools::reTrue('删除成功');
+    }
+
+    public function addUserRole($id)
+    {
+        $roles = Input::get('roles', '');
+        try {
+            $roles = explode(',', $roles);
+            $admin = SysUser::find($id);
+            foreach ($roles as $key => $role) {
+                $admin->addRoles($role);
+            }
+            $re = Toole::reTrue('添加角色成功');
+        } catch (Exception $e) {
+            $re= Toole::reFalse($e->getCode(), '添加角色失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delUserRole()
+    {
+        $roles = Input::get('roles', '');
+        try {
+            $admin = SysUser::find($id);
+            $roles = explode(',', $roles);
+            foreach ($roles as $id) {
+                if (!is_numeric($id)) {
+                    throw new Exception("包含无效的角色数据-".$id, 10001);
+                }
+            }
+            $admin->delRoles($roles);
+            $re = Tools::reTrue('删除角色成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除角色失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 }
