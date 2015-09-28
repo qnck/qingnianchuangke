@@ -28,6 +28,7 @@ class Repayment extends Eloquent
         $data['schema'] = $this->f_schema;
         $data['percentage'] = $this->f_percentage;
         $data['amount'] = $this->f_re_money;
+        $data['paied_amount'] = $this->f_money;
         $data['status'] = $this->f_status;
         if (!empty($this->repaied_at)) {
             $date = new DateTime($this->repaied_at);
