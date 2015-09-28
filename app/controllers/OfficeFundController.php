@@ -125,7 +125,7 @@ class OfficeFundController extends \BaseController
                 throw new Exception("没有找到相关的基金", 6001);
             }
             $current_income = $fund->getCurrentPeriodIncome();
-            $current_loan->f_money = $current_income;
+            $current_loan->f_income = $current_income;
             $profit = $current_income - $current_loan->f_re_money;
             if ($profit > 0) {
                 $wallet = UsersWalletBalances::find($fund->u_id);
@@ -134,10 +134,13 @@ class OfficeFundController extends \BaseController
                 }
                 $wallet->putIn($profit);
                 $current_loan->f_status = 4;
+                $current_loan->f_money = $current_loan->f_re_money;
             } elseif ($profit == 0) {
                 $current_loan->f_status = 3;
+                $current_loan->f_money = $current_loan->f_re_money;
             } elseif ($profit < 0) {
                 $current_loan->f_status = 2;
+                $current_loan->f_money = $current_loan->f_income;
             }
             $current_loan->repaied_at = $now->format('Y-m-d H:i:s');
             $current_loan->save();
