@@ -124,6 +124,7 @@ class OfficeFundController extends \BaseController
             if (empty($fund)) {
                 throw new Exception("没有找到相关的基金", 6001);
             }
+            $fund->load('loans');
             $current_income = $fund->getCurrentPeriodIncome();
             $current_loan->f_income = $current_income;
             $profit = $current_income - $current_loan->f_re_money;
