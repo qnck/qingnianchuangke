@@ -45,7 +45,9 @@ class Fund extends Eloquent
         //     $data['loan_end'] = null;
         // }
         // $data['loan_period'] = ceil(($end - $start) / (3600 * 24));
-        // 
+        if (!empty($this->booth)) {
+            $data['booth'] = $this->booth->showDetail();
+        }
 
         $data['status'] = $this->t_status;
         $loans = null;
