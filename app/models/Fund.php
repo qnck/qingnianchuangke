@@ -45,11 +45,17 @@ class Fund extends Eloquent
         //     $data['loan_end'] = null;
         // }
         // $data['loan_period'] = ceil(($end - $start) / (3600 * 24));
+        $data['status'] = $this->t_status;
+        $data['is_closed'] = (int)$this->t_is_closed;
+        if (!empty($this->closed_at)) {
+            $date = new DateTime($this->closed_at);
+            $data['closed_at'] = $date->format('Y-m-d H:i:s');
+        } else {
+            $data['closed_at'] = null;
+        }
         if (!empty($this->booth)) {
             $data['booth'] = $this->booth->showDetail();
         }
-
-        $data['status'] = $this->t_status;
         $loans = null;
         if (!empty($this->loans)) {
             foreach ($this->loans as $key => $loan) {
@@ -164,6 +170,21 @@ class Fund extends Eloquent
             $lastDate = $lastDate->format('Y-m-d');
         }
         return $lastDate;
+    }
+
+    public function chkLoansAlloc()
+    {
+        $check = true;
+        if (empty($this->loans)) {
+            $this->load('loans');
+        }
+        foreach ($this->loans as $key => $loan) {
+            if ($load->f_status < 1) {
+                $check =false;
+                break;
+            }
+        }
+        return $check;
     }
 
     public static function clearByUser($u_id)

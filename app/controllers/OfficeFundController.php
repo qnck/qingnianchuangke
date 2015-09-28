@@ -71,6 +71,16 @@ class OfficeFundController extends \BaseController
                 $repay->imgs = $imgs;
                 $repay->save();
             }
+            $fund = Fund::find($repay->f_id);
+            if (empty($fund)) {
+                throw new Exception("没有找到相关的基金", 1);
+            }
+            $fund->load('loans');
+            if ($fund->chkAllRepaied()) {
+                $fund->t_status = 5;
+            }
+            $fund->t_status = 4;
+            $fund->save();
 
             $re = Tools::reTrue('放款成功');
             DB::commit();
@@ -104,6 +114,7 @@ class OfficeFundController extends \BaseController
     public function retriveLoan($id)
     {
         DB::beginTransaction();
+        $now = new DateTime();
         try {
             $current_loan = Repayment::find($id);
             if (empty($current_loan)) {
@@ -128,6 +139,7 @@ class OfficeFundController extends \BaseController
             } elseif ($profit < 0) {
                 $current_loan->f_status = 2;
             }
+            $current_loan->repaied_at = $now->format('Y-m-d H:i:s');
             $current_loan->save();
             $fund->load('loans');
             $all_repaied = true;
@@ -150,7 +162,12 @@ class OfficeFundController extends \BaseController
                     }
                     $wallet->getOut($qnck_profit);
                 }
+                $fund->t_is_close = 1;
+                $fund->closed_at = $now->format('Y-m-d H:i:s');
+            } else {
+                $fund->t_is_close = 0;
             }
+            $fund->save();
             $re = Tools::reTrue('回收放款成功');
             DB::commit();
         } catch (Exception $e) {
