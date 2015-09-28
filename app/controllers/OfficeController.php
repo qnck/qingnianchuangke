@@ -39,7 +39,7 @@ class OfficeController extends \BaseController
     public function logout()
     {
         Session::forget('admin_id');
-        $re = Toole::reTrue('登出成功');
+        $re = Tools::reTrue('登出成功');
         return Response::json($re);
     }
 }
