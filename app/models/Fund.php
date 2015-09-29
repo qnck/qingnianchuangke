@@ -179,7 +179,7 @@ class Fund extends Eloquent
             $this->load('loans');
         }
         foreach ($this->loans as $key => $loan) {
-            if ($load->f_status < 1) {
+            if ($loan->f_status < 1) {
                 $check =false;
                 break;
             }
