@@ -62,6 +62,7 @@ class Repayment extends Eloquent
         $log->repayment_id = $this->t_id;
         $log->admin_id = Tools::getAdminId();
         $log->comment = $comment;
+        var_dump($log);exit;
         $log->addLog();
     }
 
