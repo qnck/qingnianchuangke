@@ -18,8 +18,25 @@
 			$('#loginPanel').find('.check-error').first().find('input').first().focus().select();
 		}
 		else{
-			alert("调用后台登录接口，验证账号密码；");
-			window.location.href='index.html';
+			// alert("调用后台登录接口，验证账号密码；");
+      // http://www.54qnck.com/office/login
+      $.ajax({
+          type: "post",
+          url: _url+"office/login",
+          data: {account:$("#account").val(),pass:$("#password").val()},
+          dataType: "text",
+          async:false,
+          success: function (r) {
+              if(JSON.parse(r).result=="2000"){
+                window.location.href='index.html';
+              }else{
+                  alert("登录失败!");
+              }
+          },
+          error: function () {
+              alert("登录失败!");
+          }
+      });
 		}
 	}
 </script>
@@ -37,12 +54,12 @@
       <div class="panel-body" style="padding:30px;">
         <div class="form-group">
           <div class="field field-icon-right">
-            <input type="text" class="input" id="account" t='1' value="admin" placeholder="登录账号,大于或等于5个字符" data-validate="required:请填写账号,length#>=5:账号长度不符合要求" />
+            <input type="text" class="input" id="account" t='1' value="root" placeholder="登录账号,大于或等于4个字符" data-validate="required:请填写账号,length#>=4:账号长度不符合要求" />
             <span class="icon icon-user"></span> </div>
         </div>
         <div class="form-group">
           <div class="field field-icon-right">
-            <input type="password" class="input" id="password" value="admin888" placeholder="登录密码,大于或等于8个字符" data-validate="required:请填写密码,length#>=8:密码长度不符合要求" />
+            <input type="password" class="input" id="password" value="123456" placeholder="登录密码,大于或等于6个字符" data-validate="required:请填写密码,length#>=6:密码长度不符合要求" />
             <span class="icon icon-key"></span> </div>
         </div>
       </div>

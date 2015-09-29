@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script type="text/javascript" src="../js/Generation_Guid.js"></script>
+<title>结账页面</title>
+<style type="text/css">
+table.altrowstable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px; 
+    color:#333333;
+    border-width: 1px;
+    border-color: #a9c6c9;
+    border-collapse: collapse;
+}
+table.altrowstable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #a9c6c9;
+}
+.rightTd{
+    width: 580px;
+    background-color:#d4e3e5;
+    border-bottom:1px solid red
+}
+.leftTd{
+    text-align: right;
+    width: 150px;
+    background-color:#c3dde0;
+}
+</style>
+<script>
+//页面加载
+$(document).ready(function () {
+    BindData();
+    $("#tt").datagrid('getPager').pagination({
+        onSelectPage:function(pageNum, pageSize){
+            opts.pageNumber = pageNum;
+            opts.pageSize = pageSize;
+            BindData();
+        }
+    });
+});
+//绑定数据
+function BindData() {
+    var pageNumber = $("#tt").datagrid('getPager').data("pagination").options.pageNumber;
+    var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
+    $.ajax({
+        type: "get",
+        url: _url+'office/fund/repaied',
+        data: {},
+        dataType: "text",
+        success: function (r) {
+            var result = JSON.parse(r);
+            if(result.result=="2000")
+                $("#tt").datagrid("loadData", result.data);
+            else 
+                $.messager.alert("提示", result.info, "alert");
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+}
+function formatStatus(value, row){
+    var result = "";
+    switch(value){
+        case 0:
+            result='新建';
+            break;
+        case 1:
+            result='审核未通过';
+            break;
+        case 2:
+            result='审核通过需面试';
+            break;
+        case 3:
+            result='审核通过未放款';
+            break;
+        case 4:
+            result='部分放款';
+            break;
+        case 5:
+            result='放款完成';
+            break;
+        case 6:
+            result='追加放款';
+            break;
+        case 7:
+            result='结束投资';
+            break;
+    }
+    return result;
+}
+function formatDpxx(value,row,index){
+    return "<a href=\"#\" onclick=\"viewShop('"+index+"')\">[点击查看]</a>";
+}
+function viewShop(index){
+    $("#tt").datagrid("selectRow",index);
+    var sdata = $("#tt").datagrid("getSelected");
+    $("#title").text(sdata.booth.title);
+    var dplx = sdata.booth.type == "1" ? "便利店" : "创的店";
+    $("#type").text(dplx);
+    $("#category").text(sdata.booth.category);
+    $("#source").text(sdata.booth.source);
+    $("#cust_group").text(sdata.booth.cust_group);
+    $("#promo_strategy").text(sdata.booth.promo_strategy);
+    $('#dpxx-dlg').dialog('open');
+}
+function formatJjxx(value,row,index){
+    return "<a href=\"#\" onclick=\"viewJjxx('"+index+"')\">[点击查看]</a>";
+}
+function closeAllTabs(id){  
+         var arrTitle = new Array();  
+         var id = "#"+id;//Tab所在的层的ID  
+         var tabs = $(id).tabs("tabs");//获得所有小Tab  
+         var tCount = tabs.length;  
+         if(tCount>0){  
+                     //收集所有Tab的title  
+             for(var i=0;i<tCount;i++){  
+                 arrTitle.push(tabs[i].panel('options').title)  
+             }  
+                     //根据收集的title一个一个删除=====清空Tab  
+             for(var i=0;i<arrTitle.length;i++){  
+                 $(id).tabs("close",arrTitle[i]);  
+             }  
+         }  
+     } 
+function viewJjxx(index){
+    closeAllTabs("jjxxTab");
+    $("#tt").datagrid("selectRow",index);
+    var sdata = $("#tt").datagrid("getSelected");
+    var loans = sdata.loans;
+    var i = 0;
+    var selected=false;
+    var selected_index=0;
+    $(loans).each(function (){
+        i++;
+        if((this.status == null || this.status=="0"|| this.status=="1") && !selected){
+            selected = true;
+            selected_index=i;
+        }
+        $("#jjxxTab").tabs("add",{
+            title:'第'+i+'次',
+            content:getContent(this,i),
+            closable:false,
+            selected:false
+        });
+        $("#jjxxTab").tabs("select",selected_index-1);
+    });
+
+    $('#jjxx-dlg').attr('maxSchema',i);
+    $('#jjxx-dlg').dialog('open');
+}
+function getContent(loan,index){
+    var sdata = $("#tt").datagrid("getSelected");
+    var result = "<table class=\"altrowstable\">";
+        result+= "<tr><td class=\"leftTd\">放款金额</td><td class=\"rightTd\"><span>"+loan.amount+"</span></td></tr>";
+        result+= "<tr><td class=\"leftTd\">所占比例</td><td class=\"rightTd\"><span>"+loan.percentage+"%</span></td></tr>";
+
+        if(loan.status == "0")
+            result+= "<tr><td class=\"leftTd\">本期营业额</td><td class=\"rightTd\"><span>0</span></td></tr>";
+        else if(loan.status == "1")
+            result+= "<tr><td class=\"leftTd\">本期营业额</td><td class=\"rightTd\"><span>"+sdata.last_income+"</span></td></tr>";
+        else
+            result+= "<tr><td class=\"leftTd\">本期营业额</td><td class=\"rightTd\"><span>"+loan.income+"</span></td></tr>";
+
+        var paied_amount = loan.paied_amount==null?0:loan.paied_amount;
+        result+= "<tr><td class=\"leftTd\">已结金额</td><td class=\"rightTd\"><span>"+paied_amount+"</span></td></tr>";
+        var repaied_at = loan.repaied_at==null?"":loan.repaied_at
+        result+= "<tr><td class=\"leftTd\">结账时间</td><td class=\"rightTd\"><span>"+repaied_at+"</span></td></tr>";
+        var statu = "";
+        if(loan.status == "0")
+            statu = "待发放";
+        else if(loan.status == "1")
+            statu = "已发放";
+        else if(loan.status == "2")
+            statu = "部分结账";
+        else if(loan.status == "3")
+            statu = "全部结账";
+        else if(loan.status == "4")
+            statu = "超额完成";
+        result+= "<tr><td class=\"leftTd\">状态</td><td class=\"rightTd\"><span>"+statu+"</span></td></tr>";
+        var opt = "";
+        if(loan.status == "0")
+            result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>该阶段基金未发放</span></td></tr>";
+        else if(loan.status == "1"){
+            if(index == sdata.loan_period){
+                //最后一次结账
+            }
+            else{
+                result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>[<a href=\"#\" onclick=\"repaied("+loan.id+",0,this,"+index+")\">结账<a/>]&nbsp;&nbsp;&nbsp;&nbsp;[<a href=\"#\" onclick=\"repaied("+loan.id+",1,this,"+index+")\">结账并发放下一次基金<a/>]</span></td></tr>";
+            }
+        }
+        else
+            result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>该阶段基金已经结账</span></td></tr>";
+    result+= "</table>";
+    return result;
+}
+function repaied(id,opt,doma,index){
+    if(opt==0){
+        $.ajax({
+            type: "get",
+            url: _url+'office/loan/'+id+'/retrive',
+            data: {},
+            dataType: "text",
+            success: function (result) {
+                alert(JSON.parse(result).info);
+                if(JSON.parse(result).result=="2000"){
+                    BindData();
+                    $('#jjxx-dlg').dialog('close');
+                }
+            },
+            error: function () {
+                alert("操作失败!");
+            }
+        });
+    }
+    else{
+        var table = $(doma).parent().parent().parent().parent().parent();
+        table.append("<tr><td class=\"leftTd\">转账凭证</td><td class=\"rightTd\"><input type=\"file\" onchange=\"fileUpload(this,"+id+","+index+")\" name=\"receipt\"/></td></tr>");
+    }
+}
+function fileUpload(domFile,id,index){
+    var pzimgvalue = $(domFile).val();
+    if(pzimgvalue.indexOf(".gif")==-1 && pzimgvalue.indexOf(".jpg")==-1 && pzimgvalue.indexOf(".png")==-1 && pzimgvalue.indexOf(".jpeg")==-1){
+        $.messager.alert("提示", "只能选择图片格式文件", "alert");
+        return;
+    }
+    //本次结账
+    $.ajax({
+        type: "get",
+        url: _url+'office/loan/'+id+'/retrive',
+        data: {},
+        dataType: "text",
+        async:false,
+        success: function (result) {
+            if(JSON.parse(result).result=="2000"){
+                //下一次放款
+                var sdata = $("#tt").datagrid("getSelected");
+                var nextloanid = sdata.loans[index].id;
+                var img_file_1="receipt";
+                var img_token=Guid.NewGuid().ToString();
+                var cate="loan";
+                var f = document.createElement("form");
+                f.action = "http://img.54qnck.com/upload.php?img_token="+img_token+"&cate="+cate;
+                f.method = "post";
+                f.enctype="multipart/form-data";
+                $(domFile).appendTo(f);
+                $(f).ajaxSubmit(function(s){
+                    if(JSON.parse(s).result=="2000")
+                    {
+                        var remark = "";
+                        $.ajax({
+                            type: "get",
+                            url: _url+"office/loan/"+nextloanid+"/alloc",
+                            data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                            dataType: "text",
+                            async:false,
+                            success: function (r) {
+                                if(JSON.parse(r).result=="2000"){
+                                    alert("结账并放款成功!");
+                                    BindData();
+                                    $('#jjxx-dlg').dialog('close');
+                                }else{
+                                    alert("结账成功，放款失败!");
+                                }
+                            },
+                            error: function () {
+                                alert("加载失败!");
+                            }
+                        });
+                    }
+                });
+            }else{
+                alert(JSON.parse(result).info);
+            }
+        },
+        error: function () {
+            alert("操作失败!");
+        }
+    });
+}
+function formatlastJzsj(value,row){
+
+}
+</script>
+</head>
+
+<body>
+<table id="tt" title="基金信息列表" class="easyui-datagrid" data-options="
+            rownumbers:true,
+            fit:true,
+            singleSelect:true,
+            pagination:true,
+            pageSize:20,
+            idField:'id',
+            toolbar:'#menuTollbar'">
+    <thead>
+        <tr>
+            <th data-options="field:'id',width:40,align:'left',halign:'center',sortable:true">id</th>
+            <th data-options="field:'profit',width:80,align:'left',halign:'center',sortable:true">利润率</th>
+            <th data-options="field:'loan',width:120,align:'left',halign:'center',sortable:true">总借款</th>
+            <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
+            <th data-options="field:'loan_period',width:200,align:'left',halign:'center',sortable:true">基金所需放款次数</th>
+            <th data-options="field:'dpxx',width:100,align:'left',halign:'center',sortable:true,formatter:formatDpxx">查看店铺信息</th>
+            <th data-options="field:'jjxx',width:100,align:'left',halign:'center',sortable:true,formatter:formatJjxx">查看基金信息</th>
+            <th data-options="field:'zhjzsj',width:110,align:'left',halign:'center',sortable:true,formatter:formatlastJzsj">最后一次结账时间</th>
+            <th data-options="field:'syts',width:100,align:'left',halign:'center',sortable:true">剩余结账天数</th>
+        </tr>
+    </thead>
+</table>
+<div id="menuTollbar" style="height: auto;">
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="BindData();">刷新</a>
+</div>
+
+<div id="dpxx-dlg" class="easyui-dialog" title="店铺信息查看" style="width: 400px; height: 270px; padding: 5px"
+    data-options="
+        closed: true,
+        modal: true,
+        iconCls: 'icon-search',
+        buttons: '#dpxx-dlg-buttons'
+    ">
+    <table class="altrowstable">
+        <tr>
+            <td class="leftTd">店铺名称</td><td class="rightTd"><span id="title"></span></td>
+        </tr>
+        <tr>
+            <td class="leftTd">店铺类型</td><td class="rightTd"><span id="type"></span></td>
+        </tr>
+        <tr>
+            <td class="leftTd">商品类别</td><td class="rightTd"><span id="category"></span></td>
+        </tr>
+        <tr>
+            <td class="leftTd">货品来源</td><td class="rightTd"><span id="source"></span></td>
+        </tr>
+        <tr>
+            <td class="leftTd">消费人群</td><td class="rightTd"><span id="cust_group"></span></td>
+        </tr>
+        <tr>
+            <td class="leftTd">推广方式</td><td class="rightTd"><span id="promo_strategy"></span></td>
+        </tr>
+    </table>
+</div>
+<div id="dpxx-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#dpxx-dlg').dialog('close');">关闭</a>
+</div>
+
+
+<div id="jjxx-dlg" class="easyui-dialog" title="基金信息查看" style="width: 600px; height: 370px; padding: 5px"
+    data-options="
+        closed: true,
+        modal: true,
+        iconCls: 'icon-search',
+        buttons: '#jjxx-dlg-buttons'
+    ">
+    <div class="easyui-tabs" style="width:576px;height:288px" id="jjxxTab">
+
+    </div>
+</div>
+<div id="jjxx-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#jjxx-dlg').dialog('close');">关闭</a>
+</div>
+
+</body>
+</html>
