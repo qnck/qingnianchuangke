@@ -18,8 +18,6 @@
 			$('#loginPanel').find('.check-error').first().find('input').first().focus().select();
 		}
 		else{
-			// alert("调用后台登录接口，验证账号密码；");
-      // http://www.54qnck.com/office/login
       $.ajax({
           type: "post",
           url: _url+"office/login",
@@ -28,13 +26,13 @@
           async:false,
           success: function (r) {
               if(JSON.parse(r).result=="2000"){
-                window.location.href='index.html';
+                window.location.href='main.html';
               }else{
                   alert("登录失败!");
               }
           },
           error: function () {
-              alert("登录失败!");
+              alert("操作失败!");
           }
       });
 		}
