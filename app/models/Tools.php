@@ -39,7 +39,7 @@ class Tools
 
     public static function getAdminId()
     {
-        return Session::get('admin_id');
+        return 1;
     }
 
     public static function generateDateUserRandomNo($u_id)
