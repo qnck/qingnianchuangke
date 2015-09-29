@@ -76,7 +76,7 @@ class OfficeFundController extends \BaseController
                 throw new Exception("没有找到相关的基金", 1);
             }
             $fund->load('loans');
-            if ($fund->chkAllRepaied()) {
+            if ($fund->chkLoansAlloc()) {
                 $fund->t_status = 5;
             }
             $fund->t_status = 4;
