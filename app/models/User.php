@@ -345,6 +345,11 @@ class User extends Eloquent
         return $followings;
     }
 
+    public function delUser()
+    {
+        // todo delete rlations with booth, product, set status to 3
+    }
+
     public static function filterByDistance($lat, $lng, $distance)
     {
         $distance = $distance * $distance;

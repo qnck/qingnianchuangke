@@ -49,7 +49,7 @@ class OfficeSysUserController extends \BaseController
         $name = Input::get('name', '');
         $pass = Input::get('pass', '');
         $account = Input::get('account', '');
-        $active= Input::get('active', 1);
+        $status= Input::get('status', 1);
 
         try {
             $user = SysUser::find($id);
@@ -57,7 +57,7 @@ class OfficeSysUserController extends \BaseController
             $user->password = $pass;
             $user->account = $account;
             $user->last_local = $ip;
-            $user->is_active = $active;
+            $user->status = $status;
             $user->save();
             $re = Tools::reTrue('编辑user成功');
         } catch (Exception $e) {

@@ -136,7 +136,7 @@ class MarketController extends \BaseController
             $query = Booth::where('b_type', '=', 2)->with([
                 'user',
                 'products' => function ($q) {
-                    $q->take(5);
+                    $q->take(5)->orderBy('sort', 'DESC')->orderBy('created_at', 'DESC');
                 }
                 ]);
             if ($key) {
