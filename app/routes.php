@@ -168,6 +168,7 @@ Route::get('office/sys/user', 'OfficeSysUserController@listUsers');
 Route::post('office/sys/user', 'OfficeSysUserController@postUser');
 Route::put('office/sys/user/{id}', 'OfficeSysUserController@putUser');
 Route::delete('office/sys/user/{id}', 'OfficeSysUserController@delUser');
+Route::put('office/sys/user/{id}/enable', 'OfficeSysUserController@enableUser');
 
 Route::post('office/sys/user/{id}/role', 'OfficeSysUserController@addUserRole');
 Route::delete('office/sys/user/{id}/role', 'OfficeSysUserController@delUserRole');

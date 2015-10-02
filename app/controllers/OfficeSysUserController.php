@@ -87,9 +87,9 @@ class OfficeSysUserController extends \BaseController
             foreach ($roles as $key => $role) {
                 $admin->addRoles($role);
             }
-            $re = Toole::reTrue('添加角色成功');
+            $re = Tools::reTrue('添加角色成功');
         } catch (Exception $e) {
-            $re= Toole::reFalse($e->getCode(), '添加角色失败:'.$e->getMessage());
+            $re= Tools::reFalse($e->getCode(), '添加角色失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -109,6 +109,24 @@ class OfficeSysUserController extends \BaseController
             $re = Tools::reTrue('删除角色成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '删除角色失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function enableUser($id)
+    {
+        $enable = Input::get('enable', 1);
+
+        try {
+            $admin = SysUser::find($id);
+            if (empty($admin)) {
+                throw new Exception("没有找到请求的用户", 10001);
+            }
+            $admin->status = $enable;
+            $admin->save();
+            $re = Tools::reTrue('操作成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
