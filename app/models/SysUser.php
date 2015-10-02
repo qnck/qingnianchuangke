@@ -13,6 +13,7 @@ class SysUser extends \Eloquent
         $data['u_name'] = $this->u_name;
         $data['last_local'] = $this->last_local;
         $data['last_time'] = $this->last_time;
+        $data['account'] = $this->account;
         $data['status'] = $this->status;
         $data['is_del'] = $this->is_del;
         

@@ -39,6 +39,7 @@ class MarketController extends \BaseController
                 $q->on('booths.b_id', '=', 'promotion_infos.b_id')
                 ->where('booths.b_status', '=', 1);
             });
+
             if ($is_follow) {
                 $query = $query->rightJoin('booth_follows', function ($q) use ($u_id) {
                     $q->on('booths.b_id', '=', 'booth_follows.b_id')

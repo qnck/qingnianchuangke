@@ -49,6 +49,7 @@ class OfficeSysUserController extends \BaseController
         $name = Input::get('name', '');
         $pass = Input::get('pass', '');
         $account = Input::get('account', '');
+        $active= Input::get('active', 1);
 
         try {
             $user = SysUser::find($id);
@@ -56,6 +57,7 @@ class OfficeSysUserController extends \BaseController
             $user->password = $pass;
             $user->account = $account;
             $user->last_local = $ip;
+            $user->is_active = $active;
             $user->save();
             $re = Tools::reTrue('编辑user成功');
         } catch (Exception $e) {
@@ -68,7 +70,10 @@ class OfficeSysUserController extends \BaseController
     {
         $user = SysUser::find($id);
         if (!empty($user)) {
-            $user->delete();
+            $user->is_del = 1;
+            $user->save();
+        } else {
+            return Tools::reFalse(10003, '删除失败:没有找到用户');
         }
         return Tools::reTrue('删除成功');
     }
