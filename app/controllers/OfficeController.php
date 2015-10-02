@@ -21,7 +21,7 @@ class OfficeController extends \BaseController
         $pass = Input::get('pass', '');
 
         try {
-            $admin = SysUser::where('account', '=', $account)->first();
+            $admin = SysUser::where('account', '=', $account)->where('is_del', '=', 0)->first();
             if (empty($admin)) {
                 throw new Exception("没有找到该用户", 10003);
             }

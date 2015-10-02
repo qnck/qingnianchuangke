@@ -839,7 +839,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->where('p_status', '=', 1)->orderBy('sort', 'DESC')->paginate($per_page);
+            $products = Product::with(['quantity', 'promo'])->where('u_id', '=', $u_id)->where('b_id', '=', $b_id)->where('p_status', '=', 1)->orderBy('sort', 'DESC')->orderBy('created_at', 'DESC')->paginate($per_page);
             $pagination = ['total_record' => $products->getTotal(), 'total_page' => $products->getLastPage(), 'per_page' => $products->getPerPage(), 'current_page' => $products->getCurrentPage()];
             $data = [];
             foreach ($products as $key => $product) {
@@ -1163,7 +1163,7 @@ class MeController extends \BaseController
             }
             // filter out invalide orders
             $query = $query->where('orders.o_status', '<>', 0)->where('orders.o_status', '<>', 3);
-            $list = $query->groupBy('carts.o_id')->paginate($per_page);
+            $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $order) {
                 $tmp = $order->showDetail(true);

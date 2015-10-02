@@ -48,6 +48,8 @@ class Order extends Eloquent
         $data['amount_paied'] = $this->o_amount_paied;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['number'] = $this->o_number;
+        $data['shipping_address'] = $this->o_shipping_address;
+        $data['shipping_phone'] = $this->o_shipping_phone;
 
         if ($mask_status) {
             $data['status'] = $this->mapOrderStatus();
