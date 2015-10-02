@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<title>青年创客后台管理系统</title>
+
+<script>
+function openPage(obj){
+    var url = "";
+    var temp = $(obj).attr("mysrc").substr(0, 4);
+    url = $(obj).attr("mysrc");
+    var subTitle = $.trim($(obj).attr("mytitle"));
+    if ($(obj).attr("mysrc") == "#") {
+        return;
+    }
+    if (!$('#centTabs').tabs('exists', subTitle)) {
+        $('#centTabs').tabs('add', {
+            title: subTitle,
+            content: createFrame(url),
+            closable: true
+        });
+    } else {
+        $('#centTabs').tabs('select', subTitle);
+    }
+}
+function createFrame(url) {
+    var s = '<iframe id="myifrm" height="'+($('#mainPanle').height()-35)+'" allowtransparency="true" src="' + url + '" scrolling="yes" width="100%" style="border:none;" frameborder="no"></iframe>';
+    return s;
+} 
+</script>
+</head>
+
+<body class="easyui-layout" style="overflow-y: hidden"  scroll="no">
+<div region="north" border="false" style="overflow: hidden; height: 60px;"> 
+        banner
+</div>
+<div region="west" hide="true" split="true" title="菜单" style="width:180px;" id="west">
+  <div id="nav" class="easyui-accordion" fit="true" border="false"> 
+    <div title="APP相关" style="overflow:auto;padding:10px;">
+        <ul style="list-style: none; line-height: 25px">
+            <li mysrc="appabout/userlist.html" mytitle="用户审核" onClick="openPage(this)"><a href="#">用户审核</a></li>
+            <li mysrc="appabout/shoplist.html" mytitle="店铺审核" onClick="openPage(this)"><a href="#">店铺审核</a></li>
+            <li mysrc="appabout/facelist.html" mytitle="面谈管理" onClick="openPage(this)"><a href="#">面谈管理</a></li>
+            <li mysrc="appabout/loaninglist.html" mytitle="放款管理" onClick="openPage(this)"><a href="#">放款管理</a></li>
+            <li mysrc="appabout/repaiedlist.html" mytitle="结账管理" onClick="openPage(this)"><a href="#">结账管理</a></li>
+            <li mysrc="appabout/drawlist.html" mytitle="提现管理" onClick="openPage(this)"><a href="#">提现管理</a></li>
+        </ul>
+    </div>
+    <div title="系统设置" style="overflow:auto;padding:10px;">
+        <ul style="list-style: none; line-height: 25px">
+            <li mysrc="#" mytitle="菜单管理" onClick="openPage(this)"><a href="#">菜单管理</a></li>
+            <li mysrc="#" mytitle="用户管理" onClick="openPage(this)"><a href="#">用户管理</a></li>
+            <li mysrc="#" mytitle="角色管理" onClick="openPage(this)"><a href="#">角色管理</a></li>
+        </ul>
+    </div>
+  </div>
+</div>
+<div id="mainPanle" region="center" style="background: #eee; overflow-y:hidden">
+    <div class="easyui-tabs" id="centTabs" data-options="fit:true">
+
+    </div>
+</div>
+</html>

@@ -193,7 +193,7 @@ function getContent(loan,index){
             result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>该阶段基金未发放</span></td></tr>";
         else if(loan.status == "1"){
             if(index == sdata.loan_period){
-                //最后一次结账
+                result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>[<a href=\"#\" onclick=\"repaied("+loan.id+",0,this,"+index+")\">结账<a/>]</span></td></tr>";
             }
             else{
                 result+= "<tr><td class=\"leftTd\">操作</td><td class=\"rightTd\"><span>[<a href=\"#\" onclick=\"repaied("+loan.id+",0,this,"+index+")\">结账<a/>]&nbsp;&nbsp;&nbsp;&nbsp;[<a href=\"#\" onclick=\"repaied("+loan.id+",1,this,"+index+")\">结账并发放下一次基金<a/>]</span></td></tr>";
@@ -289,7 +289,7 @@ function fileUpload(domFile,id,index){
     });
 }
 function formatlastJzsj(value,row){
-
+    
 }
 </script>
 </head>

@@ -7,7 +7,7 @@
 <script type="text/javascript" src="../easyui/jquery.min.js"></script>
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
-<title>用户管理</title>
+<title>角色管理</title>
 <script>
 	//页面加载
 	$(document).ready(function () {
@@ -26,7 +26,7 @@
 		var pageSize = $("#tt").datagrid('getPager').data("pagination").options.pageSize;
 		$.ajax({
 			type: "get",
-			url: _url+'office/sys/user',
+			url: _url+'office/sys/role',
 			data: {},
 			dataType: "text",
 			success: function (result) {
@@ -46,23 +46,23 @@
 				BindData();
 				break;
 			case "add"://添加
-				$('#user-dlg').dialog({ title: "添加用户" });
+				$('#role-dlg').dialog({ title: "添加角色" });
 				clearAllInputValue();//
-				$('#user-dlg').dialog('open');
+				$('#role-dlg').dialog('open');
 				break;
 			case "upd"://更新
 				var sdata = $("#tt").datagrid("getSelected");
 				if (sdata) {
 					clearAllInputValue();
 					putDataToWindow(sdata);
-					$('#user-dlg').dialog({ title: "编辑用户" });
-					$('#user-dlg').dialog('open');
+					$('#role-dlg').dialog({ title: "编辑角色" });
+					$('#role-dlg').dialog('open');
 				} else {
-					$.messager.alert("提示", "请选择要编辑的用户！", "alert");
+					$.messager.alert("提示", "请选择要编辑的角色！", "alert");
 				}
 				break;
 			case "del"://删除
-				deleteUser();
+				deleteRole();
 				break;
 			default:
 				break;
@@ -70,21 +70,17 @@
 	}
 	//清空页面元素
 	function clearAllInputValue(){
-		$("#account").val("");//账号
-		$("#username").val("");//姓名
-		$("#password").val("");//密码
-		$("#okpassword").val("");//确认密码
+		$("#role_name").val("");//角色名称
 	}
 	//绑定页面元素
 	function putDataToWindow(data) {
-		$("#account").val(data.account);//账号
-		$("#username").val(data.u_name);//姓名
+		$("#role_name").val(data.r_name);//角色名称
 	}
 	//输入检查
 	function ckeckValue(obj) {
 		var sid = $(obj).attr("id");
 		var __val = $(obj).val();
-		if (sid == "account" || sid == "username" || sid == "password") {
+		if (sid == "role_name") {
 			if (__val == "") {
 				$(obj).parent().next().children().show();
 				return false;
@@ -92,32 +88,21 @@
 				clearError(obj);
 				return true;
 			}
-		} else if (sid == "okpassword") {//确认密码
-			if (__val == "") {
-				$(obj).parent().next().children().html("请输入确认密码!").show();
-				return false;
-			} else if ($("#password").val() != __val) {
-				$(obj).parent().next().children().html("确认密码输入错误!").show();
-				return false;
-			} else {
-				clearError(obj);
-				return true;
-			}
-		} 
+		}
 	}
 	//清空错误信息
 	function clearError(obj){
 		$(obj).parent().next().children().hide();
 	}
 	//删除用户
-	function deleteUser() {
+	function deleteRole() {
 		var sdata = $("#tt").datagrid("getSelected");
 		if (sdata) {
-			$.messager.confirm("提示", "确认删除选中用户！", function (r) {
+			$.messager.confirm("提示", "确认删除选中的角色！", function (r) {
 				if (r) {
 					$.ajax({
 						type: "delete",
-						url: _url+'office/sys/user/{'+sdata.id+'}',
+						url: _url+'office/sys/role/{'+sdata.id+'}',
 						data: {},
 						dataType: "text",
 						success: function (r) {
@@ -132,38 +117,24 @@
 				}
 			});
 		} else {
-			$.messager.alert("提示", "请选择要删除的用户！", "alert");
+			$.messager.alert("提示", "请选择要删除的角色！", "alert");
 		}
 	}
 	//获取页面元素值
 	function getDataFromWindow(){
 		var rsData = { data: "", flag: true };
-		var userObj = {};
-		if (ckeckValue($("#account"))) {//账号
-			userObj.account = $("#account").val();
+		var roleObj = {};
+		if (ckeckValue($("#role_name"))) {//角色名称
+			roleObj.r_name = $("#role_name").val();
 		} else {
 			rsData.flag = false;
 		}
-		if (ckeckValue($("#username"))) {//姓名
-			userObj.u_name = $("#username").val();
-		} else {
-			rsData.flag = false;
-		}
-		if (ckeckValue($("#password"))) {//密码
-			userObj.password = $("#password").val();
-		} else {
-			rsData.flag = false;
-		}
-		if (ckeckValue($("#okpassword"))) {//密码
-			// userObj.password = $("#password").val();
-		} else {
-			rsData.flag = false;
-		}
-		rsData.data = userObj;
+		roleObj.r_memo = $("#role_remark").val();
+		rsData.data = roleObj;
 		return rsData;
 	}
 	//保存按钮点击事件
-	function saveUserClick(){
+	function saveRoleClick(){
 		var fnty = $("#displayinfo").attr("fnty");//读取操作类型
 		var rsData = getDataFromWindow();
 		if (rsData.flag) {
@@ -172,14 +143,14 @@
 				//调用后台添加接口
 				$.ajax({
 					type: "post",
-					url: _url+'office/sys/user',
-					data: {name:rsData.data.u_name,pass:rsData.data.password,account:rsData.data.account},
+					url: _url+'office/sys/role',
+					data: {name:rsData.data.r_name,desc:rsData.data.r_memo},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);
 						alert(result.info);
 						if(result.result=="2000"){
-							$("#user-dlg").dialog("close");
+							$("#role-dlg").dialog("close");
 							BindData();
 						}
 					},
@@ -188,23 +159,23 @@
 					}
 				});
 			} else if (fnty == "upd") {//编辑
-				//获取选中用户
+				//获取选中角色
 				var sdata = $("#tt").datagrid("getSelected");
-				//获取选中用户索引
+				//获取选中角色索引
 				var rowindex = $("#tt").datagrid("getRowIndex", sdata);
-				//设置修改用户id
+				//设置修改角色id
 				rsData.data.id = sdata.id;
 				//调用后台编辑接口
 				$.ajax({
 					type: "put",
-					url: _url+'office/sys/user/'+rsData.data.id,
-					data: {name:rsData.data.u_name,pass:rsData.data.password,account:rsData.data.account},
+					url: _url+'office/sys/role/'+rsData.data.id,
+					data: {name:rsData.data.r_name,desc:rsData.data.r_memo},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);
 						alert(result.info);
 						if(result.result=="2000"){
-							$("#user-dlg").dialog("close");
+							$("#role-dlg").dialog("close");
 							BindData();
 						}
 					},
@@ -216,30 +187,17 @@
 		}
 	}
 	function formatHandle(value, row) {
-		var rs  = row.status=='1' ? '<a class="alink-edit" onclick="changeStatus(\'0\',\'禁用\')" href="#">[禁用]</a>' : '<a class="alink-edit" onclick="changeStatus(\'1\',\'启用\'))" href="#">[启用]</a>';//''
-		rs += '<a class="alink-edit" onclick="setRole()" href="#">[设置角色]</a>';
+		var rs  = '<a class="alink-edit" onclick="setUser()" href="#">[设置用户]</a>';
 		return rs;
 	}
-	function formatStatus(value, row){
-		if(value=="0") return "禁用";
-		else return "可用"
-	}
-	function setRole(){
+	function setUser(){
 		alert("coding");
-	}
-	function changeStatus(ty,msg){
-		$.messager.confirm("提示", "确认"+msg+"选中用户！", function (r) {
-			if (r) {
-				////
-				alert("后台接口还未提供");
-			}
-		});
 	}
 </script>
 </head>
 
 <body>
-<table id="tt" title="用户列表" class="easyui-datagrid" data-options="
+<table id="tt" title="角色列表" class="easyui-datagrid" data-options="
             rownumbers:true,
             fit:true,
             singleSelect:true,
@@ -250,12 +208,8 @@
     <thead>
         <tr>
             <th data-options="field:'id',width:120,align:'left',halign:'center'">id</th>
-            <th data-options="field:'u_name',width:120,align:'left',halign:'center'">姓名</th>
-            <th data-options="field:'account',width:80,align:'left',halign:'center'">账号</th>
-            <th data-options="field:'last_local',width:80,align:'left',halign:'center'">最后登录IP</th>
-            <th data-options="field:'last_time',width:120,align:'left',halign:'center'">最后登录时间</th>
-            <th data-options="field:'status',width:80,align:'left',halign:'center',formatter:formatStatus">是否可用</th>
-            <th data-options="field:'is_del',width:80,align:'left',halign:'center'">已删除</th>
+            <th data-options="field:'r_name',width:120,align:'left',halign:'center'">角色名称</th>
+            <th data-options="field:'r_memo',width:80,align:'left',halign:'center'">角色描述</th>
             <th data-options="field:'options',width:140,align:'center',formatter:formatHandle">操作</th>
         </tr>
     </thead>
@@ -268,54 +222,38 @@
 </div>
 
 <!-- 添加/编辑窗口 Start -->
-<div id="user-dlg" class="easyui-dialog" title="添加用户" style="width: 400px; height: 330px; padding: 5px"
+<div id="role-dlg" class="easyui-dialog" title="添加角色" style="width: 400px; height: 330px; padding: 5px"
     data-options="
         closed:true,
         modal:true,
         iconCls: 'icon-save',
-        buttons: '#user-dlg-buttons'
+        buttons: '#role-dlg-buttons'
     ">
     <div>
         <div id="displayinfo" fnty="add" style="display: none;">信息存储隐藏层</div>
         <table class="userTab">
             <tr>
-                <td class="td-key">账号</td>
+                <td class="td-key">角色名称</td>
                 <td style="width: 100px;">
-                    <input id="account" next="username" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
+                    <input id="role_name" next="role_remark" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td>
-                    <div style="color: red; display: none;">请输入账号!</div>
+                    <div style="color: red; display: none;">请输入角色名称!</div>
                 </td>
             </tr>
             <tr>
-                <td class="td-key">姓名</td>
+                <td class="td-key">角色描述</td>
                 <td>
-                    <input id="username" next="password" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
+                    <input id="role_remark" type="text" /></td>
                 <td>
-                    <div style="color: red; display: none;">请输入姓名!</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="td-key">密码</td>
-                <td>
-                    <input id="password" next="okpassword" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
-                <td style="text-align: left;">
-                    <div style="color: red; display: none;">请输入密码!</div>
-                </td>
-            </tr>
-            <tr>
-                <td class="td-key">确认密码</td>
-                <td>
-                    <input id="okpassword" next="pid" type="text" onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
-                <td style="text-align: left;">
-                    <div style="color: red; display: none;">请输入确认密码!</div>
+                    
                 </td>
             </tr>
         </table>
     </div>
 </div>
-<div id="user-dlg-buttons">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="saveUserClick();">保存</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#user-dlg').dialog('close');">取消</a>
+<div id="role-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="saveRoleClick();">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#role-dlg').dialog('close');">取消</a>
 </div>
 <!-- 添加/编辑窗口 End -->
 </body>
