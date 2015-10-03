@@ -119,8 +119,8 @@ class OfficeMenuController extends \BaseController
             if (empty($role)) {
                 throw new Exception("么有找到请求的角色", 10001);
             }
-            $role->m_name = $name;
-            $role->m_memo = $desc;
+            $role->r_name = $name;
+            $role->r_memo = $desc;
             $role->save();
             $re = Tools::reTrue('修改成功');
         } catch (Exception $e) {
