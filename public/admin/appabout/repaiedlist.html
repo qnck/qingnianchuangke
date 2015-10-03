@@ -288,9 +288,72 @@ function fileUpload(domFile,id,index){
         }
     });
 }
-function formatlastJzsj(value,row){
-    
+function formatSyts(value,row){
+    if(row.last_retrive!=null){
+        var ltime = new Date(row.last_retrive);
+        var ntime = ltime.DateAdd("m",1);
+        return daysBetween(ntime.Format("YYYY-MM-dd"),new Date().Format("YYYY-MM-dd"));
+    }
+    else
+    {
+        return "";
+    }
 }
+//日期添加
+Date.prototype.DateAdd = function(strInterval, Number) { 
+    var dtTmp = this; 
+    switch (strInterval) { 
+        case 's' :return new Date(Date.parse(dtTmp) + (1000 * Number)); 
+        case 'n' :return new Date(Date.parse(dtTmp) + (60000 * Number)); 
+        case 'h' :return new Date(Date.parse(dtTmp) + (3600000 * Number)); 
+        case 'd' :return new Date(Date.parse(dtTmp) + (86400000 * Number)); 
+        case 'w' :return new Date(Date.parse(dtTmp) + ((86400000 * 7) * Number)); 
+        case 'q' :return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number*3, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+        case 'm' :return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+        case 'y' :return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+    } 
+}
+//取两个日期相差天数
+function daysBetween(DateOne,DateTwo) 
+{ 
+    var OneMonth = DateOne.substring(5,DateOne.lastIndexOf ('-')); 
+    var OneDay = DateOne.substring(DateOne.length,DateOne.lastIndexOf ('-')+1); 
+    var OneYear = DateOne.substring(0,DateOne.indexOf ('-')); 
+
+    var TwoMonth = DateTwo.substring(5,DateTwo.lastIndexOf ('-')); 
+    var TwoDay = DateTwo.substring(DateTwo.length,DateTwo.lastIndexOf ('-')+1); 
+    var TwoYear = DateTwo.substring(0,DateTwo.indexOf ('-')); 
+
+    var cha=((Date.parse(OneMonth+'/'+OneDay+'/'+OneYear)- Date.parse(TwoMonth+'/'+TwoDay+'/'+TwoYear))/86400000);
+    return Math.abs(cha); 
+}
+//日期格式化
+Date.prototype.Format = function(formatStr)   
+{   
+    var str = formatStr;   
+    var Week = ['日','一','二','三','四','五','六'];  
+  
+    str=str.replace(/yyyy|YYYY/,this.getFullYear());
+    str=str.replace(/yy|YY/,(this.getYear() % 100)>9?(this.getYear() % 100).toString():'0' + (this.getYear() % 100));   
+  
+    str=str.replace(/MM/,this.getMonth()>9?this.getMonth().toString():'0' + this.getMonth());   
+    str=str.replace(/M/g,this.getMonth());
+  
+    str=str.replace(/w|W/g,Week[this.getDay()]);
+  
+    str=str.replace(/dd|DD/,this.getDate()>9?this.getDate().toString():'0' + this.getDate());   
+    str=str.replace(/d|D/g,this.getDate());   
+  
+    str=str.replace(/hh|HH/,this.getHours()>9?this.getHours().toString():'0' + this.getHours());   
+    str=str.replace(/h|H/g,this.getHours());   
+    str=str.replace(/mm/,this.getMinutes()>9?this.getMinutes().toString():'0' + this.getMinutes());   
+    str=str.replace(/m/g,this.getMinutes());   
+  
+    str=str.replace(/ss|SS/,this.getSeconds()>9?this.getSeconds().toString():'0' + this.getSeconds());   
+    str=str.replace(/s|S/g,this.getSeconds());   
+  
+    return str;   
+}   
 </script>
 </head>
 
@@ -312,8 +375,8 @@ function formatlastJzsj(value,row){
             <th data-options="field:'loan_period',width:200,align:'left',halign:'center',sortable:true">基金所需放款次数</th>
             <th data-options="field:'dpxx',width:100,align:'left',halign:'center',sortable:true,formatter:formatDpxx">查看店铺信息</th>
             <th data-options="field:'jjxx',width:100,align:'left',halign:'center',sortable:true,formatter:formatJjxx">查看基金信息</th>
-            <th data-options="field:'zhjzsj',width:110,align:'left',halign:'center',sortable:true,formatter:formatlastJzsj">最后一次结账时间</th>
-            <th data-options="field:'syts',width:100,align:'left',halign:'center',sortable:true">剩余结账天数</th>
+            <th data-options="field:'last_allot',width:130,align:'left',halign:'center',sortable:true">最后一次放款时间</th>
+            <th data-options="field:'syts',width:100,align:'left',halign:'center',sortable:true,formatter:formatSyts">结账剩余天数</th>
         </tr>
     </thead>
 </table>

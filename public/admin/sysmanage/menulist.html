@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="../easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../easyui/themes/icon.css">
+<script type="text/javascript" src="../easyui/jquery.min.js"></script>
+<script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<title>菜单管理</title>
+<script>
+	//页面加载
+	$(document).ready(function () {
+		BindData();
+	});
+	//绑定数据
+	function BindData() {
+		$.ajax({
+			type: "get",
+			url: _url+'office/sys/menu',
+			data: {},
+			dataType: "text",
+			success: function (result) {
+				if(JSON.parse(result).result=="2000")
+					$("#tt").treegrid("loadData", JSON.parse(result).data);
+			},
+			error: function () {
+				alert("加载失败!");
+			}
+		});
+	}
+    /*  菜单格式化   */
+    function menunameformater(value, row) {
+        if (row.fatherid == 0) {
+            var rs = '<lable style="color:blue; font-weight:bold;">' + value + '</lable>';
+            return rs;
+        } else {
+            return value;
+        }
+    }
+    function toolBarClick(ty) {
+        $("#displayinfo").attr("fnty", ty);
+        switch (ty) {
+            case "resh"://刷新
+                BindData();
+                break;
+            case "addself"://新增
+            case "addchild"://新增
+                var sdata = $("#tt").treegrid("getSelected");
+                if (!sdata) {
+                    $.messager.alert("提示", "请选择一行数据", "alert");
+                    return;
+                }
+                $('#menu-dlg').dialog({ title: ty == "addchild" ? "新增子级菜单" : "新增同级菜单" });
+                clearAllInputValue();
+                $('#menu-dlg').dialog('open');
+                break;
+            case "upd"://修改
+                var sdata = $("#tt").datagrid("getSelected");
+                if (sdata) {
+                    clearAllInputValue();
+                    putDataToWindow(sdata);
+                    $('#menu-dlg').dialog({ title: "修改菜单" });
+                    $('#menu-dlg').dialog('open');
+                } else {
+                    $.messager.alert("提示", "请选择一个菜单", "alert");
+                }
+                break;
+            case "del"://删除
+                deleteMenu();
+                break;
+            default:
+                break;
+        }
+    }
+	function clearAllInputValue(){
+        $("#name").val("");
+        $("#url").val("");
+        $("#desc").val("");
+	}
+    function putDataToWindow(data) {
+        $("#name").val(data.name);
+        $("#url").val(data.url);
+        $("#desc").val(data.desc);
+    }
+	//输入检查
+	function ckeckValue(obj) {
+		var sid = $(obj).attr("id");
+		var __val = $(obj).val();
+		if (sid == "name"||sid == "url") {
+			if (__val == "") {
+				$(obj).parent().next().children().show();
+				return false;
+			} else {
+				clearError(obj);
+				return true;
+			}
+		}
+	}
+	//清空错误信息
+	function clearError(obj){
+		$(obj).parent().next().children().hide();
+	}
+    function deleteMenu() {
+        var sdata = $("#tt").treegrid("getSelected");
+        if (sdata) {
+            if (sdata.children.length > 0) {
+                $.messager.alert("提示", "请先删除子菜单", "alert");
+                return;
+            }
+            $.messager.confirm("提示", "确认删除此菜单？", function (r) {
+                if (r) {
+                    var id = sdata.id;
+                    $.ajax({
+                        type: "delete",
+                        url: _url+'/office/sys/menu/'+id,
+                        data: {},
+                        dataType: "text",
+                        success: function (r) {
+							var result = JSON.parse(r);
+							$.messager.alert('提示', result.info, 'info');
+                            if(result.result=="2000"){
+								BindData();
+							}
+                        }
+                    });
+                }
+            });
+        } else {
+            $.messager.alert("提示", "请选择要删除的菜单", "alert");
+        }
+    }
+	function getDataFromWindow(){
+		var rsData = { data: "", flag: true };
+		var menuObj = {};
+		if (ckeckValue($("#name"))) {//
+			menuObj.name = $("#name").val();
+		} else {
+			rsData.flag = false;
+		}
+		if (ckeckValue($("#url"))) {//
+			menuObj.url = $("#url").val();
+		} else {
+			rsData.flag = false;
+		}
+		menuObj.desc = $("#desc").val();
+        var fnty = $("#displayinfo").attr("fnty");
+        var sdata = $("#tt").treegrid("getSelected");
+        var pid = fnty == "addself" ? sdata.parent : sdata.id;
+        menuObj.parent = pid;
+		rsData.data = menuObj;
+		return rsData;
+	}
+    function saveMenuClick(){
+    	var fnty = $("#displayinfo").attr("fnty");//读取操作类型
+		var rsData = getDataFromWindow();
+		if (rsData.flag) {
+			//添加
+            if (fnty == "addself" || fnty == "addchild") {
+				//调用后台添加接口
+				$.ajax({
+					type: "post",
+					url: _url+'office/sys/menu',
+					data: {name:rsData.data.name,desc:rsData.data.desc,parent:rsData.data.parent,url:rsData.data.url,level:0,parent_path:0},
+					dataType: "text",
+					success: function (r) {
+						var result = JSON.parse(r);
+						$.messager.alert('提示', result.info, 'info');
+						if(result.result=="2000"){
+							$("#menu-dlg").dialog("close");
+							BindData();
+						}
+					},
+					error: function () {
+						alert("操作失败!");
+					}
+				});
+			} else if (fnty == "upd") {//编辑
+				var sdata = $("#tt").datagrid("getSelected");
+				rsData.data.id = sdata.id;
+				$.ajax({
+					type: "post",
+					url: _url+'office/sys/menu'+rsData.data.id,
+					data: {name:rsData.data.name,desc:rsData.data.desc,parent:rsData.data.parent,url:rsData.data.url,level:0,parent_path:0},
+					dataType: "text",
+					success: function (r) {
+						var result = JSON.parse(r);
+						$.messager.alert('提示', result.info, 'info');
+						if(result.result=="2000"){
+							$("#menu-dlg").dialog("close");
+							BindData();
+						}
+					},
+					error: function () {
+						alert("操作失败!");
+					}
+				});
+			}
+		}
+    }
+</script>
+</head>
+
+<body>
+<table id="tt" title="菜单导航" class="easyui-treegrid" data-options="
+    rownumbers:true,
+    fit:true,
+    animate:true,
+    idField:'id',
+    treeField:'name',
+    toolbar:'#menuTollbar'
+    ">
+    <thead>
+        <tr>
+            <th data-options="field:'name',width:200,align:'left',halign:'center',formatter:menunameformater">菜单名称</th>
+            <th data-options="field:'url',width:300,align:'left',halign:'center'">链接地址</th>
+            <th data-options="field:'desc',width:200,align:'center'">描述</th>
+        </tr>
+    </thead>
+</table>
+<div id="menuTollbar" style="height: auto;">
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-reload'" onclick="toolBarClick('resh');">刷新</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="toolBarClick('addself');">新增同级菜单</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-add'" onclick="toolBarClick('addchild');">新增子级菜单</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-edit'" onclick="toolBarClick('upd');">修改</a>
+    <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-remove'" onclick="toolBarClick('del');">删除</a>
+</div>
+
+<!-- 添加/编辑窗口 Start -->
+<div id="menu-dlg" class="easyui-dialog" title="添加角色" style="width: 400px; height: 330px; padding: 5px"
+    data-options="
+        closed:true,
+        modal:true,
+        iconCls: 'icon-save',
+        buttons: '#menu-dlg-buttons'
+    ">
+    <div>
+        <div id="displayinfo" fnty="add" style="display: none;">信息存储隐藏层</div>
+        <table class="userTab">
+            <tr>
+                <td class="td-key">菜单名称</td>
+                <td style="width: 100px;">
+                    <input id="name" next="url" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
+                <td>
+                    <div style="color: red; display: none;">请输入菜单名称!</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="td-key">菜单地址</td>
+                <td style="width: 100px;">
+                    <input id="url" next="desc" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
+                <td>
+                    <div style="color: red; display: none;">请输入菜单地址!</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="td-key">菜单描述</td>
+                <td>
+                    <input id="desc" type="text" /></td>
+                <td>
+                    
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="menu-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="saveMenuClick();">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#menu-dlg').dialog('close');">取消</a>
+</div>
+<!-- 添加/编辑窗口 End -->
+
+</body>
+</html>

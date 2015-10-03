@@ -117,16 +117,34 @@
 				if (r) {
 					$.ajax({
 						type: "delete",
-						url: _url+'office/sys/user/{'+sdata.id+'}',
+						url: _url+'office/sys/user/'+sdata.id,
 						data: {},
 						dataType: "text",
 						success: function (r) {
 							var result = JSON.parse(r);
-							$.messager.alert('提示', result.info, 'info');
-							BindData();
+							if(result.result=="2000"){
+								$.ajax({
+									type: "put",
+									url: _url+'office/sys/user/'+sdata.id+"/enable",
+									data: {enable:0},
+									dataType: "text",
+									success: function (re) {
+										var res = JSON.parse(re);
+										if(res.result=="2000"){
+											$.messager.alert('提示', "删除用户成功！", 'info');
+										}else{
+											$.messager.alert('提示', "删除用户成功,禁用用户失败！", 'info');
+										}
+										BindData();
+									},
+									error: function () {
+										alert("禁用用户操作失败!");
+									}
+								});
+							}
 						},
 						error: function () {
-							alert("操作失败!");
+							alert("删除用户操作失败!");
 						}
 					});
 				}
@@ -216,7 +234,7 @@
 		}
 	}
 	function formatHandle(value, row) {
-		var rs  = row.status=='1' ? '<a class="alink-edit" onclick="changeStatus(\'0\',\'禁用\')" href="#">[禁用]</a>' : '<a class="alink-edit" onclick="changeStatus(\'1\',\'启用\'))" href="#">[启用]</a>';//''
+		var rs  = row.status=='1' ? '<a class="alink-edit" onclick="changeStatus(\'0\',\'禁用\',\''+row.id+'\')" href="#">[禁用]</a>' : '<a class="alink-edit" onclick="changeStatus(\'1\',\'启用\',\''+row.id+'\')" href="#">[启用]</a>';//''
 		rs += '<a class="alink-edit" onclick="setRole()" href="#">[设置角色]</a>';
 		return rs;
 	}
@@ -224,14 +242,34 @@
 		if(value=="0") return "禁用";
 		else return "可用"
 	}
+
+	function formatIsdel(value, row){
+		if(value=="0") return "否";
+		else return "是"
+	}
 	function setRole(){
 		alert("coding");
 	}
-	function changeStatus(ty,msg){
+	function changeStatus(ty,msg,id){
 		$.messager.confirm("提示", "确认"+msg+"选中用户！", function (r) {
 			if (r) {
-				////
-				alert("后台接口还未提供");
+				$.ajax({
+					type: "put",
+					url: _url+'office/sys/user/'+id+"/enable",
+					data: {enable:ty},
+					dataType: "text",
+					success: function (r) {
+						var result = JSON.parse(r);
+						alert(result.info);
+						if(result.result=="2000"){
+							$("#user-dlg").dialog("close");
+							BindData();
+						}
+					},
+					error: function () {
+						alert("操作失败!");
+					}
+				});
 			}
 		});
 	}
@@ -255,7 +293,7 @@
             <th data-options="field:'last_local',width:80,align:'left',halign:'center'">最后登录IP</th>
             <th data-options="field:'last_time',width:120,align:'left',halign:'center'">最后登录时间</th>
             <th data-options="field:'status',width:80,align:'left',halign:'center',formatter:formatStatus">是否可用</th>
-            <th data-options="field:'is_del',width:80,align:'left',halign:'center'">已删除</th>
+            <th data-options="field:'is_del',width:80,align:'left',halign:'center',formatter:formatIsdel">已删除</th>
             <th data-options="field:'options',width:140,align:'center',formatter:formatHandle">操作</th>
         </tr>
     </thead>
