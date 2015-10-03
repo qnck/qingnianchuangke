@@ -41,17 +41,21 @@ class SysMenu extends Eloquent
         return $data;
     }
 
-    public static function makeTree()
+    public static function makeTree($admin_id = -1)
     {
-        $admin_id = Tools::getAdminId();
-        $admin = SysUser::find($admin_id);
-        if (empty($admin)) {
-            throw new Exception("没有查找到admin数据", 10003);
+        if ($admin_id == -1) {
+            $admin = new SysUser();
+            $admin->account = 'root';
+        } else {
+            $admin = SysUser::find($admin_id);
+            if (empty($admin)) {
+                throw new Exception("没有查找到admin数据", 10003);
+            }
         }
         if ($admin->account == 'root') {
             $list = SysMenu::get();
         } else {
-            $list = SysMenu::leftJoin('sys_role_menus', function ($q) {
+            $list = SysMenu::select('sys_menus.*')->leftJoin('sys_role_menus', function ($q) {
                 $q->on('sys_menus.id', '=', 'sys_role_menus.m_id');
             })->leftJoin('sys_user_roles', function ($q) use ($admin_id) {
                 $q->on('sys_user_roles.id', '=', 'sys_role_menus.r_id')->where('sys_user_roles.admin_id', '=', $admin_id);

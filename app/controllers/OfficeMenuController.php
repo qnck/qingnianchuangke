@@ -8,12 +8,8 @@ class OfficeMenuController extends \BaseController
     public function listMenu()
     {
         try {
-            $list = SysMenu::get();
-            $data = [];
-            foreach ($list as $key => $menu) {
-                $data[] = $menu->showInList();
-            }
-            $re = Tools::reTrue('获取菜单成功', $data);
+            $menu_tree = SysMenu::makeTree(-1);
+            $re = Tools::reTrue('获取菜单成功', $menu_tree);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());
         }
