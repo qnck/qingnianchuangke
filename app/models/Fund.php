@@ -58,6 +58,7 @@ class Fund extends Eloquent
         }
         $loans = null;
         $last_retrive = null;
+        $last_allot = null;
         if (!empty($this->loans)) {
             foreach ($this->loans as $key => $loan) {
                 $loans[] = $loan->showInList();
@@ -67,12 +68,22 @@ class Fund extends Eloquent
                     if (empty($last_retrive)) {
                         $last_retrive = $date;
                     } else {
-                        $last_retrive = $last_retrive > $data ? $data : $last_retrive;
+                        $last_retrive = $last_retrive < $date ? $date : $last_retrive;
+                    }
+                }
+                if (!empty($loan->created_at)) {
+                    $date = new DateTime($loan->created_at);
+                    $date = $date->format('Y-m-d H:i:s');
+                    if (empty($last_allot)) {
+                        $last_allot = $date;
+                    } else {
+                        $last_allot = $last_allot < $date ? $date : $last_allot;
                     }
                 }
             }
         }
         $data['last_retrive'] = $last_retrive;
+        $data['last_allot'] = $last_allot;
         $data['loans'] = $loans;
         $data['loan_period'] = count($loans);
         return $data;
