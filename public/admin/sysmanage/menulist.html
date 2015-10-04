@@ -145,9 +145,13 @@
 		}
 		menuObj.desc = $("#desc").val();
         var fnty = $("#displayinfo").attr("fnty");
-        var sdata = $("#tt").treegrid("getSelected");
-        var pid = fnty == "addself" ? sdata.parent : sdata.id;
-        menuObj.parent = pid;
+        if (fnty == "addself" || fnty == "addchild"){
+	        var sdata = $("#tt").treegrid("getSelected");
+	        var pid = fnty == "addself" ? sdata.parent : sdata.id;
+	        var level = fnty == "addself" ? sdata.level : (parseInt(sdata.level)+1);
+	        menuObj.parent = pid;
+	        menuObj.level = level;
+        }
 		rsData.data = menuObj;
 		return rsData;
 	}
@@ -161,7 +165,7 @@
 				$.ajax({
 					type: "post",
 					url: _url+'office/sys/menu',
-					data: {name:rsData.data.name,desc:rsData.data.desc,parent:rsData.data.parent,url:rsData.data.url,level:0,parent_path:0},
+					data: {name:rsData.data.name,desc:rsData.data.desc,parent:rsData.data.parent,url:rsData.data.url,level:rsData.data.level,parent_path:0},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);
@@ -177,11 +181,10 @@
 				});
 			} else if (fnty == "upd") {//编辑
 				var sdata = $("#tt").datagrid("getSelected");
-				rsData.data.id = sdata.id;
 				$.ajax({
-					type: "post",
-					url: _url+'office/sys/menu'+rsData.data.id,
-					data: {name:rsData.data.name,desc:rsData.data.desc,parent:rsData.data.parent,url:rsData.data.url,level:0,parent_path:0},
+					type: "put",
+					url: _url+'office/sys/menu'+sdata.id,
+					data: {name:rsData.data.name,desc:rsData.data.desc,parent:sdata.parent,url:rsData.data.url,level:sdata.level,parent_path:0},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);

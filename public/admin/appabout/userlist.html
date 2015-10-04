@@ -98,23 +98,25 @@ $(document).ready(function () {
 		$("#mqdh").text("");
 	}
 	function putDetailToWindow(detail){
-		$("#sfzhm").text(detail.identity_number);
-		if(detail.identity_imgs!=null){
-			$("#sfzzp_zm").attr("src",detail.identity_imgs.identity_img_front);
-			$("#sfzzp_bm").attr("src",detail.identity_imgs.identity_img_back);
-		}
-		$("#jtzz").text(detail.home_adress);
-		$("#fqxm").text(detail.father_name);
-		$("#fqdh").text(detail.father_telephone);
-		$("#mqxm").text(detail.mother_name);
-		$("#mqdh").text(detail.mother_telephone);
-		if(detail.status=="1")
-			$("#detailOptTd").html("此项已审核通过");
-		else if(detail.status=="0"){
-			$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
-		}
-		else if(detail.status=="2"){
-			$("#detailOptTd").html("审核不通过，原因【<span style='color:red;'>"+detail.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+		if(detail){
+			$("#sfzhm").text(detail.identity_number);
+			if(detail.identity_imgs!=null){
+				$("#sfzzp_zm").attr("src",detail.identity_imgs.identity_img_front);
+				$("#sfzzp_bm").attr("src",detail.identity_imgs.identity_img_back);
+			}
+			$("#jtzz").text(detail.home_adress);
+			$("#fqxm").text(detail.father_name);
+			$("#fqdh").text(detail.father_telephone);
+			$("#mqxm").text(detail.mother_name);
+			$("#mqdh").text(detail.mother_telephone);
+			if(detail.status=="1")
+				$("#detailOptTd").html("此项已审核通过");
+			else if(detail.status=="0"){
+				$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+			}
+			else if(detail.status=="2"){
+				$("#detailOptTd").html("审核不通过，原因【<span style='color:red;'>"+detail.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+			}
 		}
 	}
 	function censor(type, opt, bankid){
