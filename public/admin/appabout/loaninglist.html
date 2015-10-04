@@ -174,34 +174,28 @@ function provide(){
     f.enctype="multipart/form-data";
     $("#pzimg").appendTo(f);
 
-    var ajax_option={
-        success:function(data){
-            alert(data);
+    $(f).ajaxSubmit(function(s){
+        if(JSON.parse(s).result=="2000")
+        {
+            var remark = $("#txtReamrk").text();
+            $.ajax({
+                type: "get",
+                url: _url+"office/loan/"+loanid+"/alloc",
+                data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                dataType: "text",
+                success: function (result) {
+                    if(JSON.parse(result).result=="2000"){
+                        $('#provide-dlg').dialog('close');
+                        $.messager.alert("提示", "操作成功", "alert");
+                        BindData();
+                    }
+                },
+                error: function () {
+                    alert("加载失败!");
+                }
+            });
         }
-    }
-    $(f).ajaxSubmit(ajax_option);
-    // $(f).ajaxSubmit(function(s){
-    //     if(JSON.parse(s).result=="2000")
-    //     {
-    //         var remark = $("#txtReamrk").text();
-    //         $.ajax({
-    //             type: "get",
-    //             url: _url+"office/loan/"+loanid+"/alloc",
-    //             data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
-    //             dataType: "text",
-    //             success: function (result) {
-    //                 if(JSON.parse(result).result=="2000"){
-    //                     $('#provide-dlg').dialog('close');
-    //                     $.messager.alert("提示", "操作成功", "alert");
-    //                     BindData();
-    //                 }
-    //             },
-    //             error: function () {
-    //                 alert("加载失败!");
-    //             }
-    //         });
-    //     }
-    // });
+    });
 }
 </script>
 </head>
