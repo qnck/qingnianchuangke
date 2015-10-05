@@ -44,7 +44,7 @@ class OfficeMenuController extends \BaseController
     public function putMenu($id)
     {
         $name = Input::get('name', '');
-        $desc = Input::get('des', '');
+        $desc = Input::get('desc', '');
         $parent = Input::get('parent', 0);
         $url = Input::get('url', '');
         $level = Input::get('level', 0);
