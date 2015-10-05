@@ -169,7 +169,7 @@ class OfficeMenuController extends \BaseController
         return Response::json($re);
     }
 
-    public function listAdminMenu($id)
+    public function listUserMenu($id)
     {
         try {
             $menu_tree = SysMenu::getTreeByAdmin($id);

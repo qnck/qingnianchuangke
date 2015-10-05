@@ -130,4 +130,25 @@ class OfficeSysUserController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listUserRole($id)
+    {
+        try {
+            $admin = SysUser::find($id);
+            if (empty($admin)) {
+                throw new Exception("没有找到用户", 10001);
+            }
+            $list = SysRole::select('sys_roles.*')->join('sys_user_roles', function ($q) use ($id) {
+                $q->on('sys_roles.id', '=', 'sys_user_roles.r_id')->where('sys_user_roles.admin_id', '=', $id);
+            })->get();
+            $data = [];
+            foreach ($list as $key => $role) {
+                $data[] = $role->showInList();
+            }
+            $re = Tools::reTrue('获取角色成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取角色失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
