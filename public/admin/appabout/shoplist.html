@@ -148,7 +148,7 @@ function censorInfo(check){
             var is_talk="0";
             if(check=="0")
                 remark = prompt("请输入审核不通过的原因：", ""); 
-            if(check == "0" && remark==""){
+            if(check == "0" && (remark==""||remark==null)){
                 $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
                 return;
             }
@@ -172,7 +172,7 @@ function censor(is_talk,remark,opt){
             data: {check:opt,interview:is_talk,remark:remark},
             dataType: "text",
             success: function (result) {
-                alert(JSON.parse(result).message);
+                alert(JSON.parse(result).info);
                 if(JSON.parse(result).result=="2000")
                     BindData();
             },

@@ -71,10 +71,12 @@
 	//清空页面元素
 	function clearAllInputValue(){
 		$("#role_name").val("");//角色名称
+		$("#role_remark").val("");//角色名称
 	}
 	//绑定页面元素
 	function putDataToWindow(data) {
-		$("#role_name").val(data.r_name);//角色名称
+		$("#role_name").val(data.name);//角色名称
+		$("#role_remark").val(data.desc);//角色名称
 	}
 	//输入检查
 	function ckeckValue(obj) {
@@ -94,7 +96,7 @@
 	function clearError(obj){
 		$(obj).parent().next().children().hide();
 	}
-	//删除用户
+	//删除角色
 	function deleteRole() {
 		var sdata = $("#tt").datagrid("getSelected");
 		if (sdata) {
@@ -102,7 +104,7 @@
 				if (r) {
 					$.ajax({
 						type: "delete",
-						url: _url+'office/sys/role/{'+sdata.id+'}',
+						url: _url+'office/sys/role/'+sdata.id,
 						data: {},
 						dataType: "text",
 						success: function (r) {
@@ -125,11 +127,11 @@
 		var rsData = { data: "", flag: true };
 		var roleObj = {};
 		if (ckeckValue($("#role_name"))) {//角色名称
-			roleObj.r_name = $("#role_name").val();
+			roleObj.name = $("#role_name").val();
 		} else {
 			rsData.flag = false;
 		}
-		roleObj.r_memo = $("#role_remark").val();
+		roleObj.desc = $("#role_remark").val();
 		rsData.data = roleObj;
 		return rsData;
 	}
@@ -144,7 +146,7 @@
 				$.ajax({
 					type: "post",
 					url: _url+'office/sys/role',
-					data: {name:rsData.data.r_name,desc:rsData.data.r_memo},
+					data: {name:rsData.data.name,desc:rsData.data.desc},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);
@@ -169,7 +171,7 @@
 				$.ajax({
 					type: "put",
 					url: _url+'office/sys/role/'+rsData.data.id,
-					data: {name:rsData.data.r_name,desc:rsData.data.r_memo},
+					data: {name:rsData.data.name,desc:rsData.data.desc},
 					dataType: "text",
 					success: function (r) {
 						var result = JSON.parse(r);
@@ -208,8 +210,8 @@
     <thead>
         <tr>
             <th data-options="field:'id',width:120,align:'left',halign:'center'">id</th>
-            <th data-options="field:'r_name',width:120,align:'left',halign:'center'">角色名称</th>
-            <th data-options="field:'r_memo',width:80,align:'left',halign:'center'">角色描述</th>
+            <th data-options="field:'name',width:120,align:'left',halign:'center'">角色名称</th>
+            <th data-options="field:'desc',width:80,align:'left',halign:'center'">角色描述</th>
             <th data-options="field:'options',width:140,align:'center',formatter:formatHandle">操作</th>
         </tr>
     </thead>

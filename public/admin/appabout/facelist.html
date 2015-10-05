@@ -139,22 +139,20 @@ function formatKdfs(value,row){
         return "自费开店";
 }
 function formatOpt(value,row){
-    return "<a href=\"#\" onclick=\"interview('1','"+row.id+"')\">[面谈通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"interview('0','"+row.id+"')\">[面谈不通过]</a>";
+    return "<a href=\"#\" onclick=\"censorInfo('1','"+row.id+"')\">[面谈通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.id+"')\">[面谈不通过]</a>";
 }
 function censorInfo(check,id){
     $.messager.confirm('提示', '确认对选择店铺进行面谈结果确认操作?', function(r){
         if (r){
             var remark="";
-            var is_talk="0";
             if(check=="0")
                 remark = prompt("请输入面谈不通过的原因：", ""); 
-            if(check == "0" && remark==""){
+            if(check == "0" && (remark=="" || remark==null)){
                 $.messager.alert("提示", "请输入面谈不通过的原因!", "alert");
                 return;
             }
             var sdata = $("#tt").datagrid("getSelected");
             if (sdata) {
-                var shop_id = sdata.id;
                 $.ajax({
                     type: "get",
                     url: _url+'office/fund/'+id+'/interview',
