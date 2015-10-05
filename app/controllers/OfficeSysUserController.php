@@ -83,7 +83,9 @@ class OfficeSysUserController extends \BaseController
         $roles = Input::get('roles', '');
         try {
             $roles = explode(',', $roles);
+            // delete current user role relation
             $admin = SysUser::find($id);
+            SysUserRole::clearUserRole($id);
             foreach ($roles as $key => $role) {
                 $admin->addRoles($role);
             }

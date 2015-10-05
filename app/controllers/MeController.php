@@ -1415,6 +1415,7 @@ class MeController extends \BaseController
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
             $data['gender'] = $user->u_sex;
+            $data['nickname'] = $user->u_nickname;
             $data['biograph'] = $user->u_biograph;
             $data['school'] = $user->school->showInList();
             $brith_date = new DateTime($user->u_birthday);
