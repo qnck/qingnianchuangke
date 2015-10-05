@@ -8,7 +8,7 @@ class OfficeController extends \BaseController
     {
         try {
             $admin_id = Tools::getAdminId();
-            $menu_tree = SysMenu::makeTree($admin_id);
+            $menu_tree = SysMenu::getTreeByAdmin($admin_id);
             $re = Tools::reTrue('获取菜单成功', $menu_tree);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());

@@ -8,7 +8,7 @@ class OfficeMenuController extends \BaseController
     public function listMenu()
     {
         try {
-            $menu_tree = SysMenu::makeTree(-1);
+            $menu_tree = SysMenu::getTreeByAdmin(-1);
             $re = Tools::reTrue('获取菜单成功', $menu_tree);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());
@@ -165,6 +165,28 @@ class OfficeMenuController extends \BaseController
             $re = Tools::reTrue('删除菜单成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '删除菜单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listAdminMenu($id)
+    {
+        try {
+            $menu_tree = SysMenu::getTreeByAdmin($id);
+            $re = Tools::reTrue('获取菜单成功', $menu_tree);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listRoleMenu($id)
+    {
+        try {
+            $menu_tree = SysMenu::getTreeByRole($id);
+            $re = Tools::reTrue('获取菜单成功', $menu_tree);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
