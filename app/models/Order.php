@@ -50,6 +50,7 @@ class Order extends Eloquent
         $data['number'] = $this->o_number;
         $data['shipping_address'] = $this->o_shipping_address;
         $data['shipping_phone'] = $this->o_shipping_phone;
+        $data['shipping_name'] = $this->o_shipping_name;
 
         if ($mask_status) {
             $data['status'] = $this->mapOrderStatus();
