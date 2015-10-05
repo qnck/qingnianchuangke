@@ -30,12 +30,17 @@ class SysMenu extends Eloquent
     {
         $data = [];
         $data['id'] = $this->id;
-        $data['name'] = $this->m_name;
+        $data['text'] = $this->m_name;
         $data['desc'] = $this->m_memo;
         $data['url'] = $this->m_url;
         $data['parent'] = (int)$this->m_parent;
         $data['level'] = (int)$this->m_level;
         $data['path'] = $this->m_path;
+        if (!empty($this->checked)) {
+            $data['checked'] = true;
+        } else {
+            $data['checked'] = false;
+        }
         $data['children'] = [];
 
         return $data;
@@ -71,7 +76,7 @@ class SysMenu extends Eloquent
         if (empty($role)) {
             throw new Exception("没有查找到角色数据", 10001);
         }
-        $list = SysMenu::select('sys_menus.*')->join('sys_role_menus', function ($q) use ($role_id) {
+        $list = SysMenu::select('sys_menus.*', 'sys_role_menus.r_id AS checked')->leftJoin('sys_role_menus', function ($q) use ($role_id) {
             $q->on('sys_menus.id', '=', 'sys_role_menus.m_id')->where('sys_role_menus.r_id', '=', $role_id);
         })->groupBy('sys_menus.id')->get();
         $re = SysMenu::makeTree($list);
