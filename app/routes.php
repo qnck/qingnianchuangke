@@ -159,6 +159,10 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/lbs/booth/{id}', 'LocationController@updateBooth');
     /* LBS END*/
 
+    /* AD START*/
+    Route::get('v0/ad/index/top', 'AdController@listIndexTop');
+    /* AD END*/
+
 });
 
 /*********** BACK ***********/
