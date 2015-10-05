@@ -139,6 +139,7 @@ class OfficeMenuController extends \BaseController
         $menus = Input::get('menus', '');
         try {
             $role = SysRole::find($id);
+            SysRoleMenu::clearRoleMenu($id);
             $menus = explode(',', $menus);
             foreach ($menus as $key => $menu) {
                 $role->addMenu($menu);
@@ -187,6 +188,21 @@ class OfficeMenuController extends \BaseController
             $re = Tools::reTrue('获取菜单成功', $menu_tree);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取菜单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listRoleUser($id)
+    {
+        try {
+            $list = SysUserRole::with(['user'])->where('r_id', '=', $id)->get();
+            $data = [];
+            foreach ($list as $key => $role) {
+                $data[] = $role->user->showInList();
+            }
+            $re = Tools::reTrue('获取admin用户成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取admin用户失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

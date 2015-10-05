@@ -80,6 +80,9 @@ class SysMenu extends Eloquent
 
     public static function makeTree($list)
     {
+        if (count($list) == 0) {
+            return ['tree' => [], 'trash' => []];
+        }
         $levels = [];
         $tree = [];
         $trash = [];
