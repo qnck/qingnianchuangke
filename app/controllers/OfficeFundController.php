@@ -30,9 +30,6 @@ class OfficeFundController extends \BaseController
             if (empty($fund)) {
                 throw new Exception("没有找到请求的基金记录", 10001);
             }
-            if ($fund->t_status > 2) {
-                throw new Exception("已经审核过了", 10001);
-            }
             if ($check) {
                 $fund->t_status = 3;
             } else {
