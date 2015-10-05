@@ -9,8 +9,8 @@ class SysMenu extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['name' => $this->m_name, 'desc' => $this->m_memo, 'parent' => $this->m_parent, 'url' => $this->m_url],
-            ['name' => 'required', 'desc' => 'required', 'parent' => 'required', 'url' => 'required']
+            ['name' => $this->m_name, 'parent' => $this->m_parent, 'url' => $this->m_url],
+            ['name' => 'required', 'parent' => 'required', 'url' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -41,7 +41,7 @@ class SysMenu extends Eloquent
         return $data;
     }
 
-    public static function makeTree($admin_id = -1)
+    public static function getTreeByAdmin($admin_id = -1)
     {
         if ($admin_id == -1) {
             $admin = new SysUser();
@@ -55,12 +55,31 @@ class SysMenu extends Eloquent
         if ($admin->account == 'root') {
             $list = SysMenu::get();
         } else {
-            $list = SysMenu::select('sys_menus.*')->leftJoin('sys_role_menus', function ($q) {
+            $list = SysMenu::select('sys_menus.*')->join('sys_role_menus', function ($q) {
                 $q->on('sys_menus.id', '=', 'sys_role_menus.m_id');
-            })->leftJoin('sys_user_roles', function ($q) use ($admin_id) {
+            })->join('sys_user_roles', function ($q) use ($admin_id) {
                 $q->on('sys_user_roles.id', '=', 'sys_role_menus.r_id')->where('sys_user_roles.admin_id', '=', $admin_id);
             })->groupBy('sys_menus.id')->get();
         }
+        $re = SysMenu::makeTree($list);
+        return $re['tree'];
+    }
+
+    public static function getTreeByRole($role_id = 0)
+    {
+        $role = SysRole::find($role_id);
+        if (empty($role)) {
+            throw new Exception("没有查找到角色数据", 10001);
+        }
+        $list = SysMenu::select('sys_menus.*')->join('sys_role_menus', function ($q) use ($role_id) {
+            $q->on('sys_menus.id', '=', 'sys_role_menus.m_id')->where('sys_role_menus.r_id', '=', $role_id);
+        })->groupBy('sys_menus.id')->get();
+        $re = SysMenu::makeTree($list);
+        return $re['tree'];
+    }
+
+    public static function makeTree($list)
+    {
         $levels = [];
         $tree = [];
         $trash = [];
@@ -82,6 +101,6 @@ class SysMenu extends Eloquent
             }
         }
         $tree = array_values($levels[0]);
-        return $tree;
+        return ['tree' => $tree, 'trash' => $trash];
     }
 }
