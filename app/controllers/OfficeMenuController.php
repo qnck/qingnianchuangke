@@ -140,7 +140,9 @@ class OfficeMenuController extends \BaseController
         try {
             $role = SysRole::find($id);
             SysRoleMenu::clearRoleMenu($id);
-            $menus = explode(',', $menus);
+            if (!is_array($menus)) {
+                $menus = explode(',', $menus);
+            }
             foreach ($menus as $key => $menu) {
                 $role->addMenu($menu);
             }
