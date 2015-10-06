@@ -213,4 +213,31 @@ class OfficeMenuController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function postRoleUser($id)
+    {
+        $users = Input::get('users', '');
+        try {
+            SysUserRole::clearRoleUser($id);
+            if (!empty($users)) {
+                if (!is_array($users)) {
+                    $role = SysRole::find($id);
+                    if (empty($role)) {
+                        throw new Exception("没有找到请求的角色", 1);
+                    }
+                    $users = explode(',', $users);
+                    foreach ($users as $key => $user) {
+                        if (!$user) {
+                            continue;
+                        }
+                        $role->addUser($user);
+                    }
+                }
+            }
+            $re = Tools::reTrue('设置用户成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '设置用户失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

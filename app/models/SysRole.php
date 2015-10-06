@@ -15,6 +15,14 @@ class SysRole extends Eloquent
         return $data;
     }
 
+    public function addUser($admin_id)
+    {
+        $user_role = new SysUserRole();
+        $user_role->admin_id = $admin_id;
+        $user_role->r_id = $this->id;
+        return $user_role->save();
+    }
+
     public function addMenu($menu)
     {
         $role_menu = new SysRoleMenu();
