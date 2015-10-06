@@ -89,16 +89,39 @@ class Booth extends Eloquent
         return $data;
     }
 
-    public function showInAdmin()
+    public function showInOffice()
     {
-        $data = $this->showInList();
+        $data = [];
+        $data['id'] = $this->b_id;
+        $data['title'] = $this->b_title;
+        $data['desc'] = $this->b_desc;
+        $data['type'] = $this->b_type;
+        $data['category'] = $this->b_product_category;
+        $data['source'] = $this->b_product_source;
+        $data['logo'] = $this->getLogo();
+        $data['fans'] = $this->b_fans_count;
+        $data['status'] = $this->b_status;
+        $data['lng'] = $this->longitude;
+        $data['lat'] = $this->latitude;
+        $data['cust_group'] = $this->b_customer_group;
+        $data['promo_strategy'] = $this->b_promo_strategy;
+        $data['is_fund'] = $this->b_with_fund;
+        $data['open'] = $this->b_open;
+        $data['open_from'] = $this->b_open_from;
+        $data['open_to'] = $this->b_open_to;
+        $data['open_on'] = $this->open_on;
         $data['source'] = $this->b_product_source;
         $data['cust_group'] = $this->b_customer_group;
         $data['promo_strategy'] = $this->b_promo_strategy;
         $data['is_fund'] = $this->b_with_fund;
         $data['status'] = $this->b_status;
+        
         if (!empty($this->fund)) {
             $data['fund'] = $this->fund->showDetail();
+        }
+
+        if (!empty($this->user)) {
+            $data['user'] = $this->user->showInOffice();
         }
         return $data;
     }

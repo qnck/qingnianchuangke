@@ -31,7 +31,7 @@ class OfficeBoothController extends \BaseController
             $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
-                $data[] = $booth->showInAdmin();
+                $data[] = $booth->showInOffice();
             }
             $re = Tools::reTrue('获取店铺列表成功', $data, $list);
         } catch (Exception $e) {
