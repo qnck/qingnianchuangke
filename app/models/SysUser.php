@@ -51,6 +51,20 @@ class SysUser extends \Eloquent
         return $this->id;
     }
 
+    public function editUser()
+    {
+        $now = new DateTime();
+        $this->baseValidate();
+        // chk exist
+        $chk = SysUser::where('account', '=', $this->account)->where('id', '<>', $this->id)->first();
+        if (!empty($chk)) {
+            throw new Exception("账号已经存在", 10001);
+        }
+        $this->password = Hash::make($this->password);
+        $this->last_time = $now->format('Y-m-d H:i:s');
+        $this->save();
+        return $this->id;
+    }
 
     public function addRoles($role)
     {

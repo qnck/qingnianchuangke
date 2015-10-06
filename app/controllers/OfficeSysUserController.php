@@ -58,7 +58,7 @@ class OfficeSysUserController extends \BaseController
             $user->account = $account;
             $user->last_local = $ip;
             $user->status = $status;
-            $user->save();
+            $user->editUser();
             $re = Tools::reTrue('编辑user成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '编辑user失败:'.$e->getMessage());
