@@ -183,6 +183,7 @@ Route::get('office/sys/role/{id}/user', 'OfficeMenuController@listRoleUser');
 Route::get('office/sys/role/{id}/menu', 'OfficeMenuController@listRoleMenu');
 Route::post('office/sys/role/{id}/menu', 'OfficeMenuController@addRoleMenu');
 Route::delete('office/sys/role/{id}/menu', 'OfficeMenuController@delRoleMenu');
+Route::post('office/sys/role/{id}/user', 'OfficeMenuController@postRoleUser');
 
 Route::get('office/sys/role', 'OfficeMenuController@listRole');
 Route::post('office/sys/role', 'OfficeMenuController@postRole');
