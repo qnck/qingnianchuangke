@@ -255,7 +255,7 @@ class MarketController extends \BaseController
             if (!$b_id) {
                 throw new Exception("请传入店铺ID", 7001);
             }
-            $query = Product::with(['promo', 'quantity'])->where('b_id', '=', $b_id);
+            $query = Product::with(['promo', 'quantity'])->where('b_id', '=', $b_id)->where('p_status', '=', 1);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
                     $q->where('p_title', 'LIKE', '%'.$key.'%')

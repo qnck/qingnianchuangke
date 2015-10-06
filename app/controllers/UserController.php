@@ -124,14 +124,11 @@ class UserController extends \BaseController
             } else {
                 User::unfollow($user, $target);
             }
-            $re = ['result' => 2000, 'data' => [], 'info' => '操作成功'];
+            $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
-            $code = 2001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
         }
+        return Response::json($re);
     }
 
 
@@ -143,6 +140,7 @@ class UserController extends \BaseController
      */
     public function update($id)
     {
+        $user = new User();
         $user->u_id = $id;
         $user->u_token = Input::get('token', null);
         $user->u_password = Input::get('pass', null);
@@ -156,9 +154,9 @@ class UserController extends \BaseController
         $imgToken = Input::get('img_token', '');
         try {
             $user->updateUser($imgToken);
-            $re = ['data' => [], 'result' => 2000, 'info' => '更新成功'];
+            $re = Tools::reTrue('更新成功');
         } catch (Exception $e) {
-            $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '更新失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

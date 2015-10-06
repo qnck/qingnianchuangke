@@ -138,7 +138,7 @@ class MeController extends \BaseController
             if (!$pass) {
                 throw new Exception("密码错误", 2001);
             }
-            
+
             $user = User::where('u_mobile', '=', $mobile)->first();
 
             // chcek if mobile exsits
@@ -327,7 +327,7 @@ class MeController extends \BaseController
             $list = [];
             foreach ($data as $key => $booth) {
                 $tmp = $booth->showDetail();
-                $products_count = Product::where('b_id', '=', $booth->b_id)->count();
+                $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
                 $tmp['prodct_count'] = $products_count;
                 $list[] = $tmp;
             }
