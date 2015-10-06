@@ -6,9 +6,50 @@
 <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
 <script type="text/javascript" src="easyui/jquery.min.js"></script>
 <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
 <title>青年创客后台管理系统</title>
 
 <script>
+$(document).ready(function () {
+    BindMenu();
+});
+function BindMenu(){
+    $.ajax({
+            type: "get",
+            url: _url+'office/menu',
+            data: {},
+            dataType: "text",
+            success: function (r) { 
+                var result = JSON.parse(r);
+                if(result.result == "2000")
+                {
+                    var _datas = result.data;
+                    var i=0;
+                    $(_datas).each(function(){
+                        if(this.parent=="0"){
+                            $('#nav').accordion('add',{
+                                title:this.text,
+                                selected:i==0,
+                                content:GetChildMenu(this.children)
+                            });
+                            i++;
+                        }
+                    });
+                }
+            },
+            error: function () {
+                alert("加载用户菜单失败!");
+            }
+        });
+}
+function GetChildMenu(menus){
+    var menuHtml = '<ul style="list-style: none; line-height: 25px">';
+    $(menus).each(function(){
+        menuHtml+='<li mysrc="'+this.url+'" mytitle="'+this.text+'" onClick="openPage(this)"><a href="#">'+this.text+'</a></li>';
+    });
+    menuHtml+='</ul>';
+    return menuHtml;
+}
 function openPage(obj){
     var url = "";
     var temp = $(obj).attr("mysrc").substr(0, 4);
@@ -40,23 +81,6 @@ function createFrame(url) {
 </div>
 <div region="west" hide="true" split="true" title="菜单" style="width:180px;" id="west">
   <div id="nav" class="easyui-accordion" fit="true" border="false"> 
-    <div title="APP相关" style="overflow:auto;padding:10px;">
-        <ul style="list-style: none; line-height: 25px">
-            <li mysrc="appabout/userlist.html" mytitle="用户审核" onClick="openPage(this)"><a href="#">用户审核</a></li>
-            <li mysrc="appabout/shoplist.html" mytitle="店铺审核" onClick="openPage(this)"><a href="#">店铺审核</a></li>
-            <li mysrc="appabout/facelist.html" mytitle="面谈管理" onClick="openPage(this)"><a href="#">面谈管理</a></li>
-            <li mysrc="appabout/loaninglist.html" mytitle="放款管理" onClick="openPage(this)"><a href="#">放款管理</a></li>
-            <li mysrc="appabout/repaiedlist.html" mytitle="结账管理" onClick="openPage(this)"><a href="#">结账管理</a></li>
-            <li mysrc="appabout/drawlist.html" mytitle="提现管理" onClick="openPage(this)"><a href="#">提现管理</a></li>
-        </ul>
-    </div>
-    <div title="系统设置" style="overflow:auto;padding:10px;">
-        <ul style="list-style: none; line-height: 25px">
-            <li mysrc="sysmanage/menulist.html" mytitle="菜单管理" onClick="openPage(this)"><a href="#">菜单管理</a></li>
-            <li mysrc="sysmanage/userlist.html" mytitle="用户管理" onClick="openPage(this)"><a href="#">用户管理</a></li>
-            <li mysrc="sysmanage/rolelist.html" mytitle="角色管理" onClick="openPage(this)"><a href="#">角色管理</a></li>
-        </ul>
-    </div>
   </div>
 </div>
 <div id="mainPanle" region="center" style="background: #eee; overflow-y:hidden">
