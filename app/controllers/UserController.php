@@ -55,6 +55,12 @@ class UserController extends \BaseController
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);
             $data = $user->register();
+            // add user wallet
+            $wallet = new UsersWalletBalances();
+            $wallet->u_id = $user->u_id;
+            $wallet->w_balance = 0.00;
+            $wallet->w_freez = 0.00;
+            $wallet->save();
             $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];

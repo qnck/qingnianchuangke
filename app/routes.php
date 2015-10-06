@@ -8,13 +8,13 @@ Route::get('about', 'HomeController@about');
 
 /*********** FILTER ***********/
 Route::filter('office', function () {
-    // $path = Request::path();
-    // if ($path != 'office/login') {
-    //     if (!SysUser::chkLogin()) {
-    //         $re = Tools::reFalse(10003, '请先登录');
-    //         return Response::json($re);
-    //     }
-    // }
+    $path = Request::path();
+    if ($path != 'office/login') {
+        if (!SysUser::chkLogin()) {
+            $re = Tools::reFalse(10003, '请先登录');
+            return Response::json($re);
+        }
+    }
 });
 Route::when('office/*', 'office');
 /*********** FILTER ***********/
@@ -25,9 +25,11 @@ Route::when('office/*', 'office');
 /* V1 */
 Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
-    /* APP CONFIG START*/
+    /* APP START*/
     Route::get('app/config', 'AppController@getConfig');
-    /* APP CONFIG END*/
+
+    Route::post('v0/app/feedback', 'AppController@postFeedback');
+    /* APP END*/
 
     /* ME START*/
     Route::get('v0/user/me', 'MeController@me');
