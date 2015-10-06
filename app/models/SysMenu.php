@@ -60,10 +60,10 @@ class SysMenu extends Eloquent
         if ($admin->account == 'root') {
             $list = SysMenu::get();
         } else {
-            $list = SysMenu::select('sys_menus.*')->join('sys_role_menus', function ($q) {
+            $list = SysMenu::select('sys_menus.*', 'sys_role_menus.r_id AS checked')->join('sys_role_menus', function ($q) {
                 $q->on('sys_menus.id', '=', 'sys_role_menus.m_id');
             })->join('sys_user_roles', function ($q) use ($admin_id) {
-                $q->on('sys_user_roles.id', '=', 'sys_role_menus.r_id')->where('sys_user_roles.admin_id', '=', $admin_id);
+                $q->on('sys_user_roles.r_id', '=', 'sys_role_menus.r_id')->where('sys_user_roles.admin_id', '=', $admin_id);
             })->groupBy('sys_menus.id')->get();
         }
         $re = SysMenu::makeTree($list);
@@ -102,6 +102,7 @@ class SysMenu extends Eloquent
             foreach ($levels[$current_level] as $key => $menu) {
                 if (array_key_exists($menu['parent'], $levels[$upper_level])) {
                     $levels[$upper_level][$menu['parent']]['children'][] = $menu;
+                    $levels[$upper_level][$menu['parent']]['checked'] = false;
                 } else {
                     $trash[] = $menu;
                 }

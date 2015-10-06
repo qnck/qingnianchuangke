@@ -80,18 +80,23 @@ class OfficeSysUserController extends \BaseController
 
     public function addUserRole($id)
     {
-        $roles = Input::get('roles', '');
+        $roles = Input::get('roles', null);
         try {
-            $roles = explode(',', $roles);
-            // delete current user role relation
-            $admin = SysUser::find($id);
             SysUserRole::clearUserRole($id);
-            foreach ($roles as $key => $role) {
-                $admin->addRoles($role);
+            if (!empty($roles)) {
+                $roles = explode(',', $roles);
+                // delete current user role relation
+                $admin = SysUser::find($id);
+                foreach ($roles as $key => $role) {
+                    if (!$role) {
+                        continue;
+                    }
+                    $admin->addRoles($role);
+                }
             }
-            $re = Tools::reTrue('添加角色成功');
+            $re = Tools::reTrue('处理角色成功');
         } catch (Exception $e) {
-            $re= Tools::reFalse($e->getCode(), '添加角色失败:'.$e->getMessage());
+            $re= Tools::reFalse($e->getCode(), '处理角色失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

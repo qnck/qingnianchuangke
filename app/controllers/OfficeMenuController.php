@@ -138,13 +138,18 @@ class OfficeMenuController extends \BaseController
     {
         $menus = Input::get('menus', '');
         try {
-            $role = SysRole::find($id);
             SysRoleMenu::clearRoleMenu($id);
-            if (!is_array($menus)) {
-                $menus = explode(',', $menus);
-            }
-            foreach ($menus as $key => $menu) {
-                $role->addMenu($menu);
+            if (!empty($menus)) {
+                $role = SysRole::find($id);
+                if (!is_array($menus)) {
+                    $menus = explode(',', $menus);
+                }
+                foreach ($menus as $key => $menu) {
+                    if (!$menu) {
+                        continue;
+                    }
+                    $role->addMenu($menu);
+                }
             }
             $re = Tools::reTrue('添加菜单成功');
         } catch (Exception $e) {
