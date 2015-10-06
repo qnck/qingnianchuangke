@@ -15,6 +15,9 @@ class UserController extends \BaseController
         try {
             // AES crypt
             $pass = Tools::qnckDecrytp($pass);
+            if (!$pass) {
+                throw new Exception("密码错误", 2001);
+            }
 
             $user = new User();
             $user->u_mobile = $mobile;
@@ -52,12 +55,15 @@ class UserController extends \BaseController
         try {
             // AES crypt
             $pass = Tools::qnckDecrytp($pass);
+            if (!$pass) {
+                throw new Exception("密码错误", 2001);
+            }
 
             $user = new User();
             $user->u_school_id = $school_id;
             $user->u_mobile = $mobile;
             $user->u_password = $pass;
-            
+
             // verify vcode via phone
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);

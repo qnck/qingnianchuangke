@@ -133,6 +133,12 @@ class MeController extends \BaseController
         $newPass = Input::get('pass');
 
         try {
+            // AES crypt
+            $newPass = Tools::qnckDecrytp($newPass);
+            if (!$pass) {
+                throw new Exception("密码错误", 2001);
+            }
+            
             $user = User::where('u_mobile', '=', $mobile)->first();
 
             // chcek if mobile exsits
@@ -140,8 +146,6 @@ class MeController extends \BaseController
                 throw new Exception("没有查找到与该手机号码绑定的用户", 2001);
             }
             $phone = new Phone($mobile);
-            // AES crypt
-            $newPass = Tools::qnckDecrytp($newPass);
 
             if ($phone->authVCode($vcode)) {
                 $user->u_password = $newPass;
