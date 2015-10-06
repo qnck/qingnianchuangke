@@ -370,20 +370,19 @@
 	    });
         if(uids!="")
         	uids = uids.substr(0,uids.length-1);
-	    alert(uids);
-	  //   $.ajax({
-	  //       type: "post",
-			// url: _url+'',
-	  //       data: {},
-	  //       dataType: "text",
-	  //       success: function (r) {
-			// 	var data = JSON.parse(r);
-   //              $.messager.alert('提示', data.info, 'info');
-	  //           if (data.result=="2000") { 
-	  //   			$('#manageMember-dlg').dialog('close');
-	  //           }
-	  //       }
-	  //   });
+	    $.ajax({
+	        type: "post",
+			url: _url+'office/sys/role/'+rid+'/user',
+	        data: {users:uids},
+	        dataType: "text",
+	        success: function (r) {
+				var data = JSON.parse(r);
+                $.messager.alert('提示', data.info, 'info');
+	            if (data.result=="2000") { 
+	    			$('#manageMember-dlg').dialog('close');
+	            }
+	        }
+	    });
 	}
 </script>
 </head>
