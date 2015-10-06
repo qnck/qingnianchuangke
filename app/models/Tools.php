@@ -62,4 +62,14 @@ class Tools
 
         return $part1.$part2.$part3;
     }
+
+    public static function qnckDecrytp($string)
+    {
+        $keyStr = Config::get('app.AES.key');
+        $aes = new AESCrypt();
+        $aes->set_key($keyStr);
+        $aes->require_pkcs5();
+        $re = $aes->decrypt($string);
+        return $re;
+    }
 }

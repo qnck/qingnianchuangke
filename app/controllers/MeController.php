@@ -132,25 +132,24 @@ class MeController extends \BaseController
         $vcode = Input::get('vcode');
         $newPass = Input::get('pass');
 
-        $user = User::where('u_mobile', '=', $mobile)->first();
-
-        // chcek if mobile exsits
-        if (!isset($user->u_id)) {
-            return Response::json(['result' => 2001, 'data' => [], 'info' => '没有查找到与该手机号码绑定的用户']);
-        }
-        $phone = new Phone($mobile);
         try {
+            $user = User::where('u_mobile', '=', $mobile)->first();
+
+            // chcek if mobile exsits
+            if (!isset($user->u_id)) {
+                throw new Exception("没有查找到与该手机号码绑定的用户", 2001);
+            }
+            $phone = new Phone($mobile);
+            // AES crypt
+            $newPass = Tools::qnckDecrytp($newPass);
+
             if ($phone->authVCode($vcode)) {
                 $user->u_password = $newPass;
                 $user->updateUser();
             }
-            $re = ['result' => 2000, 'data' => [], 'info' => '重置密码成功'];
+            $re = Tools::reTrue('重置密码成功');
         } catch (Exception $e) {
-            $code = 2001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => $e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '重置密码失败:'.$e->getMessage());
         }
 
         return Response::json($re);

@@ -2,7 +2,7 @@
 
 // play ground
 //
-
+Route::get('/v1', 'HomeController@v1');
 Route::get('/', 'HomeController@index');
 Route::get('about', 'HomeController@about');
 
