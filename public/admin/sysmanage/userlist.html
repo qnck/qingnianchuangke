@@ -8,6 +8,23 @@
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <title>用户管理</title>
+<style>
+.choseButtonDiv {
+    float: left;
+    height: 20px;
+    border: 3px solid #DCEDED;
+    background: #DCEDED;
+    padding-top: 5px;
+    padding-left: 30px;
+    padding-right: 10px;
+    margin: 3px;
+    cursor: pointer;
+}
+.choseButtonDivCK {
+    border: 3px solid #3399FF;
+    background: #DCEDED url(../images/btn-ck.png) no-repeat;
+}
+</style>
 <script>
 	//页面加载
 	$(document).ready(function () {
@@ -235,7 +252,7 @@
 	}
 	function formatHandle(value, row) {
 		var rs  = row.status=='1' ? '<a class="alink-edit" onclick="changeStatus(\'0\',\'禁用\',\''+row.id+'\')" href="#">[禁用]</a>' : '<a class="alink-edit" onclick="changeStatus(\'1\',\'启用\',\''+row.id+'\')" href="#">[启用]</a>';//''
-		rs += '<a class="alink-edit" onclick="setRole()" href="#">[设置角色]</a>';
+		rs += '<a class="alink-edit" onclick="setRole(\'' + row.u_name + '\',\'' + row.id + '\')" href="#">[设置角色]</a>';
 		return rs;
 	}
 	function formatStatus(value, row){
@@ -247,8 +264,90 @@
 		if(value=="0") return "否";
 		else return "是"
 	}
-	function setRole(){
-		alert("coding");
+	function getRoles() {
+        $("#roleContent").html("");
+		$.ajax({
+			type: "get",
+			url: _url+'office/sys/role',
+			data: {},
+			dataType: "text",
+			success: function (result) {
+				if(JSON.parse(result).result=="2000"){
+					var roleHtml = "";
+	                var __data = JSON.parse(result).data;
+	                $.each(__data, function (i, v) {
+	                    var roletemp = '<div id="role_'+v.id+'" class="choseButtonDiv" onclick="choseButtonClick(this);" ck="0">'+v.name+'</div>';
+	                    roleHtml += roletemp;
+	                });
+	                $("#roleContent").html(roleHtml);
+				}
+			},
+			error: function () {
+				alert("加载失败!");
+			}
+		});
+	}
+	function choseButtonClick(obj){
+        var ck = $(obj).attr("ck");
+        if (ck == 0) {
+            $(obj).addClass("choseButtonDivCK").attr("ck", 1);	
+        } else if (ck == 1) {
+            $(obj).removeClass("choseButtonDivCK").attr("ck", 0);
+        }
+	}
+	function setRole(username, uid){
+        $("#tt").datagrid("clearSelections");
+        $("#roleContent div").removeClass("choseButtonDivCK").attr("ck", 0);
+        getRolesByUserId(uid);
+        $('#buttonControl-dlg').dialog({ title: "设置角色&nbsp;&nbsp;[<font color='red'>" + username + "</font>]" });
+        $('#buttonControl-dlg').dialog('open');
+	}
+	function getRolesByUserId(uid){
+        getRoles();
+        $.ajax({
+            type: "get",
+			url: _url+'office/sys/user/'+uid+'/role',
+            data: {},
+            dataType: "text",
+            success: function (r) {
+				var data = JSON.parse(r);
+                if (data.result=="2000") {
+                    var __data = data.data;
+                    if (__data.length > 0) {
+                        $.each(__data, function (i, v) {
+                            $("#role_" + v.id).addClass("choseButtonDivCK").attr("ck", 1);
+                        });
+                    }
+                }
+                else {
+                    $.messager.alert('提示', data.info, 'info');
+                }
+            }
+        });
+	}
+	function userRoleBtnClick(){
+		var sdata = $("#tt").datagrid("getSelected");
+        var uid = sdata.id;
+        var rids = "";
+        $("#roleContent div[ck='1']").each(function () {
+            var rid = $(this).attr("id").replace("role_", "");
+            rids+=rid+",";
+        });
+        if(rids!="")
+        	rids = rids.substr(0,rids.length-1);
+        $.ajax({
+            type: "post",
+			url: _url+'office/sys/user/'+uid+'/role',
+            data: {roles:rids},
+            dataType: "text",
+            success: function (r) {
+				var data = JSON.parse(r);
+                $.messager.alert('提示', data.info, 'info');
+                if (data.result=="2000") {
+        			$('#buttonControl-dlg').dialog('close');
+                }
+            }
+        });
 	}
 	function changeStatus(ty,msg,id){
 		$.messager.confirm("提示", "确认"+msg+"选中用户！", function (r) {
@@ -356,5 +455,23 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#user-dlg').dialog('close');">取消</a>
 </div>
 <!-- 添加/编辑窗口 End -->
+
+<div id="buttonControl-dlg" class="easyui-dialog" title="按钮权限" style="width: 400px; height: 300px; padding: 5px"
+    data-options="
+        closed:true,
+        modal:true,
+        iconCls: 'icon-save',
+        buttons: '#buttonControl-dlg-buttons'
+    ">
+    <div style="height: 30px; border-bottom: 2px solid #D4D4D4; margin-top:10px;">
+    	点击角色名进行选择/取消选择
+    </div>
+    <div id="roleContent"></div>
+</div>
+<div id="buttonControl-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="userRoleBtnClick()">确定</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#buttonControl-dlg').dialog('close');">取消</a>
+</div>
+
 </body>
 </html>

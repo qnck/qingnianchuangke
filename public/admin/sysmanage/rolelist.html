@@ -8,6 +8,46 @@
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <title>角色管理</title>
+<style>
+    .chosePageDiv {
+        float: left;
+        height: 20px;
+        cursor: pointer;
+        background: #DCEDED;
+        border: 3px solid #DCEDED;
+        padding-top: 5px;
+        padding-left: 20px;
+        padding-right: 5px;
+        margin-left: 3px;
+        margin-top: 3px;
+    }
+    .chosePageDiv:hover {
+        background: #D4D4D4;
+        cursor: pointer;
+    }
+    .chosePageDivCK {
+        border: 3px solid #3399FF;
+    }
+    .chosePageDivDel {
+        float: left;
+        height: 20px;
+        cursor: pointer;
+        border: 3px solid #FFDBE2;
+        padding-top: 5px;
+        padding-left: 20px;
+        padding-right: 5px;
+        margin-left: 3px;
+        margin-top: 3px;
+        background: #DCEDED url(../images/btn-del.png) no-repeat;
+    }
+    .chosePageDivDel:hover {
+        background-color: #D4D4D4;
+        cursor: pointer;
+    }
+    .ckUserItem {
+        background: #BBBBBB;
+    }
+</style>
 <script>
 	//页面加载
 	$(document).ready(function () {
@@ -189,11 +229,161 @@
 		}
 	}
 	function formatHandle(value, row) {
-		var rs  = '<a class="alink-edit" onclick="setUser()" href="#">[设置用户]</a>';
-		return rs;
+	    var rs = '<a class="alink-edit" href="#" onclick="editControl(\'' + row.name + '\',\'' + row.id + '\');">[角色菜单]</a>&nbsp;&nbsp;' +
+	             '<a class="alink-edit" href="#" onclick="manageMember(\'' + row.name + '\',\'' + row.id + '\');">[角色成员]</a>';
+	    return rs;
 	}
-	function setUser(){
-		alert("coding");
+	function editControl(name, rid) {
+	    existPages = "";
+	    getMenusByRoleId(rid);
+	    $('#editControl-dlg').dialog({ title: "角色菜单&nbsp;&nbsp;[<font color='red'>" + name + "</font>]" });
+	    $('#editControl-dlg').dialog('open');
+	}
+	/*  根据角色取菜单（包括所有菜单）   */
+	function getMenusByRoleId(rid) {
+	    $.ajax({
+	        type: "get",
+			url: _url+'office/sys/role/'+rid+'/menu',
+	        data: {},
+	        dataType: "text",
+	        success: function (r) {
+				var data = JSON.parse(r);
+	            if (data.result=="2000") {
+	                $("#editControlTree").tree("loadData", data.data);
+	            }
+	            else {
+	                $.messager.alert('提示', data.info, 'info');
+	            }
+	        }
+	    });
+	}
+	/*  角色菜单 确定按钮  */
+	function roleMenuBtnClick() {
+	    var mids = "";
+	    var nodes = $("#editControlTree").tree("getChecked", ["checked", "indeterminate"]);
+	    $.each(nodes, function (i, v) {
+            mids+=v.id+",";
+	    });
+    	if(mids!="")
+    		mids = mids.substr(0,mids.length-1);
+		var sdata = $("#tt").datagrid("getSelected");
+        var rid = sdata.id;
+	    $.ajax({
+            type: "post",
+			url: _url+'office/sys/role/'+rid+'/menu',
+            data: {menus:mids},
+            dataType: "text",
+            success: function (r) {
+				var data = JSON.parse(r);
+                $.messager.alert('提示', data.info, 'info');
+                if (data.result=="2000") {
+    				$('#editControl-dlg').dialog('close');
+                }
+            }
+        });
+	}
+	var allUserHtml = "";
+	function manageMember(name, rid) {
+	    allUserHtml = "";
+	    $.ajax({
+	        type: "get",
+			url: _url+'office/sys/user',
+	        data: {},
+	        dataType: "text",
+	        async:false,
+	        success: function (r) {
+				var data = JSON.parse(r);
+	            if (data.result == "2000") {
+	                var __data = data.data.rows;
+	                $(__data).each(function(){
+	                    var temp = $("#allUserTemp").html();
+	                    temp = temp.replace("$id$", this.id);
+	                    temp = temp.replace("$username$", this.u_name);
+	                    temp = temp.replace("$account$", this.account);
+	                    allUserHtml += temp;
+	                });
+	                $("#allUser").html(allUserHtml);
+	            }
+	            else {
+	                $.messager.alert('提示', data.info, 'info');
+	            }
+	        }
+	    });
+	    $("#myUser").html("");
+	    getUsersByRoleId(rid);
+	    $('#manageMember-dlg').dialog({ title: "角色成员&nbsp;&nbsp;[<font color='red'>" + name + "</font>]" });
+	    $('#manageMember-dlg').dialog('open');
+	}
+	/*  根据角色取用户   */
+	function getUsersByRoleId(rid) {
+	    $.ajax({
+	        type: "get",
+			url: _url+'office/sys/role/'+rid+'/user',
+	        data: {},
+	        dataType: "text",
+	        success: function (r) {
+				var data = JSON.parse(r);
+	            if (data.result=="2000") {
+	                var __data = data.data;
+	                if (__data.length > 0) {
+	                    $.each(__data, function (i, v) {
+	                        $("#allUser div[id='user_" + v.id + "']").appendTo($("#myUser"));
+	                    });
+	                }
+	            } else {
+	                $.messager.alert('提示', data.info, 'info');
+	            }
+	        }
+	    });
+	}
+	function userItemClick(obj) {
+	    var ck = $(obj).attr("ck");
+	    if (ck == 0) {
+	        $(obj).addClass("ckUserItem").attr("ck", 1);
+	    } else {
+	        $(obj).removeClass("ckUserItem").attr("ck", 0);
+	    }
+	}
+	function moveUser(ty) {
+	    if (ty == "toRight") {
+	        $("#allUser div[ck='1']").removeClass("ckUserItem").attr("ck", 0).appendTo($("#myUser"));
+	    } else if (ty == "toLeft") {
+	        $("#myUser div[ck='1']").removeClass("ckUserItem").attr("ck", 0).appendTo($("#allUser"));
+	    } else if (ty == "toAll") {
+	        $("#myUser").html(allUserHtml);
+	        $("#allUser").html("");
+	    } else if (ty == "clear") {
+	        $("#allUser").html(allUserHtml);
+	        $("#myUser").html("");
+	    }
+	}
+	function roleUserBtnClick() {
+	    var sdata = $("#tt").datagrid("getSelected");
+	    var rid = sdata.id;
+	    var uids = "";
+	    $("#myUser div").each(function () {
+	    	var uidstr = $(this).attr("id");
+	    	if(uidstr){
+		        var uid = uidstr.replace("user_", "");
+            	uids+=uid+",";
+	        }
+	    });
+        if(uids!="")
+        	uids = uids.substr(0,uids.length-1);
+	    alert(uids);
+	  //   $.ajax({
+	  //       type: "post",
+			// url: _url+'',
+	  //       data: {},
+	  //       dataType: "text",
+	  //       success: function (r) {
+			// 	var data = JSON.parse(r);
+   //              $.messager.alert('提示', data.info, 'info');
+	  //           if (data.result=="2000") { 
+	  //   			$('#manageMember-dlg').dialog('close');
+	  //           }
+	  //       }
+	  //   });
 	}
 </script>
 </head>
@@ -211,8 +401,8 @@
         <tr>
             <th data-options="field:'id',width:120,align:'left',halign:'center'">id</th>
             <th data-options="field:'name',width:120,align:'left',halign:'center'">角色名称</th>
-            <th data-options="field:'desc',width:80,align:'left',halign:'center'">角色描述</th>
-            <th data-options="field:'options',width:140,align:'center',formatter:formatHandle">操作</th>
+            <th data-options="field:'desc',width:200,align:'left',halign:'center'">角色描述</th>
+            <th data-options="field:'options',width:180,align:'center',formatter:formatHandle">操作</th>
         </tr>
     </thead>
 </table>
@@ -258,5 +448,69 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#role-dlg').dialog('close');">取消</a>
 </div>
 <!-- 添加/编辑窗口 End -->
+
+
+<!--    角色菜单  弹出窗口    -->
+<div id="editControl-dlg" class="easyui-dialog" title="角色菜单管理" style="width: 270px; height: 400px; padding: 0px; overflow: hidden;"
+    data-options="
+        closed:true,
+        modal:true,
+        iconCls: 'icon-save',
+        buttons: '#editControl-dlg-buttons'
+    ">
+    <table class="solidTab" style="width: 100%; height: 100%;">
+        <tr>
+            <td style="width: 200px; height: 423px;">
+                <div style="height: 100%; overflow: auto;">
+                    <ul id="editControlTree" class="easyui-tree" data-options="
+                        checkbox:true,
+                        onlyLeafCheck:false,
+                        animate:true,
+                        lines:true
+                        ">
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="editControl-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="roleMenuBtnClick();">确定</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#editControl-dlg').dialog('close');">取消</a>
+</div>
+
+<!--    角色成员  弹出窗口    -->
+<div id="manageMember-dlg" class="easyui-dialog" title="角色成员管理" style="width: 500px; height: 400px; padding: 0px"
+    data-options="
+        closed:true,
+        modal:true,
+        iconCls: 'icon-save',
+        buttons: '#manageMember-dlg-buttons'
+    ">
+    <div class="easyui-layout" style="width: 100%; height: 100%;">
+        <div data-options="region:'west',collapsible:false" title="系统用户" style="width: 220px;">
+            <div id="allUser" class="usersDiv" style="width: 100%; height: 100%; overflow: auto;"></div>
+            <script type="text/template" id="allUserTemp">
+                <div style="cursor:pointer" id="user_$id$" onclick="userItemClick(this);" ck="0">
+                	<div style="float:left;width:80px;">$username$</div><div>[$account$]</div>
+                </div>
+            </script>
+        </div>
+        <div data-options="region:'center'" style="text-align: center; padding-top: 90px;">
+            <input type="button" style="width: 40px; height: 40px;" onclick="moveUser('toRight');" value=">>" /><br />
+            <input type="button" style="width: 40px; height: 40px;" onclick="moveUser('toLeft');" value="<<" /><br />
+            <input type="button" style="width: 40px; height: 40px;" onclick="moveUser('toAll');" value="全选" /><br />
+            <input type="button" style="width: 40px; height: 40px;" onclick="moveUser('clear');" value="清空" /><br />
+        </div>
+        <div data-options="region:'east',collapsible:false,tools:'#myUserTools'" title="角色成员" style="width: 220px;">
+            <div id="myUser" class="usersDiv" style="width: 100%; height: 100%; overflow: auto;"></div>
+        </div>
+    </div>
+</div>
+<div id="manageMember-dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" onclick="roleUserBtnClick();">确定</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="$('#manageMember-dlg').dialog('close');">取消</a>
+</div>
+
 </body>
 </html>

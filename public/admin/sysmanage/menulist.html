@@ -79,7 +79,7 @@
         $("#desc").val("");
 	}
     function putDataToWindow(data) {
-        $("#name").val(data.name);
+        $("#name").val(data.text);
         $("#url").val(data.url);
         $("#desc").val(data.desc);
     }
@@ -183,7 +183,7 @@
 				var sdata = $("#tt").datagrid("getSelected");
 				$.ajax({
 					type: "put",
-					url: _url+'office/sys/menu'+sdata.id,
+					url: _url+'office/sys/menu/'+sdata.id,
 					data: {name:rsData.data.name,desc:rsData.data.desc,parent:sdata.parent,url:rsData.data.url,level:sdata.level,parent_path:0},
 					dataType: "text",
 					success: function (r) {
@@ -210,12 +210,12 @@
     fit:true,
     animate:true,
     idField:'id',
-    treeField:'name',
+    treeField:'text',
     toolbar:'#menuTollbar'
     ">
     <thead>
         <tr>
-            <th data-options="field:'name',width:200,align:'left',halign:'center',formatter:menunameformater">菜单名称</th>
+            <th data-options="field:'text',width:200,align:'left',halign:'center',formatter:menunameformater">菜单名称</th>
             <th data-options="field:'url',width:300,align:'left',halign:'center'">链接地址</th>
             <th data-options="field:'desc',width:200,align:'center'">描述</th>
         </tr>
