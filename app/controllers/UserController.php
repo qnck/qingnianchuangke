@@ -12,10 +12,13 @@ class UserController extends \BaseController
     {
         $mobile = Input::get('mobile');
         $pass = Input::get('pass');
-        $user = new User();
-        $user->u_mobile = $mobile;
-        $user->u_password = $pass;
         try {
+            // AES crypt
+            $pass = Tools::qnckDecrytp($pass);
+
+            $user = new User();
+            $user->u_mobile = $mobile;
+            $user->u_password = $pass;
             $data = $user->login();
             $re = ['data' => $data, 'result' => 2000, 'info' => '登陆成功'];
         } catch (Exception $e) {
@@ -46,11 +49,15 @@ class UserController extends \BaseController
         $pass = Input::get('pass');
         $school_id = Input::get('school');
         $vCode = Input::get('vcode');
-        $user = new User();
-        $user->u_school_id = $school_id;
-        $user->u_mobile = $mobile;
-        $user->u_password = $pass;
         try {
+            // AES crypt
+            $pass = Tools::qnckDecrytp($pass);
+
+            $user = new User();
+            $user->u_school_id = $school_id;
+            $user->u_mobile = $mobile;
+            $user->u_password = $pass;
+            
             // verify vcode via phone
             $phone = new Phone($mobile);
             $phone->authVCode($vCode);
