@@ -188,6 +188,25 @@ class User extends Eloquent
         return $data;
     }
 
+    public function showInOffice()
+    {
+        $data = [];
+        $data['id'] = $this->u_id;
+        $data['name'] = $this->u_name;
+        $data['nickname'] = $this->u_nickname;
+        $data['head_img'] = $this->u_head_img;
+        $data['gender'] = $this->u_sex;
+        $data['lat'] = $this->latitude;
+        $data['lng'] = $this->longitude;
+        $data['mobile'] = $this->u_mobile;
+        $school = null;
+        if (isset($this->school)) {
+            $school = $this->school->showInList();
+        }
+        $data['school'] = $school;
+        return $data;
+    }
+
     /**
      * show detailed data
      * @author Kydz 2015-06-24
