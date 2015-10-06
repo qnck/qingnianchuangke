@@ -42,8 +42,6 @@ $(document).ready(function () {
     BindData();
     $("#tt").datagrid('getPager').pagination({
         onSelectPage:function(pageNum, pageSize){
-            opts.pageNumber = pageNum;
-            opts.pageSize = pageSize;
             BindData();
         }
     });

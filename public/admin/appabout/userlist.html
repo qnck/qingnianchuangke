@@ -40,8 +40,6 @@ $(document).ready(function () {
 	BindData();
 	$("#tt").datagrid('getPager').pagination({
 		onSelectPage:function(pageNum, pageSize){
-			opts.pageNumber = pageNum;
-			opts.pageSize = pageSize;
 			BindData();
 		}
 	});
@@ -53,7 +51,7 @@ $(document).ready(function () {
 		$.ajax({
 			type: "get",
 			url: _url+'office/user/profile',
-			data: {},
+			data: {page:pageNumber,per_page:pageSize},
 			dataType: "text",
 			success: function (r) {	
 				var result = JSON.parse(r);
@@ -262,7 +260,7 @@ $(document).ready(function () {
             fit:true,
             singleSelect:true,
             pagination:true,
-            pageSize:20,
+            pageSize:10,
             idField:'id',
             toolbar:'#menuTollbar'">
     <thead>
