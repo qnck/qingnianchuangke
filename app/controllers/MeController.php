@@ -1497,12 +1497,12 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $bank = UsersBankCard::where('u_id', '=', $u_id)->first();
-            $bank->load('bank');
             $alipay = UsersAlipayPayment::find($u_id);
             $wechat = UsersWechatPayment::find($u_id);
             if (empty($bank)) {
                 $data['bank'] = null;
             } else {
+                $bank->load('bank');
                 $data['bank'] = $bank->showInList();
             }
             if (empty($alipay)) {
