@@ -66,20 +66,33 @@ function BindData() {
     });
 }
 function formatYslrl(value,row){
-    return row.fund.profit;
+    if(row.fund)
+        return row.fund.profit;
+    else
+        return "";
 }
 function formatXqzj(value,row){
-    return row.fund.loan;
+    if(row.fund)
+        return row.fund.loan;
+    else
+        return "";
 }
 function formatYszq(value,row){
-    return row.fund.loan_period;
+    if(row.fund)
+        return row.fund.loan_period;
+    else
+        return "";
 }
 function formatTkjh(value,row){
-    var result = "";
-    for (var i =  0; i < row.fund.loans.length; i++) {
-        result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
-    };
-    return result.substring(0,result.length-1);
+    if(row.fund){
+        var result = "";
+        for (var i =  0; i < row.fund.loans.length; i++) {
+            result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
+        };
+        return result.substring(0,result.length-1);
+    }
+    else
+        return "";
 }
 function formatTjyh(value,row){
     if(row.user)
@@ -146,8 +159,11 @@ function censorInfo(check){
             var is_talk="0";
             if(check=="0")
                 remark = prompt("请输入审核不通过的原因：", ""); 
-            if(check == "0" && (remark==""||remark==null)){
-                $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
+            if(check == "0" && remark==null){
+                return;
+            }
+            else if(check == "0" && remark==""){
+                $.messager.alert("提示", "请输入审核不通过的原因!", "alert");
                 return;
             }
             if(check=="1"){

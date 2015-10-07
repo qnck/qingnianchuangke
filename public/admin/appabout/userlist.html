@@ -122,9 +122,13 @@ $(document).ready(function () {
 		var remark = "";
 		if(opt=="0")
 			remark = prompt("请输入审核不通过的原因：", ""); 
-		if(opt == "0" && remark==""){
-			return;
-		}
+        if(opt == "0" && remark==null){
+            return;
+        }
+        else if(opt == "0" && remark==""){
+            $.messager.alert("提示", "请输入审核不通过的原因!", "alert");
+            return;
+        }
 
 		var sdata = $("#tt").datagrid("getSelected");
 		if (sdata) {
