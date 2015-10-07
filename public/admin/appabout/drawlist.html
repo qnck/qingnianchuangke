@@ -53,7 +53,7 @@ function BindData() {
     $.ajax({
         type: "get",
         url: _url+'office/draw',
-        data: {interview:1},
+        data: {interview:1,page:pageNumber,per_page:pageSize},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);

@@ -53,7 +53,7 @@ function BindData() {
     $.ajax({
         type: "get",
         url: _url+'office/booth',
-        data: {interview:1},
+        data: {interview:1,page:pageNumber,per_page:pageSize},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);
@@ -151,7 +151,10 @@ function censorInfo(check,id){
             var remark="";
             if(check=="0")
                 remark = prompt("请输入面谈不通过的原因：", ""); 
-            if(check == "0" && (remark=="" || remark==null)){
+            if(check == "0" && remark==null){
+                return;
+            }
+            else if(check == "0" && remark==""){
                 $.messager.alert("提示", "请输入面谈不通过的原因!", "alert");
                 return;
             }

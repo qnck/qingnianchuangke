@@ -65,7 +65,7 @@
 		$.ajax({
 			type: "get",
 			url: _url+'office/sys/role',
-			data: {},
+			data: {page:pageNumber,per_page:pageSize},
 			dataType: "text",
 			success: function (result) {
 				if(JSON.parse(result).result=="2000")
