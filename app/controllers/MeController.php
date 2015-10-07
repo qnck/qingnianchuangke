@@ -250,13 +250,15 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
 
-            $chk = Booth::where('u_id', '=', $u_id)->where('b_type', '=', $boothType)->first();
-
-            if (!empty($chk->b_id)) {
-                throw new Exception("您已经申请过该类店铺了, 请勿重复提交", 7001);
+            $booth = Booth::where('u_id', '=', $u_id)->where('b_type', '=', $boothType)->first();
+            if (empty($booth)) {
+                $booth = new Booth();
+            } else {
+                if ($booth->b_status == 1) {
+                    throw new Exception("您已经申请过该类店铺了, 请勿重复提交", 7001);
+                }
             }
 
-            $booth = new Booth();
             $booth->c_id = $s_id;
             $booth->s_id = $user->u_school_id;
             $booth->u_id = $u_id;
@@ -273,7 +275,14 @@ class MeController extends \BaseController
             $b_id = $booth->register();
             
             if ($withFund == 1) {
-                $fund = new Fund();
+                $fund = Fund::where('b_id', '=', $booth->b_id)->first();
+                if (empty($fund)) {
+                    $fund = new Fund();
+                } else {
+                    if ($fund->t_status > 2) {
+                        throw new Exception("基金已经发放", 1);
+                    }
+                }
                 $fund->u_id = $u_id;
                 $fund->t_apply_money = $loan;
                 $fund->b_id = $b_id;
@@ -287,6 +296,9 @@ class MeController extends \BaseController
                 if (!is_array($loanSchema)) {
                     throw new Exception("请传入正确的提款计划", 7001);
                 }
+
+                // clear all exists schema
+                DB::table('repayments')->where('f_id', '=', $f_id)->delete();
 
                 foreach ($loanSchema as $key => $percentage) {
                     $percentage = $percentage / 100;

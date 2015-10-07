@@ -91,9 +91,11 @@ class Fund extends Eloquent
 
     public function addFund()
     {
-        $now = new DateTime();
         $this->baseValidate();
-        $this->created_at = $now->format('Y-m-d H:i:s');
+        if (empty($this->created_at)) {
+            $now = new DateTime();
+            $this->created_at = $now->format('Y-m-d H:i:s');
+        }
         $this->save();
         return $this->t_id;
     }
