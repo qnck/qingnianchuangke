@@ -128,9 +128,11 @@ class Booth extends Eloquent
 
     public function addBooth()
     {
-        $now = new DateTime();
         $this->baseValidate();
-        $this->created_at = $now->format('Y-m-d H:i:s');
+        if (empty($this->created_at)) {
+            $now = new DateTime();
+            $this->created_at = $now->format('Y-m-d H:i:s');
+        }
         $this->save();
         return $this->b_id;
     }
