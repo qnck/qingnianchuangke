@@ -125,7 +125,6 @@ class User extends Eloquent
             [
                 'nickname' => $this->u_nickname,
                 'age' => $this->u_age,
-                'name' => $this->u_name,
                 'sex' => $this->u_sex,
                 'school_id' => $this->u_school_id,
                 'pass' => $this->u_password,
@@ -133,7 +132,6 @@ class User extends Eloquent
             [
                 'nickname' => 'sometimes|max:32',
                 'age' => 'sometimes|digits_between:1,3',
-                'name' => 'sometimes|max:5',
                 'sex' => 'sometimes|digits:1',
                 'school_id' => 'sometimes',
                 'pass' => 'sometimes',
