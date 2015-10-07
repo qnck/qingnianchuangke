@@ -9,7 +9,7 @@ class OfficeBoothController extends \BaseController
         $alloc = Input::get('alloc', 0);
         $interview = Input::get('interview', 0);
 
-        $per_page = Input::get('per_page', null);
+        $per_page = Input::get('per_page', 10000000);
 
         try {
             $query = Booth::with(['fund' => function ($q) {
@@ -27,11 +27,7 @@ class OfficeBoothController extends \BaseController
             if ($interview == 1) {
                 $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '=', 1);
             }
-            if ($per_page == null) {
-                $list = $query->get();
-            } else {
-                $list = $query->paginate($per_page);
-            }
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
                 $data[] = $booth->showInOffice();

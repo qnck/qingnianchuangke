@@ -6,7 +6,7 @@ class OfficeWebUserController extends \BaseController
 {
     public function listUserProfiles()
     {
-        $per_page = Input::get('per_page', null);
+        $per_page = Input::get('per_page', 10000000);
 
         try {
             $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'dic_schools.t_name', 'tmp_users_details.u_status AS detail_status', 'tmp_users_contact_peoples.u_status AS contact_status', 'tmp_users_bank_cards.b_status AS bank_status')->leftJoin('tmp_users_contact_peoples', function ($q) {
@@ -19,11 +19,7 @@ class OfficeWebUserController extends \BaseController
                 $q->on('dic_schools.t_id', '=', 'users.u_school_id');
             });
 
-            if ($per_page == null) {
-                $list = $query->get();
-            } else {
-                $list = $query->paginate($per_page);
-            }
+            $list = $query->paginate($per_page);
             $array = $list->toArray();
             $data['rows'] = [];
             foreach ($array['data'] as $key => $userProfile) {
