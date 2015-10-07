@@ -7,23 +7,19 @@ class OfficeDrawContoller extends \BaseController
     public function listDraw()
     {
         $status = Input::get('status', null);
-        $per_page = Input::get('per_page', null);
+        $per_page = Input::get('per_page', 10000000);
 
         try {
             $query = UsersDraw::with(['bank']);
             if (!empty($status)) {
                 $query = $query->where('d_status', '=', (int)$status);
             }
-            if ($per_page == null) {
-                $list = $query->get();
-            } else {
-                $list = $query->paginate($per_page);
-            }
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $draw) {
                 $data[] = $draw->showInList();
             }
-            $re = Tools::reTrue('获取提现列表成功', $data);
+            $re = Tools::reTrue('获取提现列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取提现列表失败:'.$e->getMessage());
         }

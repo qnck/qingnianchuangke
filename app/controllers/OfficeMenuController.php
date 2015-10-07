@@ -93,13 +93,14 @@ class OfficeMenuController extends \BaseController
 
     public function listRole()
     {
+        $per_page = Input::get('per_page', 10000000);
         try {
-            $list = SysRole::get();
+            $list = SysRole::paginate($per_page);
             $data = [];
             foreach ($list as $key => $role) {
                 $data[] = $role->showInList();
             }
-            $re = Tools::reTrue('获取角色成功', $data);
+            $re = Tools::reTrue('获取角色成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取角色失败:'.$e->getMessage());
         }

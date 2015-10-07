@@ -6,20 +6,16 @@ class OfficeSysUserController extends \BaseController
 {
     public function listUsers()
     {
-        $per_page = Input::get('per_page', null);
+        $per_page = Input::get('per_page', 10000000);
 
-        if ($per_page == null) {
-            $list = SysUser::get();
-        } else {
-            $list = SysUser::paginate(30);
-        }
+        $list = SysUser::paginate($per_page);
         $data = [];
         $data['rows'] = [];
         $data['total'] = $list->count();
         foreach ($list as $key => $user) {
             $data['rows'][] = $user->showInList();
         }
-        $re = Tools::reTrue('获取sysuer成功', $data);
+        $re = Tools::reTrue('获取sysuer成功', $data, $list);
         return Response::json($re);
     }
 
@@ -155,16 +151,12 @@ class OfficeSysUserController extends \BaseController
             $query = SysRole::select('sys_roles.*')->join('sys_user_roles', function ($q) use ($id) {
                 $q->on('sys_roles.id', '=', 'sys_user_roles.r_id')->where('sys_user_roles.admin_id', '=', $id);
             });
-            if ($per_page == null) {
-                $list = $query->get();
-            } else {
-                $list = $query->paginate($per_page);
-            }
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $role) {
                 $data[] = $role->showInList();
             }
-            $re = Tools::reTrue('获取角色成功', $data);
+            $re = Tools::reTrue('获取角色成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取角色失败:'.$e->getMessage());
         }
