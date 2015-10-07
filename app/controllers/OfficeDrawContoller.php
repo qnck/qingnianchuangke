@@ -6,15 +6,19 @@ class OfficeDrawContoller extends \BaseController
 {
     public function listDraw()
     {
-        $per_page = Input::get('per_page', 30);
         $status = Input::get('status', null);
+        $per_page = Input::get('per_page', null);
 
         try {
             $query = UsersDraw::with(['bank']);
             if (!empty($status)) {
                 $query = $query->where('d_status', '=', (int)$status);
             }
-            $list = $query->paginate($per_page);
+            if ($per_page == null) {
+                $list = $query->get();
+            } else {
+                $list = $query->paginate($per_page);
+            }
             $data = [];
             foreach ($list as $key => $draw) {
                 $data[] = $draw->showInList();

@@ -6,16 +6,21 @@ class OfficeSysUserController extends \BaseController
 {
     public function listUsers()
     {
-        $list = \SysUser::paginate(30);
+        $per_page = Input::get('per_page', null);
 
+        if ($per_page == null) {
+            $list = SysUser::get();
+        } else {
+            $list = SysUser::paginate(30);
+        }
         $data = [];
         $data['rows'] = [];
         $data['total'] = $list->count();
         foreach ($list as $key => $user) {
             $data['rows'][] = $user->showInList();
         }
-        $re = \Tools::reTrue('获取sysuer成功', $data);
-        return \Response::json($re);
+        $re = Tools::reTrue('获取sysuer成功', $data);
+        return Response::json($re);
     }
 
     public function postUser()
@@ -140,14 +145,21 @@ class OfficeSysUserController extends \BaseController
 
     public function listUserRole($id)
     {
+        $per_page = Input::get('per_page', null);
+
         try {
             $admin = SysUser::find($id);
             if (empty($admin)) {
                 throw new Exception("没有找到用户", 10001);
             }
-            $list = SysRole::select('sys_roles.*')->join('sys_user_roles', function ($q) use ($id) {
+            $query = SysRole::select('sys_roles.*')->join('sys_user_roles', function ($q) use ($id) {
                 $q->on('sys_roles.id', '=', 'sys_user_roles.r_id')->where('sys_user_roles.admin_id', '=', $id);
-            })->get();
+            });
+            if ($per_page == null) {
+                $list = $query->get();
+            } else {
+                $list = $query->paginate($per_page);
+            }
             $data = [];
             foreach ($list as $key => $role) {
                 $data[] = $role->showInList();
