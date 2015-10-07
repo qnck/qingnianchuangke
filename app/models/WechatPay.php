@@ -44,7 +44,7 @@ class WechatPay
 
     public function verifyNotify()
     {
-        $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        $xml = file_get_contents('php://input', 'r');
         $this->log->INFO('POSTED DATE FRON WX SERVER:'.json_encode($xml));
 
         $re = WxPayResults::Init($xml);
