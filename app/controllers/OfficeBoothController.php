@@ -17,7 +17,7 @@ class OfficeBoothController extends \BaseController
             'fund.loans',
             'user'])->select('booths.*');
 
-            $query = $query->join('funds', function ($q) {
+            $query = $query->leftJoin('funds', function ($q) {
                 $q->on('funds.b_id', '=', 'booths.b_id');
             });
 
