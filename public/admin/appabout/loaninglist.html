@@ -84,7 +84,9 @@ function formatTkjh(value,row){
     return result.substring(0,result.length-1);
 }
 function formatTjyh(value,row){
-    return row.user.name;
+    if(row.user)
+        return row.user.name;
+    else return "";
 }
 function formatStatus(value,row){
     var result = "";
