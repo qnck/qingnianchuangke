@@ -135,7 +135,7 @@ class MeController extends \BaseController
         try {
             // AES crypt
             $newPass = Tools::qnckDecrytp($newPass);
-            if (!$pass) {
+            if (!$newPass) {
                 throw new Exception("密码错误", 2001);
             }
 
