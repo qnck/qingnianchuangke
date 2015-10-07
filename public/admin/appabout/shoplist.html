@@ -149,10 +149,10 @@ function formatKdfs(value,row){
 }
 function formatOpt(value,row){
     if(row.status=="0")
-        return "<a href=\"#\" onclick=\"censorInfo('1')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0')\">[审批不通过]</a>";
+        return "<a href=\"#\" onclick=\"censorInfo('1','"+row.is_fund+"')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.is_fund+"')\">[审批不通过]</a>";
     else return "此项目已审核过";
 }
-function censorInfo(check){
+function censorInfo(check,is_fund){
     $.messager.confirm('提示', '确认对选择店铺进行审批操作?', function(r){
         if (r){
             var remark="";
@@ -166,7 +166,7 @@ function censorInfo(check){
                 $.messager.alert("提示", "请输入审核不通过的原因!", "alert");
                 return;
             }
-            if(check=="1"){
+            if(check=="1" && is_fund=="1"){
                 $('#ts-dlg').dialog('open');
             }
             else
