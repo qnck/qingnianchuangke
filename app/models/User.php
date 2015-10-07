@@ -102,6 +102,7 @@ class User extends Eloquent
             $school = DicSchool::find($user->u_school_id);
             $re['site'] = $school->t_city;
             $re['school'] = $school->showInList();
+            $re['gender'] = $this->u_sex;
             $user->load('booths');
             $booths = null;
             if (!empty($user->booths)) {
