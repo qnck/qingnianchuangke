@@ -6,11 +6,12 @@ class AppController extends \BaseController
 {
     public function getConfig()
     {
-        $init['app_ver'] = '0.08';
+
+        $init['app_ver'] = Config::get('app.app.andriod.ver');
         $init['api_ver'] = 'v0';
         $init['force_upgrade'] = 1;
         $init['init_img'] = 'http://img.54qnck.com/img/sys/load.png';
-        $init['app_download_link'] = 'http://img.54qnck.com/download/CK_008.apk';
+        $init['app_download_link'] = 'http://img.54qnck.com/download/'.Config::get('app.app.andriod.file_name');
         $init['desc'] = '新加了个若干功能, 修复了若干bug';
 
         $data['init'] = $init;
