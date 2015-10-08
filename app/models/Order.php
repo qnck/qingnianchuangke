@@ -19,6 +19,9 @@ class Order extends Eloquent
     public static $STATUS_ORDERED = 5;
     public static $STATUS_PAIED = 6;
 
+    private $_carts = [];
+    private $_bills = [];
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -164,11 +167,53 @@ class Order extends Eloquent
         return true;
     }
 
+    public function getSummary()
+    {
+        $this->_carts = Cart::where('o_id', '=', $this->o_id)->get();
+        foreach ($this->_carts as $key => $cart) {
+            if (empty($this->_bills[$cart->b_id])) {
+                $this->_bills[$cart->b_id]['total']['paied'] = 0;
+                $this->_bills[$cart->b_id]['total_origin']['paied'] = 0;
+                $this->_bills[$cart->b_id]['total']['pending'] = 0;
+                $this->_bills[$cart->b_id]['total_origin']['pending'] = 0;
+            } else {
+                if ($cart->c_status == 3) {
+                    $this->_bills[$cart->b_id]['total']['paied'] += $cart->c_amount;
+                    $this->_bills[$cart->b_id]['total_origin']['paied'] += $cart->c_amount_origin;
+                } else {
+                    $this->_bills[$cart->b_id]['total']['pending'] += $cart->c_amount;
+                    $this->_bills[$cart->b_id]['total_origin']['pending'] += $cart->c_amount_origin;
+                }
+            }
+        }
+    }
+
+    public function confirm()
+    {
+        $this->getSummary();
+        foreach ($this->_bills as $key => $bill) {
+            $booth = Booth::find($key);
+            $wallet = UsersWalletBalances::find($booth->u_id);
+            if ($booth->b_with_fund) {
+                $fund = Fund::where('b_id', '=', $key)->where('t_is_close', '=', 0)->first();
+                if (empty($fund)) {
+                    $wallet->putIn($bill['total']['paied']);                    
+                }
+            } else {
+                $wallet->putIn($bill['total']['paied']);
+            }
+        }
+        $this->o_status = Order::$SHIPPING_STATUS_FINISHED;
+        return $this->save();
+    }
+
     public function checkoutCarts()
     {
-        $carts = Cart::where('o_id', '=', $this->o_id)->where('c_status', '=', 2)->get();
-        foreach ($carts as $key => $cart) {
-            $cart->checkout();
+        $this->getSummary();
+        foreach ($this->_carts as $key => $cart) {
+            if ($cart->c_status == 2) {
+                $cart->checkout();
+            }
         }
     }
 
