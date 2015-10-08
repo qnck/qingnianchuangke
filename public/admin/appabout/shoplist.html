@@ -40,8 +40,6 @@ $(document).ready(function () {
     BindData();
     $("#tt").datagrid('getPager').pagination({
         onSelectPage:function(pageNum, pageSize){
-            opts.pageNumber = pageNum;
-            opts.pageSize = pageSize;
             BindData();
         }
     });
@@ -53,7 +51,7 @@ function BindData() {
     $.ajax({
         type: "get",
         url: _url+'office/booth',
-        data: {},
+        data: {page:pageNumber,per_page:pageSize},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);
@@ -68,20 +66,33 @@ function BindData() {
     });
 }
 function formatYslrl(value,row){
-    return row.fund.profit;
+    if(row.fund)
+        return row.fund.profit;
+    else
+        return "";
 }
 function formatXqzj(value,row){
-    return row.fund.loan;
+    if(row.fund)
+        return row.fund.loan;
+    else
+        return "";
 }
 function formatYszq(value,row){
-    return row.fund.loan_period;
+    if(row.fund)
+        return row.fund.loan_period;
+    else
+        return "";
 }
 function formatTkjh(value,row){
-    var result = "";
-    for (var i =  0; i < row.fund.loans.length; i++) {
-        result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
-    };
-    return result.substring(0,result.length-1);
+    if(row.fund){
+        var result = "";
+        for (var i =  0; i < row.fund.loans.length; i++) {
+            result += row.fund.loans[i].percentage + "%("+row.fund.loans[i].amount+")，";
+        };
+        return result.substring(0,result.length-1);
+    }
+    else
+        return "";
 }
 function formatTjyh(value,row){
     if(row.user)
@@ -138,21 +149,24 @@ function formatKdfs(value,row){
 }
 function formatOpt(value,row){
     if(row.status=="0")
-        return "<a href=\"#\" onclick=\"censorInfo('1')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0')\">[审批不通过]</a>";
+        return "<a href=\"#\" onclick=\"censorInfo('1','"+row.is_fund+"')\">[审批通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.is_fund+"')\">[审批不通过]</a>";
     else return "此项目已审核过";
 }
-function censorInfo(check){
+function censorInfo(check,is_fund){
     $.messager.confirm('提示', '确认对选择店铺进行审批操作?', function(r){
         if (r){
             var remark="";
             var is_talk="0";
             if(check=="0")
                 remark = prompt("请输入审核不通过的原因：", ""); 
-            if(check == "0" && (remark==""||remark==null)){
-                $.messager.alert("提示", "请输入审核不通过的原因！", "alert");
+            if(check == "0" && remark==null){
                 return;
             }
-            if(check=="1"){
+            else if(check == "0" && remark==""){
+                $.messager.alert("提示", "请输入审核不通过的原因!", "alert");
+                return;
+            }
+            if(check=="1" && is_fund=="1"){
                 $('#ts-dlg').dialog('open');
             }
             else

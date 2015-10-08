@@ -42,8 +42,6 @@ $(document).ready(function () {
     BindData();
     $("#tt").datagrid('getPager').pagination({
         onSelectPage:function(pageNum, pageSize){
-            opts.pageNumber = pageNum;
-            opts.pageSize = pageSize;
             BindData();
         }
     });
@@ -55,7 +53,7 @@ function BindData() {
     $.ajax({
         type: "get",
         url: _url+'office/booth',
-        data: {alloc:1},
+        data: {alloc:1,page:pageNumber,per_page:pageSize},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);
@@ -86,7 +84,9 @@ function formatTkjh(value,row){
     return result.substring(0,result.length-1);
 }
 function formatTjyh(value,row){
-    return row.user.name;
+    if(row.user)
+        return row.user.name;
+    else return "";
 }
 function formatStatus(value,row){
     var result = "";

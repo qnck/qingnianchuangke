@@ -42,8 +42,6 @@ $(document).ready(function () {
     BindData();
     $("#tt").datagrid('getPager').pagination({
         onSelectPage:function(pageNum, pageSize){
-            opts.pageNumber = pageNum;
-            opts.pageSize = pageSize;
             BindData();
         }
     });
@@ -55,7 +53,7 @@ function BindData() {
     $.ajax({
         type: "get",
         url: _url+'office/booth',
-        data: {interview:1},
+        data: {interview:1,page:pageNumber,per_page:pageSize},
         dataType: "text",
         success: function (r) {
             var result = JSON.parse(r);
@@ -88,6 +86,12 @@ function formatTkjh(value,row){
 function formatTjyh(value,row){
     if(row.user)
         return row.user.name;
+    else
+        return "";
+}
+function formatLxdh(value,row){
+    if(row.user)
+        return row.user.mobile;
     else
         return "";
 }
@@ -147,7 +151,10 @@ function censorInfo(check,id){
             var remark="";
             if(check=="0")
                 remark = prompt("请输入面谈不通过的原因：", ""); 
-            if(check == "0" && (remark=="" || remark==null)){
+            if(check == "0" && remark==null){
+                return;
+            }
+            else if(check == "0" && remark==""){
                 $.messager.alert("提示", "请输入面谈不通过的原因!", "alert");
                 return;
             }
@@ -199,6 +206,7 @@ function censorInfo(check,id){
             <th data-options="field:'yszq',width:80,align:'left',halign:'center',sortable:true,formatter:formatYszq">预算周期(月)</th>
             <th data-options="field:'tkjh',width:250,align:'left',halign:'center',sortable:true,formatter:formatTkjh">提款计划</th>
             <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
+            <th data-options="field:'lxdh',width:80,align:'left',halign:'center',sortable:true,formatter:formatLxdh">联系电话</th>
             <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
             <th data-options="field:'options',width:165,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
