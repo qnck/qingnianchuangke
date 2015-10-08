@@ -22,9 +22,9 @@ class OfficeController extends \BaseController
         $pass = Input::get('pass', '');
 
         try {
-            $admin = SysUser::where('account', '=', $account)->where('is_del', '=', 0)->first();
+            $admin = SysUser::where('account', '=', $account)->where('is_del', '=', 0)->where('status', '=', 1)->first();
             if (empty($admin)) {
-                throw new Exception("没有找到该用户", 10003);
+                throw new Exception("没有找到可用的用户", 10003);
             }
             if (!Hash::check($pass, $admin->password)) {
                 throw new Exception("密码错误", 10003);
