@@ -1335,16 +1335,22 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id', 0);
         $orders = Input::get('orders', '');
 
+        DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
             $orders = explode(',', $orders);
             if (empty($orders)) {
                 throw new Exception("无效的订单数据", 7001);
             }
-            Order::updateShippingStatus($orders, Order::$SHIPPING_STATUS_FINISHED);
-            $re = Tools::reTrue('发货成功');
+            $orders = Order::whereIn('o_id', $orders)->get();
+            foreach ($orders as $key => $order) {
+                $order->confirm();
+            }
+            $re = Tools::reTrue('确认成功');
+            DB::commit();
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '发货失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '确认失败:'.$e->getMessage());
+            DB::rollback();
         }
         return $re;
     }
