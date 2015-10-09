@@ -33,18 +33,15 @@ class PayController extends \BaseController
 
     public function callbackWechat()
     {
-        $return_code = Input::get('return_code', 'FAIL');
-        $return_msg = Input::get('return_msg', '没有获取到返回');
-        
-
-        $wechat = new WechatPay();
-        $wechat->log->INFO('callback start');
         DB::beginTransaction();
         try {
-            if ($return_code == 'FAIL') {
-                throw new Exception("微信服务器返回错误", 9001);
-            }
+            $wechat = new WechatPay();
+            $wechat->log->INFO('callback start');
+            $input = file_get_contents('php://input', 'r');
+            $wechat->log->INFO('POSTED DATE FRON WX SERVER:'.$input);
+
             $re = $wechat->verifyNotify();
+            $re['total_fee'] = $re['total_fee'] * 0.01;
             $order = Order::getOrderByNo($re['out_trade_no']);
             $order->pay($re['total_fee'], WechatPay::PAYMENT_TAG);
             $order->checkoutCarts();
