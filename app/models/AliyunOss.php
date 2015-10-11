@@ -5,23 +5,26 @@
 class AliyunOss
 {
     private $_oss = null;
-    private $_upload_token = '';
+    private $_token = '';
     private $_cate = '';
     private $_id = '';
-    private $_bucket = 'qnckimg';
+    private $_bucket = '';
 
-    public function __construct($cate)
+    public function __construct($cate, $token = '', $id = '')
     {
+        $this->_bucket = Config::get('app.imgbucket');
         $this->_cate = $cate;
         $basePath = base_path();
         require_once($basePath."/vendor/aliyunoss/alioss.class.php");
         require_once($basePath."/vendor/aliyunoss/thirdparty/xml2array.class.php");
         $this->_oss = new ALIOSS();
+        $this->_token = $token;
+        $this->_id = $id;
     }
 
     public function setToken($token)
     {
-        $this->_upload_token = $token;
+        $this->_token = $token;
     }
 
     public function setId($id)
@@ -29,10 +32,10 @@ class AliyunOss
         $this->_id = $id;
     }
 
-    public function upload($token)
+    public function upload()
     {
         $folder = $this->_cate;
-        if (!$token) {
+        if (!$this->_token) {
             throw new Exception("需要传入token", 20001);
         } elseif (!$this->_cate) {
             throw new Exception("需要传入cate", 20001);
@@ -43,7 +46,7 @@ class AliyunOss
                 foreach ($_FILES as $key => $file) {
                     if ($file['name'] && $file['error'] == 0 && $file['size'] > 0) {
                         // todo enhance with mime type
-                        $obj = '_tmp/'.$this->_cate.'/'.$token.'/'.$key;
+                        $obj = '_tmp/'.$this->_cate.'/'.$this->_token.'/'.$key.'.'.$this->getExt($file);
                         $re = $this->_oss->upload_file_by_file($this->_bucket, $obj, $file['tmp_name']);
                         if (!$re->isOK()) {
                             throw new Exception("图片:".$file['name'].'上传失败', 20001);
@@ -53,26 +56,67 @@ class AliyunOss
                 }
             }
         }
+        $re = $this->scan('_tmp/'.$this->_cate.'/'.$this->_token.'/');
+        $re = Img::attachHost($re);
+        return $re;
     }
 
-    public function confirm($token)
+    public function save()
     {
+        $dir = $this->_cate.'/'.$this->_id.'/';
+        $tmp_dir = '_tmp/'.$this->_cate.'/'.$this->_token.'/';
 
+        $o = $this->scan($tmp_dir);
+        $origin = Img::attachKey($o);
+
+        $t = $this->scan($dir);
+        $target = Img::attachKey($t);
+
+        $delete = array_intersect_key($target, $origin);
+
+        foreach ($delete as $key => $value) {
+            $this->remove($value);
+        }
+        foreach ($origin as $key => $value) {
+            $name = Img::getFileName($value);
+            $this->move($value, $this->_cate.'/'.$this->_id.'/'.$name);
+        }
+        return $origin;
     }
 
-    public function scan()
+    public function getList()
+    {
+        $dir = $this->_cate.'/'.$this->_id.'/';
+        $re = $this->scan($dir);
+        $imgs = Img::attachKey($re);
+        return $imgs;
+    }
+
+    public function scan($path)
     {
         $options = [
             'delimiter' => '/',
-            'prefix' => '_tmp/loan'
+            'prefix' => $path
         ];
         $response = $this->_oss->list_object($this->_bucket, $options);
-        if ($response->isOK()) {
-            $re = $this->getResponseBodyArray($response);
-            var_dump($re);
-        } else {
-            var_dump($response);
+        if (!$response->isOK()) {
+            throw new Exception("获取图片列表失败", 20001);
+            
         }
+        $response = $this->getResponseBodyArray($response);
+        if (empty($response['ListBucketResult']['Contents'])) {
+            return [];
+        }
+        $files = $response['ListBucketResult']['Contents'];
+        if (empty($files['Key'])) {
+            $re = [];
+            foreach ($files as $key => $file) {
+                $re[] = $file['Key'];
+            }
+        } else {
+            $re[] = $files['Key'];
+        }
+        return $re;
     }
 
     public function checkDir()
@@ -83,9 +127,20 @@ class AliyunOss
         $this->makeDir($dir);
     }
 
-    public function save()
+    public function remove($obj)
     {
+        $re = $this->_oss->delete_object($this->_bucket, $obj);
+        if (!$re->isOK()) {
+            throw new Exception("图片删除失败", 20001);
+        }
+    }
 
+    public function move($from, $target)
+    {
+        $re = $this->_oss->copy_object($this->_bucket, $from, $this->_bucket, $target);
+        if (!$re->isOK()) {
+            throw new Exception("移动图片失败", 20001);
+        }
     }
 
     public function makeDir($dir)

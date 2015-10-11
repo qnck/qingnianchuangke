@@ -2,6 +2,7 @@
 
 // play ground
 //
+Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
 Route::get('/', 'HomeController@index');
 Route::get('about', 'HomeController@about');
@@ -25,6 +26,11 @@ Route::filter('office', function () {
 });
 Route::when('office/*', 'office');
 /*********** FILTER ***********/
+
+/*********** IMG ***********/
+Route::post('img', 'ImgController@postImg');
+/*********** IMG ***********/
+
 
 /*********** API ***********/
 
