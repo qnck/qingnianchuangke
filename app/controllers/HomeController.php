@@ -6,7 +6,6 @@ class HomeController extends BaseController {
     
     public function v1()
     {
-        
     }
 
     public function index()
