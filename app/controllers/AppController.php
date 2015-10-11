@@ -38,4 +38,13 @@ class AppController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getDownloadLink()
+    {
+        $name = Config::get('app.app.android.file_name');
+        header('Content-Type: application/vnd.android.package-archive');
+        header('Content-Disposition:attachment;filename="qnck.apk"');
+        readfile('http://img.54qnck.com/download/'.$name);
+        exit();
+    }
 }
