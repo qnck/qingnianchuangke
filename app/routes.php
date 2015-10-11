@@ -6,6 +6,13 @@ Route::get('/v1', 'HomeController@v1');
 Route::get('/', 'HomeController@index');
 Route::get('about', 'HomeController@about');
 
+/* handling files */
+Route::pattern('any', '(.*)');
+Route::get('css/{any}', 'MiscFileController@getCSS');
+Route::get('js/{any}', 'MiscFileController@getJS');
+Route::get('images/{any}', 'MiscFileController@getImg');
+Route::get('addons/{any}', 'MiscFileController@getAddOn');
+
 /*********** FILTER ***********/
 Route::filter('office', function () {
     $path = Request::path();
@@ -27,6 +34,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* APP START*/
     Route::get('app/config', 'AppController@getConfig');
+    Route::get('app/download', 'AppController@getDownloadLink');
 
     Route::post('v0/app/feedback', 'AppController@postFeedback');
     /* APP END*/
