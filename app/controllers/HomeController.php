@@ -11,8 +11,7 @@ class HomeController extends BaseController {
 
     public function index()
     {
-        $p = null;
-        echo '<a href="qnckinterface.sinaapp.com">http://qnckinterface.sinaapp.com/</a>';
+        return View::make('blade.index.index');
     }
 
     public function about()
