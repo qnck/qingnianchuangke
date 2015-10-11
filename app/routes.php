@@ -29,6 +29,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('app/config', 'AppController@getConfig');
 
     Route::post('v0/app/feedback', 'AppController@postFeedback');
+    Route::get('v0/app/download', 'AppController@getDownloadLink');
     /* APP END*/
 
     /* ME START*/
