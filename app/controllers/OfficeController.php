@@ -30,7 +30,18 @@ class OfficeController extends \BaseController
                 throw new Exception("密码错误", 10003);
             }
             Session::put('admin_id', $admin->id);
-            $re = Tools::reTrue('登录成功');
+            $admin_id = $admin->id;
+            $data = [];
+            $data['name'] = $admin->u_name;
+            $list = SysRole::select('sys_roles.*')->join('sys_user_roles', function ($q) use ($admin_id) {
+                $q->on('sys_roles.id', '=', 'sys_user_roles.r_id')->where('sys_user_roles.admin_id', '=', $admin_id);
+            })->get();
+            $roles = [];
+            foreach ($list as $key => $role) {
+                $roles[] = $role->showInList();
+            }
+            $data['roles'] = $roles;
+            $re = Tools::reTrue('登录成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '登录失败:'.$e->getMessage());
         }
