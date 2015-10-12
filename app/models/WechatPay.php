@@ -5,7 +5,7 @@
 */
 class WechatPay
 {
-    const PAYMENT_TAG = 2;
+    const PAYMENT_TAG = 1;
 
     public $_notify = null;
     private $_notify_url = '';
