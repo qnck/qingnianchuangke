@@ -143,7 +143,7 @@ function formatKdfs(value,row){
         return "自费开店";
 }
 function formatOpt(value,row){
-    return "<a href=\"#\" onclick=\"censorInfo('1','"+row.fund.id+"')\">[面谈通过]</a>&nbsp;&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.fund.id+"')\">[面谈不通过]</a>";
+    return "<a href=\"#\" onclick=\"censorInfo('1','"+row.fund.id+"')\">[面谈通过]</a>&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.fund.id+"')\">[面谈不通过]</a>";
 }
 function censorInfo(check,id){
     $.messager.confirm('提示', '确认对选择店铺进行面谈结果确认操作?', function(r){
@@ -208,7 +208,7 @@ function censorInfo(check,id){
             <th data-options="field:'tjyh',width:80,align:'left',halign:'center',sortable:true,formatter:formatTjyh">提交用户</th>
             <th data-options="field:'lxdh',width:80,align:'left',halign:'center',sortable:true,formatter:formatLxdh">联系电话</th>
             <th data-options="field:'status',width:120,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
-            <th data-options="field:'options',width:165,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
+            <th data-options="field:'options',width:185,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
     </thead>
 </table>

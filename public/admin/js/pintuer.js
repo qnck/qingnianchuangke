@@ -24,7 +24,7 @@ $(function(){
 			}else{
 				e.closest('.form-group').removeClass("check-success");
 				e.closest('.form-group').addClass("check-error");
-				e.closest('.field').append('<div class="input-help"><ul>'+$checktext+'</ul></div>');
+				// e.closest('.field').append('<div class="input-help"><ul>'+$checktext+'</ul></div>');
 			}
 		}
 	});
