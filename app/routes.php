@@ -179,6 +179,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/ad/index/top', 'AdController@listIndexTop');
     /* AD END*/
 
+    /* PAYMENT START*/
+    Route::post('v0/pay/alipay/watchdog', 'PayController@callbackAlipay');
+    Route::post('v0/pay/wechat/watchdog', 'PayController@callbackWechat');
+    /* PAYMENT END*/
+
 });
 
 /*********** BACK ***********/
@@ -254,8 +259,3 @@ Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
 /* WECHAT END*/
-
-/* PAYMENT START*/
-Route::post('pay/alipay/watchdog', 'PayController@callbackAlipay');
-Route::post('pay/wechat/watchdog', 'PayController@callbackWechat');
-/* PAYMENT END*/
