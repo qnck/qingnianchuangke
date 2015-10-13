@@ -524,20 +524,21 @@ class MarketController extends \BaseController
         $delivery_time = Input::get('delivery_time', $now->format('Y-m-d H:i:s'));
         $remark = Input::get('remark', '');
 
-        $carts = Input::get('carts', '');
+        $carts = Input::get('carts', null);
         DB::beginTransaction();
         try {
-            $carts = explode(',', $carts);
-            if (!is_array($carts) || empty($carts)) {
+            if (empty($carts)) {
                 throw new Exception("请传入有效的购物车", 1);
             }
+            $carts = explode(',', $carts);
             $user = User::chkUserByToken($token, $u_id);
             $list = Cart::whereIn('c_id', $carts)->get();
             $total_amount = 0;
             $total_amount_origin = 0;
             $group['amount_origin'] = 0;
             $group['amount'] = 0;
-            $group['carts_ids'] = '';
+            $group['carts_ids'] = [];
+            $group['b_ids'] = [];
             foreach ($list as $key => $cart) {
                 if ($cart->u_id != $u_id) {
                     throw new Exception("没有权限操作该购物车", 7001);
@@ -549,6 +550,7 @@ class MarketController extends \BaseController
                 $group['amount_origin'] += $cart->c_amount_origin;
                 $group['amount'] += $cart->c_amount;
                 $group['carts_ids'][] = $cart->c_id;
+                $group['b_ids'][] = $cart->b_id;
             }
 
             if (($group['amount_origin'] != $amount_origin) || ($group['amount'] != $amount)) {
@@ -568,6 +570,12 @@ class MarketController extends \BaseController
             $order->o_remark = $remark;
             $order->o_number = $order_no;
             $o_id = $order->addOrder();
+            // push msg to seller
+            $list = Booth::whereIn('b_id', $group['b_ids'])->get();
+            foreach ($list as $key => $booth) {
+                $msg = new PushMessage($booth->u_id);
+                $msg->pushMessage('您有新的订单, 请及时发货');
+            }
             Cart::bindOrder([$order->o_id => $group['carts_ids']]);
             $re = Tools::reTrue('提交订单成功', ['order_id' => $o_id, 'order_no' => $order_no]);
             DB::commit();
