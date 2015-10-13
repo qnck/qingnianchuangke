@@ -70,6 +70,7 @@ var scrollFunc = function(e) {
     var t1 = document.getElementById("wheelDelta");
     var t2 = document.getElementById("detail");
     if (e.wheelDelta) {
+        //IE/Opera/Chrome 
         if (e.wheelDelta > 0) {
             $("#nav").removeClass("nav-00");
             $("#nav").removeClass("nav-70");
@@ -81,13 +82,16 @@ var scrollFunc = function(e) {
             $("#nav").addClass("nav-70");
         }
         t1.value = e.wheelDelta;
-    } else if (e.detail) {  
+    } else if (e.detail) { //Firefox 
         if (e.detail > 0) {
+            //alert("向上");
             $("#nav").removeClass("nav-00");
             $("#nav").removeClass("nav-up-to-down");
             $("#nav").addClass("nav-70");
         }
-        else if (e.detail < 0) {          
+        else if (e.detail < 0) {
+            //alert("向下");
+            
             $("#nav").removeClass("nav-00");
             $("#nav").removeClass("nav-70");
             $("#nav").addClass("nav-up-to-down");
@@ -95,13 +99,37 @@ var scrollFunc = function(e) {
     }
     ScrollText(direct);
 };
+/*注册事件*/
 if (document.addEventListener) {
     document.addEventListener('DOMMouseScroll', scrollFunc, false);
-}
-window.onmousewheel = document.onmousewheel = scrollFunc;
+}//W3C 
+window.onmousewheel = document.onmousewheel = scrollFunc;//IE/Opera/Chrome/Safari 
 
 
-//---------轮播图片----------------
+//---------轮播图片点击事件----------------
+//$(".js-flickity div img").click(function () {
+//    var this_id = $(this).attr("id");
+//    if (this_id == "01") {
+//        $("#secondTitel").html("我是标题1我是标题1我是标题1");
+//        $("#secondContent").html("我是内容1我是内容1我是内容1我是内容1我是内容1我是内容1我是内容1");
+//    }
+//    else if (this_id == "02") {
+//        $("#secondTitel").html("我是标题2我是标题2");
+//        $("#secondContent").html("我是内容2我是内容2我是内容2我是内容2我是内容2我是内容2我是内容2我是内容2");
+//    }
+//    else if (this_id == "03") {
+//        $("#secondTitel").html("我是标题3我是标题3");
+//        $("#secondContent").html("我是内容3我是内容3我是内容3我是内容3我是内容3我是内容3我是内容3我是内容3我是内容3我是内容3");
+//    }
+//    var _id = "./images/bg" + this_id + ".jpg";
+//    $("#secondPhoto").attr("src", _id);
+//    $(".js-flickity,.fun,.union,.develop").css("display", "none");
+//    $(".second-content").css("display", "block");
+//    var fontHeight = $("#secondFont").height();
+//    $(".link").css("top", 570+fontHeight+"px");
+//    $(".footer").css("top", 570 + fontHeight +180+ "px");
+//});
+
 function secondShow(this_id) {
     if (this_id == "01") {
         $("#secondTitel").html("我是标题1我是标题1我是标题1");
@@ -165,6 +193,10 @@ $(".fun-list ul li div").click(function () {
     $(".fun-list").css("display", "none");
     $(".fun-content").css("display", "block");
     $("#funContent").attr("src", str);
+    //$(".union").css("top", "250%");
+    //$(".develop").css("top", "400%");
+    //$(".link").css("top", "520%");
+    //$(".footer").css("top", "550%");
     $(".union").css("top", imgHeight + 850 + "px");
     $(".develop").css("top", imgHeight + 850 + 900 + "px");
     $(".link").css("top", imgHeight + 850 + 900 + 770 + "px");
@@ -173,6 +205,10 @@ $(".fun-list ul li div").click(function () {
 $("#funClose").click(function () {
     $(".fun-content").css("display", "none");
     $(".fun-list").css("display", "block");
+    //$(".union").css("top", "290%");
+    //$(".develop").css("top", "440%");
+    //$(".link").css("top", "560%");
+    //$(".footer").css("top", "590%");
     $(".union").css("top", imgHeight + 1090 + "px");
     $(".develop").css("top", imgHeight + 1090 + 900 + "px");
     $(".link").css("top", imgHeight + 1090 + 900 + 770 + "px");
@@ -210,7 +246,9 @@ $("#funRight").click(function () {
 $("#unionWhite").mousedown(function (event) {
     var x, y, value;
     x = this.offsetLeft;
+    //y = event.clientX;
     value = event.clientX - this.offsetLeft;
+    //alert(value);
     if ((0 <= value) && (value < 75)) {
         $("#drag").css("margin-left", "-245px");
         $("#photo").attr("src", "./images/change1.png");
@@ -236,11 +274,14 @@ $("#unionWhite").mousedown(function (event) {
         $("#tz").css("color", "black");
     }
 });
+//-----------窗口自适应事件---------------
 var imgHeight;
 function winResize() {
+    //alert("resize");
     var broWidth;
     location.reload(true);
     broWidth = document.body.clientWidth;
+    //broHeight = window.screen.height;
     imgHeight = 1135 * broWidth / 2396 ;
     $(".js-flickity").css("height", imgHeight + "px");
     $(".fun").css("top", imgHeight);

@@ -24,7 +24,7 @@ class SysUser extends \Eloquent
     {
         $validator = Validator::make(
             ['account' => $this->account, 'name' => $this->u_name, 'pass' => $this->password],
-            ['account' => 'required', 'name' => 'required', 'pass' => 'required']
+            ['account' => 'required', 'name' => 'required', 'pass' => 'sometime']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
