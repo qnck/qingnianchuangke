@@ -31,7 +31,7 @@ class MarketController extends \BaseController
                 'product' => function ($q) {
                     $q->with(['promo', 'quantity']);
                 }]);
-            $query = $query->select('promotion_infos.*')->where('promotion_infos.p_range', '=', $range);
+            $query = $query->select('promotion_infos.*')->where('promotion_infos.p_range', '<=', $range);
             $query = $query->leftJoin('products', function ($q) {
                 $q->on('products.p_id', '=', 'promotion_infos.p_id')
                 ->where('products.p_status', '=', 1);
