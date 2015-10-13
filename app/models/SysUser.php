@@ -24,7 +24,7 @@ class SysUser extends \Eloquent
     {
         $validator = Validator::make(
             ['account' => $this->account, 'name' => $this->u_name, 'pass' => $this->password],
-            ['account' => 'required', 'name' => 'required', 'pass' => 'sometime']
+            ['account' => 'required', 'name' => 'required', 'pass' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -54,7 +54,6 @@ class SysUser extends \Eloquent
     public function editUser()
     {
         $now = new DateTime();
-        $this->baseValidate();
         // chk exist
         $chk = SysUser::where('account', '=', $this->account)->where('id', '<>', $this->id)->first();
         if (!empty($chk)) {
