@@ -197,7 +197,7 @@ class Order extends Eloquent
             if ($booth->b_with_fund) {
                 $fund = Fund::where('b_id', '=', $key)->where('t_is_close', '=', 0)->first();
                 if (empty($fund)) {
-                    $wallet->putIn($bill['total']['paied']);                    
+                    $wallet->putIn($bill['total']['paied']);
                 }
             } else {
                 $wallet->putIn($bill['total']['paied']);
