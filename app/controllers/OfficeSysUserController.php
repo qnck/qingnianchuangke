@@ -48,14 +48,16 @@ class OfficeSysUserController extends \BaseController
         $ip = $request->ip();
 
         $name = Input::get('name', '');
-        $pass = Input::get('pass', '');
+        $pass = Input::get('pass', null);
         $account = Input::get('account', '');
         $status= Input::get('status', 1);
 
         try {
             $user = SysUser::find($id);
             $user->u_name = $name;
-            $user->password = $pass;
+            if (!empty($pass)) {
+                $user->password = $pass;
+            }
             $user->account = $account;
             $user->last_local = $ip;
             $user->status = $status;

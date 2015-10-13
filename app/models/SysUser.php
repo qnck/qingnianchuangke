@@ -54,7 +54,6 @@ class SysUser extends \Eloquent
     public function editUser()
     {
         $now = new DateTime();
-        $this->baseValidate();
         // chk exist
         $chk = SysUser::where('account', '=', $this->account)->where('id', '<>', $this->id)->first();
         if (!empty($chk)) {
