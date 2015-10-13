@@ -10,6 +10,27 @@
 <script src="js/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script src="js/pintuer.js"></script>
+<style type="text/css" title="currentStyle" media="screen" mce_bogus="1">  
+    #divcenter  
+    {  
+        position: absolute; /*层漂浮*/  
+        top: 50%;  
+        left: 50%;  
+        width: 800px;  
+        height: 436px;  
+        margin-top: -218px; /*注意这里必须是DIV高度的一半*/  
+        margin-left: -400px; /*这里是DIV宽度的一半*/  
+        background: url(images/login.jpg);  
+    }  
+    *  
+    {  
+        font-family: Arial;  
+    }  
+    .validate  
+    {  
+        color: Red;  
+    }  
+</style>  
 <script>
 	function btnLoginClick(){
 		$('#loginPanel').find('input').trigger("blur");
@@ -26,7 +47,16 @@
           async:false,
           success: function (r) {
               if(JSON.parse(r).result=="2000"){
-                window.location.href='main.html';
+                var _data = JSON.parse(r).data
+                var username = _data.name;
+                var roles = _data.roles;
+                var rolename = "";
+                $(roles).each(function (){
+                  rolename+=this.name+",";
+                });
+                if(rolename!="")
+                  rolename = rolename.substr(0,rolename.length-1);
+                window.location.href='main.html?u='+escape(username)+'&r='+escape(rolename);
               }else{
                   alert("登录失败!");
               }
@@ -40,31 +70,27 @@
 </script>
 </head>
 <body>
-<div class="container">
-<div class="line">
-<div class="xs6 xm4 xs3-move xm4-move"> <br />
-  <br />
-  <div class="media media-y">&nbsp; </div>
-  <br />
-  <br />
-    <div id="loginPanel" class="panel">
+  <div id="divcenter">  
+    <div id="loginPanel" class="panel" style="width:333px;height:245px;background:#fff;margin-top:150px;margin-left:10px;">
       <div class="panel-head"><strong>青年创客后台管理系统</strong></div>
       <div class="panel-body" style="padding:30px;">
         <div class="form-group">
           <div class="field field-icon-right">
-            <input type="text" class="input" id="account" t='1' value="root" placeholder="登录账号,大于或等于4个字符" data-validate="required:请填写账号,length#>=4:账号长度不符合要求" />
-            <span class="icon icon-user"></span> </div>
+            <input type="text" class="input" id="account" t='1' value="" placeholder="登录账号,大于或等于4个字符" data-validate="required:请填写账号,length#>=4:账号长度不符合要求" />
+            <span class="icon icon-user"></span>
+          </div>
         </div>
         <div class="form-group">
           <div class="field field-icon-right">
-            <input type="password" class="input" id="password" value="123456" placeholder="登录密码,大于或等于6个字符" data-validate="required:请填写密码,length#>=6:密码长度不符合要求" />
-            <span class="icon icon-key"></span> </div>
+            <input type="password" class="input" id="password" value="" placeholder="登录密码,大于或等于6个字符" data-validate="required:请填写密码,length#>=6:密码长度不符合要求" />
+            <span class="icon icon-key"></span> 
+          </div>
         </div>
       </div>
       <div class="panel-foot text-center">
         <button class="button button-block bg-main text-big" onClick="btnLoginClick()">立即登录后台</button>
       </div>
     </div>
-</div>
+  </div>
 </body>
 </html>

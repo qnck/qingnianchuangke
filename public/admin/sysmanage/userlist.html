@@ -7,11 +7,12 @@
 <script type="text/javascript" src="../easyui/jquery.min.js"></script>
 <script type="text/javascript" src="../easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
+<link rel="stylesheet" href="../css/pintuer.css">
 <title>用户管理</title>
 <style>
 .choseButtonDiv {
     float: left;
-    height: 20px;
+    height: 32px;
     border: 3px solid #DCEDED;
     background: #DCEDED;
     padding-top: 5px;
@@ -23,6 +24,30 @@
 .choseButtonDivCK {
     border: 3px solid #3399FF;
     background: #DCEDED url(../images/btn-ck.png) no-repeat;
+}
+table.altrowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;	
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse;
+}
+table.altrowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+.rightTd{
+	width: 340px;
+	background-color:#d4e3e5;
+	border-bottom:1px solid red
+}
+.leftTd{
+	text-align: right;
+	width: 100px;
+	background-color:#c3dde0;
 }
 </style>
 <script>
@@ -63,12 +88,18 @@
 			case "add"://添加
 				$('#user-dlg').dialog({ title: "添加用户" });
 				clearAllInputValue();//
+				$("#password").attr("placeholder","登录密码,大于或等于6个字符");
+				$("#password").attr("data-validate","required:请填写登录密码,length#>=6:密码长度不符合要求");
+				$("#okpassword").attr("data-validate","required:请输入确认登录密码,repeat#password:确认密码输入错误");
 				$('#user-dlg').dialog('open');
 				break;
 			case "upd"://更新
 				var sdata = $("#tt").datagrid("getSelected");
 				if (sdata) {
 					clearAllInputValue();
+					$("#password").attr("placeholder","登录密码,大于或等于6个字符【留空则为不修改】");
+					$("#password").removeAttr("data-validate");
+					$("#okpassword").removeAttr("data-validate");
 					putDataToWindow(sdata);
 					$('#user-dlg').dialog({ title: "编辑用户" });
 					$('#user-dlg').dialog('open');
@@ -89,6 +120,12 @@
 		$("#username").val("");//姓名
 		$("#password").val("");//密码
 		$("#okpassword").val("");//确认密码
+		var tds = $('#userTable').find('.form-group');
+		$(tds).each(function(){
+			$(this).removeClass("check-error");
+			$(this).find(".input-help").remove();
+			$(this).addClass("check-success");
+		});
 	}
 	//绑定页面元素
 	function putDataToWindow(data) {
@@ -97,28 +134,33 @@
 	}
 	//输入检查
 	function ckeckValue(obj) {
-		var sid = $(obj).attr("id");
-		var __val = $(obj).val();
-		if (sid == "account" || sid == "username" || sid == "password") {
-			if (__val == "") {
-				$(obj).parent().next().children().show();
-				return false;
-			} else {
-				clearError(obj);
-				return true;
+		var e=$(obj);
+		if(e.attr("data-validate")){
+			e.closest('.field').find(".input-help").remove();
+			var $checkdata=e.attr("data-validate").split(',');
+			var $checkvalue=e.val();
+			var $checkstate=true;
+			var $checktext="";
+			if(e.attr("placeholder")==$checkvalue){$checkvalue="";}
+			if($checkvalue!="" || e.attr("data-validate").indexOf("required")>=0){
+				for(var i=0;i<$checkdata.length;i++){
+					var $checktype=$checkdata[i].split(':');
+					if(! $pintuercheck(e,$checktype[0],$checkvalue)){
+						$checkstate=false;
+						$checktext=$checktext+"<li>"+$checktype[1]+"</li>";
+					}
+				}
+			};
+			if($checkstate){
+				e.closest('.form-group').removeClass("check-error");
+				e.parent().find(".input-help").remove();
+				e.closest('.form-group').addClass("check-success");
+			}else{
+				e.closest('.form-group').removeClass("check-success");
+				e.closest('.form-group').addClass("check-error");
+				e.closest('.field').append('<div class="input-help"><ul>'+$checktext+'</ul></div>');
 			}
-		} else if (sid == "okpassword") {//确认密码
-			if (__val == "") {
-				$(obj).parent().next().children().html("请输入确认密码!").show();
-				return false;
-			} else if ($("#password").val() != __val) {
-				$(obj).parent().next().children().html("确认密码输入错误!").show();
-				return false;
-			} else {
-				clearError(obj);
-				return true;
-			}
-		} 
+		}
 	}
 	//清空错误信息
 	function clearError(obj){
@@ -172,31 +214,20 @@
 	function getDataFromWindow(){
 		var rsData = { data: "", flag: true };
 		var userObj = {};
-		if (ckeckValue($("#account"))) {//账号
-			userObj.account = $("#account").val();
-		} else {
-			rsData.flag = false;
-		}
-		if (ckeckValue($("#username"))) {//姓名
-			userObj.u_name = $("#username").val();
-		} else {
-			rsData.flag = false;
-		}
-		if (ckeckValue($("#password"))) {//密码
-			userObj.password = $("#password").val();
-		} else {
-			rsData.flag = false;
-		}
-		if (ckeckValue($("#okpassword"))) {//密码
-			// userObj.password = $("#password").val();
-		} else {
-			rsData.flag = false;
-		}
+		userObj.account = $("#account").val();
+		userObj.u_name = $("#username").val();
+		userObj.password = $("#password").val();
 		rsData.data = userObj;
 		return rsData;
 	}
 	//保存按钮点击事件
 	function saveUserClick(){
+		$('#userTable').find('input').trigger("blur");
+		var numError = $('#userTable').find('.check-error').length;
+		if(numError){
+			$('#userTable').find('.check-error').first().find('input').first().focus().select();
+			return;
+		}
 		var fnty = $("#displayinfo").attr("fnty");//读取操作类型
 		var rsData = getDataFromWindow();
 		if (rsData.flag) {
@@ -227,6 +258,14 @@
 				var rowindex = $("#tt").datagrid("getRowIndex", sdata);
 				//设置修改用户id
 				rsData.data.id = sdata.id;
+				if(rsData.data.password!="" && rsData.data.password.length<6){
+                	$.messager.alert("提示", "密码长度不符合要求", "alert");
+                	return;
+				}
+				else if(rsData.data.password!="" && $("#okpassword").val()!=rsData.data.password){
+                	$.messager.alert("提示", "确认登录密码错误", "alert");
+                	return;
+				}
 				//调用后台编辑接口
 				$.ajax({
 					type: "put",
@@ -403,7 +442,7 @@
 </div>
 
 <!-- 添加/编辑窗口 Start -->
-<div id="user-dlg" class="easyui-dialog" title="添加用户" style="width: 400px; height: 330px; padding: 5px"
+<div id="user-dlg" class="easyui-dialog" title="添加用户" style="width: 520px; height: 430px; padding: 5px"
     data-options="
         closed:true,
         modal:true,
@@ -412,10 +451,10 @@
     ">
     <div>
         <div id="displayinfo" fnty="add" style="display: none;">信息存储隐藏层</div>
-        <table class="userTab">
+        <!-- <table class="userTab">
             <tr>
                 <td class="td-key">账号</td>
-                <td style="width: 100px;">
+                <td style="width: 200px;">
                     <input id="account" next="username" type="text"  onblur="ckeckValue(this);" onfocus="clearError(this);" /></td>
                 <td>
                     <div style="color: red; display: none;">请输入账号!</div>
@@ -445,7 +484,49 @@
                     <div style="color: red; display: none;">请输入确认密码!</div>
                 </td>
             </tr>
-        </table>
+        </table> -->
+	    <table class="altrowstable" id="userTable">
+	        <tr>
+	            <td class="leftTd">账号</td>
+	            <td class="rightTd">
+			        <div class="form-group">
+			          <div class="field field-icon-right">
+			        		<input type="text" class="input" id="account" placeholder="登录账号,大于或等于4个字符" data-validate="required:请填写账号,length#>=4:账号长度不符合要求" onblur="ckeckValue(this);"/>
+			          </div>
+			        </div>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td class="leftTd">姓名</td>
+	            <td class="rightTd">
+			        <div class="form-group">
+			          <div class="field field-icon-right">
+			        		<input type="text" class="input" id="username" placeholder="用户姓名" data-validate="required:请填写用户姓名" onblur="ckeckValue(this);"/>
+			          </div>
+			        </div>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td class="leftTd">密码</td>
+	            <td class="rightTd">
+			        <div class="form-group">
+			          <div class="field field-icon-right">
+			        		<input type="text" class="input" id="password" name="password" placeholder="登录密码,大于或等于6个字符" data-validate="required:请填写登录密码,length#>=6:密码长度不符合要求" onblur="ckeckValue(this);"/>
+			          </div>
+			        </div>
+	            </td>
+	        </tr>
+	        <tr>
+	            <td class="leftTd">确认密码</td>
+	            <td class="rightTd">
+			        <div class="form-group">
+			          <div class="field field-icon-right">
+			        		<input type="text" class="input" id="okpassword" placeholder="确认登录密码，与登录密码相同" data-validate="required:请输入确认登录密码,repeat#password:确认密码输入错误" onblur="ckeckValue(this);"/>
+			          </div>
+			        </div>
+	            </td>
+	        </tr>
+	    </table>
     </div>
 </div>
 <div id="user-dlg-buttons">
