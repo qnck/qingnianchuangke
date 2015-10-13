@@ -77,20 +77,24 @@ function createFrame(url) {
     return s;
 } 
 function loginOut(){
-    $.ajax({
-        type: "get",
-        url: _url+'office/logout',
-        data: {},
-        dataType: "text",
-        success: function (r) { 
-            var result = JSON.parse(r);
-            if(result.result == "2000")
-            {
-                window.location.href='login.html';
-            }
-        },
-        error: function () {
-            alert("用户注销失败!");
+    $.messager.confirm('提示', '确定要注销吗？', function(r){
+        if (r){
+            $.ajax({
+                type: "get",
+                url: _url+'office/logout',
+                data: {},
+                dataType: "text",
+                success: function (r) { 
+                    var result = JSON.parse(r);
+                    if(result.result == "2000")
+                    {
+                        window.location.href='login.html';
+                    }
+                },
+                error: function () {
+                    alert("用户注销失败!");
+                }
+            });
         }
     });
 }
@@ -100,9 +104,9 @@ function loginOut(){
 <body class="easyui-layout" style="overflow-y: hidden"  scroll="no">
 <div region="north" border="false" style="overflow: hidden; height:74px;background:url(images/background.png) no-repeat;background-size:100% 100%;">
     <img src="images/iocn.png" height="44" width="44" style="padding:15px 10px;float:left"/>
-    <div style="padding-top:20px;float:left;">
-        <span style="font-size:28px;font-weight:bold;color:#FAE22D">【青年创】</span>
-        <span style="font-size:14px;font-weight:bold;">后台管理系统</span>
+    <div style="padding-top:25px;float:left;">
+        <span style="font-size:22px;font-weight:bold;color:#FAE22D">【青年创】</span>
+        <span style="font-size:22px;font-weight:bold;color:#fff">后台管理系统</span>
     </div>
     <div style="margin-right:20px;margin-top:10px;float:right;height:51px;width:51">
         <img src="images/100.png"/>
@@ -111,7 +115,7 @@ function loginOut(){
         <div id="rolename" style="font-size:14px;font-weight:bold;color:#FAE22D;text-align:right;margin-top:5px;">
             @rolename
         </div>
-        <div style="font-size:16px;font-weight:bold;text-align:right;padding-top:7px;">
+        <div style="font-size:16px;font-weight:bold;text-align:right;padding-top:7px;color:#fff">
             欢迎你
             ，
             <span id="username">@username</span>
