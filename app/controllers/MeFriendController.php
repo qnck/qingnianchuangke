@@ -31,7 +31,7 @@ class MeFriendController extends \BaseController {
                 return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
             }
             
-            $data = $this->getUserList($u_id, 3);
+            $data = $this->getUserList($u_id, 2);
 
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
         } catch (Exception $e) {
@@ -53,6 +53,20 @@ class MeFriendController extends \BaseController {
         try {
             $user = User::chkUserByToken($token, $u_id);
             $data = $this->getUserList($u_id);
+
+            $list = UserFriendInviteLog::where('u_id', '=', $u_id)->get();
+            $logs = [];
+            foreach ($list as $key => $log) {
+                $logs[$log->friend_id] = $log->id;
+            }
+            foreach ($data as $key => $friend) {
+                if (array_key_exists($friend['id'], $logs)) {
+                    $data[$key]['log_id'] = $logs[$friend['id']];
+                } else {
+                    unset($data[$key]);
+                }
+            }
+            $data = array_values($data);
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取好友邀请列表成功'];
         } catch (Exception $e) {
             $code = 3001;
@@ -94,6 +108,7 @@ class MeFriendController extends \BaseController {
             $userFriend->u_id_2 = $friend;
             $userFriend->t_inviter = $u_id;
             $userFriend->invite($u_id);
+            UserFriendInviteLog::addLog($u_id, $friend);
             $re = ['result' => 2000, 'data' => [], 'info' => '邀请好友成功'];
         } catch (Exception $e) {
             $code = 3001;
@@ -210,18 +225,22 @@ class MeFriendController extends \BaseController {
         return Response::json($re);
     }
 
-    public function removeInvite()
+    public function removeInvite($id)
     {
-        $u_id = Input::get('u_id', 0);
-        $token = Input::get('token', '');
-        $friend = Input::get('friend', 0);
         try {
-            $user = User::chkUserByToken($token, $u_id);
+            $log = UserFriendInviteLog::find($id);
+            if (empty($log)) {
+                throw new Exception("好友邀请已删除", 3001);
+            }
+            $u_id = $log->u_id;
+            $friend = $log->friend_id;
+
             $userFriend = UsersFriend::findLinkById($u_id, $friend);
             if ($userFriend === UsersFriend::$RELATION_NONE) {
             } elseif ($userFriend->t_status == 1) {
                 $userFriend->remove();
             }
+            $log->delete();
             $re = Tools::reTrue('删除好友邀请成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '删除好友邀请失败:'.$e->getMessage());
@@ -233,9 +252,12 @@ class MeFriendController extends \BaseController {
     {
         $query = UsersFriend::with(['user1', 'user2']);
         if ($status) {
-            $query->where('t_status', '=', $status);
+            $query = $query->where('t_status', '=', $status);
         }
-        $list = $query->where('u_id_1', '=', $u_id)->orWhere('u_id_2', '=', $u_id)->get();
+        $list = $query->where(function ($q) use ($u_id) {
+            $q->where('u_id_1', '=', $u_id)->orWhere('u_id_2', '=', $u_id);
+        })->get();
+
         $data = [];
         foreach ($list as $key => $userLink) {
             if ($userLink->t_status == 1) {

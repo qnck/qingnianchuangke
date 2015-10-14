@@ -15,10 +15,11 @@ class OfficeDrawContoller extends \BaseController
                 $query = $query->where('d_status', '=', (int)$status);
             }
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $draw) {
-                $data[] = $draw->showInList();
+                $data['rows'][] = $draw->showInList();
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取提现列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取提现列表失败:'.$e->getMessage());
@@ -62,6 +63,7 @@ class OfficeDrawContoller extends \BaseController
             }
 
             if ($confirm == 1) {
+                $balance->deFreez($draw->d_amount);
                 $draw->d_status = 1;
                 $balance->getOut($draw->d_amount);
             } elseif ($confirm == 0) {

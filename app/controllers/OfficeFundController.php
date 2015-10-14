@@ -30,17 +30,18 @@ class OfficeFundController extends \BaseController
             if (empty($fund)) {
                 throw new Exception("没有找到请求的基金记录", 10001);
             }
+            $booth = Booth::find($fund->b_id);
+            if (empty($booth)) {
+                throw new Exception("无与基金相关的店铺数据", 10001);
+            }
             if ($check) {
                 $fund->t_status = 3;
+                $booth->b_status = 1;
             } else {
                 $fund->t_status = 1;
-                $booth = Booth::find($fund->b_id);
-                if (empty($booth)) {
-                    throw new Exception("无与基金相关的店铺数据", 10001);
-                }
                 $booth->b_status = 2;
-                $booth->save();
             }
+            $booth->save();
             $fund->remark = $remark;
             $fund->interview();
             $re = Tools::reTrue('操作成功');
@@ -98,12 +99,13 @@ class OfficeFundController extends \BaseController
         try {
             $query = Fund::with(['booth', 'loans'])->where('t_status', '>', 2);
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $fund) {
                 $tmp = $fund->showDetail();
                 $tmp['last_income'] = $fund->getCurrentPeriodIncome();
-                $data[] = $tmp;
+                $data['rows'][] = $tmp;
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取基金收入列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取基金收入列表成功:'.$e->getMessage());

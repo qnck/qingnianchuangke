@@ -25,13 +25,14 @@ class OfficeBoothController extends \BaseController
                 $query = $query->where('funds.t_status', '>', 2)->where('booths.b_status', '=', 1);
             }
             if ($interview == 1) {
-                $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '=', 1);
+                $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '<>', 1);
             }
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $booth) {
-                $data[] = $booth->showInOffice();
+                $data['rows'][] = $booth->showInOffice();
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取店铺列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取店铺失败:'.$e->getMessage());
@@ -65,7 +66,9 @@ class OfficeBoothController extends \BaseController
                 if ($booth->b_status == 1) {
                     throw new Exception("店铺已经审核过了", 10002);
                 }
-                $booth->b_status = 1;
+                if ($interview != 1) {
+                    $booth->b_status = 1;
+                }
                 if ($fund) {
                     $fund->censorPass($interview);
                 }
