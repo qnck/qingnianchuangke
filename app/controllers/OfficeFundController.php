@@ -99,11 +99,11 @@ class OfficeFundController extends \BaseController
         try {
             $query = Fund::with(['booth', 'loans'])->where('t_status', '>', 2);
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $fund) {
                 $tmp = $fund->showDetail();
                 $tmp['last_income'] = $fund->getCurrentPeriodIncome();
-                $data[] = $tmp;
+                $data['rows'][] = $tmp;
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取基金收入列表成功', $data, $list);

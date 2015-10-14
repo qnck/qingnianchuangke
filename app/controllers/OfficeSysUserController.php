@@ -11,7 +11,6 @@ class OfficeSysUserController extends \BaseController
         $list = SysUser::paginate($per_page);
         $data = [];
         $data['rows'] = [];
-        $data['total'] = $list->count();
         foreach ($list as $key => $user) {
             $data['rows'][] = $user->showInList();
         }
@@ -155,9 +154,9 @@ class OfficeSysUserController extends \BaseController
                 $q->on('sys_roles.id', '=', 'sys_user_roles.r_id')->where('sys_user_roles.admin_id', '=', $id);
             });
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $role) {
-                $data[] = $role->showInList();
+                $data['rows'][] = $role->showInList();
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取角色成功', $data, $list);
