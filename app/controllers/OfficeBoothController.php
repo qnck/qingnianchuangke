@@ -65,7 +65,9 @@ class OfficeBoothController extends \BaseController
                 if ($booth->b_status == 1) {
                     throw new Exception("店铺已经审核过了", 10002);
                 }
-                $booth->b_status = 1;
+                if ($interview != 1) {
+                    $booth->b_status = 1;
+                }
                 if ($fund) {
                     $fund->censorPass($interview);
                 }

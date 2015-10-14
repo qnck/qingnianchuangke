@@ -1175,13 +1175,15 @@ class MeController extends \BaseController
                     $q = $q->orWhere('orders.o_shipping_status', '=', 1);
                 }
                 if (in_array(Order::$STATUS_SHIPPED, $status)) {
-                    $q = $q->orWhere('orders.o_shipping_status', '>=', 5);
+                    $q = $q->orWhere('orders.o_shipping_status', '=', 5);
                 }
                 if (in_array(Order::$STATUS_ORDERED, $status)) {
                     $q = $q->orWhere('orders.o_status', '=', 1);
                 }
                 if (in_array(Order::$STATUS_PAIED, $status)) {
-                    $q = $q->orWhere('orders.o_status', '=', 2);
+                    $q = $q->orWhere(function ($qq) {
+                        $qq->where('orders.o_status', '=', 2)->where('orders.o_shipping_status', '<>', 10);
+                    });
                 }
             });
 
