@@ -25,7 +25,7 @@ class OfficeBoothController extends \BaseController
                 $query = $query->where('funds.t_status', '>', 2)->where('booths.b_status', '=', 1);
             }
             if ($interview == 1) {
-                $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '=', 1);
+                $query = $query->where('funds.t_status', '=', 2)->where('booths.b_status', '<>', 1);
             }
             $list = $query->paginate($per_page);
             $data = [];
