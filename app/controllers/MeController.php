@@ -1326,6 +1326,26 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function getSellOrder($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $order = Order::find($id);
+            if (empty($order)) {
+                throw new Exception("没有找到该订单", 9002);
+            }
+            $order->load(['carts']);
+            $data = $order->showDetail(true);
+            $re = Tools::reTrue('获取订单成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function countSellOrders()
     {
         $token = Input::get('token', '');

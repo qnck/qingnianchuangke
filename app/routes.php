@@ -85,6 +85,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/order/{id}', 'MeController@getOrder');
     Route::get('v0/user/me/orders/count', 'MeController@countOrders');
     Route::get('v0/user/me/sells', 'MeController@listSellOrders');
+    Route::get('v0/user/me/sells/{id}', 'MeController@getSellOrder');
     Route::get('v0/user/me/sells/count', 'MeController@countSellOrders');
     Route::post('v0/user/me/order/deliver', 'MeController@deliverOrder');
     Route::post('v0/user/me/order/confirm', 'MeController@confirmOrder');
