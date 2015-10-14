@@ -56,7 +56,7 @@ class Order extends Eloquent
         $data['shipping_name'] = $this->o_shipping_name;
 
         if ($mask_status) {
-            $data['status'] = $this->mapOrderStatus();
+            $data['status'] = $this->mapOrderStatus('all');
         } else {
             $data['status'] = $this->o_status;
             $data['shipping_status'] = $this->o_shipping_status;
@@ -72,47 +72,43 @@ class Order extends Eloquent
         return $data;
     }
 
-    public function mapOrderStatus()
+    public function mapOrderStatus($mask)
     {
-        $invalide = false;
-        $shipped = false;
-        $paied = false;
-        $received = false;
-        if (in_array($this->o_status, [0, 3])) {
-            $invalide = true;
-        } elseif ($this->o_status == 1) {
-            $paied = false;
-        } elseif ($this->o_status == 2) {
-            $paied = true;
+        $status = $this->o_status.'.'.$this->o_shipping_status.'.'.$mask;
+        switch ($status) {
+            case '2.10.all':
+            case '2.10.order':
+            case '2.10.shipping':
+               return Order::$STATUS_FINISHED;
+               break;
+            case '1.1.order':
+            case '1.5.order':
+            case '1.10.order':
+               return Order::$STATUS_ORDERED;
+               break;
+            case '2.1.order':
+            case '2.5.order':
+               return Order::$STATUS_PAIED;
+               break;
+            case '1.1.shipping':
+            case '2.1.shipping':
+               return Order::$STATUS_PACKED;
+               break;
+            case '1.5.shipping':
+            case '2.5.shipping':
+               return Order::$STATUS_SHIPPED;
+               break;
+            case '1.1.all':
+            case '1.5.all':
+            case '1.10.all':
+            case '2.1.all':
+            case '2.5.all':
+               return Order::$STATUS_UNFINISHED;
+               break;
+            default:
+               return Order::$STATUS_INVALIDE;
+               break;
         }
-        if ($this->o_shipping_status == 1) {
-            $shipped = false;
-        } else {
-            $shipped = true;
-        }
-        if ($this->o_shipping_status == 10) {
-            $received = true;
-        }
-
-        if ($invalide) {
-            return Order::$STATUS_INVALIDE;
-        }
-        if ($shipped && $paied && $received) {
-            return Order::$STATUS_FINISHED;
-        }
-        if (!$paied && !$shipped) {
-            return Order::$STATUS_ORDERED;
-        }
-        if ($paied && !$shipped) {
-            return Order::$STATUS_PACKED;
-        }
-        if (!$paied && $shipped) {
-            return Order::$STATUS_PAIED;
-        }
-        if ($shipped && !$received) {
-            return Order::$STATUS_SHIPPED;
-        }
-        return Order::$STATUS_UNFINISHED;
     }
 
     public function addOrder()
