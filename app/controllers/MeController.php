@@ -1159,7 +1159,7 @@ class MeController extends \BaseController
             }
             // unfinished
             if ($status == Order::$STATUS_UNFINISHED) {
-                $query = $query->where('orders.o_shipping_status', '<>', 10)->where('orders.o_status', '<>', 2);
+                $query = $query->where('orders.o_shipping_status', '<>', 10)->orWhere('orders.o_status', '<>', 2);
             // finished
             } elseif ($status == Order::$STATUS_FINISHED) {
                 $query = $query->where('orders.o_shipping_status', '=', 10)->where('orders.o_status', '=', 2);
@@ -1168,7 +1168,7 @@ class MeController extends \BaseController
                 $query = $query->where('orders.o_shipping_status', '=', 1);
             // shipped
             } elseif ($status == Order::$STATUS_SHIPPED) {
-                $query = $query->where('orders.o_shipping_status', '=', 5);
+                $query = $query->where('orders.o_shipping_status', '>=', 5);
             // orderd
             } elseif ($status == Order::$STATUS_ORDERED) {
                 $query = $query->where('orders.o_status', '=', 1);
@@ -1216,7 +1216,7 @@ class MeController extends \BaseController
                 throw new Exception("没有权限操作该订单", 9006);
             }
             $order->load(['carts']);
-            $data = $order->showDetail();
+            $data = $order->showDetail(true);
             $re = Tools::reTrue('获取订单成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
