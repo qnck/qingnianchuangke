@@ -154,6 +154,11 @@ function provideSure(schema,amount,id){
     $.messager.confirm('提示', '确认已对选择项目进行了第'+schema+'次[金额：'+amount+']放款?', function(r){
         if (r){
             $('#provide-dlg').attr('loanid',id);
+            var input=document.createElement("input");//创建input
+            input.setAttribute("type","file");//设置type属性
+            input.setAttribute("id","pzimg");//设置name属性
+            input.setAttribute("name","receipt");//设置name属性
+            $(input).appendTo($("#fileTd"));
             $('#provide-dlg').dialog('open');
         }
     });
@@ -169,31 +174,31 @@ function provide(){
     var img_token=Guid.NewGuid().ToString();
     var cate="loan";
     var f = document.createElement("form");
-    f.action = "http://img.54qnck.com/upload.php?img_token="+img_token+"&cate="+cate;
+    f.action = _url+"img?img_token="+img_token+"&cate="+cate;
     f.method = "post";
     f.enctype="multipart/form-data";
     $("#pzimg").appendTo(f);
 
     $(f).ajaxSubmit(function(s){
-        if(JSON.parse(s).result=="2000")
+        if(s.result=="2000")
         {
-        }
-    });
-    var remark = $("#txtReamrk").text();
-    $.ajax({
-        type: "get",
-        url: _url+"office/loan/"+loanid+"/alloc",
-        data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
-        dataType: "text",
-        success: function (result) {
-            if(JSON.parse(result).result=="2000"){
-                $('#provide-dlg').dialog('close');
-                $.messager.alert("提示", "操作成功", "alert");
-                BindData();
-            }
-        },
-        error: function () {
-            alert("加载失败!");
+            var remark = $("#txtReamrk").val();
+            $.ajax({
+                type: "get",
+                url: _url+"office/loan/"+loanid+"/alloc",
+                data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                dataType: "text",
+                success: function (result) {
+                    if(JSON.parse(result).result=="2000"){
+                        $('#provide-dlg').dialog('close');
+                        $.messager.alert("提示", "操作成功", "alert");
+                        BindData();
+                    }
+                },
+                error: function () {
+                    alert("加载失败!");
+                }
+            });
         }
     });
 }
@@ -245,7 +250,7 @@ function provide(){
             <td class="leftTd">描述信息</td><td class="rightTd"><textarea style="width:100%;height:80px;" id="txtReamrk"></textarea></td>
         </tr>
         <tr>
-            <td class="leftTd">转账凭证<span style='color:red'>*</span></td><td class="rightTd"><input type="file" name="receipt" id="pzimg"/></td>
+            <td class="leftTd">转账凭证<span style='color:red'>*</span></td><td class="rightTd" id="fileTd"></td>
         </tr>
     </table>
 </div>
