@@ -31,7 +31,7 @@ class MeFriendController extends \BaseController {
                 return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
             }
             
-            $data = $this->getUserList($u_id, 3);
+            $data = $this->getUserList($u_id, 2);
 
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取我的好友列表成功', 'ver' => $sum];
         } catch (Exception $e) {
@@ -252,9 +252,12 @@ class MeFriendController extends \BaseController {
     {
         $query = UsersFriend::with(['user1', 'user2']);
         if ($status) {
-            $query->where('t_status', '=', $status);
+            $query = $query->where('t_status', '=', $status);
         }
-        $list = $query->where('u_id_1', '=', $u_id)->orWhere('u_id_2', '=', $u_id)->get();
+        $list = $query->where(function ($q) use ($u_id) {
+            $q->where('u_id_1', '=', $u_id)->orWhere('u_id_2', '=', $u_id);
+        })->get();
+
         $data = [];
         foreach ($list as $key => $userLink) {
             if ($userLink->t_status == 1) {
