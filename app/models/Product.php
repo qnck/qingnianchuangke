@@ -112,7 +112,21 @@ class Product extends Eloquent
         $this->p_active_at = $now->format('Y-m-d H:i:s');
         $this->save();
 
-        // $quantity = ProductQuantity::where('');
+        $quantity = ProductQuantity::where('p_id', '=', $this->p_id)->first();
+        if (empty($quantity)) {
+            $quantity = new ProductQuantity();
+            $quantity->p_id = $this->p_id;
+            $quantity->b_id = $this->b_id;
+            $quantity->u_id = $this->u_id;
+            $quantity->q_total = $stock;
+            $quantity->addQuantity();
+        }
+        $freez = $quantity->q_cart + $quantity->q_sold;
+        if ($freez > $stock) {
+            throw new Exception("库存数量不能小于:".$freez, 1);
+        }
+        $quantity->q_total = $stock;
+        $quantity->save();
         return $this->p_id;
     }
 
