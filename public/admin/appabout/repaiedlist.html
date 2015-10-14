@@ -248,33 +248,33 @@ function fileUpload(domFile,id,index){
                 var img_token=Guid.NewGuid().ToString();
                 var cate="loan";
                 var f = document.createElement("form");
-                f.action = "http://img.54qnck.com/upload.php?img_token="+img_token+"&cate="+cate;
+                f.action = _url+"img?img_token="+img_token+"&cate="+cate;
                 f.method = "post";
                 f.enctype="multipart/form-data";
                 $(domFile).appendTo(f);
                 $(f).ajaxSubmit(function(s){
                     if(JSON.parse(s).result=="2000")
                     {
-                    }
-                });
-                var remark = "";
-                $.ajax({
-                    type: "get",
-                    url: _url+"office/loan/"+nextloanid+"/alloc",
-                    data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
-                    dataType: "text",
-                    async:false,
-                    success: function (r) {
-                        if(JSON.parse(r).result=="2000"){
-                            alert("结账并放款成功!");
-                            BindData();
-                            $('#jjxx-dlg').dialog('close');
-                        }else{
-                            alert("结账成功，放款失败!");
-                        }
-                    },
-                    error: function () {
-                        alert("加载失败!");
+                        var remark = "";
+                        $.ajax({
+                            type: "get",
+                            url: _url+"office/loan/"+nextloanid+"/alloc",
+                            data: {comment:remark,cate:cate,receipt:img_file_1,img_token:img_token},
+                            dataType: "text",
+                            async:false,
+                            success: function (r) {
+                                if(JSON.parse(r).result=="2000"){
+                                    alert("结账并放款成功!");
+                                    BindData();
+                                    $('#jjxx-dlg').dialog('close');
+                                }else{
+                                    alert("结账成功，放款失败!");
+                                }
+                            },
+                            error: function () {
+                                alert("加载失败!");
+                            }
+                        });
                     }
                 });
             }else{
