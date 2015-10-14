@@ -335,7 +335,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $data = Booth::with(['user'])->where('u_id', '=', $u_id)->get();
+            $data = Booth::with(['user'])->where('u_id', '=', $u_id)->where('b_status', '=', 1)->get();
             $list = [];
             foreach ($data as $key => $booth) {
                 $tmp = $booth->showDetail();
@@ -365,6 +365,9 @@ class MeController extends \BaseController
             $booth = Booth::find($id);
             if (empty($booth->b_id) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取到请求的店铺", 1);
+            }
+            if ($booth->b_status != 1) {
+                throw new Exception("店铺状态不可用, 请联系客服", 1);
             }
             $booth->load('fund');
             $fund_info = null;
