@@ -1133,7 +1133,7 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
-        $status = Input::get('status', 0);
+        $status = Input::get('status', 1);
         $key_word = Input::get('key', '');
         $finish = Input::get('finish', 0);
         $from = Input::get('from', '');
@@ -1157,34 +1157,43 @@ class MeController extends \BaseController
             if ($to) {
                 $query = $query->where('orders.created_at', '<', $to);
             }
-            // unfinished
-            if ($status == Order::$STATUS_UNFINISHED) {
-                $query = $query->where('orders.o_shipping_status', '<>', 10)->orWhere('orders.o_status', '<>', 2);
-            // finished
-            } elseif ($status == Order::$STATUS_FINISHED) {
-                $query = $query->where('orders.o_shipping_status', '=', 10)->where('orders.o_status', '=', 2);
-            // packed
-            } elseif ($status == Order::$STATUS_PACKED) {
-                $query = $query->where('orders.o_shipping_status', '=', 1);
-            // shipped
-            } elseif ($status == Order::$STATUS_SHIPPED) {
-                $query = $query->where('orders.o_shipping_status', '>=', 5);
-            // orderd
-            } elseif ($status == Order::$STATUS_ORDERED) {
-                $query = $query->where('orders.o_status', '=', 1);
-            // paied
-            } elseif ($status == Order::$STATUS_PAIED) {
-                $query = $query->where('orders.o_status', '=', 2);
-            }
+
+            $status = explode(',', $status);
+
+            $query = $query->where(function ($q) use ($status) {
+                if (in_array(Order::$STATUS_UNFINISHED, $status)) {
+                    $q = $q->orWhere(function ($qq) {
+                        $qq->where('orders.o_shipping_status', '<>', 10)->orWhere('orders.o_status', '<>', 2);
+                    });
+                }
+                if (in_array(Order::$STATUS_FINISHED, $status)) {
+                    $q = $q->orWhere(function ($qq) {
+                        $qq->orWhere('orders.o_shipping_status', '=', 10)->where('orders.o_status', '=', 2);
+                    });
+                }
+                if (in_array(Order::$STATUS_PACKED, $status)) {
+                    $q = $q->orWhere('orders.o_shipping_status', '=', 1);
+                }
+                if (in_array(Order::$STATUS_SHIPPED, $status)) {
+                    $q = $q->orWhere('orders.o_shipping_status', '>=', 5);
+                }
+                if (in_array(Order::$STATUS_ORDERED, $status)) {
+                    $q = $q->orWhere('orders.o_status', '=', 1);
+                }
+                if (in_array(Order::$STATUS_PAIED, $status)) {
+                    $q = $q->orWhere('orders.o_status', '=', 2);
+                }
+            });
+
             // filter out invalide orders
             $query = $query->where('orders.o_status', '<>', 0)->where('orders.o_status', '<>', 3);
             $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at', 'DESC')->paginate($per_page);
             $data = [];
-            if (in_array($status, [Order::$STATUS_UNFINISHED, Order::$STATUS_FINISHED])) {
+            if (array_intersect($status, [Order::$STATUS_UNFINISHED, Order::$STATUS_FINISHED])) {
                 $mask = 'all';
-            } elseif (in_array($status, [Order::$STATUS_PACKED, Order::$STATUS_SHIPPED])) {
+            } elseif (array_intersect($status, [Order::$STATUS_PACKED, Order::$STATUS_SHIPPED])) {
                 $mask = 'shipping';
-            } elseif (in_array($status, [Order::$STATUS_ORDERED, Order::$STATUS_PAIED])) {
+            } elseif (array_intersect($status, [Order::$STATUS_ORDERED, Order::$STATUS_PAIED])) {
                 $mask = 'order';
             }
             foreach ($list as $key => $order) {
@@ -1269,7 +1278,7 @@ class MeController extends \BaseController
             } elseif ($finish == 2) {
                 $query = $query->where('orders.o_shipping_status', '=', 10);
             }
-            $list = $query->groupBy('carts.o_id')->paginate($per_page);
+            $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $order) {
                 $data[] = $order->showDetail();

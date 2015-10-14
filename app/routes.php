@@ -107,7 +107,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/friend/confirm', 'MeFriendController@confirm');
     Route::post('v0/user/me/friend/invite', 'MeFriendController@invite');
     Route::get('v0/user/me/friend/invite', 'MeFriendController@indexInvite');
-    Route::get('v0/user/me/friend/invite/remove', 'MeFriendController@removeInvite');
+    Route::delete('v0/user/me/friend/invite/{id}', 'MeFriendController@removeInvite');
     Route::get('v0/user/me/friend/check', 'MeFriendController@check');
     /* ME FRIEND END*/
 
