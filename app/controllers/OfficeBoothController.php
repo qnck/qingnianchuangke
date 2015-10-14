@@ -32,6 +32,7 @@ class OfficeBoothController extends \BaseController
             foreach ($list as $key => $booth) {
                 $data[] = $booth->showInOffice();
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取店铺列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取店铺失败:'.$e->getMessage());
