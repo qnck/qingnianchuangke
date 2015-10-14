@@ -171,10 +171,13 @@ class Order extends Eloquent
         $this->_carts = Cart::where('o_id', '=', $this->o_id)->get();
         foreach ($this->_carts as $key => $cart) {
             if (empty($this->_bills[$cart->b_id])) {
-                $this->_bills[$cart->b_id]['total']['paied'] = 0;
-                $this->_bills[$cart->b_id]['total_origin']['paied'] = 0;
-                $this->_bills[$cart->b_id]['total']['pending'] = 0;
-                $this->_bills[$cart->b_id]['total_origin']['pending'] = 0;
+                if ($cart->c_status == 3) {
+                    $this->_bills[$cart->b_id]['total']['paied'] = $cart->c_amount;
+                    $this->_bills[$cart->b_id]['total_origin']['paied'] = $cart->c_amount_origin;
+                } else {
+                    $this->_bills[$cart->b_id]['total']['pending'] = $cart->c_amount;
+                    $this->_bills[$cart->b_id]['total_origin']['pending'] = $cart->c_amount_origin;
+                }
             } else {
                 if ($cart->c_status == 3) {
                     $this->_bills[$cart->b_id]['total']['paied'] += $cart->c_amount;

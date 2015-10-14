@@ -305,7 +305,7 @@ class MarketController extends \BaseController
         $type = Input::get('type');
         $promo = PromotionInfo::find($id);
         try {
-            if (empty($promo->p_id)) {
+            if (empty($promo)) {
                 throw new Exception("请求的促销信息不存在", 7001);
             }
             $user = User::chkUserByToken($token, $u_id);
