@@ -1180,10 +1180,17 @@ class MeController extends \BaseController
             $query = $query->where('orders.o_status', '<>', 0)->where('orders.o_status', '<>', 3);
             $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at', 'DESC')->paginate($per_page);
             $data = [];
+            if (in_array($status, [Order::$STATUS_UNFINISHED, Order::$STATUS_FINISHED])) {
+                $mask = 'all';
+            } elseif (in_array($status, [Order::$STATUS_PACKED, Order::$STATUS_SHIPPED])) {
+                $mask = 'shipping';
+            } elseif (in_array($status, [Order::$STATUS_ORDERED, Order::$STATUS_PAIED])) {
+                $mask = 'order';
+            }
             foreach ($list as $key => $order) {
                 $tmp = $order->showDetail(true);
                 if ($status) {
-                    $tmp['status'] = $status;
+                    $tmp['status'] = $order->mapOrderStatus($mask);
                 }
                 $data[] = $tmp;
             }
