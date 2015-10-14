@@ -30,17 +30,18 @@ class OfficeFundController extends \BaseController
             if (empty($fund)) {
                 throw new Exception("没有找到请求的基金记录", 10001);
             }
+            $booth = Booth::find($fund->b_id);
+            if (empty($booth)) {
+                throw new Exception("无与基金相关的店铺数据", 10001);
+            }
             if ($check) {
                 $fund->t_status = 3;
+                $booth->b_status = 1;
             } else {
                 $fund->t_status = 1;
-                $booth = Booth::find($fund->b_id);
-                if (empty($booth)) {
-                    throw new Exception("无与基金相关的店铺数据", 10001);
-                }
                 $booth->b_status = 2;
-                $booth->save();
             }
+            $booth->save();
             $fund->remark = $remark;
             $fund->interview();
             $re = Tools::reTrue('操作成功');
