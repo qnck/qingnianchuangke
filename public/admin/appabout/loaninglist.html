@@ -154,6 +154,11 @@ function provideSure(schema,amount,id){
     $.messager.confirm('提示', '确认已对选择项目进行了第'+schema+'次[金额：'+amount+']放款?', function(r){
         if (r){
             $('#provide-dlg').attr('loanid',id);
+            var input=document.createElement("input");//创建input
+            input.setAttribute("type","file");//设置type属性
+            input.setAttribute("id","pzimg");//设置name属性
+            input.setAttribute("name","receipt");//设置name属性
+            $(input).appendTo($("#fileTd"));
             $('#provide-dlg').dialog('open');
         }
     });
@@ -177,7 +182,7 @@ function provide(){
     $(f).ajaxSubmit(function(s){
         if(s.result=="2000")
         {
-            var remark = $("#txtReamrk").text();
+            var remark = $("#txtReamrk").val();
             $.ajax({
                 type: "get",
                 url: _url+"office/loan/"+loanid+"/alloc",
@@ -245,7 +250,7 @@ function provide(){
             <td class="leftTd">描述信息</td><td class="rightTd"><textarea style="width:100%;height:80px;" id="txtReamrk"></textarea></td>
         </tr>
         <tr>
-            <td class="leftTd">转账凭证<span style='color:red'>*</span></td><td class="rightTd"><input type="file" name="receipt" id="pzimg"/></td>
+            <td class="leftTd">转账凭证<span style='color:red'>*</span></td><td class="rightTd" id="fileTd"><input type="file" name="receipt" id="pzimg"/></td>
         </tr>
     </table>
 </div>

@@ -84,7 +84,11 @@ function formatOpt(value,row){
 function payToUser(ty,id){
     $('#provide-dlg').attr('ty',ty);
     $('#provide-dlg').attr('payid',id);
-    $("#pzimg").appendTo($("#fileTd"));
+    var input=document.createElement("input");//创建input
+    input.setAttribute("type","file");//设置type属性
+    input.setAttribute("id","pzimg");//设置name属性
+    input.setAttribute("name","receipt");//设置name属性
+    $(input).appendTo($("#fileTd"));
     $('#provide-dlg').dialog('open');
 }
 
@@ -108,10 +112,10 @@ function provide(){
         {
             var ty = $('#provide-dlg').attr('ty');
             var payid = $('#provide-dlg').attr('payid');
-            var remark = $("#txtReamrk").text();
+            var remark = $("#txtReamrk").val();
             $.ajax({
-                type: "get",
-                url: _url+"office/draw/"+payid,
+                type: "put",
+                url: _url+"office/draw/"+payid+"/confirm",
                 data: {confirm:ty,comment:remark,receipt:img_file_1,img_token:img_token,cate:cate},
                 dataType: "text",
                 success: function (r) {
