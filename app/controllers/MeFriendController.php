@@ -61,11 +61,12 @@ class MeFriendController extends \BaseController {
             }
             foreach ($data as $key => $friend) {
                 if (array_key_exists($friend['id'], $logs)) {
-                    $data[$key]['id'] = $logs[$friend['id']];
+                    $data[$key]['log_id'] = $logs[$friend['id']];
                 } else {
                     unset($data[$key]);
                 }
             }
+            $data = array_values($data);
             $re = ['result' => 2000, 'data' => $data, 'info' => '获取好友邀请列表成功'];
         } catch (Exception $e) {
             $code = 3001;
