@@ -15,9 +15,9 @@ class OfficeDrawContoller extends \BaseController
                 $query = $query->where('d_status', '=', (int)$status);
             }
             $list = $query->paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $draw) {
-                $data[] = $draw->showInList();
+                $data['rows'][] = $draw->showInList();
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取提现列表成功', $data, $list);

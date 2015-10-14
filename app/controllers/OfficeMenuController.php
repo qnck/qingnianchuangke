@@ -96,9 +96,9 @@ class OfficeMenuController extends \BaseController
         $per_page = Input::get('per_page', 10000000);
         try {
             $list = SysRole::paginate($per_page);
-            $data = [];
+            $data['rows'] = [];
             foreach ($list as $key => $role) {
-                $data[] = $role->showInList();
+                $data['rows'][] = $role->showInList();
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取角色成功', $data, $list);
