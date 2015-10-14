@@ -1133,7 +1133,7 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
-        $status = Input::get('status', 1);
+        $status = Input::get('status') ? Input::get('status') : '1,2';
         $key_word = Input::get('key', '');
         $finish = Input::get('finish', 0);
         $from = Input::get('from', '');
@@ -1278,7 +1278,7 @@ class MeController extends \BaseController
             } elseif ($finish == 2) {
                 $query = $query->where('orders.o_shipping_status', '=', 10);
             }
-            $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at DESC')->paginate($per_page);
+            $list = $query->groupBy('carts.o_id')->orderBy('orders.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $order) {
                 $data[] = $order->showDetail();
