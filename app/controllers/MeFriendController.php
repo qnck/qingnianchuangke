@@ -240,7 +240,7 @@ class MeFriendController extends \BaseController {
             } elseif ($userFriend->t_status == 1) {
                 $userFriend->remove();
             }
-            $log->remove();
+            $log->delete();
             $re = Tools::reTrue('删除好友邀请成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '删除好友邀请失败:'.$e->getMessage());
