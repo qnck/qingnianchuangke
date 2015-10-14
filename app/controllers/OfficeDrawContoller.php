@@ -63,6 +63,7 @@ class OfficeDrawContoller extends \BaseController
             }
 
             if ($confirm == 1) {
+                $balance->deFreez($draw->d_amount);
                 $draw->d_status = 1;
                 $balance->getOut($draw->d_amount);
             } elseif ($confirm == 0) {
