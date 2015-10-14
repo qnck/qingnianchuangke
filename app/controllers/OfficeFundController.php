@@ -105,6 +105,7 @@ class OfficeFundController extends \BaseController
                 $tmp['last_income'] = $fund->getCurrentPeriodIncome();
                 $data[] = $tmp;
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取基金收入列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取基金收入列表成功:'.$e->getMessage());

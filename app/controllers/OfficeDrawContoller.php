@@ -19,6 +19,7 @@ class OfficeDrawContoller extends \BaseController
             foreach ($list as $key => $draw) {
                 $data[] = $draw->showInList();
             }
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取提现列表成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取提现列表失败:'.$e->getMessage());
