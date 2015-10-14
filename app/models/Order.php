@@ -79,35 +79,38 @@ class Order extends Eloquent
             case '2.10.all':
             case '2.10.order':
             case '2.10.shipping':
-               return Order::$STATUS_FINISHED;
-               break;
+                return Order::$STATUS_FINISHED;
+                break;
             case '1.1.order':
             case '1.5.order':
             case '1.10.order':
-               return Order::$STATUS_ORDERED;
-               break;
+            case '1.1.all':
+                return Order::$STATUS_ORDERED;
+                break;
             case '2.1.order':
             case '2.5.order':
-               return Order::$STATUS_PAIED;
-               break;
+            case '2.1.all':
+                return Order::$STATUS_PAIED;
+                break;
             case '1.1.shipping':
             case '2.1.shipping':
-               return Order::$STATUS_PACKED;
-               break;
+                return Order::$STATUS_PACKED;
+                break;
             case '1.5.shipping':
             case '2.5.shipping':
-               return Order::$STATUS_SHIPPED;
-               break;
+            case '2.5.all':
+                return Order::$STATUS_SHIPPED;
+                break;
             case '1.1.all':
             case '1.5.all':
             case '1.10.all':
             case '2.1.all':
             case '2.5.all':
-               return Order::$STATUS_UNFINISHED;
-               break;
+                return Order::$STATUS_UNFINISHED;
+                break;
             default:
-               return Order::$STATUS_INVALIDE;
-               break;
+                return Order::$STATUS_INVALIDE;
+                break;
         }
     }
 
@@ -199,7 +202,7 @@ class Order extends Eloquent
                 $wallet->putIn($bill['total']['paied']);
             }
         }
-        $this->o_status = Order::$SHIPPING_STATUS_FINISHED;
+        $this->o_shipping_status = 10;
         return $this->save();
     }
 
