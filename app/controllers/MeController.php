@@ -1793,6 +1793,7 @@ class MeController extends \BaseController
         $b_id = Input::get('b_id', 0);
         $holder = Input::get('holder', '');
 
+        DB::beginTransaction();
         try {
             if ($payment == 1 && (!$b_id || !$holder)) {
                 throw new Exception("提现到银行卡需要填写持卡人姓名并选择银行", 9008);
@@ -1806,10 +1807,14 @@ class MeController extends \BaseController
             $draw->b_id = $b_id;
             $draw->b_holder_name = $holder;
             $d_id = $draw->addDraw();
+            $wallet = UsersWalletBalances::find($u_id);
+            $wallet->freez($amount);
             $data['id'] = $d_id;
             $re = Tools::reTrue('提现申请成功', $data);
+            DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提现申请失败:'.$e->getMessage());
+            DB::rollback();
         }
         return Response::json($re);
     }
