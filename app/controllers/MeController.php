@@ -1330,15 +1330,26 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $remark = Input::get('remark', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            $order = Order::find($id);
             if (empty($order)) {
                 throw new Exception("没有找到该订单", 9002);
             }
+            if ($order->u_id != $user->u_id) {
+                throw new Exception("没有权限操作该订单", 9001);
+            }
+            if ($order->o_status != 1) {
+                throw new Exception("不能在该状态下取消订单", 9001);
+            }
+            $order->cancelOrder($remark);
+            $re = Tools::reTrue('取消订单成功.');
         } catch (Exception $e) {
-            
+            $re = Tools::reFalse($e->getCode(), '取消订单失败:'.$e->getMessage());
         }
+        return Response::json($re);
     }
 
     public function getSellOrder($id)
@@ -1357,6 +1368,32 @@ class MeController extends \BaseController
             $re = Tools::reTrue('获取订单成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取订单失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function cancelSellOrder()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $remark = Input::get('remark', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $order = Order::find($id);
+            if (empty($order)) {
+                throw new Exception("没有找到该订单", 9002);
+            }
+            if ($order->u_id != $user->u_id) {
+                throw new Exception("没有权限操作该订单", 9001);
+            }
+            if ($order->o_status != 1) {
+                throw new Exception("不能在该状态下取消订单", 9001);
+            }
+            $order->cancelOrder($remark);
+            $re = Tools::reTrue('取消订单成功.');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '取消订单失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

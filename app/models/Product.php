@@ -47,6 +47,13 @@ class Product extends Eloquent
             $promo = $this->promo->showInList();
             $data['promo'] = $promo;
         }
+        if (!empty($this->booth)) {
+            $data['booth'] = $this->booth->showInList();
+        }
+
+        if (!empty($this->user)) {
+            $data['user'] = $this->user->showDetail();
+        }
 
         return $data;
     }
@@ -88,6 +95,10 @@ class Product extends Eloquent
             $replies = $list;
         }
         $data['replies'] = $replies;
+
+        if (!empty($this->booth)) {
+            $data['booth'] = $this->booth->showInList();
+        }
 
         if (!empty($this->user)) {
             $data['user'] = $this->user->showDetail();
