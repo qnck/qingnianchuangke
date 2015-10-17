@@ -33,7 +33,7 @@
         $(document).on('click', '#btn_share', function () {
             javascript:appObject.shareOnAndroid(1);
         });
-        $(document).on('click', '#btn_share', function () {
+        $(document).on('click', '#btn_download', function () {
             var link = "{{$link}}";
             javascript:appObject.downloadOnAndroid(link);
         });
