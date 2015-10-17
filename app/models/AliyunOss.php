@@ -77,11 +77,13 @@ class AliyunOss
         foreach ($delete as $key => $value) {
             $this->remove($value);
         }
+        $return = [];
         foreach ($origin as $key => $value) {
             $name = Img::getFileName($value);
-            $this->move($value, $this->_cate.'/'.$this->_id.'/'.$name);
+            $this->move($value, $dir.$name);
+            $return[$key] = $dir.$name;
         }
-        return $origin;
+        return $return;
     }
 
     public function getList()
