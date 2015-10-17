@@ -229,13 +229,21 @@ Route::get('office/user/profile/{id}', 'OfficeWebUserController@getUserProfile')
 Route::put('office/user/profile/{id}/censor/detail', 'OfficeWebUserController@censorUserProfileDetail');
 Route::put('office/user/profile/{id}/censor/contact', 'OfficeWebUserController@censorUserProfileContact');
 Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@censorUserProfileBank');
+Route::put('office/user/{id}/enable', 'OfficeWebUserController@enable');
 /* WEB USER END*/
 
 /* BOOTH START*/
 Route::get('office/booth', 'OfficeBoothController@listBooths');
 Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 Route::get('office/booth/{id}/loans', 'OfficeBoothController@listLoans');
+Route::put('office/booth/{id}/enable', 'OfficeBoothController@enable');
 /* BOOTH END*/
+
+/* PRODUCT START*/
+Route::get('office/product', 'OfficeProductController@listProduct');
+Route::get('office/product/{id}', 'OfficeProductController@getProduct');
+Route::put('office/product/{id}/enable', 'OfficeProductController@enable');
+/* PRODUCT END*/
 
 /* FUND START*/
 Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');

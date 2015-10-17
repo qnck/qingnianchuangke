@@ -1326,6 +1326,21 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function cancelOrder($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            if (empty($order)) {
+                throw new Exception("没有找到该订单", 9002);
+            }
+        } catch (Exception $e) {
+            
+        }
+    }
+
     public function getSellOrder($id)
     {
         $token = Input::get('token', '');
