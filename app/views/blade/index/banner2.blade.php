@@ -8,7 +8,7 @@
     <style type="text/css">
     .bg {
         background-size: cover;
-        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/1_inner.jpg');
+        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/2_inner.jpg');
     }
     .btn {
         width: 142px;
@@ -18,8 +18,8 @@
     .share {
         background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_share.png');
     }
-    .download {
-        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_download.png');
+    .fund {
+        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_fund.png');
     }
     .left {
         float: left;
@@ -33,8 +33,11 @@
         $(document).on('click', '#btn_share', function () {
             javascript:appObject.shareOnAndroid();
         });
+        $(document).on('click', '#btn_fund', function () {
+            javascript:appObject.openShopOnAndroid();
+        });
 
-        layout(0.082);
+        layout(0.166);
     });
     </script>
 </head>
@@ -42,7 +45,7 @@
     <div class="bg" id="bg"></div>
     <div class="menu" id="menu">
         <a class="left"><div id="btn_share" class="share btn"></div></a>
-        <a class="right" href="{{$link}}"><div id="btn_download" class="download btn"></div></a>
+        <a class="right"><div id="btn_fund" class="fund btn"></div></a>
     </div>
 </body>
 </html>
