@@ -15,7 +15,7 @@ class OfficeProductController extends \BaseController
             foreach ($list as $key => $product) {
                 $data['rows'][] = $product->showInList();
             }
-            $data['totoal'] = $list->getTotal();
+            $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取产品列表成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取产品列表失败:'.$e->getMessage());

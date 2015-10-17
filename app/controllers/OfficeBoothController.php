@@ -110,7 +110,7 @@ class OfficeBoothController extends \BaseController
 
     public function enable($id)
     {
-        $status = Input::get('status', 1);
+        $status = Input::get('status', 0);
         $remark = Input::get('remark', '');
 
         try {

@@ -52,6 +52,8 @@ class Booth extends Eloquent
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['user'] = null;
+        $data['status'] = $this->b_status;
+        $data['remark'] = $this->remark;
         if (!empty($this->user)) {
             $data['user'] = $this->user->showInList();
         }
@@ -79,7 +81,8 @@ class Booth extends Eloquent
         $data['open_from'] = $this->b_open_from;
         $data['open_to'] = $this->b_open_to;
         $data['open_on'] = $this->open_on;
-
+        $data['status'] = $this->b_status;
+        $data['remark'] = $this->remark;
         $user = null;
         if (!empty($this->user)) {
             $user = $this->user->showInList();
@@ -115,7 +118,7 @@ class Booth extends Eloquent
         $data['promo_strategy'] = $this->b_promo_strategy;
         $data['is_fund'] = $this->b_with_fund;
         $data['status'] = $this->b_status;
-        
+        $data['remark'] = $this->remark;
         if (!empty($this->fund)) {
             $data['fund'] = $this->fund->showDetail();
         }
