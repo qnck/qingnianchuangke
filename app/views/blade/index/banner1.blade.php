@@ -37,7 +37,7 @@
             var link = "{{$link}}";
             javascript:appObject.downloadOnAndroid(link);
         });
-        var margin_top = 0.04;
+        var margin_top = 0.05;
         var height_ratio = 2.97;
         layout(margin_top, height_ratio);
     });
