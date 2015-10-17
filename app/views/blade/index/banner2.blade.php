@@ -31,7 +31,7 @@
     <script type="text/javascript">
     $(document).ready(function (){
         $(document).on('click', '#btn_share', function () {
-            javascript:appObject.shareOnAndroid();
+            javascript:appObject.shareOnAndroid(2);
         });
         $(document).on('click', '#btn_fund', function () {
             javascript:appObject.openShopOnAndroid();
