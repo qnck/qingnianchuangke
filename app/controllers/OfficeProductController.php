@@ -9,7 +9,7 @@ class OfficeProductController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         try {
-            $query = Product::with(['quantity']);
+            $query = Product::with(['booth', 'quantity', 'user']);
             $list = $query->paginate($per_page);
             $data['rows'] = [];
             foreach ($list as $key => $product) {

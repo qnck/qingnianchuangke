@@ -235,6 +235,13 @@ class User extends Eloquent
         $data['following_count'] = $this->u_following_count;
         $data['status'] = $this->u_status;
         $data['remark'] = $this->u_remark;
+        $data['home_img'] = Img::toArray($this->u_home_img);
+        $data['biograph'] = $this->u_biograph;
+        $data['lat'] = $this->latitude;
+        $data['lng'] = $this->longitude;
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
+        }
         return $data;
     }
 
