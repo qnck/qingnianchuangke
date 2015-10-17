@@ -69,6 +69,13 @@ class Cart extends Eloquent
         return $this->delete();
     }
 
+    public function cancelCart()
+    {
+        $this->unloadProduct();
+        $this->c_status = -1;
+        return $this->save();
+    }
+
     public function loadProduct()
     {
         if (!$this->p_id || !$this->c_quantity) {

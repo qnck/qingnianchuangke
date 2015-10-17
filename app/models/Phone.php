@@ -80,7 +80,7 @@ class Phone extends Eloquent
         $code->v_reuse = 0;
         $code->verifiable_id = $this->_mobile;
         $code->verifiable_type = 'Phone';
-        $txt = '您的验证码是 '.$code->v_code;
+        $txt = '您的验证码是'.$code->v_code.'，该验证码5分钟内有效。校园创业、购物、交友、找工作就上 ';
         $this->sendText($txt, TxtMessage::SEND_FAST);
         $code->save();
         return $code->v_code;

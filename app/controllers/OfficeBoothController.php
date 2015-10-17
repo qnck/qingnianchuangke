@@ -107,4 +107,33 @@ class OfficeBoothController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function enable($id)
+    {
+        $status = Input::get('status', 1);
+        $remark = Input::get('remark', '');
+
+        try {
+            $booth = booth::find($id);
+            if (empty($booth)) {
+                throw new Exception("没有找到请求的店铺", 10001);
+            }
+            if ($status == 1) {
+                $status = 1;
+                $msg = '您的店铺['.$booth->b_title.']已被启用';
+            } else {
+                $status = -1;
+                $msg = '您的店铺['.$booth->b_title.']已被禁用';
+            }
+            $pushMessage = new PushMessage($booth->u_id);
+            $pushMessage->pushMessage($msg);
+            $booth->b_status = $status;
+            $booth->remark = $remark;
+            $booth->save();
+            $re = Tools::reTrue('用户状态修改成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '用户状态修改失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

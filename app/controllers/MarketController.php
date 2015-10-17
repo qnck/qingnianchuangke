@@ -522,7 +522,7 @@ class MarketController extends \BaseController
         $shipping_address = Input::get('shipping_address', '');
         $shipping = Input::get('shipping', 1);
         $delivery_time = Input::get('delivery_time', $now->format('Y-m-d H:i:s'));
-        $remark = Input::get('remark', '');
+        $comment = Input::get('comment', '');
 
         $carts = Input::get('carts', null);
         DB::beginTransaction();
@@ -567,7 +567,7 @@ class MarketController extends \BaseController
             $order->o_shipping_address = $shipping_address;
             $order->o_delivery_time = $delivery_time;
             $order->o_shipping = $shipping;
-            $order->o_remark = $remark;
+            $order->o_comment = $comment;
             $order->o_number = $order_no;
             $o_id = $order->addOrder();
             // push msg to seller

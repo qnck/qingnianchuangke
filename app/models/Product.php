@@ -35,6 +35,9 @@ class Product extends Eloquent
         $data['discount'] = $this->p_discount;
         $data['sort'] = $this->sort;
         $data['reply_count'] = $this->p_reply_count;
+        $data['status'] = $this->p_status;
+        $data['remark'] = $this->p_remark;
+
 
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
@@ -61,6 +64,8 @@ class Product extends Eloquent
         $data['imgs'] = Img::toArray($this->p_imgs);
         $data['imgs'] = Img::filterKey('prod_img_', $data['imgs']);
         $data['reply_count'] = $this->p_reply_count;
+        $data['status'] = $this->p_status;
+        $data['remark'] = $this->p_remark;
 
         $quantity = null;
         if (!empty($this->quantity)) {
@@ -83,6 +88,10 @@ class Product extends Eloquent
             $replies = $list;
         }
         $data['replies'] = $replies;
+
+        if (!empty($this->user)) {
+            $data['user'] = $this->user->showDetail();
+        }
 
         return $data;
     }
@@ -188,5 +197,10 @@ class Product extends Eloquent
     public function replies()
     {
         return $this->hasMany('ProductReply', 'p_id', 'p_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('User', 'u_id', 'u_id');
     }
 }
