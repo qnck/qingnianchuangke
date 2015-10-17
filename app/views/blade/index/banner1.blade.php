@@ -16,7 +16,7 @@
         background-size: cover;
     }
     .share {
-        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_share.png');
+        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_share_click.png');
     }
     .download {
         background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_download.png');
@@ -33,8 +33,9 @@
         $(document).on('click', '#btn_share', function () {
             javascript:appObject.shareOnAndroid();
         });
-
-        layout(0.082);
+        var margin_top = 0.04;
+        var height_ratio = 2.97;
+        layout(margin_top, height_ratio);
     });
     </script>
 </head>
@@ -42,7 +43,7 @@
     <div class="bg" id="bg"></div>
     <div class="menu" id="menu">
         <a class="left"><div id="btn_share" class="share btn"></div></a>
-        <a class="right" href="{{$link}}"><div id="btn_download" class="download btn"></div></a>
+        <a class="right" href="{{$link}}" target="_blank"><div id="btn_download" class="download btn"></div></a>
     </div>
 </body>
 </html>

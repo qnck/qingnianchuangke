@@ -1,10 +1,10 @@
-function layout(margin_top)
+function layout(margin_top, height_ratio)
 {
     var width = $('body').css('width');
 
     width = filterPX(width);
 
-    var height = width * 2.85;
+    var height = width * height_ratio;
 
     var margin_top = height * margin_top * -1;
 
@@ -12,7 +12,7 @@ function layout(margin_top)
     $('#bg').css('height', height);
     $('#menu').css('margin-top', margin_top);
 
-    var margin_btn = width/2 * 0.25;
+    var margin_btn = width/2 * 0.35;
 
     $('.left').css('margin-left', margin_btn);
     $('.right').css('margin-right', margin_btn);

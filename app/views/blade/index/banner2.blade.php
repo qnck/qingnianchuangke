@@ -16,7 +16,7 @@
         background-size: cover;
     }
     .share {
-        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_share.png');
+        background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_share_me.png');
     }
     .fund {
         background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/btn_fund.png');
@@ -36,8 +36,9 @@
         $(document).on('click', '#btn_fund', function () {
             javascript:appObject.openShopOnAndroid();
         });
-
-        layout(0.166);
+        var margin_top = 0.06;
+        var height_ratio = 3.4;
+        layout(margin_top, height_ratio);
     });
     </script>
 </head>
