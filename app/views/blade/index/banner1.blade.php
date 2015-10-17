@@ -31,7 +31,7 @@
     <script type="text/javascript">
     $(document).ready(function (){
         $(document).on('click', '#btn_share', function () {
-            javascript:appObject.shareOnAndroid();
+            javascript:appObject.shareOnAndroid(1);
         });
         var margin_top = 0.04;
         var height_ratio = 2.97;
