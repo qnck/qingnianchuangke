@@ -225,7 +225,15 @@ class User extends Eloquent
         $data['nickname'] = $this->u_nickname;
         $data['age'] = $this->u_age;
         $data['name'] = $this->u_name;
+        $data['gender'] = $this->u_sex;
         $data['sex'] = $this->u_sex;
+        if (!empty($this->u_birthday)) {
+            $birthday = new DateTime($this->u_birthday);
+            $birthday = $birthday->format('Y-m-d');
+        } else {
+            $birthday = null;
+        }
+        $data['birth'] = $birthday;
         $path = explode(',', $this->u_head_img);
         $path = array_pop($path);
         $data['head_img'] = $path;
@@ -235,7 +243,7 @@ class User extends Eloquent
         $data['following_count'] = $this->u_following_count;
         $data['status'] = $this->u_status;
         $data['remark'] = $this->u_remark;
-        $data['home_img'] = Img::toArray($this->u_home_img);
+        $data['home_imgs'] = Img::toArray($this->u_home_img);
         $data['biograph'] = $this->u_biograph;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;

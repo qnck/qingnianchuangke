@@ -95,6 +95,7 @@ class UserController extends \BaseController
             return Response::json(['result' => 2001, 'data' => [], 'info' => '没有找到请求的用户']);
         }
         try {
+            $user->load(['school']);
             $data = $user->showDetail();
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
