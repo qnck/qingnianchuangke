@@ -232,4 +232,29 @@ class OfficeWebUserController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function enable($id)
+    {
+        $status = Input::get('status', 0);
+        $remark = Input::get('remark', '');
+
+        try {
+            $user = User::find($id);
+            if (empty($user)) {
+                throw new Exception("没有找到请求的用户", 10001);
+            }
+            if ($status == 1) {
+                $status = 1;
+            } else {
+                $status = -1;
+            }
+            $user->u_status = $status;
+            $user->u_remark = $remark;
+            $user->save();
+            $re = Tools::reTrue('用户状态修改成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '用户状态修改失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

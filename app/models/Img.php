@@ -113,6 +113,9 @@ class Img
     public static function filterKey($needle, $array = [])
     {
         $re = [];
+        if (empty($array)) {
+            return $array;
+        }
         foreach ($array as $key => $img) {
             if (strpos($key, $needle) !== false) {
                 $re[] = $img;

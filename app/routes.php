@@ -5,6 +5,8 @@
 Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
 Route::get('/', 'HomeController@index');
+Route::get('/banner/1', 'HomeController@banner1');
+Route::get('/banner/2', 'HomeController@banner2');
 Route::get('about', 'HomeController@about');
 
 /* handling files */
@@ -83,9 +85,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');
     Route::get('v0/user/me/orders', 'MeController@listOrders');
     Route::get('v0/user/me/order/{id}', 'MeController@getOrder');
+    Route::put('v0/user/me/order/{id}/cancel', 'MeController@cancelOrder');
     Route::get('v0/user/me/orders/count', 'MeController@countOrders');
     Route::get('v0/user/me/sells', 'MeController@listSellOrders');
     Route::get('v0/user/me/sells/{id}', 'MeController@getSellOrder');
+    Route::put('v0/user/me/sells/{id}/cancel', 'MeController@cancelSellOrder');
     Route::get('v0/user/me/sells/count', 'MeController@countSellOrders');
     Route::post('v0/user/me/order/deliver', 'MeController@deliverOrder');
     Route::post('v0/user/me/order/confirm', 'MeController@confirmOrder');
@@ -229,13 +233,21 @@ Route::get('office/user/profile/{id}', 'OfficeWebUserController@getUserProfile')
 Route::put('office/user/profile/{id}/censor/detail', 'OfficeWebUserController@censorUserProfileDetail');
 Route::put('office/user/profile/{id}/censor/contact', 'OfficeWebUserController@censorUserProfileContact');
 Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@censorUserProfileBank');
+Route::put('office/user/{id}/enable', 'OfficeWebUserController@enable');
 /* WEB USER END*/
 
 /* BOOTH START*/
 Route::get('office/booth', 'OfficeBoothController@listBooths');
 Route::put('office/booth/{id}/censor', 'OfficeBoothController@censorBooth');
 Route::get('office/booth/{id}/loans', 'OfficeBoothController@listLoans');
+Route::put('office/booth/{id}/enable', 'OfficeBoothController@enable');
 /* BOOTH END*/
+
+/* PRODUCT START*/
+Route::get('office/product', 'OfficeProductController@listProduct');
+Route::get('office/product/{id}', 'OfficeProductController@getProduct');
+Route::put('office/product/{id}/enable', 'OfficeProductController@enable');
+/* PRODUCT END*/
 
 /* FUND START*/
 Route::get('office/fund/{id}/loan', 'OfficeFundController@listRepayments');

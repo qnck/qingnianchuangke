@@ -83,9 +83,9 @@ class User extends Eloquent
     public function login()
     {
         $this->baseValidate();
-        $user = User::where('u_mobile', '=', $this->u_mobile)->first();
+        $user = User::where('u_mobile', '=', $this->u_mobile)->where('u_status', '=', 1)->first();
         if (!isset($user->u_id)) {
-            throw new Exception("没有找到请求的用户", 1);
+            throw new Exception("请求的用户不可用", 1);
         }
         if (!Hash::check($this->u_password, $user->u_password)) {
             throw new Exception("密码错误", 1);
@@ -184,6 +184,8 @@ class User extends Eloquent
             $school = $this->school->showInList();
         }
         $data['school'] = $school;
+        $data['status'] = $this->u_status;
+        $data['remark'] = $this->u_remark;
         return $data;
     }
 
@@ -203,6 +205,8 @@ class User extends Eloquent
             $school = $this->school->showInList();
         }
         $data['school'] = $school;
+        $data['status'] = $this->u_status;
+        $data['remark'] = $this->u_remark;
         return $data;
     }
 
@@ -221,7 +225,15 @@ class User extends Eloquent
         $data['nickname'] = $this->u_nickname;
         $data['age'] = $this->u_age;
         $data['name'] = $this->u_name;
+        $data['gender'] = $this->u_sex;
         $data['sex'] = $this->u_sex;
+        if (!empty($this->u_birthday)) {
+            $birthday = new DateTime($this->u_birthday);
+            $birthday = $birthday->format('Y-m-d');
+        } else {
+            $birthday = null;
+        }
+        $data['birth'] = $birthday;
         $path = explode(',', $this->u_head_img);
         $path = array_pop($path);
         $data['head_img'] = $path;
@@ -229,6 +241,15 @@ class User extends Eloquent
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
         $data['following_count'] = $this->u_following_count;
+        $data['status'] = $this->u_status;
+        $data['remark'] = $this->u_remark;
+        $data['home_imgs'] = Img::toArray($this->u_home_img);
+        $data['biograph'] = $this->u_biograph;
+        $data['lat'] = $this->latitude;
+        $data['lng'] = $this->longitude;
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
+        }
         return $data;
     }
 

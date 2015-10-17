@@ -100,7 +100,7 @@ class MarketController extends \BaseController
         $perPage = Input::get('per_page', 30);
 
         try {
-            $query = Booth::where('b_type', '=', 1)->with(['user']);
+            $query = Booth::where('b_type', '=', 1)->where('b_status', '=', 1)->with(['user']);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
                     $q->where('b_product_source', 'LIKE', '%'.$key.'%')
@@ -133,10 +133,10 @@ class MarketController extends \BaseController
         $perPage = Input::get('per_page', 30);
 
         try {
-            $query = Booth::where('b_type', '=', 2)->with([
+            $query = Booth::where('b_type', '=', 2)->where('b_status', '=', 1)->with([
                 'user',
                 'products' => function ($q) {
-                    $q->take(5)->orderBy('sort', 'DESC')->orderBy('created_at', 'DESC');
+                    $q->take(5)->where('p_status', '=', 1)->orderBy('sort', 'DESC')->orderBy('created_at', 'DESC');
                 }
                 ]);
             if ($key) {
@@ -522,7 +522,7 @@ class MarketController extends \BaseController
         $shipping_address = Input::get('shipping_address', '');
         $shipping = Input::get('shipping', 1);
         $delivery_time = Input::get('delivery_time', $now->format('Y-m-d H:i:s'));
-        $remark = Input::get('remark', '');
+        $comment = Input::get('comment', '');
 
         $carts = Input::get('carts', null);
         DB::beginTransaction();
@@ -567,7 +567,7 @@ class MarketController extends \BaseController
             $order->o_shipping_address = $shipping_address;
             $order->o_delivery_time = $delivery_time;
             $order->o_shipping = $shipping;
-            $order->o_remark = $remark;
+            $order->o_comment = $comment;
             $order->o_number = $order_no;
             $o_id = $order->addOrder();
             // push msg to seller

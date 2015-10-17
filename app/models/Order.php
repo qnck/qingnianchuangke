@@ -219,6 +219,20 @@ class Order extends Eloquent
         }
     }
 
+    public function cancelOrder($remark)
+    {
+        $this->getSummary();
+        foreach ($this->_carts as $key => $cart) {
+            if ($cart->c_status == 2) {
+                $cart->cancelCart();
+            }
+        }
+        $this->o_status = -1;
+        $this->o_remark = $remark;
+        $this->save();
+        return true;
+    }
+
     public static function sumIncome($to = null, $from = null, $b_id = null, $u_id = null, $owner_id = null)
     {
         $query = Order::sum('o_amount_paied');
