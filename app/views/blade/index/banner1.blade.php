@@ -6,6 +6,8 @@
     <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
     <script type="text/javascript" src="/js/bannerlayout.js"></script>
     <style type="text/css">
+
+    
     .bg {
         background-size: cover;
         background-image: url('http://qnck001.oss-cn-hangzhou.aliyuncs.com/banner/1_inner.jpg');
