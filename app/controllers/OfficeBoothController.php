@@ -15,10 +15,16 @@ class OfficeBoothController extends \BaseController
             $query = Booth::with(['fund' => function ($q) {
             },
             'fund.loans',
-            'user'])->select('booths.*');
+            'user'])->select('booths.*', 'tmp_users_details.u_status AS detail_status', 'tmp_users_contact_peoples.u_status AS contact_status', 'tmp_users_bank_cards.b_status AS bank_status');
 
             $query = $query->leftJoin('funds', function ($q) {
                 $q->on('funds.b_id', '=', 'booths.b_id');
+            })->leftJoin('tmp_users_details', function ($q) {
+                $q->on('tmp_users_details.u_id', '=', 'booths.u_id');
+            })->leftJoin('tmp_users_contact_peoples', function ($q) {
+                $q->on('tmp_users_contact_peoples.u_id', '=', 'booths.u_id');
+            })->leftJoin('tmp_users_bank_cards', function ($q) {
+                $q->on('tmp_users_bank_cards.u_id', '=', 'booths.u_id');
             });
 
             if ($alloc == 1) {
@@ -30,7 +36,13 @@ class OfficeBoothController extends \BaseController
             $list = $query->paginate($per_page);
             $data['rows'] = [];
             foreach ($list as $key => $booth) {
-                $data['rows'][] = $booth->showInOffice();
+                $tmp = $booth->showInOffice();
+                if (!empty($tmp['user'])) {
+                    $tmp['user']['detail_status'] = $booth->detail_status;
+                    $tmp['user']['contact_status'] = $booth->contact_status;
+                    $tmp['user']['bank_status'] = $booth->bank_status;
+                }
+                $data['rows'][] = $tmp;
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取店铺列表成功', $data, $list);

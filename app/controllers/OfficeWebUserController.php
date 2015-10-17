@@ -9,7 +9,7 @@ class OfficeWebUserController extends \BaseController
         $per_page = Input::get('per_page', 10000000);
 
         try {
-            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'dic_schools.t_name', 'tmp_users_details.u_status AS detail_status', 'tmp_users_contact_peoples.u_status AS contact_status', 'tmp_users_bank_cards.b_status AS bank_status')->leftJoin('tmp_users_contact_peoples', function ($q) {
+            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_status', 'users.u_remark', 'dic_schools.t_name', 'tmp_users_details.u_status AS detail_status', 'tmp_users_contact_peoples.u_status AS contact_status', 'tmp_users_bank_cards.b_status AS bank_status')->leftJoin('tmp_users_contact_peoples', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_users_contact_peoples.u_id');
             })->leftJoin('tmp_users_details', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_users_details.u_id');
