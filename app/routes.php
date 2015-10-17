@@ -5,6 +5,8 @@
 Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
 Route::get('/', 'HomeController@index');
+Route::get('/banner/1', 'HomeController@banner1');
+Route::get('/banner/2', 'HomeController@banner2');
 Route::get('about', 'HomeController@about');
 
 /* handling files */
