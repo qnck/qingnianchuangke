@@ -44,7 +44,8 @@ class AppController extends \BaseController
         $name = Config::get('app.app.android.file_name');
         header('Content-Type: application/vnd.android.package-archive');
         header('Content-Disposition:attachment;filename="qnck.apk"');
-        readfile('http://qnck001.oss-cn-hangzhou.aliyuncs.com/app/android/'.$name);
+        header('Content-Length: 4000000');
+        readfile('http://qnck001.oss-cn-hangzhou-internal.aliyuncs.com/app/android/'.$name);
         exit();
     }
 }

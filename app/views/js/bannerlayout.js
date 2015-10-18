@@ -12,12 +12,12 @@ function layout(margin_top, height_ratio)
     $('#bg').css('height', height);
     $('#menu').css('margin-top', margin_top);
 
-    var margin_btn = width/2 * 0.35;
+    var margin_btn = width/2 * 0.15;
 
     $('.left').css('margin-left', margin_btn);
     $('.right').css('margin-right', margin_btn);
 
-    resizeBtn(width*0.3);
+    resizeBtn(width*0.4);
 }
 
 function resizeBtn(width)

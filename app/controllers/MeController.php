@@ -1931,4 +1931,34 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function delHomeImg()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+        $obj = Input::get('obj', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $home_imgs = explode(',', $user->u_home_img);
+            foreach ($home_imgs as $key => $img) {
+                if ($obj == $img) {
+                    unset($home_imgs[$key]);
+                    break;
+                }
+            }
+            $user->u_home_img = implode(',', $home_imgs);
+            $user->save();
+
+            $oss = new AliyunOss('user');
+            $obj = Img::getFileName($obj);
+            $obj = 'user/'.$u_id.'/'.$obj;
+            $oss->remove($obj);
+
+            $re = Tools::reTrue('删除图片成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除图片失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

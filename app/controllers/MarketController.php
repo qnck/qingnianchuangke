@@ -9,7 +9,7 @@ class MarketController extends \BaseController
         $site = Input::get('site', 0);
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
-        $range = Input::get('range', 1);
+        $range = Input::get('range', 3);
         $u_id = Input::get('u_id');
         $is_follow = Input::get('is_follow', 0);
 
@@ -31,7 +31,7 @@ class MarketController extends \BaseController
                 'product' => function ($q) {
                     $q->with(['promo', 'quantity']);
                 }]);
-            $query = $query->select('promotion_infos.*')->where('promotion_infos.p_range', '<=', $range);
+            $query = $query->select('promotion_infos.*');
             $query = $query->leftJoin('products', function ($q) {
                 $q->on('products.p_id', '=', 'promotion_infos.p_id')
                 ->where('products.p_status', '=', 1);
@@ -45,11 +45,15 @@ class MarketController extends \BaseController
                     $q->on('booths.b_id', '=', 'booth_follows.b_id')
                     ->where('booth_follows.u_id', '=', $u_id);
                 });
+                $school = 0;
+                $site = 0;
+                $range = 3;
             }
-            if ($school) {
+            $query = $query->where('promotion_infos.p_range', '<=', $range);
+            if ($school && $range == 3) {
                 $query = $query->where('promotion_infos.s_id', '=', $school);
             }
-            if ($site) {
+            if ($site && $range == 2) {
                 $query = $query->where('promotion_infos.c_id', '=', $site);
             }
             if ($key) {

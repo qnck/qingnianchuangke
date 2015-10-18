@@ -32,6 +32,11 @@ class AliyunOss
         $this->_id = $id;
     }
 
+    public function setBucket($bucket)
+    {
+        $this->_bucket = $bucket;
+    }
+
     public function upload()
     {
         $folder = $this->_cate;
