@@ -46,10 +46,10 @@ class MarketController extends \BaseController
                     ->where('booth_follows.u_id', '=', $u_id);
                 });
             }
-            if ($school) {
+            if ($school && $range == 3) {
                 $query = $query->where('promotion_infos.s_id', '=', $school);
             }
-            if ($site) {
+            if ($site && $range == 2) {
                 $query = $query->where('promotion_infos.c_id', '=', $site);
             }
             if ($key) {

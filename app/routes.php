@@ -55,6 +55,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/resetpass', 'MeController@resetPass');
     Route::get('v0/user/me/followers', 'MeController@myFollowers');
     Route::get('v0/user/me/followings', 'MeController@myFollowings');
+    Route::delete('v0/user/me/homeimg', 'MeController@delHomeImg');
     /* ME END*/
 
     /* ME PROFILE START*/
