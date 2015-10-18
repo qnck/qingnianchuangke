@@ -31,6 +31,16 @@ class MarketController extends \BaseController
                 'product' => function ($q) {
                     $q->with(['promo', 'quantity']);
                 }]);
+
+            if ($is_follow) {
+                $query = $query->rightJoin('booth_follows', function ($q) use ($u_id) {
+                    $q->on('booths.b_id', '=', 'booth_follows.b_id')
+                    ->where('booth_follows.u_id', '=', $u_id);
+                });
+                $school = 0;
+                $site = 0;
+                $range = 3;
+            }
             $query = $query->select('promotion_infos.*')->where('promotion_infos.p_range', '<=', $range);
             $query = $query->leftJoin('products', function ($q) {
                 $q->on('products.p_id', '=', 'promotion_infos.p_id')
@@ -39,13 +49,6 @@ class MarketController extends \BaseController
                 $q->on('booths.b_id', '=', 'promotion_infos.b_id')
                 ->where('booths.b_status', '=', 1);
             });
-
-            if ($is_follow) {
-                $query = $query->rightJoin('booth_follows', function ($q) use ($u_id) {
-                    $q->on('booths.b_id', '=', 'booth_follows.b_id')
-                    ->where('booth_follows.u_id', '=', $u_id);
-                });
-            }
             if ($school && $range == 3) {
                 $query = $query->where('promotion_infos.s_id', '=', $school);
             }
