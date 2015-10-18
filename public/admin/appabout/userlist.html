@@ -108,13 +108,19 @@ $(document).ready(function () {
 			$("#fqdh").text(detail.father_telephone);
 			$("#mqxm").text(detail.mother_name);
 			$("#mqdh").text(detail.mother_telephone);
-			if(detail.status=="1")
-				$("#detailOptTd").html("此项已审核通过");
-			else if(detail.status=="0"){
-				$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+			var sdata = $("#tt").datagrid("getSelected");
+			if(sdata.u_status=="1"){
+				if(detail.status=="1")
+					$("#detailOptTd").html("此项已审核通过");
+				else if(detail.status=="0"){
+					$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+				}
+				else if(detail.status=="2"){
+					$("#detailOptTd").html("审核不通过，原因【<span style='color:red;'>"+detail.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+				}
 			}
-			else if(detail.status=="2"){
-				$("#detailOptTd").html("审核不通过，原因【<span style='color:red;'>"+detail.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('detail','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('detail','0')\">[审核不通过]</a>");
+			else{
+				$("#detailOptTd").html("此用户已被禁用");
 			}
 		}
 	}
@@ -175,13 +181,19 @@ $(document).ready(function () {
 		$("#hzxm").text(bank.holder_name);
 		$("#hzdh").text(bank.holder_phone);
 		$("#hzsfz").text(bank.holder_identity_number);
-		if(bank.status=="1")
-			$("#bankOptTd").html("此项已审核通过");
-		else if(bank.status=="0"){
-			$("#bankOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+		var sdata = $("#tt").datagrid("getSelected");
+		if(sdata.u_status=="1"){
+			if(bank.status=="1")
+				$("#bankOptTd").html("此项已审核通过");
+			else if(bank.status=="0"){
+				$("#bankOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+			}
+			else if(bank.status=="2"){
+				$("#bankOptTd").html("审核不通过，原因【<span style='color:red;'>"+bank.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+			}
 		}
-		else if(bank.status=="2"){
-			$("#bankOptTd").html("审核不通过，原因【<span style='color:red;'>"+bank.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('bank','1','"+bank.id+"')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('bank','0','"+bank.id+"')\">[审核不通过]</a>");
+		else{
+			$("#bankOptTd").html("此用户已被禁用");
 		}
 	}
 	function clearContactWindowData(){
@@ -214,27 +226,75 @@ $(document).ready(function () {
 		$("#hydh1").text(contact.frend_telephone1);
 		$("#hyxm2").text(contact.frend_name2);
 		$("#hydh2").text(contact.frend_telephone2);
-		if(contact.status=="1")
-			$("#contactOptTd").html("此项已审核通过");
-		else if(contact.status=="0"){
-			$("#contactOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+		var sdata = $("#tt").datagrid("getSelected");
+		if(sdata.u_status=="1"){
+			if(contact.status=="1")
+				$("#contactOptTd").html("此项已审核通过");
+			else if(contact.status=="0"){
+				$("#contactOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+			}
+			else if(contact.status=="2"){
+				$("#contactOptTd").html("审核不通过，原因【<span style='color:red;'>"+contact.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+			}
 		}
-		else if(contact.status=="2"){
-			$("#contactOptTd").html("审核不通过，原因【<span style='color:red;'>"+contact.remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('contact','1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('contact','0')\">[审核不通过]</a>");
+		else{
+			$("#contactOptTd").html("此用户已被禁用");
 		}
 	}
 	function formatStatus(value, row){
-		if(row.detail_status=="1" && row.contact_status=="1" && row.bank_status=="1")
-			return "已通过审核";
-		else if(row.detail_status=="1" || row.contact_status=="1" || row.bank_status=="1")
-			return "部分通过审核";
+		if(row.u_status=="1")
+		{
+			if(row.detail_status=="1" && row.contact_status=="1" && row.bank_status=="1")
+				return "已通过审核";
+			else if(row.detail_status=="1" || row.contact_status=="1" || row.bank_status=="1")
+				return "部分通过审核";
+			else
+				return "未通过审核";
+		}else{
+			return "已禁用";
+		}
+	}
+	function formatOpt(value, row,index){
+		var result = "";
+		if(row.u_status=="1")
+			result = '<a class="alink-edit" onclick="changeStatus(\'0\',\'禁用\',\''+row.id+'\')" href="#">[禁用]</a>';
 		else
-			return "未通过审核";
+			result = '<a class="alink-edit" onclick="changeStatus(\'1\',\'启用\',\''+row.id+'\')" href="#">[启用]</a>';
+		return result + "&nbsp;&nbsp;<a class='alink-edit' style='color:blue' href='#' onclick='viewDetail("+row.id+","+index+")'>[查看明细]</a>";
 	}
-	function formatOpt(value, row){
-		return "<a class='alink-edit' style='color:blue' href='#' onclick='viewDetail("+row.id+")'>[查看明细]</a>";
+	function changeStatus(ty,msg,id){
+		$.messager.confirm("提示", "确认"+msg+"选中的用户！", function (r) {
+        if (r) {
+            var remark="";
+            remark = prompt("请输入"+msg+"选中用户的原因：", ""); 
+            if(ty=="0"&&remark==null){
+                return;
+            }
+            else if(ty=="0"&&remark==""){
+                $.messager.alert("提示", "请输入禁用选中用户的原因!", "alert");
+                return;
+            }
+            $.ajax({
+                type: "put",
+                url: _url+'office/user/'+id+"/enable",
+                data: {status:ty,remark:remark},
+                dataType: "text",
+                success: function (r) {
+                    var result = JSON.parse(r);
+                    alert(result.info);
+                    if(result.result=="2000"){
+                        BindData();
+                    }
+                },
+                error: function () {
+                    alert("操作失败!");
+                }
+            });
+        }
+    });
 	}
-	function viewDetail(id){
+	function viewDetail(id,index){
+	    $("#tt").datagrid("selectRow",index);
 		$.ajax({
 			type: "get",
 			url: _url+'office/user/profile/'+id,
@@ -274,7 +334,8 @@ $(document).ready(function () {
             <th data-options="field:'u_name',width:80,align:'left',halign:'center',sortable:true">姓名</th>
             <th data-options="field:'t_name',width:200,align:'left',halign:'center',sortable:true">学校</th>
             <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
-            <th data-options="field:'options',width:100,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
+            <th data-options="field:'u_remark',width:100,align:'left',halign:'center',sortable:true">禁用原因</th>
+            <th data-options="field:'options',width:160,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
         </tr>
     </thead>
 </table>
