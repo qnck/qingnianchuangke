@@ -15,8 +15,9 @@ class HomeController extends BaseController {
 
     public function banner1()
     {
+        $type = Input::get('share_type', '');
         $download_link = 'http://'.Config::get('app.subdomain.api').'/app/download';
-        return View::make('blade.index.banner1')->with('link', $download_link);
+        return View::make('blade.index.banner1')->with('link', $download_link)->with('share_type', $type);
     }
 
     public function banner2()

@@ -16,6 +16,7 @@ function layout(margin_top, height_ratio)
 
     $('.left').css('margin-left', margin_btn);
     $('.right').css('margin-right', margin_btn);
+    $('.center').css('margin', '0 auto');
 
     resizeBtn(width*0.4);
 }
