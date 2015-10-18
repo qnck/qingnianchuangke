@@ -35,10 +35,6 @@
         $(document).on('click', '#btn_share', function () {
             javascript:appObject.shareOnAndroid(1);
         });
-        $(document).on('click', '#btn_download', function () {
-            var link = "{{$link}}";
-            javascript:appObject.downloadOnAndroid(link);
-        });
         var margin_top = 0.05;
         var height_ratio = 2.97;
         layout(margin_top, height_ratio);
@@ -48,8 +44,11 @@
 <body>
     <div class="bg" id="bg"></div>
     <div class="menu" id="menu">
-        <a class="left"><div id="btn_share" class="share btn"></div></a>
-        <a class="right"><div id="btn_download" class="download btn"></div></a>
+        @if($share_type == "app")
+        <a href="{{$link}}" target="_blank"><div id="btn_download" class="download btn center"></div></a>
+        @else
+        <a><div id="btn_share" class="share btn center"></div></a>
+        @endif
     </div>
 </body>
 </html>
