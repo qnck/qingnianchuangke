@@ -1,6 +1,4 @@
-	//var _url="http://www.qnck.dev/";
-	var _url="http://www.54qnck.com/";
-	//var _url="http://www.test.54qnck.com/";
+	document.write("<script type='text/javascript' src='js/url.js'></script>");
 	$pintuercheck=function(element,type,value){
 		$pintu=value.replace(/(^\s*)|(\s*$)/g, "");
 		switch(type){
