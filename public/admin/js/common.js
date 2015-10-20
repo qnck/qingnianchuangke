@@ -1,4 +1,4 @@
-	document.write("<script type='text/javascript' src='js/url.js'></script>");
+	document.write("<script type='text/javascript' src='/admin/js/url.js'></script>");
 	$pintuercheck=function(element,type,value){
 		$pintu=value.replace(/(^\s*)|(\s*$)/g, "");
 		switch(type){
