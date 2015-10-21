@@ -51,7 +51,8 @@ class AliyunOss
                 foreach ($_FILES as $key => $file) {
                     if ($file['name'] && $file['error'] == 0 && $file['size'] > 0) {
                         // todo enhance with mime type
-                        $obj = '_tmp/'.$this->_cate.'/'.$this->_token.'/'.$key.'.'.$this->getExt($file);
+                        $rnd = Tools::getTimeString(6);
+                        $obj = '_tmp/'.$this->_cate.'/'.$this->_token.'/'.$key.'.'.$rnd.'.'.$this->getExt($file);
                         $re = $this->_oss->upload_file_by_file($this->_bucket, $obj, $file['tmp_name']);
                         if (!$re->isOK()) {
                             throw new Exception("图片:".$file['name'].'上传失败', 20001);
