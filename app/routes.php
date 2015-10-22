@@ -80,7 +80,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/product', 'MeController@postProduct');
     Route::get('v0/user/me/product', 'MeController@getProducts');
     Route::get('v0/user/me/product/{id}', 'MeController@getProduct');
-    Route::put('v0/user/me/product/{id}', 'MeController@updateProduct');
+    Route::put('v0/user/me/product/{id}', 'MeController@putProduct');
     Route::get('v0/user/me/product/{id}/on', 'MeController@productOn');
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');

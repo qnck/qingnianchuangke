@@ -954,7 +954,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function updateProduct($id)
+    public function putProduct($id)
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
@@ -1953,6 +1953,41 @@ class MeController extends \BaseController
             $oss = new AliyunOss('user');
             $obj = Img::getFileName($obj);
             $obj = 'user/'.$u_id.'/'.$obj;
+            $oss->remove($obj);
+
+            $re = Tools::reTrue('删除图片成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除图片失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delProductImg($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+        $obj = Input::get('obj', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = Product::find($id);
+            if (empty($product)) {
+                throw new Exception("没有找到请求的图片", 7001);
+            }
+            $imgs = explode(',', $product->p_imgs);
+            foreach ($imgs as $key => $img) {
+                if ($obj == $img) {
+                    unset($imgs[$key]);
+                    break;
+                }
+            }
+
+            $product->p_imgs = implode(',', $imgs);
+            $product->save();
+
+            $oss = new AliyunOss('product');
+            $obj = Img::getFileName('obj');
+            $obj = 'product/'.$id.'/'.$obj;
             $oss->remove($obj);
 
             $re = Tools::reTrue('删除图片成功');
