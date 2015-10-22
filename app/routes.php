@@ -82,6 +82,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/product/{id}', 'MeController@getProduct');
     Route::put('v0/user/me/product/{id}', 'MeController@putProduct');
     Route::get('v0/user/me/product/{id}/on', 'MeController@productOn');
+    Route::delete('v0/user/me/product/{id}/img', 'MeController@delProductImg');
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');
     Route::get('v0/user/me/orders', 'MeController@listOrders');
