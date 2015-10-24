@@ -238,6 +238,7 @@ class MeController extends \BaseController
         $promoStratege = Input::get('promo_strategy');
         // with fund
         $withFund = Input::get('fund', 0);
+        $booth_cate = Input::get('cate', 0);
 
         // profit ratio
         $profitRate = Input::get('profit');
@@ -272,6 +273,7 @@ class MeController extends \BaseController
             $booth->b_promo_strategy = $promoStratege;
             $booth->b_with_fund = $withFund;
             $booth->b_type = $boothType;
+            $booth->b_cate = $booth_cate;
             $b_id = $booth->register();
             
             if ($withFund == 1) {
@@ -874,6 +876,134 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function postFlea()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        
+        $prodName = Input::get('prod_name', '');
+        $prodDesc = Input::get('prod_desc', '');
+        $prodBrief = Input::get('prod_brief', '');
+        $publish = Input::get('publish', 1);
+        $product_cate = Input::get('cate');
+        if (!$product_cate) {
+            $product_cate = 6;
+        }
+
+        $imgToken = Input::get('img_token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $booth = Booth::where('u_id', '=', $u_id)->first();
+            if (empty($booth)) {
+                $shcool = $user->load('school');
+                $booth = new Booth();
+                $booth->u_id = $u_id;
+                $booth->b_type = 0;
+                $booth->c_id = $school->t_city;
+                $booth->s_id = $school->t_id;
+                $booth->b_with_fund = 0;
+                $booth->latitude = $user->latitude;
+                $booth->longitude = $user->longitude;
+                $booth->save();
+            }
+
+            $product = new Product();
+            $product->b_id = $booth->b_id;
+            $product->p_title = $prodName;
+            $product->u_id = $u_id;
+            $product->p_cost = 0;
+            $product->p_price_origin = 0;
+            $product->p_price = 0;
+            $product->p_discount = 0;
+            $product->p_desc = $prodDesc;
+            $product->p_brief = $prodBrief;
+            $product->p_status = $publish == 1 ? 1 : 2;
+            $product->p_cate = $product_cate;
+            $product->p_type = 2;
+            $p_id = $product->addProduct();
+            $quantity = new ProductQuantity();
+            $quantity->p_id = $p_id;
+            $quantity->b_id = $b_id;
+            $quantity->u_id = $u_id;
+            $quantity->q_total = 1;
+
+            $quantity->addQuantity();
+
+            if ($imgToken) {
+                $imgObj = new Img('product', $imgToken);
+                $imgs = $imgObj->getSavedImg($p_id, '', true);
+                $product->p_imgs = implode(',', $imgs);
+                $product->save();
+            }
+
+            $re = Tools::reTrue('添加产品成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '添加产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function putFlea($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $prodName = Input::get('prod_name', '');
+        $prodBrief = Input::get('prod_brief', '');
+        $prodDesc = Input::get('prod_desc', '');
+        $publish = Input::get('publish', 1);
+        $product_cate = Input::get('cate', 7);
+
+        $imgToken = Input::get('img_token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $product = Product::find($id);
+
+            if (!isset($product->p_id) || $product->u_id != $u_id) {
+                throw new Exception("没有找到请求的产品", 1);
+            }
+
+            $product->p_title = $prodName;
+            $product->p_desc = $prodDesc;
+            $product->sort = 1;
+            $product->p_cate = $product_cate;
+            $product->p_brief = $prodBrief;
+            $product->p_status = $publish == 1 ? 1 : 2;
+
+            if ($imgToken) {
+                $imgObj = new Img('product', $imgToken);
+                $imgs = $imgObj->getSavedImg($id, $product->p_imgs, true);
+                $product->p_imgs = implode(',', $imgs);
+                $product->save();
+            }
+
+            $re = Tools::reTrue('更新产品成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '更新产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function getFlea($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = Product::find($id);
+            $data = $product->showDetail();
+            $re = Tools::reTrue('获取商品成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取商品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function postProduct()
     {
         $token = Input::get('token', '');
@@ -888,6 +1018,10 @@ class MeController extends \BaseController
         $prodDiscount = Input::get('prod_discount', 100);
         $prodStock = Input::get('prod_stock', 0);
         $publish = Input::get('publish', 1);
+        $product_cate = Input::get('cate');
+        if (!$product_cate) {
+            $product_cate = 7;
+        }
 
         $promoDesc = Input::get('promo', '');
         $promoRange = Input::get('promo_range', 0);
@@ -914,6 +1048,8 @@ class MeController extends \BaseController
             $product->p_desc = $prodDesc;
             $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
+            $product->p_cate = $product_cate;
+            $product->p_type = 1;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;
@@ -943,13 +1079,9 @@ class MeController extends \BaseController
                 $product->save();
             }
 
-            $re = ['result' => 2000, 'data' => [], 'info' => '添加产品成功'];
+            $re = Tools::reTrue('添加产品成功');
         } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '添加产品失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '添加产品失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -970,6 +1102,7 @@ class MeController extends \BaseController
 
         $promoDesc = Input::get('promo', '');
         $promoRange = Input::get('promo_range', 0);
+        $product_cate = Input::get('cate', 7);
 
         $imgToken = Input::get('img_token', '');
 
@@ -995,6 +1128,7 @@ class MeController extends \BaseController
             $product->p_discount = $prodDiscount;
             $product->p_desc = $prodDesc;
             $product->sort = 1;
+            $product->p_cate = $product_cate;
             $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
             $product->saveProduct($prodStock);
@@ -1024,13 +1158,9 @@ class MeController extends \BaseController
                 $product->save();
             }
 
-            $re = ['result' => 2000, 'data' => [], 'info' => '更新产品成功'];
+            $re = Tools::reTrue('更新产品成功');
         } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '更新产品失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '更新产品失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1049,13 +1179,9 @@ class MeController extends \BaseController
                 throw new Exception("请传入正确的排序数据", 1);
             }
             $re = Product::updateSort($sortArray);
-            $re = ['result' => 2000, 'data' => [], 'info' => '更新排序成功'];
+            $re = Tools::reTrue('更新排序成功');
         } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '更新排序失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '更新排序失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1074,13 +1200,9 @@ class MeController extends \BaseController
                 throw new Exception("请传入正确的排序数据", 1);
             }
             $re = Product::updateDiscount($discountArray);
-            $re = ['result' => 2000, 'data' => [], 'info' => '更新折扣成功'];
+            $re = Tools::reTrue('更新折扣成功');
         } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '更新折扣失败:'.$e->getMessage()];
+            $re = Tools::reTrue('更新折扣失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1099,13 +1221,9 @@ class MeController extends \BaseController
             }
             $product->p_status = $on == 1 ? 1 : 2;
             $product->save();
-            $re = ['result' => 2000, 'data' => [], 'info' => '产品操作成功'];
+            $re = Tools::reTrue('产品操作成功');
         } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '产品操作失败:'.$e->getMessage()];
+            $re = Tools::reFalse($e->getCode(), '产品操作失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

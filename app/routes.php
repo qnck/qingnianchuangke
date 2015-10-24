@@ -85,6 +85,9 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::delete('v0/user/me/product/{id}/img', 'MeController@delProductImg');
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');
+    Route::post('v0/user/me/flea', 'MeController@postFlea');
+    Route::put('v0/user/me/flea/{id}', 'MeController@putFlea');
+    Route::get('v0/user/me/flea/{id}', 'MeController@getFlea');
     Route::get('v0/user/me/orders', 'MeController@listOrders');
     Route::get('v0/user/me/order/{id}', 'MeController@getOrder');
     Route::put('v0/user/me/order/{id}/cancel', 'MeController@cancelOrder');
@@ -137,7 +140,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* TRADE END*/
 
     /* MAKER START*/
-    Route::get('v0/market/hot', 'MarketController@index');
+    Route::get('v0/market/cate/booth', 'MarketController@getBoothCate');
+    Route::get('v0/market/cate/product', 'MarketController@getProductCate');
+    Route::get('v0/market/cate/flea', 'MarketController@getFleaCate');
+    Route::get('v0/market/hot', 'MarketController@hot');
+    Route::get('v0/market/flea', 'MarketController@flea');
     Route::get('v0/market/convenient', 'MarketController@convenient');
     Route::get('v0/market/maker', 'MarketController@maker');
     Route::get('v0/market/booth', 'MarketController@listBooth');

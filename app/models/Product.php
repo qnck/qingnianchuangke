@@ -21,6 +21,41 @@ class Product extends Eloquent
         }
     }
 
+    public static function getProductCate($type)
+    {
+        $re = [];
+        switch ($type) {
+            // regular product
+            case 1:
+                $re = [
+                '1' => '校创精品',
+                '2' => '精神世界',
+                '3' => '品质生活',
+                '4' => '娱乐科技',
+                '5' => '运动健康',
+                '6' => '校创服务',
+                '7' => '其他分类',
+                ];
+                break;
+            // second hand product
+            case 2:
+                $re = [
+                '1' => '图文影音',
+                '2' => '体育用品',
+                '3' => '创意手工',
+                '4' => '虚拟商品',
+                '5' => '数码科技',
+                '6' => '其他分类',
+                ];
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+        return $re;
+    }
+
     public function showInList()
     {
         $data = null;

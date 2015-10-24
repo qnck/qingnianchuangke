@@ -12,8 +12,8 @@ class Booth extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['site' => $this->s_id, 'type' => $this->b_type, 'user' => $this->u_id, 'title' => $this->b_title],
-            ['site' => 'required', 'type' => 'required', 'user'=> 'required', 'title' => 'required']
+            ['site' => $this->c_id, 'user' => $this->u_id, 'title' => $this->b_title],
+            ['site' => 'required', 'user'=> 'required', 'title' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -56,6 +56,9 @@ class Booth extends Eloquent
         $data['remark'] = $this->remark;
         if (!empty($this->user)) {
             $data['user'] = $this->user->showInList();
+        }
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
         }
         return $data;
     }
@@ -214,5 +217,10 @@ class Booth extends Eloquent
     public function fund()
     {
         return $this->hasOne('Fund', 'b_id', 'b_id');
+    }
+
+    public function school()
+    {
+        return $this->hasOne('DicSchool', 't_id', 's_id');
     }
 }

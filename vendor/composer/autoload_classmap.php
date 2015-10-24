@@ -1009,6 +1009,7 @@ return array(
     'Predis\\Transaction\\AbortedMultiExecException' => $vendorDir . '/predis/predis/lib/Predis/Transaction/AbortedMultiExecException.php',
     'Predis\\Transaction\\MultiExecContext' => $vendorDir . '/predis/predis/lib/Predis/Transaction/MultiExecContext.php',
     'Product' => $baseDir . '/app/models/Product.php',
+    'ProductCate' => $baseDir . '/app/database/migrations/2015_10_24_121236_product_cate.php',
     'ProductQuantity' => $baseDir . '/app/models/ProductQuantity.php',
     'ProductReply' => $baseDir . '/app/models/ProductReply.php',
     'PromotionInfo' => $baseDir . '/app/models/PromotionInfo.php',
