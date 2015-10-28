@@ -189,6 +189,14 @@ class User extends Eloquent
         return $data;
     }
 
+    public function showInImList()
+    {
+        $data['id'] = $this->u_id;
+        $data['head_img'] = $this->u_head_img;
+        $data['nickname'] = $this->u_nickname;
+        return $data;
+    }
+
     public function showInOffice()
     {
         $data = [];
@@ -234,9 +242,7 @@ class User extends Eloquent
             $birthday = null;
         }
         $data['birth'] = $birthday;
-        $path = explode(',', $this->u_head_img);
-        $path = array_pop($path);
-        $data['head_img'] = $path;
+        $data['head_img'] = $this->u_head_img;
         $data['school_id'] = $this->u_school_id;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
@@ -453,12 +459,17 @@ class User extends Eloquent
 
     public function bankCards()
     {
-        return $this->hasMany('UsersBankCard', 'u_id', 'u_id');
+        return $this->hasOne('UserProfileBankcard', 'u_id', 'u_id');
     }
 
     public function contact()
     {
-        return $this->hasOne('UsersContactPeople', 'u_id', 'u_id');
+        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
+    }
+
+    public function profileBase()
+    {
+        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
     }
 
     public function school()

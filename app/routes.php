@@ -1,5 +1,4 @@
 <?php
-
 // play ground
 //
 Route::post('/v1', 'HomeController@v1');
@@ -60,14 +59,16 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* ME PROFILE START*/
     Route::get('v0/user/me/profile/check', 'MeController@profileCheck');
-    Route::post('v0/user/me/profile/detail', 'MeController@postDetail');
-    Route::post('v0/user/me/profile/contact', 'MeController@postContact');
     Route::post('v0/user/me/profile/card', 'MeController@postCard');
-    Route::get('v0/user/me/profile/detail', 'MeController@getDetail');
-    Route::get('v0/user/me/profile/contact', 'MeController@getContact');
     Route::get('v0/user/me/profile/card', 'MeController@getCard');
+    Route::post('v0/user/me/profile/base', 'MeController@postUserBase');
     Route::put('v0/user/me/profile/base', 'MeController@putUserBase');
     Route::get('v0/user/me/profile/base', 'MeController@getUserBase');
+    
+    Route::post('v0/user/me/profile/detail', 'MeController@postDetail');
+    Route::post('v0/user/me/profile/contact', 'MeController@postContact');
+    Route::get('v0/user/me/profile/detail', 'MeController@getDetail');
+    Route::get('v0/user/me/profile/contact', 'MeController@getContact');
     /* ME PROFILE END*/
 
     /* ME MARKET START*/
@@ -134,6 +135,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/post/{id}/praise', 'PostController@praise');
     Route::delete('v0/post/reply/{id}', 'PostController@disableReply');
     /* POST END*/
+
+    /* IM START*/
+    Route::get('v0/im/user/{id}', 'ImController@getUser');
+    Route::get('v0/im/user', 'ImController@listUser');
+    /* IM END*/
 
     /* TRADE START*/
     Route::resource('v0/trade', 'TradeController');

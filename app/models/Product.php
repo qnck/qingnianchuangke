@@ -7,6 +7,8 @@ class Product extends Eloquent
     public $primaryKey = 'p_id';
     public $timestamps = false;
 
+    private $_imgs = [];
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -58,13 +60,14 @@ class Product extends Eloquent
 
     public function showInList()
     {
+        $this->loadImgs();
         $data = null;
         $data['id'] = $this->p_id;
         $data['title'] = $this->p_title;
         $data['desc'] = $this->p_desc;
         $data['brief'] = $this->p_brief;
-        $data['imgs'] = Img::toArray($this->p_imgs);
-        $data['imgs'] = Img::filterKey('prod_img_', $data['imgs']);
+        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['imgs'] = Img::filterKey('prod_img_', $this->_imgs);
         $data['price_origin'] = $this->p_price_origin;
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
@@ -95,6 +98,7 @@ class Product extends Eloquent
 
     public function showDetail()
     {
+        $this->loadImgs();
         $data = null;
         $data['prod_name'] = $this->p_title;
         $data['prod_desc'] = $this->p_desc;
@@ -103,8 +107,8 @@ class Product extends Eloquent
         $data['prod_price_origin'] = $this->p_price_origin;
         $data['prod_price'] = $this->p_price;
         $data['prod_discount'] = $this->p_discount;
-        $data['imgs'] = Img::toArray($this->p_imgs);
-        $data['imgs'] = Img::filterKey('prod_img_', $data['imgs']);
+        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['imgs'] = Img::filterKey('prod_img_', $this->_imgs);
         $data['reply_count'] = $this->p_reply_count;
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
@@ -221,6 +225,11 @@ class Product extends Eloquent
         $sql = $sql.$discountSql.' END, '.$priceSql;
         $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
         return DB::statement($sql);
+    }
+
+    private function loadImgs()
+    {
+        $this->_imgs = Img::toArray($this->p_imgs);
     }
 
     // laravel relation

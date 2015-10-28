@@ -493,8 +493,8 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $bank = TmpUsersBankCard::checkProfile($u_id);
-            $contact = TmpUsersContactPeople::checkProfile($u_id);
+            $bank = TmpUserProfileBankcard::checkProfile($u_id);
+            $contact = TmpUserProfileBase::checkProfile($u_id);
             $detail = TmpUsersDetails::checkProfile($u_id);
             $re = ['result' => 2000, 'data' => ['detail' => $detail, 'contact' => $contact, 'bank' => $bank], 'info' => '获取用户资料验证信息成功'];
         } catch (Exception $e) {
@@ -618,6 +618,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    // abandon
     public function getContact()
     {
         $token = Input::get('token', '');
@@ -625,7 +626,7 @@ class MeController extends \BaseController
         
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $contact = TmpUsersContactPeople::find($u_id);
+            $contact = TmpUserProfileBase::find($u_id);
             $contact->load('school');
             $data = [];
             if (!isset($contact->u_id)) {
@@ -667,6 +668,7 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    // abandon
     public function postContact()
     {
         $token = Input::get('token', '');
@@ -701,9 +703,9 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
 
-            $user_contact_people = TmpUsersContactPeople::find($u_id);
+            $user_contact_people = TmpUserProfileBase::find($u_id);
             if (!isset($user_contact_people->u_id)) {
-                $user_contact_people = new TmpUsersContactPeople();
+                $user_contact_people = new TmpUserProfileBase();
             }
             if ($user_contact_people->u_status == 1) {
                 throw new Exception("您的审核已经通过", 3002);
@@ -735,14 +737,10 @@ class MeController extends \BaseController
                 $user_contact_people->save();
             }
 
-            $re = ['result' => 2000, 'data' => [], 'info' => '提交学校信息成功'];
+            $re = Tools::reTrue('提交学校信息成功');
         } catch (Exception $e) {
-            TmpUsersContactPeople::clearByUser($u_id);
-            $code = 3002;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '提交学校信息失败:'.$e->getMessage()];
+            TmpUserProfileBase::clearByUser($u_id);
+            $re = Tools::reFalse($e->getCode(), '提交学校信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -754,7 +752,7 @@ class MeController extends \BaseController
         
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            $card = TmpUserProfileBankcard::find($u_id);
             $card->load('bank');
             if (!isset($card->u_id)) {
                 $data['bank'] = null;
@@ -764,10 +762,10 @@ class MeController extends \BaseController
                 $data['holder_ID'] = '';
             } else {
                 $data['bank'] = $card->bank->showInList();
-                $data['card_num'] = $card->b_card_num;
+                $data['card_num'] = $card->b_card_number;
                 $data['card_holder'] = $card->b_holder_name;
-                $data['holder_phone'] = $card->u_frend_telephone1;
-                $data['holder_ID'] = $card->b_holder_identity;
+                $data['holder_phone'] = $card->b_holder_phone;
+                $data['holder_ID'] = $card->b_holder_id_number;
             }
             $re = Tools::reTrue('获取用户银行卡成功', $data);
         } catch (Exception $e) {
@@ -800,28 +798,24 @@ class MeController extends \BaseController
             $phone = new Phone($mobile);
             $phone->authVCode($vcode);
 
-            $card = TmpUsersBankCard::where('u_id', '=', $u_id)->first();
+            $card = TmpUserProfileBankcard::find($u_id);
             if (!isset($card->u_id)) {
-                $card = new TmpUsersBankCard();
+                $card = new TmpUserProfileBankcard();
             }
             if ($card->u_status == 1) {
                 throw new Exception("您的审核已经通过", 3002);
             }
             $card->u_id = $u_id;
             $card->b_id = $bankId;
-            $card->b_card_num = $cardNum;
+            $card->b_card_number = $cardNum;
             $card->b_holder_name = $cardHolderName;
             $card->b_holder_phone = $cardHolderPhone;
-            $card->b_holder_identity = $cardHolderID;
+            $card->b_holder_id_number = $cardHolderID;
             $card->register();
-            $re = ['result' => 2000, 'data' => [], 'info' => '提交银行卡信息成功'];
+            $re = Tools::reTrue('提交银行卡信息成功');
         } catch (Exception $e) {
-            TmpUsersBankCard::clearByUser($u_id);
-            $code = 3002;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '提交银行卡信息失败:'.$e->getMessage()];
+            TmpUserProfileBankcard::clearByUser($u_id);
+            $re = Tools::reFalse($e->getCode(), '提交银行卡信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1649,44 +1643,106 @@ class MeController extends \BaseController
             $data = [];
             $user = User::chkUserByToken($token, $u_id);
             $user->load('school');
-            $user_contact = UsersContactPeople::find($u_id);
-            if (empty($user_contact->u_id)) {
+            $profile = UserProfileBase::find($u_id);
+            if (empty($profile->u_id)) {
                 $entry_year = '';
-                $stu_imgs = '';
-            } else {
-                $entry_year = $user_contact->u_entry_year;
-                $stu_imgs = Img::toArray($user_contact->u_student_img);
-            }
-            if (empty($stu_imgs)) {
                 $stu_imgs = null;
-            }
-            $user_detail = UsersDetail::find($u_id);
-            if (empty($user_detail->u_id)) {
-                $id_imgs = '';
-            } else {
-                $id_imgs = Img::toArray($user_detail->u_identity_img);
-            }
-            if (empty($id_imgs)) {
                 $id_imgs = null;
+            } else {
+                $entry_year = $profile->u_entry_year;
+                $stu_imgs = Img::toArray($profile->u_student_imgs);
+                $id_imgs = Img::toArray($profile->u_id_imgs);
             }
 
             $data['id'] = $user->u_id;
             $data['name'] = $user->u_name;
+            $data['nickname'] = $user->u_nickname;
+            $data['biograph'] = $user->u_biograph;
+            $data['gender'] = $user->u_sex;
             $data['home_imgs'] = Img::toArray($user->u_home_img);
             $data['head_img'] = $user->u_head_img;
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
-            $data['gender'] = $user->u_sex;
-            $data['nickname'] = $user->u_nickname;
-            $data['biograph'] = $user->u_biograph;
+            $data['major'] = $profile->u_major;
+            $data['id_verified'] = $profile->u_is_id_verified;
+            $data['stu_verified'] = $profile->u_is_student_verified;
             $data['school'] = $user->school->showInList();
-            $brith_date = new DateTime($user->u_birthday);
-            $data['birth'] = $brith_date->format('Y-m-d');
-            $data['interests'] = $user->u_interests;
+
+            $data['id_number'] = $profile->u_id_number;
+            $data['stu_number'] = $profile->u_student_number;
+            $data['emergency_name'] = $profile->em_contact_name;
+            $data['emergency_phone'] = $profile->em_contact_phone;
+
+            $card = UserProfileBankcard::find($u_id);
+            if (empty($card)) {
+                $data['bank'] = '';
+                $data['card_holder_name'] = '';
+                $data['card_number'] = '';
+            } else {
+                $card->load('bank');
+                $data['bank'] = $card->bank->showInList();
+                $data['card_holder_name'] = $card->b_holder_name;
+                $data['card_number'] = $card->b_card_number;
+            }
+
+            $data['father_name'] = $profile->u_father_name;
+            $data['father_phone'] = $profile->u_father_phone;
+            $data['mother_name'] = $profile->u_mother_name;
+            $data['mother_phone'] = $profile->u_mother_phone;
+            
             $re = Tools::reTrue('获取用户基本信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取用户基本信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postUserBase()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $name = Input::get('name', '');
+        $id_num = Input::get('id_number', '');
+        $id_school = Input::get('id_school', 0);
+        $entry_year = Input::get('entry_year', '');
+        $major = Input::get('major', '');
+        $stu_num = Input::get('stu_num', '');
+        $em_name = Input::get('emergency_name', '');
+        $em_phoen = Input::get('emergency_phone', '');
+
+        $img_token = Input::get('img_token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $profile = TmpUserProfileBase::find($u_id);
+            if (empty($profile)) {
+                $profile = new TmpUserProfileBase();
+                $profile->u_id = $u_id;
+            }
+            $user->u_name = $name;
+            $profile->u_id_number = $id_num;
+            $profile->s_id = $id_school;
+            $profile->u_entry_year = $entry_year;
+            $profile->u_major = $major;
+            $profile->u_student_number = $stu_num;
+            $profile->em_contact_phone = $em_phoen;
+            $profile->em_contact_name = $em_name;
+            $profile->register();
+            if ($img_token) {
+                $imgObj = new Img('user', $img_token);
+                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs]), true);
+                $stu_imgs = Img::filterKey('student_img_', $imgs);
+                $id_imgs = Img::filterKey('identity_img_', $imgs);
+                $profile->u_student_imgs = implode(',', $stu_imgs);
+                $profile->u_id_imgs = implode(',', $id_imgs);
+            }
+            $user->save();
+            $profile->save();
+            $re = Tools::reTrue('提交信息成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '提交信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1696,55 +1752,48 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
-        $name = Input::get('name', '');
+        $name = Input::get('name');
         $nickname = Input::get('nickname', '');
-        $birth = Input::get('birth', '');
-        $gender = Input::get('gender', 0);
-        $biograph = Input::get('biograph', '');
+        $gender = Input::get('gender', '');
+        $bio = Input::get('bio', '');
+        $id_school = Input::get('id_school', 0);
         $entry_year = Input::get('entry_year', '');
-        $interests = Input::get('interests', '');
+        $major = Input::get('major', '');
+        $stu_num = Input::get('stu_num', '');
 
         $img_token = Input::get('img_token', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $user_contact = UsersContactPeople::find($u_id);
-            if (empty($user_contact->u_id)) {
-                $user_contact = new UsersContactPeople();
-                $user_contact->u_id = $u_id;
+            $profile = TmpUserProfileBase::find($u_id);
+            if (empty($profile)) {
+                $profile = new TmpUserProfileBase();
+                $profile->u_id = $u_id;
             }
-            $user_detail = UsersDetail::find($u_id);
-            if (empty($user_detail->u_id)) {
-                $user_detail = new UsersDetail();
-                $user_detail->u_id = $u_id;
-            }
-            $user_contact->u_entry_year = $entry_year;
-
-            $birth_date = new DateTime($birth);
             $user->u_name = $name;
-            $user->u_birthday = $birth_date;
-            $user->u_sex = $gender;
-            $user->u_biograph = $biograph;
-            $user->u_interests = $interests;
             $user->u_nickname = $nickname;
+            $user->u_sex = $gender;
+            $user->u_biograph = $bio;
+
+            $profile->s_id = $id_school;
+            $profile->u_entry_year = $entry_year;
+            $profile->u_major = $major;
+
             if ($img_token) {
                 $imgObj = new Img('user', $img_token);
-                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$user->u_home_img, $user->u_head_img, $user_contact->u_student_img, $user_detail->u_identity_img]), true);
-                $home_imgs = Img::filterKey('home_img_', $imgs);
+                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs, $user->u_home_img]), true);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);
-                $head_img = Img::filterKey('head_img', $imgs);
+                $home_imgs = Img::filterKey('home_img_', $imgs);
+                $profile->u_student_imgs = implode(',', $stu_imgs);
+                $profile->u_id_imgs = implode(',', $id_imgs);
                 $user->u_home_img = implode(',', $home_imgs);
-                $user->u_head_img = implode(',', $head_img);
-                $user_contact->u_student_img = implode(',', $stu_imgs);
-                $user_detail->u_identity_img = implode(',', $id_imgs);
             }
-            $user_contact->save();
-            $user_detail->save();
+            $profile->save();
             $user->save();
-            $re = Tools::reTrue('编辑基本信息成功');
+            $re = Tools::reTrue('提交信息成功');
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '编辑信息失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '提交信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -1756,7 +1805,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $bank = UsersBankCard::where('u_id', '=', $u_id)->first();
+            $bank = UserProfileBankcard::find($u_id);
             $alipay = UsersAlipayPayment::find($u_id);
             $wechat = UsersWechatPayment::find($u_id);
             if (empty($bank)) {
@@ -1857,16 +1906,16 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $card = UsersBankCard::where('b_card_num', '=', $card_num)->first();
+            $card = UserProfileBankcard::where('b_card_num', '=', $card_num)->first();
             if (!empty($card) && $card->u_id != $u_id) {
                 throw new Exception("该卡号不可用", 9007);
             }
-            $card = UsersBankCard::where('u_id', '=', $u_id)->first();
+            $card = UserProfileBankcard::find($u_id);
             if (empty($card)) {
-                $card = new UsersBankCard();
+                $card = new UserProfileBankcard();
                 $card->u_id = $u_id;
             }
-            $card->b_card_num = $card_num;
+            $card->b_card_number = $card_num;
             $card->b_holder_name = $holder;
             $card->b_id = $bank;
             $card->save();

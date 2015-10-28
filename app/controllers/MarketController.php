@@ -676,7 +676,7 @@ class MarketController extends \BaseController
 
         try {
             $user = User::find($u_id);
-            $user_contact = UsersContactPeople::find($u_id);
+            $user_contact = UserProfileBase::find($u_id);
             $query = BoothFollow::with(['follower', 'follower.school'])->where('b_id', '=', $id)->select('booth_follows.*')
             ->leftJoin('users', function ($q) {
                 $q->on('users.u_id', '=', 'booth_follows.u_id');

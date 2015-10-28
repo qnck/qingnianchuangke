@@ -33,13 +33,14 @@ class OfficeWebUserController extends \BaseController
         return Response::Json($re);
     }
 
+    // abondan
     public function getUserProfile($id)
     {
         try {
             $user = User::find($id);
             $detail = TmpUsersDetails::find($id);
-            $bank = TmpUsersBankCard::where('u_id', '=', $id)->first();
-            $contact = TmpUsersContactPeople::find($id);
+            $bank = TmpUserProfileBankcard::find($id);
+            $contact = TmpUserProfileBase::find($id);
 
             if (empty($user)) {
                 throw new Exception("查找的用户的不存在", 10001);
@@ -129,6 +130,7 @@ class OfficeWebUserController extends \BaseController
         return Response::json($re);
     }
 
+    // abondan
     public function censorUserProfileContact($id)
     {
         $check = Input::get('check', 0);
@@ -141,7 +143,7 @@ class OfficeWebUserController extends \BaseController
                 }
             }
 
-            $tmp_contact = TmpUsersContactPeople::find($id);
+            $tmp_contact = TmpUserProfileBase::find($id);
             if (empty($tmp_contact)) {
                 throw new Exception("查找的用户信息不存在", 10001);
             }
@@ -150,9 +152,9 @@ class OfficeWebUserController extends \BaseController
                 throw new Exception("审核已经通过了", 10002);
             }
 
-            $contact = UsersContactPeople::find($id);
+            $contact = UserProfileBase::find($id);
             if (empty($contact)) {
-                $contact = new UsersContactPeople();
+                $contact = new UserProfileBase();
             }
 
             if ($check == 1) {
@@ -196,7 +198,7 @@ class OfficeWebUserController extends \BaseController
                 }
             }
 
-            $tmp_bank = TmpUsersBankCard::find($id);
+            $tmp_bank = TmpUserProfileBankcard::find($id);
             if (empty($tmp_bank)) {
                 throw new Exception("查找的用户信息不存在", 10001);
             }
@@ -205,19 +207,19 @@ class OfficeWebUserController extends \BaseController
                 throw new Exception("审核已经通过了", 10002);
             }
 
-            $bank = UsersBankCard::find($id);
+            $bank = UserProfileBankcard::find($id);
             if (empty($bank)) {
-                $bank = new UsersBankCard();
+                $bank = new UserProfileBankcard();
             }
 
             if ($check == 1) {
                 $bank->t_id = $tmp_bank->t_id;
                 $bank->u_id = $tmp_bank->u_id;
                 $bank->b_id = $tmp_bank->b_id;
-                $bank->b_card_num = $tmp_bank->b_card_num;
+                $bank->b_card_number = $tmp_bank->b_card_number;
                 $bank->b_holder_name = $tmp_bank->b_holder_name;
                 $bank->b_holder_phone = $tmp_bank->b_holder_phone;
-                $bank->b_holder_identity = $tmp_bank->b_holder_identity;
+                $bank->b_holder_id_number = $tmp_bank->b_holder_id_number;
                 $bank->save();
                 $tmp_bank->b_status = 1;
                 $tmp_bank->remark = '';

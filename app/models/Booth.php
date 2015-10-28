@@ -8,6 +8,7 @@ class Booth extends Eloquent
     public $timestamps = false;
 
     public static $type = [1 => '便利店', 2 => '创的店', 3 => '创的店与便利店'];
+    private $_imgs = [];
 
     private function baseValidate()
     {
@@ -25,6 +26,7 @@ class Booth extends Eloquent
 
     public function showInLogin()
     {
+        $this->loadImg();
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
@@ -32,6 +34,7 @@ class Booth extends Eloquent
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['logo'] = $this->getLogo();
+        $data['cover_img'] = $this->_imgs['cover_img'];
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['open'] = $this->b_open;
@@ -45,12 +48,14 @@ class Booth extends Eloquent
 
     public function showInList()
     {
+        $this->loadImg();
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
         $data['desc'] = $this->b_desc;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
+        $data['cover_img'] = $this->_imgs['cover_img'];
         $data['user'] = null;
         $data['status'] = $this->b_status;
         $data['remark'] = $this->remark;
@@ -65,6 +70,7 @@ class Booth extends Eloquent
 
     public function showDetail()
     {
+        $this->loadImg();
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
@@ -73,6 +79,7 @@ class Booth extends Eloquent
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
         $data['logo'] = $this->getLogo();
+        $data['cover_img'] = $this->_imgs['cover_img'];
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
@@ -97,6 +104,7 @@ class Booth extends Eloquent
 
     public function showInOffice()
     {
+        $this->loadImg();
         $data = [];
         $data['id'] = $this->b_id;
         $data['title'] = $this->b_title;
@@ -105,6 +113,7 @@ class Booth extends Eloquent
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
         $data['logo'] = $this->getLogo();
+        $data['cover_img'] = $this->_imgs['cover_img'];
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
@@ -178,7 +187,7 @@ class Booth extends Eloquent
     public function getLogo()
     {
         $logo = null;
-        $imgs = Img::toArray($this->b_imgs);
+        $imgs = $this->_imgs;
         if (empty($imgs['logo'])) {
             $logo = null;
         } elseif (strpos($imgs['logo'], 'http://') !== false) {
@@ -195,6 +204,11 @@ class Booth extends Eloquent
         if (!empty($record)) {
             $record->delete();
         }
+    }
+
+    private function loadImg()
+    {
+        $this->_imgs = Img::toArray($this->b_imgs);
     }
 
     // laravel relations
