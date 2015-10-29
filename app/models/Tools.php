@@ -81,4 +81,14 @@ class Tools
         }
         return substr($crud, $length * -1, $length);
     }
+
+    public static function getNow($format = 'Y-m-d H:i:s')
+    {
+        $now = new DateTime();
+        if ($format) {
+            return $now->format($format);
+        } else {
+            return $now;
+        }
+    }
 }

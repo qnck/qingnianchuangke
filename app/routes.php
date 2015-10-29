@@ -78,6 +78,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::put('v0/user/me/booth/{id}/desc', 'MeController@putBoothDesc');
     Route::put('v0/user/me/booth/{id}/status', 'MeController@putBoothStatus');
     Route::get('v0/user/me/booth/{id}/status', 'MeController@getBoothStatus');
+    
     Route::post('v0/user/me/product', 'MeController@postProduct');
     Route::get('v0/user/me/product', 'MeController@getProducts');
     Route::get('v0/user/me/product/{id}', 'MeController@getProduct');
@@ -86,28 +87,37 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::delete('v0/user/me/product/{id}/img', 'MeController@delProductImg');
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
     Route::post('v0/user/me/product/discount', 'MeController@updateProductDiscount');
-    Route::post('v0/user/me/flea', 'MeController@postFlea');
-    Route::put('v0/user/me/flea/{id}', 'MeController@putFlea');
-    Route::get('v0/user/me/flea/{id}', 'MeController@getFlea');
+
+    Route::post('v0/user/me/crowd', 'MeCrowdFundingController@postCrowFunding');
+
+    Route::post('v0/user/me/flea', 'MeProductController@postFlea');
+    Route::put('v0/user/me/flea/{id}', 'MeProductController@putFlea');
+    Route::get('v0/user/me/flea/{id}', 'MeProductController@getFlea');
+    
     Route::get('v0/user/me/orders', 'MeController@listOrders');
     Route::get('v0/user/me/order/{id}', 'MeController@getOrder');
     Route::put('v0/user/me/order/{id}/cancel', 'MeController@cancelOrder');
     Route::get('v0/user/me/orders/count', 'MeController@countOrders');
+    Route::post('v0/user/me/order/deliver', 'MeController@deliverOrder');
+    Route::post('v0/user/me/order/confirm', 'MeController@confirmOrder');
+    
     Route::get('v0/user/me/sells', 'MeController@listSellOrders');
     Route::get('v0/user/me/sells/{id}', 'MeController@getSellOrder');
     Route::put('v0/user/me/sells/{id}/cancel', 'MeController@cancelSellOrder');
     Route::get('v0/user/me/sells/count', 'MeController@countSellOrders');
-    Route::post('v0/user/me/order/deliver', 'MeController@deliverOrder');
-    Route::post('v0/user/me/order/confirm', 'MeController@confirmOrder');
+    
     Route::get('v0/user/me/praise/promo', 'MeController@listPraisePromo');
     Route::get('v0/user/me/following/booth', 'MeController@listFollowingBooth');
+    
     Route::get('v0/user/me/wallet', 'MeController@showWallet');
     Route::post('v0/user/me/wallet/draw', 'MeController@postWalletDraw');
     Route::get('v0/user/me/wallet/draw', 'MeController@listWalletDraw');
     Route::get('v0/user/me/wallet/draw/{id}', 'MeController@getWalletDraw');
+    
     Route::post('v0/user/me/payment/wechat', 'MeController@postPaymentWechat');
     Route::post('v0/user/me/payment/alipay', 'MeController@postPaymentAlipay');
     Route::post('v0/user/me/payment/bank', 'MeController@postPaymentBank');
+    
     Route::get('v0/user/me/financial/report', 'MeController@financialReport');
     Route::post('v0/user/me/financial/report/confirm', 'MeController@confirmFinancialReport');
     /* ME MARKET END*/
@@ -205,7 +215,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* PAYMENT END*/
 
     /* CROWDINGFUDING START*/
-    Route::get('v0/crowd', 'CrowdFundingController@listCrowFunding');
+    Route::get('v0/crowd', 'CrowdFundingController@listCrowdFunding');
     /* CROWDINGFUDING END*/
 
 });

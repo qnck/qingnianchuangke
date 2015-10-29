@@ -4,33 +4,36 @@
 */
 class CrowdFundingController extends \BaseController
 {
-    public function listCrowFunding()
+    public function listCrowdFunding()
     {
-        $data = [];
-        $tmp = [
-            'id' => 1,
-            'title' => '众筹众筹众筹',
-            'price' => '20.00',
-            'amount' => '2324.00',
-            'target_amount' => '5000.00',
-            'days_left' => '16',
-            'school' => [
-                'id' => 1,
-                'school_name' => '北京大学',
-            ],
-            'city' => [
-                'id' => 1,
-                'name' => '北京',
-            ],
-            'user' => [
-                'id' => 20,
-                'name' => '学姐',
-                'nickname' => '还是学姐',
-                'head_img' => "http://qnckimgtest.oss-cn-hangzhou.aliyuncs.com/user/46/head_img.jpg",
-            ],
-        ];
-        $data[] = $tmp;
-        $re = Tools::reTrue('获取众筹列表成功', $data);
+        $per_page = Input::get('per_page', 30);
+
+        $cate = Input::get('cate', 0);
+
+        $range = Input::get('range', 1);
+        $city = Input::get('city', 0);
+        $school = Input::get('school', 0);
+
+        try {
+            $query = CrowdFunding::with(['city', 'school', 'user', 'product'])->where('c_status', '>', 2);
+            if ($cate) {
+                $query = $query->where('c_cate', '=', $cate);
+            }
+            if ($city && $range == 2) {
+                $query = $query->where('c_id', '=', $city);
+            }
+            if ($school && $range = 3) {
+                $query = $query->where('s_id', '=', $school);
+            }
+            $list = $query->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $funding) {
+                $data[] = $funding->showInList();
+            }
+            $re = Tools::reTrue('获取众筹成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
+        }
         return Response::json($re);
     }
 }

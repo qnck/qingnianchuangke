@@ -457,19 +457,9 @@ class User extends Eloquent
         return $this->belongsToMany('User', 'attentions', 'u_fans_id', 'u_id');
     }
 
-    public function bankCards()
+    public function bankCard()
     {
         return $this->hasOne('UserProfileBankcard', 'u_id', 'u_id');
-    }
-
-    public function contact()
-    {
-        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
-    }
-
-    public function profileBase()
-    {
-        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
     }
 
     public function school()
@@ -487,8 +477,18 @@ class User extends Eloquent
         return $this->hasMany('PromotionPraise', 'u_id', 'u_id');
     }
 
+    public function booth()
+    {
+        return $this->hasOne('booth', 'u_id', 'u_id');
+    }
+
     public function booths()
     {
         return $this->hasMany('Booth', 'u_id', 'u_id');
+    }
+
+    public function profileBase()
+    {
+        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
     }
 }
