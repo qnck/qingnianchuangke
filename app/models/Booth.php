@@ -34,7 +34,7 @@ class Booth extends Eloquent
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
         $data['logo'] = $this->getLogo();
-        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['open'] = $this->b_open;
@@ -55,7 +55,7 @@ class Booth extends Eloquent
         $data['desc'] = $this->b_desc;
         $data['type'] = $this->b_type;
         $data['category'] = $this->b_product_category;
-        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['user'] = null;
         $data['status'] = $this->b_status;
         $data['remark'] = $this->remark;
@@ -79,7 +79,7 @@ class Booth extends Eloquent
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
         $data['logo'] = $this->getLogo();
-        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
