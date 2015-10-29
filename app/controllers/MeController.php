@@ -894,7 +894,7 @@ class MeController extends \BaseController
                 $shcool = $user->load('school');
                 $booth = new Booth();
                 $booth->u_id = $u_id;
-                $booth->b_type = 0;
+                $booth->b_type = 7;
                 $booth->c_id = $school->t_city;
                 $booth->s_id = $school->t_id;
                 $booth->b_with_fund = 0;
@@ -919,7 +919,7 @@ class MeController extends \BaseController
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;
-            $quantity->b_id = $b_id;
+            $quantity->b_id = $booth->b_id;
             $quantity->u_id = $u_id;
             $quantity->q_total = 1;
 
