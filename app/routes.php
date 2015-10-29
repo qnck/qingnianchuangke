@@ -204,6 +204,10 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/pay/wechat/watchdog', 'PayController@callbackWechat');
     /* PAYMENT END*/
 
+    /* CROWDINGFUDING START*/
+    Route::get('v0/crowd', 'CrowdFundingController@listCrowFunding');
+    /* CROWDINGFUDING END*/
+
 });
 
 /*********** BACK ***********/
