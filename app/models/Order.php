@@ -124,7 +124,7 @@ class Order extends Eloquent
         return $this->o_id;
     }
 
-    public static function generateOrderNo($u_id)
+    public static function generateOrderGroupNo($u_id)
     {
         $order_no = Tools::generateDateUserRandomNo($u_id);
         $chk = Order::where('o_number', '=', $order_no)->first();
@@ -168,7 +168,11 @@ class Order extends Eloquent
 
     public function getSummary()
     {
-        $this->_carts = Cart::where('o_id', '=', $this->o_id)->get();
+        $this->_carts = Cart::leftJoin('orders', function ($q) {
+            $q->on('carts.o_id', '=', 'orders.o_id')
+            ->where('orders.o_group_number', '=', $this->o_group_number);
+        })
+        ->get();
         foreach ($this->_carts as $key => $cart) {
             if (empty($this->_bills[$cart->b_id])) {
                 if ($cart->c_status == 3) {

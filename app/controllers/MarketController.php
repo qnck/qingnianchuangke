@@ -612,10 +612,10 @@ class MarketController extends \BaseController
             $list = Cart::whereIn('c_id', $carts)->get();
             $total_amount = 0;
             $total_amount_origin = 0;
-            $group['amount_origin'] = 0;
-            $group['amount'] = 0;
-            $group['carts_ids'] = [];
-            $group['b_ids'] = [];
+            $b_ids = [];
+            $amount_origin_sum = 0;
+            $amount_sum = 0;
+            $groups = [];
             foreach ($list as $key => $cart) {
                 if ($cart->u_id != $u_id) {
                     throw new Exception("没有权限操作该购物车", 7001);
@@ -624,37 +624,53 @@ class MarketController extends \BaseController
                     throw new Exception("购物车无效", 7005);
                 }
                 $cart->updateCart($cart->c_quantity);
-                $group['amount_origin'] += $cart->c_amount_origin;
-                $group['amount'] += $cart->c_amount;
-                $group['carts_ids'][] = $cart->c_id;
-                $group['b_ids'][] = $cart->b_id;
+                if (empty($groups[$cart->b_id]['amount_origin'])) {
+                    $groups[$cart->b_id]['amount_origin'] = 0;
+                    $groups[$cart->b_id]['amount'] = 0;
+                    $groups[$cart->b_id]['carts_ids'] = [];
+                }
+                $groups[$cart->b_id]['amount_origin'] += $cart->c_amount_origin;
+                $groups[$cart->b_id]['amount'] += $cart->c_amount;
+                $groups[$cart->b_id]['carts_ids'][] = $cart->c_id;
+                $b_ids[] = $cart->b_id;
+
+                $amount_sum += $groups[$cart->b_id]['amount'];
+                $amount_origin_sum += $groups[$cart->b_id]['amount_origin'];
             }
 
-            if (($group['amount_origin'] != $amount_origin) || ($group['amount'] != $amount)) {
+            if (($amount_origin_sum != $amount_origin) || ($amount_sum != $amount)) {
                 throw new Exception("支付金额已刷新, 请重新提交订单", 9003);
             }
-            $order_no = Order::generateOrderNo($u_id);
-            $order = new Order();
-            $order->u_id = $u_id;
-            $order->o_amount_origin = $group['amount_origin'];
-            $order->o_amount = $group['amount'];
-            $order->o_shipping_fee = $shipping_fee;
-            $order->o_shipping_name = $shipping_name;
-            $order->o_shipping_phone = $shipping_phone;
-            $order->o_shipping_address = $shipping_address;
-            $order->o_delivery_time = $delivery_time;
-            $order->o_shipping = $shipping;
-            $order->o_comment = $comment;
-            $order->o_number = $order_no;
-            $o_id = $order->addOrder();
+
+            $order_group_no = Order::generateOrderGroupNo($u_id);
+            foreach ($groups as $b_id => $group) {
+                $rnd_str = rand(10, 99);
+                $order_no = $order_group_no.$b_id.$rnd_str;
+                $order = new Order();
+                $order->u_id = $u_id;
+                $order->b_id = $b_id;
+                $order->o_amount_origin = $group['amount_origin'];
+                $order->o_amount = $group['amount'];
+                $order->o_shipping_fee = $shipping_fee;
+                $order->o_shipping_name = $shipping_name;
+                $order->o_shipping_phone = $shipping_phone;
+                $order->o_shipping_address = $shipping_address;
+                $order->o_delivery_time = $delivery_time;
+                $order->o_shipping = $shipping;
+                $order->o_comment = $comment;
+                $order->o_number = $order_no;
+                $order->o_group_number = $order_group_no;
+                $o_id = $order->addOrder();
+                Cart::bindOrder([$order->o_id => $group['carts_ids']]);
+            }
+
             // push msg to seller
-            $list = Booth::whereIn('b_id', $group['b_ids'])->get();
+            $list = Booth::whereIn('b_id', $b_ids)->get();
             foreach ($list as $key => $booth) {
                 $msg = new PushMessage($booth->u_id);
                 $msg->pushMessage('您有新的订单, 请及时发货');
             }
-            Cart::bindOrder([$order->o_id => $group['carts_ids']]);
-            $re = Tools::reTrue('提交订单成功', ['order_id' => $o_id, 'order_no' => $order_no]);
+            $re = Tools::reTrue('提交订单成功', ['order_group_no' => $order_group_no]);
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), $e->getMessage());

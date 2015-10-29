@@ -12,11 +12,10 @@ class Crowdfunding extends Migration {
      */
     public function up()
     {
-        Schema::create('crowd_fundings', function ($table) {
-
+        Schema::table('orders', function ($table) {
+            $table->string('o_group_number', 127);
+            $table->integer('b_id');
         });
-
-        Schema::create('crowd_funding_purchaes')
     }
 
     /**
@@ -28,5 +27,4 @@ class Crowdfunding extends Migration {
     {
         //
     }
-
 }
