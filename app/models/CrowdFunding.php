@@ -40,6 +40,7 @@ class CrowdFunding extends Eloquent
     {
         $this->loadImg();
         $data = [];
+        $data['id'] = $this->cf_id;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['title'] = $this->c_title;
         $data['status'] = $this->c_status;
@@ -47,6 +48,7 @@ class CrowdFunding extends Eloquent
         $data['time'] = $this->c_time;
         $data['target_amount'] = $this->c_target_amount;
         if ($this->product) {
+            $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
             $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
         }
@@ -66,6 +68,7 @@ class CrowdFunding extends Eloquent
     {
         $this->loadImg();
         $data = [];
+        $data['id'] = $this->cf_id;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $content = json_decode($this->c_content);
         $prod_imgs = Img::filterKey('prod_img_', $this->_imgs, true);
@@ -84,6 +87,7 @@ class CrowdFunding extends Eloquent
         $data['shipping'] = $this->c_shipping;
         $data['shipping_fee'] = $this->c_shipping_fee;
         if ($this->product) {
+            $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
             $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
         }
