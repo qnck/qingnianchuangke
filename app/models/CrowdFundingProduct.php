@@ -31,4 +31,5 @@ class CrowdFundingProduct extends Eloquent
     }
 
     // relation
+        
 }

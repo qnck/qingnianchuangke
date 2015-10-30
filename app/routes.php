@@ -216,6 +216,9 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* CROWDINGFUDING START*/
     Route::get('v0/crowd', 'CrowdFundingController@listCrowdFunding');
+    Route::get('v0/crowd/cate', 'CrowdFundingController@getCate');
+    Route::get('v0/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
+    Route::post('v0/crowd/{id}/reply', 'CrowdFundingController@postReply');
     /* CROWDINGFUDING END*/
 
 });

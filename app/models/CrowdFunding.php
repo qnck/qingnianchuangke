@@ -43,8 +43,12 @@ class CrowdFunding extends Eloquent
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['title'] = $this->c_title;
         $data['status'] = $this->c_status;
+        $data['active_at'] = $this->active_at;
+        $data['time'] = $this->c_time;
+        $data['target_amount'] = $this->c_target_amount;
         if ($this->product) {
             $data['price'] = $this->product->p_price;
+            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
         }
         if ($this->user) {
             $data['user'] = $this->user->showInList();
@@ -54,6 +58,46 @@ class CrowdFunding extends Eloquent
         }
         if ($this->city) {
             $data['city'] = $this->city->showInList();
+        }
+        return $data;
+    }
+
+    public function showDetail()
+    {
+        $this->loadImg();
+        $data = [];
+        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
+        $content = json_decode($this->c_content);
+        $prod_imgs = Img::filterKey('prod_img_', $this->_imgs, true);
+        $pic_text = [];
+        foreach ((array)$prod_imgs as $key => $value) {
+            $tmp = ['img' => $value, 'text' => $content[$key]];
+            $pic_text[] = $tmp;
+        }
+        $data['content'] = $pic_text;
+        $data['title'] = $this->c_title;
+        $data['status'] = $this->c_status;
+        $data['active_at'] = $this->active_at;
+        $data['time'] = $this->c_time;
+        $data['yield_time'] = $this->c_yield_time;
+        $data['target_amount'] = $this->c_target_amount;
+        $data['shipping'] = $this->c_shipping;
+        $data['shipping_fee'] = $this->c_shipping_fee;
+        if ($this->product) {
+            $data['price'] = $this->product->p_price;
+            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
+        }
+        if ($this->user) {
+            $data['user'] = $this->user->showInList();
+        }
+        if ($this->school) {
+            $data['school'] = $this->school->showInList();
+        }
+        if ($this->city) {
+            $data['city'] = $this->city->showInList();
+        }
+        if ($this->replies) {
+            $data['replies'] = Reply::makeTree($this->replies);
         }
         return $data;
     }
@@ -96,5 +140,10 @@ class CrowdFunding extends Eloquent
     public function products()
     {
         return $this->hasMany('CrowdFundingProduct', 'c_id', 'c_id');
+    }
+
+    public function replies()
+    {
+        return $this->morphToMany('Reply', 'repliable');
     }
 }

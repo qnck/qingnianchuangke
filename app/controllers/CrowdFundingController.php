@@ -4,6 +4,13 @@
 */
 class CrowdFundingController extends \BaseController
 {
+
+    public function getCate()
+    {
+        $data = CrowdFunding::getCrowdFundingCate();
+        return Response::json($data);
+    }
+
     public function listCrowdFunding()
     {
         $per_page = Input::get('per_page', 30);
@@ -33,6 +40,57 @@ class CrowdFundingController extends \BaseController
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function getCrowdFunding($id)
+    {
+        try {
+            $crowdfunding = CrowdFunding::find($id);
+            $crowdfunding->load(['replies']);
+            $data = $crowdfunding->showDetail();
+            $re = Tools::reTrue('获取众筹成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse('获取众筹失败');
+        }
+        return Response::json($re);
+    }
+
+    public function postReply($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $to = Input::get('to', 0);
+        $to_u_id = Input::get('to_u_id', 0);
+        $content = Input::get('content', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $to_user = User::find($to_u_id);
+            if (empty($to_user)) {
+                $to_u_id = 0;
+                $to_u_name = '';
+            } else {
+                $to_u_name = $to_user->u_nickname;
+            }
+            $cf = CrowdFunding::find($id);
+            $reply = [
+                'to_id' => $to,
+                'created_at' => Tools::getNow(),
+                'content' => $content,
+                'u_id' => $u_id,
+                'u_name' => $user->u_nickname,
+                'status' => 1,
+                'to_u_id' => $to_u_id,
+                'to_u_name' => $to_u_name,
+            ];
+            $replyObj = new Reply($reply);
+            $cf->replies()->save($replyObj);
+            $re = Tools::reTrue('回复成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '回复失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

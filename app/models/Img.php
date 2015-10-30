@@ -110,7 +110,7 @@ class Img
         return $array;
     }
 
-    public static function filterKey($needle, $array = [])
+    public static function filterKey($needle, $array = [], $with_key = false)
     {
         $re = [];
         if (empty($array)) {
@@ -118,7 +118,11 @@ class Img
         }
         foreach ($array as $key => $img) {
             if (strpos($key, $needle) !== false) {
-                $re[] = $img;
+                if ($with_key) {
+                    $re[$key] = $img;
+                } else {
+                    $re = $img;
+                }
             }
         }
         return $re;
