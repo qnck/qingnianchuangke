@@ -148,7 +148,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* IM START*/
     Route::get('v0/im/user/{id}', 'ImController@getUser');
-    Route::get('v0/im/user', 'ImController@listUser');
+    Route::post('v0/im/user', 'ImController@listUser');
     /* IM END*/
 
     /* TRADE START*/
