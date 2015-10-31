@@ -119,16 +119,57 @@ class MeProductController extends \BaseController
 
     public function getFlea($id)
     {
+        try {
+            $product = Product::find($id);
+            $data = $product->showDetail();
+            $re = Tools::reTrue('获取商品成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取商品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function putAtop($id)
+    {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
             $product = Product::find($id);
-            $data = $product->showDetail();
-            $re = Tools::reTrue('获取商品成功');
+            if ($product->u_id != $u_id) {
+                throw new Exception("无法操作该商品", 7001);
+            }
+            $max_sort = DB::table('products')->where('u_id', '=', $u_id)->where('b_id', '=', $product->b_id)->max('sort');
+            $product->sort = ++$max_sort;
+            $product->save();
+            $re = Tools::reTrue('商品置顶成功');
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取商品失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '商品置顶失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function pushPromo($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $promo = PromotionInfo::find($id);
+            $now_obj = new DateTime();
+            $last_update_obj = new DateTime($promo->updated_at);
+            $diff = $now_obj->diff($last_update_obj);
+            if ($diff->days == 0 && $promo->p_push_count < 3) {
+                $promo->p_push_count++;
+                $promo->updated_at = $now_obj->format('Y-m-d H:i:s');
+            } else {
+                throw new Exception("每天只能推送3次", 7001);
+            }
+            $re = Tools::reTrue('商品置顶成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '商品置顶失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

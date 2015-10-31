@@ -22,6 +22,7 @@ class MarketController extends \BaseController
                 throw new Exception("请传入有效的用户id", 2001);
             }
             $query = PromotionInfo::with([
+                'city',
                 'school',
                 'booth' => function ($q) {
                     $q->with(['user']);
@@ -113,7 +114,7 @@ class MarketController extends \BaseController
         $page = Input::get('page', 1);
         $perPage = Input::get('per_page', 30);
 
-        try {
+        // try {
             if (!$u_id) {
                 throw new Exception("请传入有效的用户id", 2001);
             }
@@ -162,9 +163,9 @@ class MarketController extends \BaseController
                 $data[] = $product->showInList();
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
-        } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取跳蚤市场商品失败:'.$e->getMessage());
-        }
+        // } catch (Exception $e) {
+        //     $re = Tools::reFalse($e->getCode(), '获取跳蚤市场商品失败:'.$e->getMessage());
+        // }
         return Response::json($re);
     }
 

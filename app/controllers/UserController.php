@@ -310,4 +310,76 @@ class UserController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function postPraise($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->praises()->where('praises.u_id', '=', $u_id)->first();
+            if (!empty($chk)) {
+                throw new Exception("已经赞过了", 7001);
+            }
+            $data = [
+                'u_id' => $u_id,
+                'created_at' => Tools::getNow(),
+                'u_name' => $user->u_name
+            ];
+            $praise = new Praise($data);
+            $user->praises()->save($praise);
+            $user->u_praise_count++;
+            $user->save();
+            $re = Tools::reTrue('点赞成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '点赞失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postFavorite($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
+            if (!empty($chk)) {
+                throw new Exception("已经收藏过了", 7001);
+            }
+            $data = [
+                'u_id' => $u_id,
+                'created_at' => Tools::getNow(),
+                'u_name' => $user->u_name
+            ];
+            $favorite = new Favorite($data);
+            $user->favorites()->save($favorite);
+            $re = Tools::reTrue('收藏成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '收藏失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delFavorite($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
+            if (empty($chk)) {
+                throw new Exception("已经取消收藏了", 7001);
+            }
+            $user->favorites()->detach($chk->id);
+            $chk->delete();
+            $re = Tools::reTrue('取消收藏成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '取消收藏失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

@@ -491,4 +491,14 @@ class User extends Eloquent
     {
         return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
     }
+
+    public function praises()
+    {
+        return $this->morphToMany('Praise', 'praisable');
+    }
+
+    public function favorites()
+    {
+        return $this->morphToMany('Favorite', 'favoriable');
+    }
 }

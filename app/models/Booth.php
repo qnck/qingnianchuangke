@@ -237,4 +237,14 @@ class Booth extends Eloquent
     {
         return $this->hasOne('DicSchool', 't_id', 's_id');
     }
+    
+    public function praises()
+    {
+        return $this->morphToMany('Praise', 'praisable');
+    }
+
+    public function favorites()
+    {
+        return $this->morphToMany('Favorite', 'favoriable');
+    }
 }

@@ -19,6 +19,7 @@ class MeCrowdFundingController extends \BaseController
         $brief = Input::get('brief', '');
         $yield_desc = Input::get('yield_desc', '');
         $content = Input::get('content', '');
+        $open_file = Input::get('open_file', 0);
 
         $price = Input::get('price', 0);
         $quantity = Input::get('quantity', 0);
@@ -66,6 +67,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
+            $crowd_funding->c_open_file = $open_file;
             $crowd_funding->addCrowdFunding();
 
             if ($img_token) {

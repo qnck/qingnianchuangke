@@ -114,7 +114,7 @@ class Img
     {
         $re = [];
         if (empty($array)) {
-            return $array;
+            return [];
         }
         foreach ($array as $key => $img) {
             if (strpos($key, $needle) !== false) {

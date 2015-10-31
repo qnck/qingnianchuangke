@@ -106,6 +106,17 @@ class CrowdFunding extends Eloquent
         return $data;
     }
 
+    public function getParticipates()
+    {
+        $query = User::select('users.*', 'carts.c_quantity')->rightJoin('carts', function ($q) {
+            $q->on('users.u_id', '=', 'carts.u_id')->where('carts.c_type', '=', 2);
+        })->join('crowd_funding_products', function ($q) {
+            $q->on('crowd_funding_products.p_id', '=', 'carts.p_id')->where('crowd_funding_products.cf_id', '=', $this->cf_id);
+        });
+        $list = $query->get();
+        return $list;
+    }
+
     public function loadImg()
     {
         $this->_imgs = Img::toArray($this->c_imgs);
@@ -149,5 +160,15 @@ class CrowdFunding extends Eloquent
     public function replies()
     {
         return $this->morphToMany('Reply', 'repliable');
+    }
+
+    public function praises()
+    {
+        return $this->morphToMany('Praise', 'praisable');
+    }
+
+    public function favorites()
+    {
+        return $this->morphToMany('Favorite', 'favoriable');
     }
 }

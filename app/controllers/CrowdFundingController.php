@@ -51,9 +51,17 @@ class CrowdFundingController extends \BaseController
             $crowdfunding = CrowdFunding::find($id);
             $crowdfunding->load(['replies']);
             $data = $crowdfunding->showDetail();
+            $participates = $crowdfunding->getParticipates();
+            $data['participates_count'] = count($participates);
+            $data['participates'] = [];
+            foreach ($participates as $key => $user) {
+                $tmp = $user->showInList();
+                $tmp['quantity'] = $user->c_quantity;
+                $data['participates'][] = $tmp;
+            }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
-            $re = Tools::reFalse('获取众筹失败');
+            $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -134,9 +142,9 @@ class CrowdFundingController extends \BaseController
             $product->loadProduct($quantity);
             if (!$funding->c_shipping) {
                 $shipping_address = '';
-                $shipping_name = $user->u_name;
-                $shipping_phone = $user->u_mobile;
             }
+            $shipping_name = $shipping_name ? $shipping_name : $user->u_name;
+            $shipping_phone = $shipping_phone ? $shipping_phone : $user->u_mobile;
 
             $date_obj = new DateTime($funding->active_at);
             $delivery_time_obj = $date_obj->modify('+'.($funding->c_time+$funding->c_yield_time).'days');
@@ -174,4 +182,89 @@ class CrowdFundingController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function postPraise($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $funding = CrowdFunding::find($id);
+            if (empty($funding)) {
+                throw new Exception("请求的众筹不存在", 2001);
+            }
+            $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
+            if (!empty($chk)) {
+                throw new Exception("已经赞过了", 7001);
+            }
+            $data = [
+                'u_id' => $u_id,
+                'created_at' => Tools::getNow(),
+                'u_name' => $user->u_name
+            ];
+            $praise = new Praise($data);
+            $funding->praises()->save($praise);
+            $funding->c_praise_count++;
+            $funding->save();
+            $re = Tools::reTrue('点赞成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '点赞失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postFavorite($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $funding = CrowdFunding::find($id);
+            if (empty($funding)) {
+                throw new Exception("请求的众筹不存在", 2001);
+            }
+            $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
+            if (!empty($chk)) {
+                throw new Exception("已经赞过了", 7001);
+            }
+            $data = [
+                'u_id' => $u_id,
+                'created_at' => Tools::getNow(),
+                'u_name' => $user->u_name
+            ];
+            $favorite = new Favorite($data);
+            $funding->favorites()->save($favorite);
+            $re = Tools::reTrue('收藏成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '收藏失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delFavorite($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $funding = CrowdFunding::find($id);
+            if (empty($funding)) {
+                throw new Exception("请求的众筹不存在", 2001);
+            }
+            $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
+            if (empty($chk)) {
+                throw new Exception("已经取消收藏了", 7001);
+            }
+            $funding->favorites()->detach($chk->id);
+            $chk->delete();
+            $re = Tools::reTrue('取消收藏成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '取消收藏失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
 }

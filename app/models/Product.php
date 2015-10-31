@@ -263,4 +263,14 @@ class Product extends Eloquent
     {
         return $this->belongsTo('User', 'u_id', 'u_id');
     }
+    
+    public function praises()
+    {
+        return $this->morphToMany('Praise', 'praisable');
+    }
+
+    public function favorites()
+    {
+        return $this->morphToMany('Favorite', 'favoriable');
+    }
 }

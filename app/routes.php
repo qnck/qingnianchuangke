@@ -83,6 +83,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/product', 'MeController@getProducts');
     Route::get('v0/user/me/product/{id}', 'MeController@getProduct');
     Route::put('v0/user/me/product/{id}', 'MeController@putProduct');
+    Route::put('v0/user/me/product/{id}/atop', 'MeProductController@putAtop');
     Route::get('v0/user/me/product/{id}/on', 'MeController@productOn');
     Route::delete('v0/user/me/product/{id}/img', 'MeController@delProductImg');
     Route::post('v0/user/me/product/sort', 'MeController@updateProductSort');
@@ -137,6 +138,9 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/{id}/follow', 'UserController@follow');
     Route::get('v0/user/{id}/followers', 'UserController@followers');
     Route::get('v0/user/{id}/followings', 'UserController@followings');
+    Route::post('v0/user/{id}/praise', 'UserController@postPraise');
+    Route::post('v0/user/{id}/favorite', 'UserController@postFavorite');
+    Route::delete('v0/user/{id}/favorite', 'UserController@delFavorite');
     Route::resource('v0/user', 'UserController');
     /* USER END*/
 
@@ -171,6 +175,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/market/product/{id}', 'MarketController@getProduct');
     Route::post('v0/market/product/{id}/reply', 'MarketController@postProductReply');
     Route::post('v0/market/promotion/{id}/praise', 'MarketController@postPromoPraise');
+    Route::put('v0/market/promotion/{id}/push', 'MeProductController@pushPromo');
     Route::get('v0/market/cart', 'MarketController@listCarts');
     Route::post('v0/market/cart', 'MarketController@postCart');
     Route::put('v0/market/cart/{id}', 'MarketController@putCart');
@@ -220,7 +225,22 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
     Route::post('v0/crowd/{id}/reply', 'CrowdFundingController@postReply');
     Route::post('v0/crowd/{id}/order', 'CrowdFundingController@postOrder');
+    Route::post('v0/crowd/{id}/praise', 'CrowdFundingController@postPraise');
+    Route::post('v0/crowd/{id}/favorite', 'CrowdFundingController@postFavorite');
+    Route::delete('v0/crowd/{id}/favorite', 'CrowdFundingController@delFavorite');
     /* CROWDINGFUDING END*/
+
+    /* PRODUCT START*/
+    Route::post('v0/product/{id}/praise', 'ProductController@postPraise');
+    Route::post('v0/product/{id}/favorite', 'ProductController@postFavorite');
+    Route::delete('v0/product/{id}/favorite', 'ProductController@delFavorite');
+    /* PRODUCT END*/
+
+    /* BOOTH START*/
+    Route::post('v0/booth/{id}/praise', 'BoothController@postPraise');
+    Route::post('v0/booth/{id}/favorite', 'BoothController@postFavorite');
+    Route::delete('v0/booth/{id}/favorite', 'BoothController@delFavorite');
+    /* BOOTH END*/
 
 });
 
