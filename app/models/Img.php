@@ -121,7 +121,7 @@ class Img
                 if ($with_key) {
                     $re[$key] = $img;
                 } else {
-                    $re = $img;
+                    $re[] = $img;
                 }
             }
         }
