@@ -104,9 +104,18 @@ class CrowdFundingController extends \BaseController
         $p_id = Input::get('product', 0);
         $quantity = Input::get('quantity', 0);
 
+        $shipping_name = Input::get('shipping_name', '');
+        $shipping_phone = Input::get('shipping_phone', '');
+        $shipping_address = Input::get('shipping_address', '');
+        $comment = Input::get('comment', '');
+
+        DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
+            $funding = CrowdFunding::find($id);
+
+            // add cart
             $cart = new Cart();
             $cart->p_id = $p_id;
             $cart->p_name = $product->p_title;
@@ -121,12 +130,48 @@ class CrowdFundingController extends \BaseController
             $cart->c_amount_origin = $product->p_price * $quantity;
             $cart->c_status = 2;
             $cart->c_type = 2;
+            $cart->save();
             $product->loadProduct($quantity);
-            $order = new Order;
-            
-        } catch (Exception $e) {
-            
-        }
+            if (!$funding->c_shipping) {
+                $shipping_address = '';
+                $shipping_name = $user->u_name;
+                $shipping_phone = $user->u_mobile;
+            }
 
+            $date_obj = new DateTime($funding->active_at);
+            $delivery_time_obj = $date_obj->modify('+'.($funding->c_time+$funding->c_yield_time).'days');
+
+            // add order
+            $order_group_no = Order::generateOrderGroupNo($u_id);
+            $rnd_str = rand(10, 99);
+            $order_no = $order_group_no.$cart->b_id.$rnd_str;
+            $order = new Order();
+            $order->u_id = $u_id;
+            $order->b_id = $cart->b_id;
+            $order->o_amount_origin = $cart->c_amount_origin;
+            $order->o_amount = $cart->c_amount;
+            $order->o_shipping_fee = $funding->c_shipping_fee;
+            $order->o_shipping_name = $shipping_name;
+            $order->o_shipping_phone = $shipping_phone;
+            $order->o_shipping_address = $shipping_address;
+            $order->o_delivery_time = $delivery_time_obj->format('Y-m-d H:i:s');
+            $order->o_shipping = $funding->c_shipping;
+            $order->o_comment = $comment;
+            $order->o_number = $order_no;
+            $order->o_group_number = $order_group_no;
+            $o_id = $order->addOrder();
+            Cart::bindOrder([$order->o_id => [$cart->c_id]]);
+
+            // push msg to seller
+            $booth = Booth::find($cart->b_id);
+            $msg = new PushMessage($booth->u_id);
+            $msg->pushMessage('您有新的订单, 请及时发货');
+            $re = Tools::reTrue('提交订单成功');
+            DB::commit();
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '提交订单失败:'.$e->getMessage());
+            DB::rollback();
+        }
+        return Response::json($re);
     }
 }
