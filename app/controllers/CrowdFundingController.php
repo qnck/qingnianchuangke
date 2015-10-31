@@ -8,6 +8,7 @@ class CrowdFundingController extends \BaseController
     public function getCate()
     {
         $data = CrowdFunding::getCrowdFundingCate();
+        $re = Tools::reTrue('获取分类成功', $data);
         return Response::json($data);
     }
 
