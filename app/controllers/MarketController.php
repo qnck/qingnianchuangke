@@ -521,6 +521,7 @@ class MarketController extends \BaseController
                 $cart->u_id = $u_id;
                 $cart->p_id = $p_id;
                 $cart->c_quantity = $quantity;
+                $cart->c_type = 1;
                 $cart->addCart();
             // cumilate quantity
             } else {

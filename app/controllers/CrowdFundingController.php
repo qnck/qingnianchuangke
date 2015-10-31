@@ -9,7 +9,7 @@ class CrowdFundingController extends \BaseController
     {
         $data = CrowdFunding::getCrowdFundingCate();
         $re = Tools::reTrue('获取分类成功', $data);
-        return Response::json($data);
+        return Response::json($re);
     }
 
     public function listCrowdFunding()
@@ -94,5 +94,39 @@ class CrowdFundingController extends \BaseController
             $re = Tools::reFalse($e->getCode(), '回复失败:'.$e->getMessage());
         }
         return Response::json($re);
+    }
+
+    public function postOrder($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        
+        $p_id = Input::get('product', 0);
+        $quantity = Input::get('quantity', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = CrowdFundingProduct::find($p_id);
+            $cart = new Cart();
+            $cart->p_id = $p_id;
+            $cart->p_name = $product->p_title;
+            $cart->u_id = $u_id;
+            $cart->b_id = $product->b_id;
+            $cart->created_at = Tools::getNow();
+            $cart->c_quantity = $quantity;
+            $cart->c_price = $product->p_price;
+            $cart->c_amount = $product->p_price * $quantity;
+            $cart->c_discount = 100;
+            $cart->c_price_origin = $product->p_price;
+            $cart->c_amount_origin = $product->p_price * $quantity;
+            $cart->c_status = 2;
+            $cart->c_type = 2;
+            $product->loadProduct($quantity);
+            $order = new Order;
+            
+        } catch (Exception $e) {
+            
+        }
+
     }
 }

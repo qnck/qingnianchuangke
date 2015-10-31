@@ -479,7 +479,7 @@ class User extends Eloquent
 
     public function booth()
     {
-        return $this->hasOne('booth', 'u_id', 'u_id');
+        return $this->hasOne('Booth', 'u_id', 'u_id');
     }
 
     public function booths()
