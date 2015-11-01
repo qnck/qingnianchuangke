@@ -84,6 +84,7 @@ class PromotionInfo extends Eloquent
             $data['praises'] = $tmp;
         }
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
+        $data['prom_id'] = $this->p_id;
         return $data;
     }
 
