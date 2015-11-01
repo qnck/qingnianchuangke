@@ -877,7 +877,7 @@ class MeController extends \BaseController
         $b_id = Input::get('b_id', '');
         
         $prodName = Input::get('prod_name', '');
-        $prodDesc = Input::get('prod_desc', '');
+        $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
         $prodCost = Input::get('prod_cost', 0);
         $prodPriceOri = Input::get('prod_price', 0);
@@ -888,7 +888,7 @@ class MeController extends \BaseController
         if (!$product_cate) {
             $product_cate = 7;
         }
-
+        $prodDesc = urldecode($prodDesc);
         $promoDesc = Input::get('promo', '');
         $promoRange = Input::get('promo_range', 0);
 

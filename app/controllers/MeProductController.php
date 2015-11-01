@@ -18,7 +18,7 @@ class MeProductController extends \BaseController
         if (!$product_cate) {
             $product_cate = 6;
         }
-
+        $prodDesc = urldecode($prodDesc);
         $imgToken = Input::get('img_token', '');
 
         try {
