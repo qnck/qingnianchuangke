@@ -177,6 +177,64 @@ class OfficeWebUserController extends \BaseController
         return Response::json($re);
     }
 
+    public function censorUserProfileIdentity($id)
+    {
+        $check = Input::get('check');
+
+        try {
+            $tmp = TmpUserProfileBase::find($id);
+            $base = UserProfileBase::find($id);
+            if ($check == 1) {
+                $tmp->u_is_id_verified = 1;
+                if (!empty($base)) {
+                    $base->u_is_id_verified = 1;
+                }
+            } else {
+                $tmp->u_is_id_verified = 0;
+                if (!empty($base)) {
+                    $base->u_is_id_verified = 0;
+                }
+            }
+            $tmp->save();
+            if (!empty($base)) {
+                $base->save();
+            }
+            $re = Tools::reTrue('审核用户身份证信息成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '审核用户身份证信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function censorUserProfileStudent($id)
+    {
+        $check = Input::get('check');
+
+        try {
+            $tmp = TmpUserProfileBase::find($id);
+            $base = UserProfileBase::find($id);
+            if ($check == 1) {
+                $tmp->u_is_student_verified = 1;
+                if (!empty($base)) {
+                    $base->u_is_student_verified = 1;
+                }
+            } else {
+                $tmp->u_is_student_verified = 0;
+                if (!empty($base)) {
+                    $base->u_is_student_verified = 0;
+                }
+            }
+            $tmp->save();
+            if (!empty($base)) {
+                $base->save();
+            }
+            $re = Tools::reTrue('审核用户身份证信息成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '审核用户身份证信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function enable($id)
     {
         $status = Input::get('status', 0);

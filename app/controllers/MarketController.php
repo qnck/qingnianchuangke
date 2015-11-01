@@ -214,9 +214,6 @@ class MarketController extends \BaseController
         try {
             $query = Booth::where('b_type', '=', 2)->where('b_status', '=', 1)->with([
                 'user',
-                'products' => function ($q) {
-                    $q->take(5)->where('p_status', '=', 1)->orderBy('sort', 'DESC')->orderBy('created_at', 'DESC');
-                }
                 ]);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
@@ -232,23 +229,7 @@ class MarketController extends \BaseController
             $list = $query->paginate($perPage);
             $data = [];
             foreach ($list as $key => $booth) {
-                $detail = $booth->showDetail();
-                $products = [];
-                if (!empty($booth->products)) {
-                    $tmp = [];
-                    foreach ($booth->products as $key => $product) {
-                        $tmp['id'] = $product->p_id;
-                        $imgArr = explode(',', $product->p_imgs);
-                        $img = '';
-                        if (!empty($imgArr)) {
-                            $img = array_pop($imgArr);
-                        }
-                        $tmp['img'] = $img;
-                        $products[] = $tmp;
-                    }
-                }
-                $detail['prodcts'] = $products;
-                $data[] = $detail;
+                $data[] = $booth->showDetail();
             }
             $re = Tools::reTrue('获取创的店成功', $data, $list);
         } catch (Exception $e) {
