@@ -52,6 +52,11 @@ class Reply extends Eloquent
         return $this->morphedByMany('CrowdFunding', 'repliable');
     }
 
+    public function products()
+    {
+        return $this->morphedByMany('Product', 'repliable');
+    }
+
     public function user()
     {
         return $this->belongsTo('User', 'u_id', 'u_id');

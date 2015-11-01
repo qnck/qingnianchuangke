@@ -87,4 +87,69 @@ class ProductController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getProduct($id)
+    {
+        $u_id = Input::get('u_id');
+
+        try {
+            $product = Product::with([
+                'quantity',
+                'promo',
+                'replies',
+                ])->find($id);
+            if (!empty($product->promo)) {
+                $product->promo->load('praises');
+            }
+            if (empty($product->p_id)) {
+                throw new Exception("无法找到请求的产品", 7001);
+            }
+            $data = $product->showDetail();
+            $re = Tools::reTrue('获取产品成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postReply($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $content = Input::get('content', '');
+        $to_u_id = Input::get('to', 0);
+        $to = Input::get('parent', 0);
+
+        try {
+            $product = Product::find($id);
+            $product->p_reply_count += 1;
+
+            $user = User::chkUserByToken($token, $u_id);
+
+            $to_user = User::find($to_u_id);
+            if (empty($to_user)) {
+                $to_u_id = 0;
+                $to_u_name = '';
+            } else {
+                $to_u_name = $to_user->u_nickname;
+            }
+            $data = [
+                'to_id' => $to,
+                'created_at' => Tools::getNow(),
+                'content' => $content,
+                'u_id' => $u_id,
+                'u_name' => $user->u_nickname,
+                'status' => 1,
+                'to_u_id' => $to_u_id,
+                'to_u_name' => $to_u_name,
+            ];
+            $reply = new Reply($data);
+            $product->replies()->save($reply);
+            $product->save();
+            $re = Tools::reTrue('回复成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '恢复失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

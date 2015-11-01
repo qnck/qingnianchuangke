@@ -14,7 +14,7 @@ class User extends Eloquent
     {
         $validator = Validator::make(
             ['mobile' => $this->u_mobile, 'pass' => $this->u_password],
-            ['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
+            ['mobile' => 'required|digits:11', 'pass' => 'required|min:6']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();

@@ -231,6 +231,8 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* CROWDINGFUDING END*/
 
     /* PRODUCT START*/
+    Route::get('v0/product/{id}', 'ProductController@getProduct');
+    Route::get('v0/product/{id}/reply', 'ProductController@postReply');
     Route::post('v0/product/{id}/praise', 'ProductController@postPraise');
     Route::post('v0/product/{id}/favorite', 'ProductController@postFavorite');
     Route::delete('v0/product/{id}/favorite', 'ProductController@delFavorite');

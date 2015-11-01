@@ -48,6 +48,7 @@ class Product extends Eloquent
                 '4' => '虚拟商品',
                 '5' => '数码科技',
                 '6' => '其他分类',
+                '7' => '赏金令',
                 ];
                 break;
             
@@ -117,6 +118,7 @@ class Product extends Eloquent
         $data['reply_count'] = $this->p_reply_count;
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
+        $data['praise_count'] = $this->p_praise_count;
 
         $quantity = null;
         if (!empty($this->quantity)) {
@@ -130,22 +132,16 @@ class Product extends Eloquent
         }
         $data['promo'] = $promo;
 
-        $replies = null;
-        if (!empty($this->replies)) {
-            $list = [];
-            foreach ($this->replies as $key => $reply) {
-                $list[] = $reply->showInList();
-            }
-            $replies = $list;
-        }
-        $data['replies'] = $replies;
-
         if (!empty($this->booth)) {
             $data['booth'] = $this->booth->showInList();
         }
 
         if (!empty($this->user)) {
             $data['user'] = $this->user->showDetail();
+        }
+
+        if ($this->replies) {
+            $data['replies'] = Reply::makeTree($this->replies);
         }
 
         return $data;
@@ -254,11 +250,6 @@ class Product extends Eloquent
         return $this->hasOne('PromotionInfo', 'p_id', 'p_id');
     }
 
-    public function replies()
-    {
-        return $this->hasMany('ProductReply', 'p_id', 'p_id');
-    }
-
     public function user()
     {
         return $this->belongsTo('User', 'u_id', 'u_id');
@@ -272,5 +263,10 @@ class Product extends Eloquent
     public function favorites()
     {
         return $this->morphToMany('Favorite', 'favoriable');
+    }
+
+    public function replies()
+    {
+        return $this->morphToMany('Reply', 'repliable');
     }
 }
