@@ -97,6 +97,9 @@ class ProductController extends \BaseController
                 'quantity',
                 'promo',
                 'replies',
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                }
                 ])->find($id);
             if (!empty($product->promo)) {
                 $product->promo->load('praises');
@@ -148,7 +151,7 @@ class ProductController extends \BaseController
             $product->save();
             $re = Tools::reTrue('回复成功');
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '恢复失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '回复失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

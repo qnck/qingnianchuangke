@@ -144,6 +144,13 @@ class Product extends Eloquent
             $data['replies'] = Reply::makeTree($this->replies);
         }
 
+        if ($this->favorites) {
+            if (count($this->favorites) > 0) {
+                $data['is_favorited'] = 1;
+            } else {
+                $data['is_favorited'] = 0;
+            }
+        }
         return $data;
     }
 
