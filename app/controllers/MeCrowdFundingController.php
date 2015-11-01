@@ -27,6 +27,8 @@ class MeCrowdFundingController extends \BaseController
 
         $img_token = Input::get('img_token', '');
 
+        $content = urldecode($content);
+
         DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
