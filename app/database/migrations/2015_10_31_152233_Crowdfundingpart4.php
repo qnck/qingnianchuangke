@@ -31,11 +31,11 @@ class Crowdfundingpart4 extends Migration
         });
 
         Schema::table('user_profile_bases', function ($table) {
-            $table->string('c_apartment_no')->nullable();
+            $table->string('u_apartment_no')->nullable();
         });
 
         Schema::table('tmp_user_profile_bases', function ($table) {
-            $table->string('c_apartment_no')->nullable();
+            $table->string('u_apartment_no')->nullable();
         });
 
         Schema::table('promotion_infos', function ($table) {

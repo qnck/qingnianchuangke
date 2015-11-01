@@ -285,9 +285,8 @@ Route::get('office/menu', 'OfficeController@getMenu');
 /* WEB USER START*/
 Route::get('office/user/profile', 'OfficeWebUserController@listUserProfiles');
 Route::get('office/user/profile/{id}', 'OfficeWebUserController@getUserProfile');
-Route::put('office/user/profile/{id}/censor/detail', 'OfficeWebUserController@censorUserProfileDetail');
-Route::put('office/user/profile/{id}/censor/contact', 'OfficeWebUserController@censorUserProfileContact');
 Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@censorUserProfileBank');
+Route::put('office/user/profile/{id}/censor/base', 'OfficeWebUserController@censorUserProfileBase');
 Route::put('office/user/{id}/enable', 'OfficeWebUserController@enable');
 /* WEB USER END*/
 

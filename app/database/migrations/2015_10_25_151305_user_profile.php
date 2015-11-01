@@ -14,7 +14,7 @@ class UserProfile extends Migration {
     {
         Schema::create('user_profile_bases', function ($table) {
             $table->integer('u_id');
-            $table->tinyInteger('u_status');    //状态 0：未审核 1：已审核(已审核通过不允许再编辑)
+            $table->tinyInteger('u_status');    //状态 0：未审核 1：已审核(已审核通过不允许再编辑) 2 审核不通过
             $table->string('u_id_number', 18);
             $table->string('u_id_imgs', 700)->nullable();
             $table->tinyInteger('u_is_id_verified')->nullable();
@@ -36,7 +36,7 @@ class UserProfile extends Migration {
 
         Schema::create('tmp_user_profile_bases', function ($table) {
             $table->integer('u_id');
-            $table->tinyInteger('u_status');    //状态 0：未审核 1：已审核(已审核通过不允许再编辑)
+            $table->tinyInteger('u_status');    //状态 0：未审核 1：已审核(已审核通过不允许再编辑) 2 审核不通过
             $table->string('u_id_number', 18);
             $table->string('u_id_imgs', 700)->nullable();
             $table->tinyInteger('u_is_id_verified')->nullable();

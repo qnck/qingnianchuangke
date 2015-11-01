@@ -43,11 +43,20 @@ class TmpUserProfileBase extends Eloquent
         $data['school'] = $this->school->showInList();
         $data['student_img'] = Img::toArray($this->u_student_imgs);
         $data['student_number'] = $this->u_student_number;
+        $data['student_verified'] = $this->u_is_student_verified;
         $data['identity_number'] = $this->u_id_number;
         $data['identity_img'] = Img::toArray($this->u_id_imgs);
+        $data['identity_verified'] = $this->u_is_id_verified;
         $data['entry_year'] = $this->u_entry_year;
         $data['major'] = $this->u_major;
         $data['emergency_phone'] = $this->em_contact_phone;
+        $data['emergency_name'] = $this->em_contact_name;
+        $data['home_adress'] = $this->u_home_adress;
+        $data['father_name'] = $this->u_father_name;
+        $data['father_telephone'] = $this->u_father_phone;
+        $data['mother_name'] = $this->u_mother_name;
+        $data['mother_telephone'] = $this->u_mother_phone;
+        $data['apartment'] = $this->u_apartment_no;
         $data['status'] = $this->u_status;
         if ($this->u_status == 2) {
             $data['remark'] = $this->remark;
