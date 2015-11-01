@@ -27,11 +27,13 @@ class MarketController extends \BaseController
                 'booth' => function ($q) {
                     $q->with(['user']);
                 },
-                // 'praises' => function ($q) {
-                //     $q->take(3);
-                // },
                 'product' => function ($q) {
-                    $q->with(['promo', 'quantity']);
+                    $q->with([
+                        'promo',
+                        'quantity',
+                        'praises' => function ($qq) {
+                            $qq->where('praises.u_id', '=', $this->u_id);
+                        }]);
                 }]);
             $query = $query->select('promotion_infos.*');
             $query = $query->leftJoin('products', function ($q) {
@@ -75,25 +77,15 @@ class MarketController extends \BaseController
             }
             $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($perPage);
             $data = [];
-            // $promo_ids = [];
             foreach ($list as $key => $product) {
-                $data[] = $product->showInListWithProduct();
-                // $promo_ids[] = $product['p_id'];
+                $tmp = $product->showInListWithProduct();
+                if (!empty($product->product->praises)) {
+                    $tmp['is_praised'] = 1;
+                } else {
+                    $tmp['is_praised'] = 0;
+                }
+                $data[] = $tmp;
             }
-            // if (!empty($promo_ids)) {
-            //     $praises = PromotionPraise::where('u_id', '=', $u_id)->whereIn('prom_id', $promo_ids)->lists('prom_id');
-            // } else {
-            //     $praises = [];
-            // }
-            // foreach ($data as $key => $product) {
-            //     if (in_array($product['product']['id'], $praises)) {
-            //         $chk = 1;
-            //     } else {
-            //         $chk = 0;
-            //     }
-            //     $product['is_praised'] = $chk;
-            //     $data[$key] = $product;
-            // }
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取首页商品失败:'.$e->getMessage());
@@ -114,7 +106,7 @@ class MarketController extends \BaseController
         $page = Input::get('page', 1);
         $perPage = Input::get('per_page', 30);
 
-        // try {
+        try {
             if (!$u_id) {
                 throw new Exception("请传入有效的用户id", 2001);
             }
@@ -122,7 +114,10 @@ class MarketController extends \BaseController
                 'booth' => function ($q) {
                     $q->with(['user', 'school']);
                 },
-                'quantity'
+                'quantity',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                },
                 ]);
             $query = $query->select('products.*')->where('products.p_status', '=', 1)->where('products.p_type', '=', 2);
             $query = $query->leftJoin('booths', function ($q) {
@@ -160,12 +155,18 @@ class MarketController extends \BaseController
             $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
             $data = [];
             foreach ($list as $key => $product) {
-                $data[] = $product->showInList();
+                $tmp = $product->showInList();
+                if (!empty($product->praises)) {
+                    $tmp['is_praised'] = 1;
+                } else {
+                    $tmp['is_praised'] = 0;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
-        // } catch (Exception $e) {
-        //     $re = Tools::reFalse($e->getCode(), '获取跳蚤市场商品失败:'.$e->getMessage());
-        // }
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取跳蚤市场商品失败:'.$e->getMessage());
+        }
         return Response::json($re);
     }
 

@@ -10,8 +10,9 @@ class MeProductController extends \BaseController
         $u_id = Input::get('u_id', 0);
         
         $prodName = Input::get('prod_name', '');
-        $prodDesc = Input::get('prod_desc', '');
+        $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
+        $price = Input::get('price', '');
         $publish = Input::get('publish', 1);
         $product_cate = Input::get('cate');
         if (!$product_cate) {
@@ -43,8 +44,8 @@ class MeProductController extends \BaseController
             $product->p_title = $prodName;
             $product->u_id = $u_id;
             $product->p_cost = 0;
-            $product->p_price_origin = 0;
-            $product->p_price = 0;
+            $product->p_price_origin = $price;
+            $product->p_price = $price;
             $product->p_discount = 0;
             $product->p_desc = $prodDesc;
             $product->p_brief = $prodBrief;

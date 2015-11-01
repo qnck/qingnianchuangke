@@ -46,5 +46,4 @@ class CrowdfundingPart3 extends Migration {
     {
         //
     }
-
 }

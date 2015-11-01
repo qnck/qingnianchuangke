@@ -80,7 +80,7 @@ class Product extends Eloquent
         $data['reply_count'] = $this->p_reply_count;
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
-
+        $data['praise_count'] = $this->p_praise_count;
 
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
