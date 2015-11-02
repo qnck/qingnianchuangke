@@ -30,12 +30,12 @@ class ImController extends BaseController
 
         try {
             $user = User::chkUserByToken($token);
-            $friends = User::whereIn('u_id', $ids)->all();
+            $friends = User::whereIn('u_id', $ids)->get();
             $data = [];
             foreach ($friends as $key => $friend) {
                 $data[] = $friend->showInImList();
             }
-            $re = Tools::reTrue('获取信息成功');
+            $re = Tools::reTrue('获取信息成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取信息失败:'.$e->getMessage());
         }
