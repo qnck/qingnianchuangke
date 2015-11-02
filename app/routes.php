@@ -58,7 +58,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* ME END*/
 
     /* ME PROFILE START*/
-    Route::get('v0/user/me/profile/check', 'MeController@profileCheck');
+    Route::get('v0/user/me/profile/check', 'MeProfileController@profileCheck');
     Route::post('v0/user/me/profile/bank', 'MeProfileController@postBank');
     Route::get('v0/user/me/profile/bank', 'MeProfileController@getBank');
     Route::post('v0/user/me/profile/base', 'MeProfileController@postUserBase');

@@ -486,27 +486,6 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function profileCheck()
-    {
-        $u_id = Input::get('u_id', 0);
-        $token = Input::get('token', '');
-
-        try {
-            $user = User::chkUserByToken($token, $u_id);
-            $bank = TmpUserProfileBankcard::checkProfile($u_id);
-            $contact = TmpUserProfileBase::checkProfile($u_id);
-            $detail = TmpUsersDetails::checkProfile($u_id);
-            $re = ['result' => 2000, 'data' => ['detail' => $detail, 'contact' => $contact, 'bank' => $bank], 'info' => '获取用户资料验证信息成功'];
-        } catch (Exception $e) {
-            $code = 3002;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '获取用户资料验证信息失败:'.$e->getMessage()];
-        }
-        return Response::json($re);
-    }
-
     public function getDetail()
     {
         $token = Input::get('token', '');

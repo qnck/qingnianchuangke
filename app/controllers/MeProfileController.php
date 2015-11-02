@@ -4,6 +4,23 @@
 */
 class MeProfileController extends \BaseController
 {
+    public function profileCheck()
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $bank = TmpUserProfileBankcard::checkProfile($u_id);
+            $base = TmpUserProfileBase::checkProfile($u_id);
+            $data = ['base' => $base, 'bank' => $bank];
+            $re = Tools::reTrue('获取用户资料验证信息成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户资料验证信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function getUserBase()
     {
         $token = Input::get('token', '');
