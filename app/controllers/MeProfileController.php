@@ -32,9 +32,12 @@ class MeProfileController extends \BaseController
             $user->load('school');
             $profile = UserProfileBase::find($u_id);
             if (empty($profile->u_id)) {
+                $profile = new UserProfileBase();
                 $entry_year = '';
                 $stu_imgs = null;
                 $id_imgs = null;
+                $profile->u_id = $user->u_id;
+                $profile->save();
             } else {
                 $entry_year = $profile->u_entry_year;
                 $stu_imgs = Img::toArray($profile->u_student_imgs);
