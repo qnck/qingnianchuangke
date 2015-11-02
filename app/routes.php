@@ -59,11 +59,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* ME PROFILE START*/
     Route::get('v0/user/me/profile/check', 'MeController@profileCheck');
-    Route::post('v0/user/me/profile/card', 'MeController@postCard');
-    Route::get('v0/user/me/profile/card', 'MeController@getCard');
-    Route::post('v0/user/me/profile/base', 'MeController@postUserBase');
-    Route::put('v0/user/me/profile/base', 'MeController@putUserBase');
-    Route::get('v0/user/me/profile/base', 'MeController@getUserBase');
+    Route::post('v0/user/me/profile/bank', 'MeProfileController@postBank');
+    Route::get('v0/user/me/profile/bank', 'MeProfileController@getBank');
+    Route::post('v0/user/me/profile/base', 'MeProfileController@postUserBase');
+    Route::put('v0/user/me/profile/base', 'MeProfileController@putUserBase');
+    Route::get('v0/user/me/profile/base', 'MeProfileController@getUserBase');
     
     Route::post('v0/user/me/profile/detail', 'MeController@postDetail');
     Route::post('v0/user/me/profile/contact', 'MeController@postContact');

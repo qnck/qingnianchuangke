@@ -11,7 +11,7 @@ class TmpUserProfileBankcard extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['user' => $this->u_id, 'bank' => $this->b_id, 'card_number' => $this->b_card_num],
+            ['user' => $this->u_id, 'bank' => $this->b_id, 'card_number' => $this->b_card_number],
             ['user' => 'required', 'bank' => 'required', 'card_number' => 'required']
         );
         if ($validator->fails()) {
@@ -25,7 +25,7 @@ class TmpUserProfileBankcard extends Eloquent
     public function showInList()
     {
         $data = [];
-        $data['card_number'] = $this->b_card_num;
+        $data['card_number'] = $this->b_card_number;
         $data['bank'] = $this->bank->b_name;
         return $data;
     }
@@ -36,7 +36,7 @@ class TmpUserProfileBankcard extends Eloquent
         $this->load('bank');
         $data['u_id'] = $this->u_id;
         $data['id'] = $this->u_id;
-        $data['card_number'] = $this->b_card_num;
+        $data['card_number'] = $this->b_card_number;
         $data['bank'] = $this->bank->showInList();
         $data['holder_name'] = $this->b_holder_name;
         $data['holder_phone'] = $this->b_holder_phone;

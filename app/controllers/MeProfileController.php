@@ -43,6 +43,7 @@ class MeProfileController extends \BaseController
             $data['stu_number'] = $profile->u_student_number;
             $data['emergency_name'] = $profile->em_contact_name;
             $data['emergency_phone'] = $profile->em_contact_phone;
+            $data['apartment_no'] = $profile->u_apartment_no;
 
             $card = UserProfileBankcard::find($u_id);
             if (empty($card)) {
@@ -81,6 +82,11 @@ class MeProfileController extends \BaseController
         $stu_num = Input::get('stu_num', '');
         $em_name = Input::get('emergency_name', '');
         $em_phoen = Input::get('emergency_phone', '');
+        $father_name = Input::get('father_name', '');
+        $father_phone = Input::get('father_phone', '');
+        $mother_name = Input::get('mother_name', '');
+        $mother_phone = Input::get('mother_phone', '');
+        $apartment_no = Input::get('apartment_no', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -99,6 +105,11 @@ class MeProfileController extends \BaseController
             $profile->u_student_number = $stu_num;
             $profile->em_contact_phone = $em_phoen;
             $profile->em_contact_name = $em_name;
+            $profile->u_father_name = $father_name;
+            $profile->u_father_phone = $father_phone;
+            $profile->u_mother_name = $mother_name;
+            $profile->u_mother_phone = $mother_phone;
+            $profile->u_apartment_no = $apartment_no;
             $profile->register();
             if ($img_token) {
                 $imgObj = new Img('user', $img_token);
@@ -164,6 +175,76 @@ class MeProfileController extends \BaseController
             $re = Tools::reTrue('提交信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提交信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function getBank()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+        
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $card = TmpUserProfileBankcard::find($u_id);
+            $card->load('bank');
+            if (!isset($card->u_id)) {
+                $data['bank'] = null;
+                $data['card_num'] = '';
+                $data['card_holder'] = '';
+                $data['holder_phone'] = '';
+                $data['holder_ID'] = '';
+            } else {
+                $data['bank'] = $card->bank->showInList();
+                $data['card_num'] = $card->b_card_number;
+                $data['card_holder'] = $card->b_holder_name;
+                $data['holder_phone'] = $card->b_holder_phone;
+                $data['holder_ID'] = $card->b_holder_id_number;
+            }
+            $re = Tools::reTrue('获取用户银行卡成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户银行卡失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postBank()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', '');
+
+        // id bank
+        $bankId = Input::get('bank', 0);
+        // bank card number
+        $cardNum = Input::get('card_num', '');
+        // card holder name
+        $cardHolderName = Input::get('holder_name', '');
+        // card holder phone
+        $cardHolderPhone = Input::get('holder_phone', '');
+        // card holder identy
+        $cardHolderID = Input::get('holder_id', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+
+            $card = TmpUserProfileBankcard::find($u_id);
+            if (!isset($card->u_id)) {
+                $card = new TmpUserProfileBankcard();
+            }
+            if ($card->u_status == 1) {
+                throw new Exception("您的审核已经通过", 3002);
+            }
+            $card->u_id = $u_id;
+            $card->b_id = $bankId;
+            $card->b_card_number = $cardNum;
+            $card->b_holder_name = $cardHolderName;
+            $card->b_holder_phone = $cardHolderPhone;
+            $card->b_holder_id_number = $cardHolderID;
+            $card->register();
+            $re = Tools::reTrue('提交银行卡信息成功');
+        } catch (Exception $e) {
+            // TmpUserProfileBankcard::clearByUser($u_id);
+            $re = Tools::reFalse($e->getCode(), '提交银行卡信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
