@@ -65,6 +65,9 @@ class Booth extends Eloquent
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
         }
+        if (!empty($this->city)) {
+            $data['city']  = $this->city->showInList();
+        }
         return $data;
     }
 
@@ -98,7 +101,12 @@ class Booth extends Eloquent
             $user = $this->user->showInList();
         }
         $data['user'] = $user;
-
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
+        }
+        if (!empty($this->city)) {
+            $data['city']  = $this->city->showInList();
+        }
         return $data;
     }
 
@@ -236,6 +244,11 @@ class Booth extends Eloquent
     public function school()
     {
         return $this->hasOne('DicSchool', 't_id', 's_id');
+    }
+
+    public function city()
+    {
+        return $this->hasOne('DicCity', 'c_id', 'c_id');
     }
     
     public function praises()

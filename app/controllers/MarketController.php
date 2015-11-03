@@ -214,6 +214,8 @@ class MarketController extends \BaseController
         try {
             $query = Booth::where('b_type', '=', 2)->where('b_status', '=', 1)->with([
                 'user',
+                'school',
+                'city'
                 ]);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {

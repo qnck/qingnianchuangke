@@ -71,6 +71,10 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/profile/contact', 'MeController@getContact');
     /* ME PROFILE END*/
 
+    /* ME FAVORITE START*/
+    Route::get('v0/user/me/favorite/booth', 'MeController@listFavoriteBooth');
+    /* ME FAVORITE END*/
+
     /* ME MARKET START*/
     Route::post('v0/user/me/booth', 'MeController@postBooth');
     Route::get('v0/user/me/booth', 'MeController@listBooth');
