@@ -1781,14 +1781,20 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
 
-        // try {
-        //     $user = User::chkUserByToken($token, $u_id);
-        //     $list = Booth::select('booths.*', 'favorites.created_at')rightJoin('favorites', function ($q) {
-        //         $q->on('');
-        //     });
-        // } catch (Exception $e) {
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = Booth::select('booths.*', 'favorites.created_at')
+            ->rightJoin('favoriable', function ($q) {
+                $q->on('booths.b_id', '=', 'favoriable.favoriable_id')->where('favoriable.favoriable_type', '=', 'Booth');
+            })->rightJoin('favorites', function ($q) {
+                $q->on('favorites.u_id', '=', $this->u_id);
+            })->get();
+            foreach ($list as $key => $value) {
+                # code...
+            }
+        } catch (Exception $e) {
             
-        // }
+        }
     }
 
     public function listFavoriteUser()
