@@ -1796,8 +1796,4 @@ class MeController extends \BaseController
     {
         
     }
-    public function listFavoriteBooth()
-    {
-        
-    }
 }
