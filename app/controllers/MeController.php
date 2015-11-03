@@ -794,7 +794,7 @@ class MeController extends \BaseController
         }
         $prodDesc = urldecode($prodDesc);
         $promoDesc = Input::get('promo', '');
-        $promoRange = Input::get('promo_range', 0);
+        $promoRange = Input::get('promo_range', 1);
 
         $imgToken = Input::get('img_token', '');
 
@@ -833,7 +833,7 @@ class MeController extends \BaseController
                 $user->load('school');
                 $promo = new PromotionInfo();
                 $promo->p_id = $p_id;
-                $promo->p_content = $promoDesc;
+                $promo->p_content = $prodName;
                 $promo->c_id = $user->school->t_city;
                 $promo->s_id = $user->school->t_id;
                 $promo->b_id = $b_id;
@@ -1774,5 +1774,30 @@ class MeController extends \BaseController
             $re = Tools::reFalse($e->getCode(), '删除图片失败:'.$e->getMessage());
         }
         return Response::json($re);
+    }
+
+    public function listFavoriteBooth()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+        } catch (Exception $e) {
+            
+        }
+    }
+
+    public function listFavoriteUser()
+    {
+        
+    }
+    public function listFavoriteProduct()
+    {
+        
+    }
+    public function listFavoriteBooth()
+    {
+        
     }
 }
