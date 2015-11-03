@@ -107,7 +107,6 @@ class Product extends Eloquent
         $this->loadImgs();
         $data = null;
         $data['prod_name'] = $this->p_title;
-        $data['prod_desc'] = $this->p_desc;
         $data['prod_brief'] = $this->p_brief;
         $data['prod_cost'] = $this->p_cost;
         $data['prod_price_origin'] = $this->p_price_origin;
@@ -115,6 +114,12 @@ class Product extends Eloquent
         $data['prod_discount'] = $this->p_discount;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['imgs'] = Img::filterKey('prod_img_', $this->_imgs);
+        $content = json_decode($this->p_desc, JSON_OBJECT_AS_ARRAY);
+        $pic_text = [];
+        foreach ($data['imgs'] as $key => $img) {
+            $pic_text[] = ['img' => $img, 'text' => $content[$key]];
+        }
+        $data['content'] = $pic_text;
         $data['reply_count'] = $this->p_reply_count;
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;

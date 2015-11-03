@@ -1781,11 +1781,14 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
 
-        try {
-            $user = User::chkUserByToken($token, $u_id);
-        } catch (Exception $e) {
+        // try {
+        //     $user = User::chkUserByToken($token, $u_id);
+        //     $list = Booth::select('booths.*', 'favorites.created_at')rightJoin('favorites', function ($q) {
+        //         $q->on('');
+        //     });
+        // } catch (Exception $e) {
             
-        }
+        // }
     }
 
     public function listFavoriteUser()
