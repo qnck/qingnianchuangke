@@ -113,7 +113,7 @@ class Booth extends Eloquent
         $data['category'] = $this->b_product_category;
         $data['source'] = $this->b_product_source;
         $data['logo'] = $this->getLogo();
-        $data['cover_img'] = $this->_imgs['cover_img'];
+        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['fans'] = $this->b_fans_count;
         $data['status'] = $this->b_status;
         $data['lng'] = $this->longitude;
