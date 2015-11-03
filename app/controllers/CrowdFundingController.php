@@ -33,7 +33,7 @@ class CrowdFundingController extends \BaseController
             if ($school && $range = 3) {
                 $query = $query->where('s_id', '=', $school);
             }
-            $list = $query->paginate($per_page);
+            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $data[] = $funding->showInList();

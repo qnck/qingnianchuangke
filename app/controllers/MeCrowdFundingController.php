@@ -102,4 +102,50 @@ class MeCrowdFundingController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listSellCrowdFunding()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $query = CrowdFunding::with(['city', 'school', 'user', 'product'])->where('u_id', '=', $u_id);
+            $list = $query->orderBy('created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $funding) {
+                $data[] = $funding->showInList();
+            }
+            $re = Tools::reTrue('获取众筹成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listBuyCrowdFunding()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $query = CrowdFunding::select('crowd_fundings.*')->with(['city', 'school', 'user', 'product'])
+            ->join('crowd_funding_products', function ($q) {
+                $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
+            })
+            ->join('carts', function ($q) {
+                $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id);
+            });
+            $list = $query->orderBy('created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $funding) {
+                $data[] = $funding->showInList();
+            }
+            $re = Tools::reTrue('获取众筹成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
