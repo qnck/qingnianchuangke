@@ -119,6 +119,7 @@ class Product extends Eloquent
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
         $data['praise_count'] = $this->p_praise_count;
+        $data['cate'] = $this->p_cate;
 
         $quantity = null;
         if (!empty($this->quantity)) {
