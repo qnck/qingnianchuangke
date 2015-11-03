@@ -73,6 +73,9 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* ME FAVORITE START*/
     Route::get('v0/user/me/favorite/booth', 'MeController@listFavoriteBooth');
+    Route::get('v0/user/me/favorite/user', 'MeController@listFavoriteUser');
+    Route::get('v0/user/me/favorite/product', 'MeController@listFavoriteProduct');
+    Route::get('v0/user/me/favorite/crowd', 'MeController@listFavoriteCrowd');
     /* ME FAVORITE END*/
 
     /* ME MARKET START*/

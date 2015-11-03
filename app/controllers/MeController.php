@@ -1783,26 +1783,95 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = Booth::select('booths.*', 'favorites.created_at')
-            ->rightJoin('favoriable', function ($q) {
-                $q->on('booths.b_id', '=', 'favoriable.favoriable_id')->where('favoriable.favoriable_type', '=', 'Booth');
-            })->rightJoin('favorites', function ($q) {
-                $q->on('favorites.u_id', '=', $this->u_id);
-            })->get();
-            foreach ($list as $key => $value) {
-                # code...
+            $list = Booth::select('booths.*', 'favorites.created_at')->with(['user', 'school', 'city'])
+            ->join('favoriables', function ($q) {
+                $q->on('booths.b_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Booth');
+            })->join('favorites', function ($q) {
+                $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
+            })->orderBy('favorites.created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $booth) {
+                $data[] = $booth->showInList();
             }
+            $re = Tools::reTrue('获取店铺成功', $data);
         } catch (Exception $e) {
-            
+            $re = Tools::reFalse($e->getCode(), '获取店铺失败:'.$e->getMessage());
         }
+        return Response::json($re);
     }
 
     public function listFavoriteUser()
     {
-        
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = User::select('users.*', 'favorites.created_at')->with(['school'])
+            ->join('favoriables', function ($q) {
+                $q->on('users.u_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'User');
+            })->join('favorites', function ($q) {
+                $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
+            })->orderBy('favorites.created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $user) {
+                $data[] = $user->showInList();
+            }
+            $re = Tools::reTrue('获取用户列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户列表失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
+
     public function listFavoriteProduct()
     {
-        
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = Product::select('products.*', 'favorites.created_at')
+            ->with(['user' => function ($q) {
+                $q->with(['school']);
+            }])
+            ->join('favoriables', function ($q) {
+                $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'User');
+            })->join('favorites', function ($q) {
+                $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
+            })->orderBy('favorites.created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $product) {
+                $data[] = $product->showInList();
+            }
+            $re = Tools::reTrue('获取用户列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户列表失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listFavoriteCrowd()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $list = CrowdFunding::select('crowd_fundings.*', 'favorites.created_at')->with(['user', 'city', 'school'])
+            ->join('favoriables', function ($q) {
+                $q->on('crowd_fundings.cf_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'CrowdFunding');
+            })->join('favorites', function ($q) {
+                $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
+            })->orderBy('favorites.created_at', 'DESC')->get();
+            $data = [];
+            foreach ($list as $key => $funding) {
+                $data[] = $funding->showInList();
+            }
+            $re = Tools::reTrue('获取用户列表成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取用户列表失败:'.$e->getMessage());
+        }
+        return Response::json($re);
     }
 }

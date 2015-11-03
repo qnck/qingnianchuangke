@@ -59,6 +59,7 @@ class Booth extends Eloquent
         $data['user'] = null;
         $data['status'] = $this->b_status;
         $data['remark'] = $this->remark;
+        $data['praise_count'] = $this->b_praise_count;
         if (!empty($this->user)) {
             $data['user'] = $this->user->showInList();
         }
@@ -96,6 +97,7 @@ class Booth extends Eloquent
         $data['open_on'] = $this->open_on;
         $data['status'] = $this->b_status;
         $data['remark'] = $this->remark;
+        $data['praise_count'] = $this->b_praise_count;
         $user = null;
         if (!empty($this->user)) {
             $user = $this->user->showInList();
