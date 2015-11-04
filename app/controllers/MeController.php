@@ -1874,4 +1874,29 @@ class MeController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function putHeadImg()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $img_token = Input::get('img_token');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            if ($img_token) {
+                $imgObj = new Img('user', $img_token);
+                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$user->u_head_img]), true);
+                $head_img = Img::filterKey('head_img', $imgs);
+                $user->u_head_img = implode(',', $head_img);
+                $user->save();
+            } else {
+                throw new Exception("请上传头像", 2001);
+            }
+            $re = Tools::reTrue('修改头像成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '修改头像失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
