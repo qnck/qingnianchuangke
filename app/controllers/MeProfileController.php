@@ -226,7 +226,6 @@ class MeProfileController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $card = TmpUserProfileBankcard::find($u_id);
-            $card->load('bank');
             if (!isset($card->u_id)) {
                 $data['bank'] = null;
                 $data['card_num'] = '';
@@ -234,6 +233,7 @@ class MeProfileController extends \BaseController
                 $data['holder_phone'] = '';
                 $data['holder_ID'] = '';
             } else {
+                $card->load('bank');
                 $data['bank'] = $card->bank->showInList();
                 $data['card_num'] = $card->b_card_number;
                 $data['card_holder'] = $card->b_holder_name;

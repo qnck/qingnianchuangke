@@ -54,6 +54,13 @@ class CrowdFunding extends Eloquent
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
             $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
+            $data['sold_quantity'] = $this->product->p_sold_quantity;
+            $data['target_quantity'] = $this->product->p_target_quantity;
+            if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
+                $data['is_limit'] = 1;
+            } else {
+                $data['is_limit'] = 0;
+            }
         }
         if ($this->user) {
             $data['user'] = $this->user->showInList();
@@ -95,6 +102,13 @@ class CrowdFunding extends Eloquent
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
             $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
+            $data['sold_quantity'] = $this->product->p_sold_quantity;
+            $data['target_quantity'] = $this->product->p_target_quantity;
+            if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
+                $data['is_limit'] = 1;
+            } else {
+                $data['is_limit'] = 0;
+            }
         }
         if ($this->user) {
             $data['user'] = $this->user->showInList();
