@@ -337,7 +337,10 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $data = Booth::with(['user'])->where('u_id', '=', $u_id)->get();
+            $data = Booth::with(['user' => function ($q) {
+                $q->with(['school']);
+            }])
+            ->where('u_id', '=', $u_id)->get();
             $list = [];
             foreach ($data as $key => $booth) {
                 $tmp = $booth->showDetail();
