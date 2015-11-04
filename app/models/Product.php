@@ -83,6 +83,8 @@ class Product extends Eloquent
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
         $data['praise_count'] = $this->p_praise_count;
+        $data['cate'] = $this->p_cate;
+        $data['cate_label'] = $this->getCateLabel();
 
         if (!empty($this->quantity)) {
             $quantity = $this->quantity->showInList();
@@ -126,6 +128,7 @@ class Product extends Eloquent
         $data['remark'] = $this->p_remark;
         $data['praise_count'] = $this->p_praise_count;
         $data['cate'] = $this->p_cate;
+        $data['cate_label'] = $this->getCateLabel();
 
         $quantity = null;
         if (!empty($this->quantity)) {
@@ -240,6 +243,18 @@ class Product extends Eloquent
         $sql = $sql.$discountSql.' END, '.$priceSql;
         $sql .= ' END WHERE p_id IN ('.implode(',', $ids).')';
         return DB::statement($sql);
+    }
+
+    public function getCateLabel()
+    {
+        if (!$this->p_type) {
+            return '';
+        }
+        $cates = Product::getProductCate($this->p_type);
+        if (!$this->p_cate) {
+            return '';
+        }
+        return $cates[$this->p_cate];
     }
 
     private function loadImgs()
