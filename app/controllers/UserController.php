@@ -30,6 +30,47 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    public function importLogin()
+    {
+        $ext_id = Input::get('ext_id', '');
+        $ext_token = Input::get('ext_token', '');
+        $nickname = Input::get('nickname', '');
+        $gender = Input::get('gender', 3);
+        $head_img = Input::get('head_img', '');
+        $import_type = Input::get('import_type', '');
+
+        try {
+            if (!$ext_id || !$import_type) {
+                throw new Exception("需要正确的id, type参数", 3005);
+            }
+            $ext = [
+                'u_ext_id' => $ext_id,
+                'u_ext_token' => $ext_token,
+                'u_head_img' => $head_img,
+                'u_gender' => $gender,
+                'u_nickname' => $nickname,
+            ];
+            switch ($import_type) {
+                case 'qq':
+                    $qq_user = new UserImportQq($ext);
+                    $data = $qq_user->import();
+                    break;
+                case 'wechat':
+                    $wechat_user = new UserImportWechat($ext);
+                    $data = $wechat_user->import();
+                    break;
+                
+                default:
+                    throw new Exception("无效的登录类型", 3005);
+                    break;
+            }
+            $re = Tools::reTrue('登录成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '登录失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
 
     /**
      * Show the form for creating a new resource.

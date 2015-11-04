@@ -11,8 +11,8 @@ class TmpUserProfileBase extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['user' => $this->u_id, 'identity_number' => $this->u_id_number, 'student_number' => $this->u_student_number],
-            ['user' => 'required', 'identity_number' => 'required', 'student_number' => 'required']
+            ['user' => $this->u_id],
+            ['user' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();

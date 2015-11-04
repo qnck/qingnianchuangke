@@ -153,6 +153,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/{id}/favorite', 'UserController@postFavorite');
     Route::delete('v0/user/{id}/favorite', 'UserController@delFavorite');
     Route::resource('v0/user', 'UserController');
+    Route::get('v0/user/import/login', 'UserController@importLogin');
     /* USER END*/
 
     /* POST START*/

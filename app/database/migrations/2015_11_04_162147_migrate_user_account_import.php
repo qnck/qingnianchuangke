@@ -17,8 +17,9 @@ class MigrateUserAccountImport extends Migration {
             $table->string('u_ext_id');
             $table->string('u_ext_token', 511);
             $table->string('u_head_img', 511);
-            $table->string('u_nick_name');
+            $table->string('u_nickname');
             $table->tinyInteger('u_gender');
+            $table->timestamp('created_at');
             $table->primary('u_id');
         });
 
@@ -27,8 +28,9 @@ class MigrateUserAccountImport extends Migration {
             $table->string('u_ext_id');
             $table->string('u_ext_token', 511);
             $table->string('u_head_img', 511);
-            $table->string('u_nick_name');
+            $table->string('u_nickname');
             $table->tinyInteger('u_gender');
+            $table->timestamp('created_at');
             $table->primary('u_id');
         });
     }
