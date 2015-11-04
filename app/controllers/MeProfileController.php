@@ -50,8 +50,7 @@ class MeProfileController extends \BaseController
             $data['biograph'] = $user->u_biograph;
             $data['gender'] = $user->u_sex;
             $data['home_imgs'] = Img::toArray($user->u_home_img);
-            $data['head_img'] = Img::toArray($user->u_head_img);
-            $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
+            $data['head_img'] = $user->getHeadImg();
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
@@ -108,6 +107,7 @@ class MeProfileController extends \BaseController
         $mother_name = Input::get('mother_name', '');
         $mother_phone = Input::get('mother_phone', '');
         $apartment_no = Input::get('apartment_no', '');
+        $mobile = Input::get('mobile', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -118,6 +118,16 @@ class MeProfileController extends \BaseController
                 $profile = new TmpUserProfileBase();
                 $profile->u_id = $u_id;
             }
+
+            if ($id_school) {
+                $profile->s_id = $id_school;
+                $user->u_school_id = $id_school;
+            }
+
+            if ($mobile) {
+                $user->u_mobile = $mobile;
+            }
+
             $user->u_name = $name;
             $profile->u_id_number = $id_num;
             $profile->s_id = $id_school;
@@ -162,6 +172,7 @@ class MeProfileController extends \BaseController
         $entry_year = Input::get('entry_year', '');
         $major = Input::get('major', '');
         $stu_num = Input::get('stu_num', '');
+        $mobile = Input::get('mobile', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -177,7 +188,14 @@ class MeProfileController extends \BaseController
             $user->u_sex = $gender;
             $user->u_biograph = $bio;
 
-            $profile->s_id = $id_school;
+            if ($id_school) {
+                $profile->s_id = $id_school;
+                $user->u_school_id = $id_school;
+            }
+
+            if ($mobile) {
+                $user->u_mobile = $mobile;
+            }
             $profile->u_entry_year = $entry_year;
             $profile->u_major = $major;
 

@@ -68,8 +68,7 @@ class User extends Eloquent
         $re['id'] = $this->u_id;
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
-        $re['head_img'] = Img::toArray($this->u_head_img);
-        $re['head_img'] = empty($re['head_img']) ? '' : reset($re['head_img']);
+        $re['head_img'] = $this->getHeadImg();
         $school = DicSchool::find($this->u_school_id);
         $re['site'] = $school->t_city;
         $re['school'] = $school->showInList();
@@ -99,8 +98,7 @@ class User extends Eloquent
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
             $re['nickname'] = $user->u_nickname;
-            $re['head_img'] = Img::toArray($user->u_head_img);
-            $re['head_img'] = empty($re['head_img']) ? '' : reset($re['head_img']);
+            $re['head_img'] = $user->getHeadImg();
             $school = DicSchool::find($user->u_school_id);
             $re['site'] = $school->t_city;
             $re['school'] = $school->showInList();
@@ -179,8 +177,7 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = Img::toArray($this->u_head_img);
-        $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
+        $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -197,8 +194,7 @@ class User extends Eloquent
     public function showInImList()
     {
         $data['id'] = $this->u_id;
-        $data['head_img'] = Img::toArray($this->u_head_img);
-        $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
+        $data['head_img'] = $this->getHeadImg();
         $data['nickname'] = $this->u_nickname;
         return $data;
     }
@@ -209,8 +205,7 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = Img::toArray($this->u_head_img);
-        $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
+        $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -250,8 +245,7 @@ class User extends Eloquent
             $birthday = null;
         }
         $data['birth'] = $birthday;
-        $data['head_img'] = Img::toArray($this->u_head_img);
-        $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
+        $data['head_img'] = $this->getHeadImg();
         $data['school_id'] = $this->u_school_id;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
@@ -404,6 +398,29 @@ class User extends Eloquent
         // todo delete rlations with booth, product, set status to 3
     }
 
+    public function getHeadImg()
+    {
+        if (!empty($this->u_head_img)) {
+            $img = Img::toArray($this->u_head_img);
+            $img = empty($img) ? '' : reset($img);
+            return $img;
+        } else {
+            $this->load('importQq');
+            if (!empty($this->importQq)) {
+                if ($this->importQq->u_head_img) {
+                    return $this->importQq->u_head_img;
+                }
+            }
+            $this->load('importWechat');
+            if (!empty($this->importWechat)) {
+                if ($this->importWechat->u_head_img) {
+                    return $this->importWechat->u_head_img;
+                }
+            }
+        }
+        return '';
+    }
+
     public static function filterByDistance($lat, $lng, $distance)
     {
         $distance = $distance * $distance;
@@ -509,5 +526,15 @@ class User extends Eloquent
     public function favorites()
     {
         return $this->morphToMany('Favorite', 'favoriable');
+    }
+
+    public function importQq()
+    {
+        return $this->hasOne('UserImportQq', 'u_id', 'u_id');
+    }
+
+    public function importWechat()
+    {
+        return $this->hasOne('UserImportWechat', 'u_id', 'u_id');
     }
 }
