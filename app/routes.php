@@ -151,7 +151,6 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/{id}/followings', 'UserController@followings');
     Route::post('v0/user/{id}/praise', 'UserController@postPraise');
     Route::post('v0/user/{id}/favorite', 'UserController@postFavorite');
-    Route::delete('v0/user/{id}/favorite', 'UserController@delFavorite');
     Route::resource('v0/user', 'UserController');
     Route::post('v0/user/import/login', 'UserController@importLogin');
     /* USER END*/
@@ -239,7 +238,6 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/crowd/{id}/order', 'CrowdFundingController@postOrder');
     Route::post('v0/crowd/{id}/praise', 'CrowdFundingController@postPraise');
     Route::post('v0/crowd/{id}/favorite', 'CrowdFundingController@postFavorite');
-    Route::delete('v0/crowd/{id}/favorite', 'CrowdFundingController@delFavorite');
     /* CROWDINGFUDING END*/
 
     /* PRODUCT START*/
@@ -247,13 +245,11 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/product/{id}/reply', 'ProductController@postReply');
     Route::post('v0/product/{id}/praise', 'ProductController@postPraise');
     Route::post('v0/product/{id}/favorite', 'ProductController@postFavorite');
-    Route::delete('v0/product/{id}/favorite', 'ProductController@delFavorite');
     /* PRODUCT END*/
 
     /* BOOTH START*/
     Route::post('v0/booth/{id}/praise', 'BoothController@postPraise');
     Route::post('v0/booth/{id}/favorite', 'BoothController@postFavorite');
-    Route::delete('v0/booth/{id}/favorite', 'BoothController@delFavorite');
     /* BOOTH END*/
 
 });

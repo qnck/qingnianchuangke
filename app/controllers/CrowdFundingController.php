@@ -187,6 +187,7 @@ class CrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -194,19 +195,26 @@ class CrowdFundingController extends \BaseController
             if (empty($funding)) {
                 throw new Exception("请求的众筹不存在", 2001);
             }
-            $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
-            if (!empty($chk)) {
-                throw new Exception("已经赞过了", 7001);
+            if ($type == 1) {
+                $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
+                if (empty($chk)) {
+                    $data = [
+                        'u_id' => $u_id,
+                        'created_at' => Tools::getNow(),
+                        'u_name' => $user->u_name
+                    ];
+                    $praise = new Praise($data);
+                    $funding->praises()->save($praise);
+                    $funding->c_praise_count++;
+                    $funding->save();
+                }
+            } else {
+                $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
+                if (!empty($chk)) {
+                    $funding->praises()->detach($chk->id);
+                    $chk->delete();
+                }
             }
-            $data = [
-                'u_id' => $u_id,
-                'created_at' => Tools::getNow(),
-                'u_name' => $user->u_name
-            ];
-            $praise = new Praise($data);
-            $funding->praises()->save($praise);
-            $funding->c_praise_count++;
-            $funding->save();
             $re = Tools::reTrue('点赞成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '点赞失败:'.$e->getMessage());
@@ -218,6 +226,7 @@ class CrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -225,46 +234,28 @@ class CrowdFundingController extends \BaseController
             if (empty($funding)) {
                 throw new Exception("请求的众筹不存在", 2001);
             }
-            $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
-            if (!empty($chk)) {
-                throw new Exception("已经赞过了", 7001);
+            if ($type == 1) {
+                $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
+                if (empty($chk)) {
+                    $data = [
+                        'u_id' => $u_id,
+                        'created_at' => Tools::getNow(),
+                        'u_name' => $user->u_name
+                    ];
+                    $favorite = new Favorite($data);
+                    $funding->favorites()->save($favorite);
+                }
+            } else {
+                $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
+                if (!empty($chk)) {
+                    $funding->favorites()->detach($chk->id);
+                    $chk->delete();
+                }
             }
-            $data = [
-                'u_id' => $u_id,
-                'created_at' => Tools::getNow(),
-                'u_name' => $user->u_name
-            ];
-            $favorite = new Favorite($data);
-            $funding->favorites()->save($favorite);
-            $re = Tools::reTrue('收藏成功');
+            $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '收藏失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
-
-    public function delFavorite($id)
-    {
-        $token = Input::get('token', '');
-        $u_id = Input::get('u_id', 0);
-
-        try {
-            $user = User::chkUserByToken($token, $u_id);
-            $funding = CrowdFunding::find($id);
-            if (empty($funding)) {
-                throw new Exception("请求的众筹不存在", 2001);
-            }
-            $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
-            if (empty($chk)) {
-                throw new Exception("已经取消收藏了", 7001);
-            }
-            $funding->favorites()->detach($chk->id);
-            $chk->delete();
-            $re = Tools::reTrue('取消收藏成功');
-        } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '取消收藏失败:'.$e->getMessage());
-        }
-        return Response::json($re);
-    }
-
 }
