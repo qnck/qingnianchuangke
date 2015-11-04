@@ -102,6 +102,7 @@ class UserController extends \BaseController
             }
             $show_user->load(['school']);
             $data = $show_user->showDetail();
+            $data['is_friend'] = 0;
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
