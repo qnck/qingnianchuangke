@@ -30,9 +30,9 @@ class MeProfileController extends \BaseController
             $data = [];
             $user = User::chkUserByToken($token, $u_id);
             $user->load('school');
-            $profile = UserProfileBase::find($u_id);
+            $profile = TmpUserProfileBase::find($u_id);
             if (empty($profile->u_id)) {
-                $profile = new UserProfileBase();
+                $profile = new TmpUserProfileBase();
                 $entry_year = '';
                 $stu_imgs = null;
                 $id_imgs = null;
@@ -66,7 +66,7 @@ class MeProfileController extends \BaseController
             $data['emergency_phone'] = $profile->em_contact_phone;
             $data['apartment_no'] = $profile->u_apartment_no;
 
-            $card = UserProfileBankcard::find($u_id);
+            $card = TmpUserProfileBankcard::find($u_id);
             if (empty($card)) {
                 $data['bank'] = '';
                 $data['card_holder_name'] = '';
