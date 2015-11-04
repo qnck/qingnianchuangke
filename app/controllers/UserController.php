@@ -38,6 +38,7 @@ class UserController extends \BaseController
         $gender = Input::get('gender', 3);
         $head_img = Input::get('head_img', '');
         $import_type = Input::get('import_type', '');
+        $import_type = strtolower($import_type);
 
         try {
             if (!$ext_id || !$import_type) {

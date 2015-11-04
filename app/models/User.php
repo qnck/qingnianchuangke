@@ -113,6 +113,7 @@ class User extends Eloquent
                 }
             }
             $re['boohts'] = $booths;
+            $re['import_type'] = 'phone';
             return $re;
         }
     }
