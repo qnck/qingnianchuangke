@@ -101,6 +101,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/crowd/sell', 'MeCrowdFundingController@listSellCrowdFunding');
     Route::get('v0/user/me/crowd/buy', 'MeCrowdFundingController@listBuyCrowdFunding');
 
+    Route::get('v0/user/me/flea', 'MeProductController@listFlea');
     Route::post('v0/user/me/flea', 'MeProductController@postFlea');
     Route::put('v0/user/me/flea/{id}', 'MeProductController@putFlea');
     Route::get('v0/user/me/flea/{id}', 'MeProductController@getFlea');

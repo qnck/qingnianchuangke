@@ -174,4 +174,41 @@ class MeProductController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function listFlea()
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        $per_page = Input::get('per_page', 30);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $query = Product::with([
+                'booth' => function ($q) {
+                    $q->with(['user', 'school']);
+                },
+                'quantity',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                },
+                ])
+            ->where('u_id', '=', $u_id)->where('p_type', '=', 2);
+            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
+            $data = [];
+            foreach ($list as $key => $product) {
+                $tmp = $product->showInList();
+                if (!empty($product->praises)) {
+                    $tmp['is_praised'] = 1;
+                } else {
+                    $tmp['is_praised'] = 0;
+                }
+                $data[] = $tmp;
+            }
+            $re = Tools::reTrue('获取我发布的产品成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取我发布的产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
