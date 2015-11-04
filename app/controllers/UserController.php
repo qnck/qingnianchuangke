@@ -90,13 +90,18 @@ class UserController extends \BaseController
      */
     public function show($id)
     {
-        $user = User::find($id);
-        if (!isset($user->u_id)) {
-            return Response::json(['result' => 2001, 'data' => [], 'info' => '没有找到请求的用户']);
-        }
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
         try {
-            $user->load(['school']);
-            $data = $user->showDetail();
+            $user = User::chkUserByToken($token, $u_id);
+
+            $show_user = User::find($id);
+            if (empty($show_user)) {
+                throw new Exception("请求的用户不存在", 1);
+            }
+            $show_user->load(['school']);
+            $data = $show_user->showDetail();
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];

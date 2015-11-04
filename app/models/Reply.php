@@ -38,7 +38,8 @@ class Reply extends Eloquent
                 $tree[$reply->to_id]['children'][] = $data;
             } else {
                 $reply->load('user');
-                $data['u_head_img'] = $reply->user->u_head_img;
+                $data['u_head_img'] = Img::toArray($reply->user->u_head_img);
+                $data['u_head_img'] = reset($data['u_head_img']);
                 $tree[$reply->id] = array_merge($data, $tree[$reply->id]);
             }
         }

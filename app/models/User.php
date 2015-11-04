@@ -68,7 +68,8 @@ class User extends Eloquent
         $re['id'] = $this->u_id;
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
-        $re['head_img'] = $this->u_head_img;
+        $re['head_img'] = Img::toArray($this->u_head_img);
+        $re['head_img'] = reset($re['head_img']);
         $school = DicSchool::find($this->u_school_id);
         $re['site'] = $school->t_city;
         $re['school'] = $school->showInList();
@@ -98,7 +99,8 @@ class User extends Eloquent
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
             $re['nickname'] = $user->u_nickname;
-            $re['head_img'] = $user->u_head_img;
+            $re['head_img'] = Img::toArray($user->u_head_img);
+            $re['head_img'] = reset($re['head_img']);
             $school = DicSchool::find($user->u_school_id);
             $re['site'] = $school->t_city;
             $re['school'] = $school->showInList();
@@ -154,6 +156,7 @@ class User extends Eloquent
         if ($imgToken) {
             $img = new Img('user', $imgToken);
             $user->u_head_img = $img->getSavedImg($user->u_id, $user->u_head_img);
+            $user->u_head_img = implode(',', $user->u_head_img);
         }
 
         $user->updated_at = date('Y-m-d H:i:s');
@@ -175,7 +178,8 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = Img::toArray($this->u_head_img);
+        $data['head_img'] = reset($data['head_img']);
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -192,7 +196,8 @@ class User extends Eloquent
     public function showInImList()
     {
         $data['id'] = $this->u_id;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = Img::toArray($this->u_head_img);
+        $data['head_img'] = reset($data['head_img']);
         $data['nickname'] = $this->u_nickname;
         return $data;
     }
@@ -203,7 +208,8 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = Img::toArray($this->u_head_img);
+        $data['head_img'] = reset($data['head_img']);
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -235,6 +241,7 @@ class User extends Eloquent
         $data['name'] = $this->u_name;
         $data['gender'] = $this->u_sex;
         $data['sex'] = $this->u_sex;
+        $data['praise_count'] = $this->u_praise_count;
         if (!empty($this->u_birthday)) {
             $birthday = new DateTime($this->u_birthday);
             $birthday = $birthday->format('Y-m-d');
@@ -242,7 +249,8 @@ class User extends Eloquent
             $birthday = null;
         }
         $data['birth'] = $birthday;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = Img::toArray($this->u_head_img);
+        $data['head_img'] = reset($data['head_img']);
         $data['school_id'] = $this->u_school_id;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
