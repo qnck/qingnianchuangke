@@ -13,7 +13,7 @@ class UserProfileBase extends Eloquent
         $data = [];
 
         $this->load('school');
-        $data['school'] = $this->school->showInList();
+        $data['school'] = empty($this->school) ? null : $this->school->showInList();
         $data['student_img'] = Img::toArray($this->u_student_imgs);
         $data['student_number'] = $this->u_student_number;
         $data['identity_number'] = $this->u_id_number;

@@ -631,7 +631,7 @@ class MeController extends \BaseController
                 $data['stu_num'] = $contact->u_student_number;
                 $imgs = Img::toArray($contact->u_student_img);
                 $data['stu_img'] = $imgs;
-                $data['school'] = $contact->school->showInList();
+                $data['school'] = empty($contact->school) ? null : $contact->school->showInList();
                 $data['profession'] = $contact->u_prof;
                 $data['degree'] = $contact->u_degree;
                 $data['entry_year'] = $contact->u_entry_year;

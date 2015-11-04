@@ -70,8 +70,13 @@ class User extends Eloquent
         $re['nickname'] = $this->u_nickname;
         $re['head_img'] = $this->getHeadImg();
         $school = DicSchool::find($this->u_school_id);
-        $re['site'] = $school->t_city;
-        $re['school'] = $school->showInList();
+        if (empty($school)) {
+            $re['site'] = null;
+            $re['school'] = null;
+        } else {
+            $re['site'] = $school->t_city;
+            $re['school'] = $school->showInList();
+        }
         return $re;
     }
 
@@ -100,8 +105,13 @@ class User extends Eloquent
             $re['nickname'] = $user->u_nickname;
             $re['head_img'] = $user->getHeadImg();
             $school = DicSchool::find($user->u_school_id);
-            $re['site'] = $school->t_city;
-            $re['school'] = $school->showInList();
+            if (empty($school)) {
+                $re['site'] = null;
+                $re['school'] = null;
+            } else {
+                $re['site'] = $school->t_city;
+                $re['school'] = $school->showInList();
+            }
             $re['gender'] = $user->u_sex;
             $user->load('booths');
             $booths = null;
