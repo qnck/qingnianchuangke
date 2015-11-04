@@ -48,6 +48,7 @@ class CrowdFunding extends Eloquent
         $data['time'] = $this->c_time;
         $data['target_amount'] = $this->c_target_amount;
         $data['praise_count'] = $this->c_praise_count;
+        $data['cate'] = $this->c_cate;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
