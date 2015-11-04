@@ -39,7 +39,7 @@ class Reply extends Eloquent
             } else {
                 $reply->load('user');
                 $data['u_head_img'] = Img::toArray($reply->user->u_head_img);
-                $data['u_head_img'] = reset($data['u_head_img']);
+                $data['u_head_img'] = empty($data['u_head_img']) ? '' : reset($data['u_head_img']);
                 $tree[$reply->id] = array_merge($data, $tree[$reply->id]);
             }
         }

@@ -51,7 +51,7 @@ class MeProfileController extends \BaseController
             $data['gender'] = $user->u_sex;
             $data['home_imgs'] = Img::toArray($user->u_home_img);
             $data['head_img'] = Img::toArray($user->u_head_img);
-            $data['head_img'] = reset($data['head_img']);
+            $data['head_img'] = empty($data['head_img']) ? '' : reset($data['head_img']);
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
