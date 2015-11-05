@@ -174,7 +174,8 @@ class CrowdFundingController extends \BaseController
             $booth = Booth::find($cart->b_id);
             $msg = new PushMessage($booth->u_id);
             $msg->pushMessage('您有新的订单, 请及时发货');
-            $re = Tools::reTrue('提交订单成功');
+            $data = ['order_no' => $order_group_no];
+            $re = Tools::reTrue('提交订单成功', $data);
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提交订单失败:'.$e->getMessage());

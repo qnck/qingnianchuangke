@@ -656,7 +656,7 @@ class MarketController extends \BaseController
                 $msg = new PushMessage($booth->u_id);
                 $msg->pushMessage('您有新的订单, 请及时发货');
             }
-            $re = Tools::reTrue('提交订单成功', ['order_group_no' => $order_group_no]);
+            $re = Tools::reTrue('提交订单成功', ['order_no' => $order_group_no]);
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), $e->getMessage());
