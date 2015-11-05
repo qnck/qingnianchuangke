@@ -315,7 +315,15 @@ class MarketController extends \BaseController
             if ($booth->b_status != 1) {
                 throw new Exception("店铺当前不可用", 7001);
             }
-            $booth->load('user');
+            $booth->load([
+                'user',
+                'praises' => function ($q) {
+                    $q->where('praise.u_id', '=', $this->u_id);
+                },
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                }
+                ]);
             $boothInfo = $booth->showDetail();
             $products_count = Product::where('b_id', '=', $booth->b_id)->where('p_status', '=', 1)->count();
             $chk = BoothFollow::where('b_id', '=', $booth->b_id)->where('u_id', '=', $u_id)->first();
@@ -327,6 +335,14 @@ class MarketController extends \BaseController
 
             $boothInfo['prodct_count'] = (int)$products_count;
             $boothInfo['is_follow'] = $is_follow;
+            $boothInfo['is_praised'] = 0;
+            $boothInfo['is_favorited'] = 0;
+            if (count($booth->praises) > 0) {
+                $boothInfo['is_praised'] = 1;
+            }
+            if (count($booth->favorites) > 0) {
+                $boothInfo['is_favorited'] = 1;
+            }
             $data = ['booth' => $boothInfo];
             $re = Tools::reTrue('获取他的店铺成功', $data);
         } catch (Exception $e) {
