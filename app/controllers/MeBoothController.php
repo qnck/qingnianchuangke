@@ -23,7 +23,7 @@ class MeBoothController extends \BaseController
             $booth->b_title = $title;
             if ($img_token) {
                 $imgObj = new Img('booth', $img_token);
-                $booth->u_head_img = $imgObj->getSavedImg($booth->b_id, $booth->b_imgs);
+                $booth->b_imgs = $imgObj->getSavedImg($booth->b_id, $booth->b_imgs);
             }
             $booth->save();
             $re = ['result' => 2000, 'data' => [], 'info' => '更新店铺成功'];
