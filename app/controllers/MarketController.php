@@ -210,15 +210,25 @@ class MarketController extends \BaseController
         $range = Input::get('range', 3);
         $key = Input::get('key', '');
         $cate = Input::get('cate', 0);
+        $u_id = Input::get('u_id', 0);
 
         $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
 
         try {
+            if (!$u_id) {
+                throw new Exception("需要传入用户ID", 7001);
+            }
             $query = Booth::where('b_type', '=', 2)->where('b_status', '=', 1)->with([
                 'user',
                 'school',
-                'city'
+                'city',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                },
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                }
                 ]);
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
@@ -242,7 +252,16 @@ class MarketController extends \BaseController
             $list = $query->paginate($perPage);
             $data = [];
             foreach ($list as $key => $booth) {
-                $data[] = $booth->showDetail();
+                $tmp = $booth->showDetail();
+                $tmp['is_praised'] = 0;
+                $tmp['is_favorited'] = 0;
+                if (count($booth->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                if (count($booth->favorites) > 0) {
+                    $tmp['is_favorited'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取创的店成功', $data, $list);
         } catch (Exception $e) {

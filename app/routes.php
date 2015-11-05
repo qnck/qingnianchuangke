@@ -82,7 +82,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* ME MARKET START*/
     Route::post('v0/user/me/booth', 'MeController@postBooth');
     Route::get('v0/user/me/booth', 'MeController@listBooth');
-    Route::get('v0/user/me/booth/{id}', 'MeController@booth');
+    Route::get('v0/user/me/booth/{id}', 'MeBoothController@getBooth');
     Route::put('v0/user/me/booth/{id}/desc', 'MeBoothController@putBoothDesc');
     Route::put('v0/user/me/booth/{id}/status', 'MeController@putBoothStatus');
     Route::get('v0/user/me/booth/{id}/status', 'MeController@getBoothStatus');

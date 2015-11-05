@@ -45,7 +45,7 @@ class MeBoothController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $booth = Booth::find($booth);
+            $booth = Booth::find($id);
             if (empty($booth) || $booth->u_id != $u_id) {
                 throw new Exception("无法获取请求的店铺", 7001);
             }
