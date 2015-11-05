@@ -146,10 +146,59 @@ $(document).ready(function () {
 				}
 			},
 			error: function () {
-				alert("加载失败!");
+				$.messager.alert("提示", "与服务器通讯失败，请联系管理员！" , "alert");
 			}
 		});
 	}
+	function identity_rz(opt){
+		var sdata = $("#tt").datagrid("getSelected");
+		if (sdata) {
+			var _id = sdata.id;
+			$.ajax({
+				type: "put",
+				url: _url+'office/user/profile/'+_id+'/censor/identity',
+				data: {check:opt},
+				dataType: "text",
+				success: function (r) {
+					var result = JSON.parse(r);
+					if(result.result =="2000"){
+						//审核成功
+						if(opt=="1")
+							$("#sfrzOptTd").html("已通过认证");
+						else
+							$("#sfrzOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>&nbsp;&nbsp;</span>&nbsp;&nbsp;<a href=\"javascript:void(0)\" onclick=\"identity_rz(1)\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"identity_rz(0)\">[认证不通过]</a>");
+					}
+				},
+				error: function () {
+					$.messager.alert("提示", "与服务器通讯失败，请联系管理员！" , "alert");
+				}
+			});
+		}
+	}
+	function student_rz(opt){
+		var sdata = $("#tt").datagrid("getSelected");
+		if (sdata) {
+			var _id = sdata.id;
+			$.ajax({
+				type: "put",
+				url: _url+'office/user/profile/'+_id+'/censor/student',
+				data: {check:opt},
+				dataType: "text",
+				success: function (r) {
+					var result = JSON.parse(r);
+					if(result.result =="2000"){
+						//审核成功
+						if(opt=="1")
+							$("#xszOptTd").html("已通过认证");
+						else
+							$("#xszOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>&nbsp;&nbsp;</span>&nbsp;&nbsp;</span>&nbsp;&nbsp;<a href=\"javascript:void(0)\" onclick=\"student_rz(1)\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"student_rz(0)\">[认证不通过]</a>");
+					}
+				},
+				error: function () {
+					$.messager.alert("提示", "与服务器通讯失败，请联系管理员！" , "alert");
+				}
+			});
+		}}
 	function putDataToWindow(data) {
 		clearWindowData();
 		var sdata = $("#tt").datagrid("getSelected");
@@ -162,21 +211,21 @@ $(document).ready(function () {
 			}
 			var identity_verified = data.base.identity_verified;
 			if(identity_verified=="0")
-				$("#sfrzOptTd").html("<a href=\"javascript:void(0)\" onclick=\"\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[认证不通过]</a>");//身份认证操作
+				$("#sfrzOptTd").html("<a href=\"javascript:void(0)\" onclick=\"identity_rz('1')\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"identity_rz('0')\">[认证不通过]</a>");//身份认证操作
 			else if(identity_verified=="1")
 				$("#sfrzOptTd").html("已通过认证");//身份认证操作
 			else
-				$("#sfrzOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>$nbsp;$nbsp;<a href=\"javascript:void(0)\" onclick=\"\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[认证不通过]</a>");//身份认证操作
+				$("#sfrzOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>&nbsp;&nbsp;<a href=\"javascript:void(0)\" onclick=\"identity_rz('1')\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"identity_rz('0')\">[认证不通过]</a>");//身份认证操作
 			$("#xszhm").text(data.base.student_number);//学生证号码
 			if(data.base.student_img)
 				$("#xszzp_zp").attr("src",data.base.student_img.student_img_front);//学生证照片
 			var student_verified = data.base.student_verified;
 			if(student_verified=="0")
-				$("#xszOptTd").html("<a href=\"javascript:void(0)\" onclick=\"\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[认证不通过]</a>");//学生证认证操作
+				$("#xszOptTd").html("<a href=\"javascript:void(0)\" onclick=\"student_rz('1')\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"student_rz('0')\">[认证不通过]</a>");//学生证认证操作
 			else if(student_verified=="1")
 				$("#xszOptTd").html("已通过认证");//学生证认证操作
 			else
-				$("#xszOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>$nbsp;$nbsp;<a href=\"javascript:void(0)\" onclick=\"\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[认证不通过]</a>");//学生证认证操作
+				$("#xszOptTd").html("<span style=\"color:red\">上次认证：未通过认证</span>&nbsp;&nbsp;<a href=\"javascript:void(0)\" onclick=\"student_rz('1')\">[认证通过]</a> <a href=\"javascript:void(0)\" onclick=\"student_rz('0')\">[认证不通过]</a>");//学生证认证操作
 			if(data.base.school)
 				$("#schoolname").text(data.base.school.school_name);//学校
 			$("#apartment").text(data.base.apartment);//宿舍
@@ -185,12 +234,12 @@ $(document).ready(function () {
 			$("#emergency_name").text(data.base.emergency_name);//紧急联系人
 			$("#emergency_phone").text(data.base.emergency_phone);//紧急联系人电话号码
 			if(data.base.status=="0")
-				$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[审核不通过]</a>");
+				$("#detailOptTd").html("<a href=\"javascript:void(0)\" onclick=\"censor('1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('0')\">[审核不通过]</a>");
 			else if(data.base.status=="1"){
 				$("#detailOptTd").html("已通过审核");
 			}
 			else {
-				$("#detailOptTd").html("<span style=\"color:red\">上次审核：未通过审核</span>$nbsp;$nbsp;<a href=\"javascript:void(0)\" onclick=\"\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"\">[审核不通过]</a>");
+				$("#detailOptTd").html("<span style=\"color:red\">上次审核：未通过审核</span>&nbsp;&nbsp;<a href=\"javascript:void(0)\" onclick=\"censor('1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('0')\">[审核不通过]</a>");
 			}
 			$("#jtzz").text(data.base.home_adress);//家庭住址
 			$("#fqxm").text(data.base.father_name);//父亲姓名
@@ -202,6 +251,45 @@ $(document).ready(function () {
 			$("#khh").text(data.bank.bank.name);//开户行
 			$("#yhkh").text(data.bank.card_number);//银行卡号
 			$("#hzxm").text(data.bank.holder_name);//户主姓名
+		}
+	}
+	function censor(opt){
+		var remark = "";
+		if(opt=="0")
+			remark = prompt("请输入审核不通过的原因：", ""); 
+        if(opt == "0" && remark==null){
+            return;
+        }
+        else if(opt == "0" && remark==""){
+            $.messager.alert("提示", "请输入审核不通过的原因!", "alert");
+            return;
+        }
+
+		var sdata = $("#tt").datagrid("getSelected");
+		if (sdata) {
+			var _id = sdata.id;
+			$.ajax({
+				type: "put",
+				url: _url+'office/user/profile/'+_id+'/censor/base',
+				data: {check:opt,remark:remark},
+				dataType: "text",
+				success: function (r) {
+					var result = JSON.parse(r);
+            		$.messager.alert("提示", result.info, "alert");
+					if(result.result =="2000"){
+						//审核成功
+						if(opt=="1")
+							$("#detailOptTd").html("已审核通过");
+						else
+							$("#detailOptTd").html("上一次审核不通过，原因【<span style='color:red;'>"+remark+"</span>】;<br>重新审核：<a href=\"javascript:void(0)\" onclick=\"censor('1')\">[审核通过]</a> <a href=\"javascript:void(0)\" onclick=\"censor('0')\">[审核不通过]</a>");
+					}
+				},
+				error: function () {
+					alert("操作失败!");
+				}
+			});
+		} else {
+			$.messager.alert("提示", "获取选中的用户信息失败！", "alert");
 		}
 	}
 	function clearWindowData(){
