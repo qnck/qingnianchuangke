@@ -142,9 +142,25 @@ class UserController extends \BaseController
             if (empty($show_user)) {
                 throw new Exception("请求的用户不存在", 1);
             }
-            $show_user->load(['school']);
+            $show_user->load([
+                'school',
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                },
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ]);
             $data = $show_user->showDetail();
             $data['is_friend'] = 0;
+            $data['is_praised'] = 0;
+            $data['is_favorited'] = 0;
+            if (count($product->praises) > 0) {
+                $data['is_praised'] = 1;
+            }
+            if (count($product->favorites) > 0) {
+                $data['is_favorited'];
+            }
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];

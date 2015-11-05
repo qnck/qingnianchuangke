@@ -91,15 +91,23 @@ class ProductController extends \BaseController
                 'replies',
                 'favorites' => function ($q) {
                     $q->where('favorites.u_id', '=', $this->u_id);
+                },
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
                 }
                 ])->find($id);
-            if (!empty($product->promo)) {
-                $product->promo->load('praises');
-            }
             if (empty($product->p_id)) {
                 throw new Exception("无法找到请求的产品", 7001);
             }
             $data = $product->showDetail();
+            $data['is_praised'] = 0;
+            $data['is_favorited'] = 0;
+            if (count($product->praises) > 0) {
+                $data['is_praised'] = 1;
+            }
+            if (count($product->favorites) > 0) {
+                $data['is_favorited'];
+            }
             $re = Tools::reTrue('获取产品成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取产品失败:'.$e->getMessage());

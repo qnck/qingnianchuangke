@@ -64,11 +64,30 @@ class CrowdFundingController extends \BaseController
 
     public function getCrowdFunding($id)
     {
+        $u_id = Input::get('u_id', 0);
+
         try {
             $crowdfunding = CrowdFunding::find($id);
-            $crowdfunding->load(['replies']);
+            $crowdfunding->load([
+                'replies',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                },
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                }
+                ]);
             $data = $crowdfunding->showDetail();
             $data['participates_count'] = $crowdfunding->getParticipates(0, true);
+            $data['is_praised'] = 0;
+            $data['is_favorited'] = 0;
+            if (count($crowdfunding->praises) > 0) {
+                $data['is_praised'] = 1;
+            }
+            if (count($crowdfunding->favorites) > 0) {
+                $data['is_favorited'] = 1;
+            }
+
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
