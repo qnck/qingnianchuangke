@@ -17,13 +17,25 @@ class CrowdFundingController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         $cate = Input::get('cate', 0);
+        $u_id = Input::get('u_id', 0);
 
         $range = Input::get('range', 1);
         $city = Input::get('city', 0);
         $school = Input::get('school', 0);
 
         try {
-            $query = CrowdFunding::with(['city', 'school', 'user', 'product'])->where('c_status', '>', 2);
+            if (!$u_id) {
+                throw new Exception("请传入用户id", 7001);
+            }
+            $query = CrowdFunding::with([
+                'city',
+                'school',
+                'user',
+                'product',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])->where('c_status', '>', 2);
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
@@ -36,7 +48,12 @@ class CrowdFundingController extends \BaseController
             $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
-                $data[] = $funding->showInList();
+                $tmp = $funding->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($funding->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
