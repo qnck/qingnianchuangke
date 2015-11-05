@@ -140,7 +140,7 @@ class CrowdFunding extends Eloquent
             $q->on('users.u_id', '=', 'carts.u_id')->where('carts.c_type', '=', 2);
         })->join('crowd_funding_products', function ($q) {
             $q->on('crowd_funding_products.p_id', '=', 'carts.p_id')->where('crowd_funding_products.cf_id', '=', $this->cf_id);
-        })->join('orders', function ($q) {
+        })->leftJoin('orders', function ($q) {
             $q->on('orders.o_id', '=', 'carts.o_id');
         });
         if ($count) {

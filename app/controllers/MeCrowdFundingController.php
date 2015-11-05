@@ -21,6 +21,8 @@ class MeCrowdFundingController extends \BaseController
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
 
+        $mobile = Input::get('mobile', '');
+
         $price = Input::get('price', 0);
         $quantity = Input::get('quantity', 0);
         $is_limit = Input::get('is_limit', 0);
@@ -70,6 +72,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_open_file = $open_file;
+            $crowd_funding->c_mobile = $mobile;
             $crowd_funding->addCrowdFunding();
 
             if ($img_token) {
@@ -92,6 +95,11 @@ class MeCrowdFundingController extends \BaseController
                 $funding_product->p_max_quantity = $quantity;
             } else {
                 $funding_product->p_max_quantity = 0;
+            }
+
+            if ($mobile && !$user->u_mobile) {
+                $user->u_mobile = $mobile;
+                $user->save();
             }
             $funding_product->addProduct();
             $re = Tools::reTrue('添加众筹成功');

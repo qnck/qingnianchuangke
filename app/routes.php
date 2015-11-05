@@ -83,7 +83,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/booth', 'MeController@postBooth');
     Route::get('v0/user/me/booth', 'MeController@listBooth');
     Route::get('v0/user/me/booth/{id}', 'MeController@booth');
-    Route::put('v0/user/me/booth/{id}/desc', 'MeController@putBoothDesc');
+    Route::put('v0/user/me/booth/{id}/desc', 'MeBoothController@putBoothDesc');
     Route::put('v0/user/me/booth/{id}/status', 'MeController@putBoothStatus');
     Route::get('v0/user/me/booth/{id}/status', 'MeController@getBoothStatus');
     

@@ -69,12 +69,7 @@ class Product extends Eloquent
         $data['brief'] = $this->p_brief;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['imgs'] = Img::filterKey('prod_img_', $this->_imgs, true);
-        $content = json_decode($this->p_desc, JSON_OBJECT_AS_ARRAY);
-        $pic_text = [];
-        foreach ($data['imgs'] as $key => $img) {
-            $pic_text[] = ['img' => $img, 'text' => $content[$key]];
-        }
-        $data['content'] = $pic_text;
+        $data['content'] = $this->getContent();
         $data['price_origin'] = $this->p_price_origin;
         $data['price'] = $this->p_price;
         $data['discount'] = $this->p_discount;
@@ -117,12 +112,7 @@ class Product extends Eloquent
         $data['prod_discount'] = $this->p_discount;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['imgs'] = Img::filterKey('prod_img_', $this->_imgs, true);
-        $content = json_decode($this->p_desc, JSON_OBJECT_AS_ARRAY);
-        $pic_text = [];
-        foreach ($data['imgs'] as $key => $img) {
-            $pic_text[] = ['img' => $img, 'text' => $content[$key]];
-        }
-        $data['content'] = $pic_text;
+        $data['content'] = $this->getContent();
         $data['reply_count'] = $this->p_reply_count;
         $data['status'] = $this->p_status;
         $data['remark'] = $this->p_remark;
@@ -162,6 +152,22 @@ class Product extends Eloquent
             }
         }
         return $data;
+    }
+
+    public function getContent()
+    {
+        $content = json_decode($this->p_desc, JSON_OBJECT_AS_ARRAY);
+        $pic_text = [];
+        if (empty($this->_imgs)) {
+            $this->loadImgs();
+        }
+        $imgs = Img::filterKey('prod_img_', $this->_imgs, true);
+        foreach ($imgs as $key => $img) {
+            $txt = empty($content[$key]) ? '' : $content[$key];
+            $pic_text[] = ['img' => $img, 'text' => $txt];
+        }
+
+        return $pic_text;
     }
 
     public function addProduct()

@@ -393,31 +393,6 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
-    public function putBoothDesc($id)
-    {
-        $token = Input::get('token', '');
-        $u_id = Input::get('u_id', 0);
-        $desc = Input::get('desc', '');
-
-        try {
-            $user = User::chkUserByToken($token, $u_id);
-            $booth = Booth::find($id);
-            if (empty($booth->b_id) || $booth->u_id != $u_id) {
-                throw new Exception("无法获取到请求的店铺", 7001);
-            }
-            $booth->b_desc = $desc;
-            $booth->save();
-            $re = ['result' => 2000, 'data' => [], 'info' => '更新店铺描述成功'];
-        } catch (Exception $e) {
-            $code = 7001;
-            if ($e->getCode() > 2000) {
-                $code = $e->getCode();
-            }
-            $re = ['result' => $code, 'data' => [], 'info' => '更新店铺描述失败:'.$e->getMessage()];
-        }
-        return Response::json($re);
-    }
-
     public function getBoothStatus($id)
     {
         $token = Input::get('token', '');

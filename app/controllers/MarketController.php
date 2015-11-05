@@ -206,7 +206,10 @@ class MarketController extends \BaseController
     public function maker()
     {
         $school = Input::get('school', 0);
+        $site = Input::get('site', 0);
+        $range = Input::get('range', 3);
         $key = Input::get('key', '');
+        $cate = Input::get('cate', 0);
 
         $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
@@ -225,9 +228,17 @@ class MarketController extends \BaseController
                     ->orWhere('b_title', 'LIKE', '%'.$key.'%');
                 });
             }
-            if ($school) {
+
+            if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
+            if ($site && $range == 2) {
+                $query = $query->where('c_id', '=', $site);
+            }
+            if ($cate) {
+                $query = $query->where('b_cate', '=', $cate);
+            }
+
             $list = $query->paginate($perPage);
             $data = [];
             foreach ($list as $key => $booth) {

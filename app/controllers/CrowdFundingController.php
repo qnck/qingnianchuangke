@@ -259,19 +259,22 @@ class CrowdFundingController extends \BaseController
 
         try {
             $funding = CrowdFunding::find($id);
+            if (empty($funding) || $funding->c_status < 3) {
+                throw new Exception("没有找到请求的众筹信息", 1);
+            }
             $participates = $funding->getParticipates($per_page);
             $data = [];
             foreach ($participates as $key => $user) {
                 $tmp = $user->showInList();
-                $tmp['address'] = $user->o_shipping_address;
+                $tmp['shipping_address'] = $user->o_shipping_address;
                 $tmp['comment'] = $user->o_comment;
-                $tmp['mobile'] = $user->o_shipping_phone;
+                $tmp['shipping_phone'] = $user->o_shipping_phone;
                 $tmp['quantity'] = $user->c_quantity;
                 $data[] = $tmp;
             }
-            $re = Tools::reTrue('获取关注用户成功', $data, $participates);
+            $re = Tools::reTrue('获取参与用户成功', $data, $participates);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取关注用户失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取参与用户失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

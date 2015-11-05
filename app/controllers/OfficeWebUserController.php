@@ -190,9 +190,9 @@ class OfficeWebUserController extends \BaseController
                     $base->u_is_id_verified = 1;
                 }
             } else {
-                $tmp->u_is_id_verified = 0;
+                $tmp->u_is_id_verified = 2;
                 if (!empty($base)) {
-                    $base->u_is_id_verified = 0;
+                    $base->u_is_id_verified = 2;
                 }
             }
             $tmp->save();
@@ -219,9 +219,9 @@ class OfficeWebUserController extends \BaseController
                     $base->u_is_student_verified = 1;
                 }
             } else {
-                $tmp->u_is_student_verified = 0;
+                $tmp->u_is_student_verified = 2;
                 if (!empty($base)) {
-                    $base->u_is_student_verified = 0;
+                    $base->u_is_student_verified = 2;
                 }
             }
             $tmp->save();
