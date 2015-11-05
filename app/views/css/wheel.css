@@ -472,20 +472,19 @@ http://flickity.metafizzy.co
 .flickity-prev-next-button {
   position: absolute;
   top: 50%;
-  width: 35px;
-  height: 70px;
+  width: 28px;
+  height: 35px;
   border: none;
-  border-radius: 50%;
+  /*border-radius: 50%;*/
   background: white;
-  background: hsla(0, 0%, 100%, 0.75);
+  /*background: hsla(0, 0%, 100%, 0.75);*/
   cursor: pointer;
   /* vertically center */
   -webkit-transform: translateY(-50%);
       -ms-transform: translateY(-50%);
           transform: translateY(-50%);
 }
-
-.flickity-prev-next-button:hover { background: white; }
+.flickity-prev-next-button:hover { background: black; }
 
 .flickity-prev-next-button:focus {
   outline: none;
