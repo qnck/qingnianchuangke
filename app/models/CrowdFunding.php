@@ -134,14 +134,19 @@ class CrowdFunding extends Eloquent
         return $cates[$this->c_cate];
     }
 
-    public function getParticipates()
+    public function getParticipates($per_page, $count = false)
     {
-        $query = User::select('users.*', 'carts.c_quantity')->rightJoin('carts', function ($q) {
+        $query = User::select('users.*', 'carts.c_quantity', 'orders.o_comment', 'orders.o_shipping_address', 'orders.o_comment', 'orders.o_shipping_phone')->rightJoin('carts', function ($q) {
             $q->on('users.u_id', '=', 'carts.u_id')->where('carts.c_type', '=', 2);
         })->join('crowd_funding_products', function ($q) {
             $q->on('crowd_funding_products.p_id', '=', 'carts.p_id')->where('crowd_funding_products.cf_id', '=', $this->cf_id);
+        })->join('orders', function ($q) {
+            $q->on('orders.o_id', '=', 'carts.o_id');
         });
-        $list = $query->get();
+        if ($count) {
+            return $query->count();
+        }
+        $list = $query->paginate($per_page);
         return $list;
     }
 

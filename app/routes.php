@@ -238,6 +238,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/crowd/{id}/order', 'CrowdFundingController@postOrder');
     Route::post('v0/crowd/{id}/praise', 'CrowdFundingController@postPraise');
     Route::post('v0/crowd/{id}/favorite', 'CrowdFundingController@postFavorite');
+    Route::get('v0/crowd/{id}/participates', 'CrowdFundingController@listParticipates');
     /* CROWDINGFUDING END*/
 
     /* PRODUCT START*/
@@ -330,6 +331,10 @@ Route::get('office/draw', 'OfficeDrawContoller@listDraw');
 Route::get('office/draw/{id}', 'OfficeDrawContoller@getDraw');
 Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
 /* DRAW END*/
+
+/* CROWDFUNDING START*/
+Route::get('office/crowd', 'OfficeCrowdFundingController@listFunding');
+/* CROWDFUNDING END*/
 
 /*********** PROTAL **********/
 

@@ -51,14 +51,7 @@ class CrowdFundingController extends \BaseController
             $crowdfunding = CrowdFunding::find($id);
             $crowdfunding->load(['replies']);
             $data = $crowdfunding->showDetail();
-            $participates = $crowdfunding->getParticipates();
-            $data['participates_count'] = count($participates);
-            $data['participates'] = [];
-            foreach ($participates as $key => $user) {
-                $tmp = $user->showInList();
-                $tmp['quantity'] = $user->c_quantity;
-                $data['participates'][] = $tmp;
-            }
+            $data['participates_count'] = $crowdfunding->getParticipates(0, true);
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
@@ -256,6 +249,29 @@ class CrowdFundingController extends \BaseController
             $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function listParticipates($id)
+    {
+        $per_page = Input::get('per_page');
+
+        try {
+            $funding = CrowdFunding::find($id);
+            $participates = $funding->getParticipates($per_page);
+            $data = [];
+            foreach ($participates as $key => $user) {
+                $tmp = $user->showInList();
+                $tmp['address'] = $user->o_shipping_address;
+                $tmp['comment'] = $user->o_comment;
+                $tmp['mobile'] = $user->o_shipping_phone;
+                $tmp['quantity'] = $user->c_quantity;
+                $data[] = $tmp;
+            }
+            $re = Tools::reTrue('获取关注用户成功', $data, $participates);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取关注用户失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
