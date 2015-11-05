@@ -150,7 +150,7 @@ function formatKdfs(value,row){
 function formatOpt(value,row){
     if(row.user)
     {
-        if(row.user.detail_status=="1" && row.user.contact_status=="1" && row.user.bank_status=="1")
+        if(row.user.base_status=="1")
         {
             if(row.status=="0")
                 return "<a href=\"#\" onclick=\"censorInfo('1','"+row.is_fund+"')\">[审批通过]</a>&nbsp;&nbsp;<a href=\"#\" onclick=\"censorInfo('0','"+row.is_fund+"')\">[审批不通过]</a>";
