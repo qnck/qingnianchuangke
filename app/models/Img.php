@@ -82,7 +82,7 @@ class Img
         $new_key = $new_key.$index;
         $pos = strpos($origin, $key);
         $new_path = substr_replace($origin, $new_key, $pos, $length);
-        $this->move($u_id, $origin, $new_path);
+        $this->move($id, $origin, $new_path);
         return $new_path;
     }
 
