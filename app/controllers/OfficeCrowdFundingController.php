@@ -47,6 +47,7 @@ class OfficeCrowdFundingController extends \BaseController
                 if ($funding->c_status == 1) {
                     throw new Exception("正在审核中", 10001);
                 }
+                $funding->active_at = Tools::getNow();
                 $funding->c_status = 4;
             } else {
                 $funding->c_status = 2;

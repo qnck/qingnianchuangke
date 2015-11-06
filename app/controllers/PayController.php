@@ -16,17 +16,23 @@ class PayController extends \BaseController
             $alipay = new Alipay();
             $alipay->verifyNotify();
 
-            $order = Order::getOrderByNo($order_no);
+            $orders = Order::getGroupOrdersByNo($order_no);
+
+            $amount_in_orders = 0;
 
             if ($ali_trade_status == 'TRADE_FINISHED' || $ali_trade_status == 'TRADE_SUCCESS') {
-                $order->pay($amount, Alipay::PAYMENT_TAG);
-                $order->checkoutCarts();
+                foreach ($orders as $key => $order) {
+                    $order->pay(Alipay::PAYMENT_TAG);
+                    $order->checkoutCarts();
+                }
             }
             DB::commit();
             echo "success";
+            die();
         } catch (Exception $e) {
             DB::rollback();
             echo "fail";
+            die();
         }
         exit;
     }
@@ -42,9 +48,11 @@ class PayController extends \BaseController
 
             $re = $wechat->verifyNotify();
             $re['total_fee'] = $re['total_fee'] * 0.01;
-            $order = Order::getOrderByNo($re['out_trade_no']);
-            $order->pay($re['total_fee'], WechatPay::PAYMENT_TAG);
-            $order->checkoutCarts();
+            $orders = Order::getGroupOrdersByNo($re['out_trade_no']);
+            foreach ($orders as $key => $order) {
+                $order->pay(WechatPay::PAYMENT_TAG);
+                $order->checkoutCarts();
+            }
             $wechat->_notify->SetReturn_code('SUCCESS');
             $wechat->_notify->SetReturn_msg('OK');
             DB::commit();
