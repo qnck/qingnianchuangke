@@ -22,6 +22,20 @@ class Img
         return $imgs;
     }
 
+    public function move($id, $from, $target)
+    {
+        $oss = new AliyunOss($this->category, '', $id);
+        $oss->move($from, $target);
+        return true;
+    }
+
+    public function remove($id, $obj)
+    {
+        $oss = new AliyunOss($this->category, '', $id);
+        $oss->remove($obj);
+        return true;
+    }
+
     public function getSavedImg($newId, $string = '', $array = false)
     {
         $imgs = $this->save($newId);

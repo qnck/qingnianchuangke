@@ -176,6 +176,13 @@ class MeProfileController extends \BaseController
 
         $img_token = Input::get('img_token', '');
 
+        $modified_img = Input::get('modified_img', '');
+        $modified_img_index = Input::get('modified_img_index', '');
+
+        if ($modified_img) {
+            $modified_img = explode(',', $modified_img);
+        }
+
         try {
             $user = User::chkUserByToken($token, $u_id);
             $profile = TmpUserProfileBase::find($u_id);
@@ -200,11 +207,37 @@ class MeProfileController extends \BaseController
             $profile->u_major = $major;
 
             if ($img_token) {
+                if (!is_numeric($modified_img_index)) {
+                    throw new Exception("需要传入正确的修改图片索引", 2001);
+                }
                 $imgObj = new Img('user', $img_token);
+                if (!empty($modified_img)) {
+                    $new_paths = [];
+                    foreach ($modified_img as $old_path) {
+                        $new_path = Tools::getReindexedImg($modified_img_index, $old_path);
+                        $imgObj->move($u_di, $old_path, $new_path);
+                        $new_paths[] = $new_path;
+                        $modified_img_index++;
+                    }
+                    $to_delete = Img::toArray($user->u_home_img);
+                    foreach ($to_delete as $obj) {
+                        if (!in_array($obj, $new_paths)) {
+                            $imgObj->remove($u_id, $obj);
+                        }
+                    }
+                    $user->u_home_img = implode(',', $new_paths);
+                }
                 $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs, $user->u_home_img]), true);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);
                 $home_imgs = Img::filterKey('home_img_', $imgs);
+                if (!empty($modified_img)) {
+                    foreach ($modified_img as $del) {
+                        if (array_key_exists($del, $home_imgs)) {
+                            unset($home_imgs[$del]);
+                        }
+                    }
+                }
                 $profile->u_student_imgs = implode(',', $stu_imgs);
                 $profile->u_id_imgs = implode(',', $id_imgs);
                 $user->u_home_img = implode(',', $home_imgs);
