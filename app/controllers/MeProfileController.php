@@ -215,7 +215,7 @@ class MeProfileController extends \BaseController
                     $new_paths = [];
                     foreach ($modified_img as $old_path) {
                         $new_path = Tools::getReindexedImg($modified_img_index, $old_path);
-                        $imgObj->move($u_di, $old_path, $new_path);
+                        $imgObj->move($u_id, $old_path, $new_path);
                         $new_paths[] = $new_path;
                         $modified_img_index++;
                     }
