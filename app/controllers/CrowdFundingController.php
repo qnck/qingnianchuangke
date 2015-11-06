@@ -244,8 +244,8 @@ class CrowdFundingController extends \BaseController
             if (empty($funding)) {
                 throw new Exception("请求的众筹不存在", 2001);
             }
+            $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -255,15 +255,15 @@ class CrowdFundingController extends \BaseController
                     $praise = new Praise($data);
                     $funding->praises()->save($praise);
                     $funding->c_praise_count++;
-                    $funding->save();
                 }
             } else {
-                $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $funding->praises()->detach($chk->id);
+                    $funding->c_praise_count = --$funding->c_praise_count <= 0 ? 0 : $funding->c_praise_count;
                     $chk->delete();
                 }
             }
+            $funding->save();
             $re = Tools::reTrue('点赞成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '点赞失败:'.$e->getMessage());
@@ -283,8 +283,8 @@ class CrowdFundingController extends \BaseController
             if (empty($funding)) {
                 throw new Exception("请求的众筹不存在", 2001);
             }
+            $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -295,7 +295,6 @@ class CrowdFundingController extends \BaseController
                     $funding->favorites()->save($favorite);
                 }
             } else {
-                $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $funding->favorites()->detach($chk->id);
                     $chk->delete();

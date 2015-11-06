@@ -383,8 +383,8 @@ class UserController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->praises()->where('praises.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $user->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -394,15 +394,15 @@ class UserController extends \BaseController
                     $praise = new Praise($data);
                     $user->praises()->save($praise);
                     $user->u_praise_count++;
-                    $user->save();
                 }
             } else {
-                $chk = $user->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $user->praises()->detach($chk->id);
                     $chk->delete();
+                    $user->u_praise_count = --$user->u_praise_count <= 0 ? 0 : $user->u_praise_count;
                 }
             }
+            $user->save();
             $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
@@ -418,8 +418,8 @@ class UserController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -430,7 +430,6 @@ class UserController extends \BaseController
                     $user->favorites()->save($favorite);
                 }
             } else {
-                $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $user->favorites()->detach($chk->id);
                     $chk->delete();

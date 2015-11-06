@@ -210,22 +210,23 @@ class MeProfileController extends \BaseController
                     throw new Exception("需要传入正确的修改图片索引", 2001);
                 }
                 $imgObj = new Img('user', $img_token);
+                $new_paths = [];
                 if (!empty($modified_img)) {
-                    $new_paths = [];
                     foreach ($modified_img as $old_path) {
                         $new_path = $imgObj->reindexImg($u_id, $modified_img_index, $old_path);
                         $new_paths[] = $new_path;
                         $modified_img_index++;
                     }
-                    $to_delete = Img::toArray($user->u_home_img);
-                    foreach ($to_delete as $obj) {
-                        if (!in_array($obj, $new_paths)) {
-                            $imgObj->remove($u_id, $obj);
-                        }
-                    }
-                    $new_paths = Img::attachHost($new_paths);
-                    $user->u_home_img = implode(',', $new_paths);
                 }
+                $to_delete = Img::toArray($user->u_home_img);
+                foreach ($to_delete as $obj) {
+                    if (!in_array($obj, $new_paths)) {
+                        $imgObj->remove($u_id, $obj);
+                    }
+                }
+                $new_paths = Img::attachHost($new_paths);
+                
+                $user->u_home_img = implode(',', $new_paths);
                 $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs, $user->u_home_img]), true);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);

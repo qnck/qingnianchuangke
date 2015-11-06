@@ -16,8 +16,8 @@ class ProductController extends \BaseController
             if (empty($product)) {
                 throw new Exception("请求的商品不存在", 2001);
             }
+            $chk = $product->praises()->where('praises.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $product->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -27,15 +27,15 @@ class ProductController extends \BaseController
                     $praise = new Praise($data);
                     $product->praises()->save($praise);
                     $product->p_praise_count++;
-                    $product->save();
                 }
             } else {
-                $chk = $product->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $product->praises()->detach($chk->id);
                     $chk->delete();
+                    $product->p_praise_count = --$product->p_praise_count <= 0 ? 0 : $product->p_praise_count;
                 }
             }
+            $product->save();
             $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
@@ -55,8 +55,8 @@ class ProductController extends \BaseController
             if (empty($product)) {
                 throw new Exception("请求的商品不存在", 2001);
             }
+            $chk = $product->favorites()->where('favorites.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $product->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -67,7 +67,6 @@ class ProductController extends \BaseController
                     $product->favorites()->save($favorite);
                 }
             } else {
-                $chk = $product->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $product->favorites()->detach($chk->id);
                     $chk->delete();

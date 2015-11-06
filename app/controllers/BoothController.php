@@ -16,8 +16,8 @@ class BoothController extends \BaseController
             if (empty($booth)) {
                 throw new Exception("请求的店铺不存在", 2001);
             }
+            $chk = $booth->praises()->where('praises.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $booth->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -27,15 +27,15 @@ class BoothController extends \BaseController
                     $praise = new Praise($data);
                     $booth->praises()->save($praise);
                     $booth->b_praise_count++;
-                    $booth->save();
                 }
             } else {
-                $chk = $booth->praises()->where('praises.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $booth->praises()->detach($chk->id);
                     $chk->delete();
+                    $booth->b_praise_count = --$booth->b_praise_count <= 0 ? 0 : $booth->b_praise_count;
                 }
             }
+            $booth->save();
             $re = Tools::reTrue('操作成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
@@ -55,8 +55,8 @@ class BoothController extends \BaseController
             if (empty($booth)) {
                 throw new Exception("请求的店铺不存在", 2001);
             }
+            $chk = $booth->favorites()->where('favorites.u_id', '=', $u_id)->first();
             if ($type == 1) {
-                $chk = $booth->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (empty($chk)) {
                     $data = [
                         'u_id' => $u_id,
@@ -67,7 +67,6 @@ class BoothController extends \BaseController
                     $booth->favorites()->save($favorite);
                 }
             } else {
-                $chk = $booth->favorites()->where('favorites.u_id', '=', $u_id)->first();
                 if (!empty($chk)) {
                     $booth->favorites()->detach($chk->id);
                     $chk->delete();
