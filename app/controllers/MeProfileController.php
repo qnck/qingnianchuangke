@@ -214,6 +214,10 @@ class MeProfileController extends \BaseController
                 if (!empty($modified_img)) {
                     $new_paths = [];
                     foreach ($modified_img as $old_path) {
+                        $old_path = substr($old_path, 8);
+                        $old_path = explode('/', $old_path);
+                        unset($old_path[0]);
+                        $old_path = implode('/', $old_path);
                         $new_path = Tools::getReindexedImg($modified_img_index, $old_path);
                         $imgObj->move($u_id, $old_path, $new_path);
                         $new_paths[] = $new_path;
