@@ -1875,7 +1875,8 @@ class MeController extends \BaseController
             } else {
                 throw new Exception("请上传头像", 2001);
             }
-            $re = Tools::reTrue('修改头像成功');
+            $data['head_img'] = $head_img;
+            $re = Tools::reTrue('修改头像成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '修改头像失败:'.$e->getMessage());
         }
