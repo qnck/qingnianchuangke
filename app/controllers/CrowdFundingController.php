@@ -70,6 +70,7 @@ class CrowdFundingController extends \BaseController
         try {
             $crowdfunding = CrowdFunding::find($id);
             $crowdfunding->load([
+                'user',
                 'replies',
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
@@ -79,6 +80,19 @@ class CrowdFundingController extends \BaseController
                 }
                 ]);
             $data = $crowdfunding->showDetail();
+            $mobile = '';
+            $apartment_no = '';
+            if ($crowdfunding->c_open_file) {
+                $mobile = $crowdfunding->user->u_mobile;
+                $base = UserProfileBase::find($crowdfunding->user->u_id);
+                if (!empty($base)) {
+                    $apartment_no = $base->u_apartment_no;
+                }
+            }
+
+            $data['mobile'] = $mobile;
+            $data['apartment_no'] = $apartment_no;
+
             $data['participates_count'] = $crowdfunding->getParticipates(0, true);
             $data['is_praised'] = 0;
             $data['is_favorited'] = 0;

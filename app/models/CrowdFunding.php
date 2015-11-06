@@ -118,6 +118,7 @@ class CrowdFunding extends Eloquent
         $data['shipping_fee'] = $this->c_shipping_fee;
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
+        $data['yield_desc'] = $this->c_yield_desc;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
