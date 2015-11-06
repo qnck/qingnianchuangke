@@ -50,6 +50,7 @@ class UserImport extends Eloquent
         $re['name'] = $user->u_name;
         $re['nickname'] = $user->u_nickname;
         $re['head_img'] = $user->getHeadImg();
+        $re['biograph'] = $user->u_biograph;
         $school = DicSchool::find($user->u_school_id);
         if (empty($school)) {
             $re['site'] = null;
