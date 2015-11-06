@@ -61,7 +61,7 @@ class ProductController extends \BaseController
                     $data = [
                         'u_id' => $u_id,
                         'created_at' => Tools::getNow(),
-                        'u_name' => $user->u_name
+                        'u_name' => $user->u_nickname
                     ];
                     $favorite = new Favorite($data);
                     $product->favorites()->save($favorite);
