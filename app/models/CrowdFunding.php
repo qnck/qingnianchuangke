@@ -108,6 +108,7 @@ class CrowdFunding extends Eloquent
             $pic_text[] = $tmp;
         }
         $data['content'] = $pic_text;
+        $data['brief'] = $this->c_brief;
         $data['title'] = $this->c_title;
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
@@ -119,6 +120,7 @@ class CrowdFunding extends Eloquent
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
+        $data['open_file'] = $this->c_open_file;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
