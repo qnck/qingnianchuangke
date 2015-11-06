@@ -211,7 +211,7 @@ class CrowdFunding extends Eloquent
         } else {
             $gap = $now->diff($active_at);
             $gap = $gap->days;
-            $gap = $this->time - $gap;
+            $gap = $this->c_time - $gap;
             if ($gap < 0) {
                 $gap = 0;
             }
