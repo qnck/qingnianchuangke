@@ -100,13 +100,13 @@ class OfficeWebUserController extends \BaseController
                 $base->u_id = $tmp_base->u_id;
                 $base->u_id_number = $tmp_base->u_id_number;
                 $base->u_id_imgs = $tmp_base->u_id_imgs;
-                $base->u_is_id_verified = $tmp_base->u_is_id_verified;
+                $base->u_is_id_verified = $tmp_base->u_is_id_verified = 1;
                 $base->s_id = $tmp_base->s_id;
                 $base->u_entry_year = $tmp_base->u_entry_year;
                 $base->u_major = $tmp_base->u_major;
                 $base->u_student_number = $tmp_base->u_student_number;
                 $base->u_student_imgs = $tmp_base->u_student_imgs;
-                $base->u_is_student_verified = $tmp_base->u_is_student_verified;
+                $base->u_is_student_verified = $tmp_base->u_is_student_verified = 1;
                 $base->em_contact_phone = $tmp_base->em_contact_phone;
                 $base->em_contact_name = $tmp_base->em_contact_name;
                 $base->u_father_name = $tmp_base->u_father_name;
