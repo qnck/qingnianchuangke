@@ -12,7 +12,7 @@ class MigratePatch20151105 extends Migration {
      */
     public function up()
     {
-        Schema::tabel('crowd_fundings', function ($tabel) {
+        Schema::table('crowd_fundings', function ($tabel) {
             $tabel->string('c_remark', '511');  //众筹审核备注
         });
     }

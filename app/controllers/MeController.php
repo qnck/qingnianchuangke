@@ -318,6 +318,10 @@ class MeController extends \BaseController
                     $repayment->f_percentage = $percentage * 100;
                     $repayment->apply();
                 }
+            } else {
+                // if without fund, no need to censor
+                $booth->b_status = 1;
+                $booth->save();
             }
             $re = Tools::reTrue('申请成功');
             DB::commit();

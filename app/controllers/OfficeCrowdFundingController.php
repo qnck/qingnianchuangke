@@ -39,11 +39,24 @@ class OfficeCrowdFundingController extends \BaseController
 
     public function censorFunding($id)
     {
+        $check = Input::get('check', 0);
+        $remart = Input::get('remark', 0);
         try {
             $funding = CrowdFunding::find($id);
-            
+            if ($check == 1) {
+                if ($funding->c_status == 1) {
+                    throw new Exception("正在审核中", 10001);
+                }
+                $funding->c_status = 4;
+            } else {
+                $funding->c_status = 2;
+            }
+            $funding->c_remark = $remart;
+            $funding->censor();
+            $re = Tools::reTrue('审核众筹成功');
         } catch (Exception $e) {
-            
+            $re = Tools::reFalse($e->getCode(), '审核众筹信息失败:'.$e->getMessage());
         }
+        return Response::json($re);
     }
 }
