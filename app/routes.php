@@ -334,6 +334,8 @@ Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
 
 /* CROWDFUNDING START*/
 Route::get('office/crowd', 'OfficeCrowdFundingController@listFunding');
+Route::get('office/crowd/{id}', 'OfficeCrowdFundingController@getFunding');
+Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFunding');
 /* CROWDFUNDING END*/
 
 /*********** PROTAL **********/

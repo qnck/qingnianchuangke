@@ -40,7 +40,7 @@ class OfficeCrowdFundingController extends \BaseController
     public function censorFunding($id)
     {
         $check = Input::get('check', 0);
-        $remart = Input::get('remark', 0);
+        $remark = Input::get('remark', '');
         try {
             $funding = CrowdFunding::find($id);
             if ($check == 1) {
@@ -51,7 +51,7 @@ class OfficeCrowdFundingController extends \BaseController
             } else {
                 $funding->c_status = 2;
             }
-            $funding->c_remark = $remart;
+            $funding->c_remark = $remark;
             $funding->censor();
             $re = Tools::reTrue('审核众筹成功');
         } catch (Exception $e) {
