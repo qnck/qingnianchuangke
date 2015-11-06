@@ -66,6 +66,7 @@ class CrowdFunding extends Eloquent
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
         $data['time'] = $this->c_time;
+        $data['time_left'] = $this->calculateTimeLeft();
         $data['target_amount'] = $this->c_target_amount;
         $data['praise_count'] = $this->c_praise_count;
         $data['cate'] = $this->c_cate;
@@ -113,6 +114,7 @@ class CrowdFunding extends Eloquent
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
         $data['time'] = $this->c_time;
+        $data['time_left'] = $this->calculateTimeLeft();
         $data['yield_time'] = $this->c_yield_time;
         $data['target_amount'] = $this->c_target_amount;
         $data['shipping'] = $this->c_shipping;
@@ -195,6 +197,26 @@ class CrowdFunding extends Eloquent
         $log->content = $content;
         $log->admin_id = Tools::getAdminId();
         $log->addLog();
+    }
+
+    public function calculateTimeLeft()
+    {
+        if (!$this->active_at) {
+            return -1;
+        }
+        $now = new DateTime();
+        $active_at = new DateTime($this->active_at);
+        if ($active_at > $now) {
+            $gap = -1;
+        } else {
+            $gap = $now->diff($active_at);
+            $gap = $gap->days;
+            $gap = $this->time - $gap;
+            if ($gap < 0) {
+                $gap = 0;
+            }
+        }
+        return $gap;
     }
 
     public function censor()

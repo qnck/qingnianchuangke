@@ -33,7 +33,11 @@ class ReplyController extends \BaseController
             foreach ($list as $key => $reply) {
                 $ids[] = $reply->id;
             }
-            $children = Reply::whereIn('to_id', $ids)->where('status', '=', 1)->orderBy('created_at', 'DESC')->get();
+            if (count($ids) > 0) {
+                $children = Reply::whereIn('to_id', $ids)->where('status', '=', 1)->orderBy('created_at', 'DESC')->get();
+            } else {
+                $children = [];
+            }
             $all = $list->merge($children);
             $data = Reply::makeTree($all);
             $re = Tools::reTrue('获取评论成功', $data);

@@ -49,7 +49,6 @@ class CrowdFundingController extends \BaseController
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
-                $tmp['server_time'] = Tools::getNow();
                 $tmp['is_praised'] = 0;
                 if (count($funding->praises) > 0) {
                     $tmp['is_praised'] = 1;
