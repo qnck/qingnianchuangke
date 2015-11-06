@@ -91,16 +91,4 @@ class Tools
             return $now;
         }
     }
-
-    public static function getReindexedImg($index, $path)
-    {
-        $file_name = Img::getFileName($path);
-        $key = Img::getKey($file_name);
-        $length = strlen($key);
-        $new_key = substr($key, 0, $length-1);
-        $new_key = $new_key.$index;
-        $pos = strpos($path, $key);
-        $new_path = substr_replace($path, $new_key, $pos, $length);
-        return $new_path;
-    }
 }

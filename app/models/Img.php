@@ -72,6 +72,20 @@ class Img
         return $imgs;
     }
 
+    public function reindexImg($id, $index, $origin)
+    {
+        $origin = Img::trimImgHost($origin);
+        $file_name = Img::getFileName($origin);
+        $key = Img::getKey($file_name);
+        $length = strlen($key);
+        $new_key = substr($key, 0, $length-1);
+        $new_key = $new_key.$index;
+        $pos = strpos($origin, $key);
+        $new_path = substr_replace($origin, $new_key, $pos, $length);
+        $this->move($u_id, $origin, $new_path);
+        return $new_path;
+    }
+
     public static function getKey($filename)
     {
         if (!$tmp = explode('.', $filename)) {
@@ -140,6 +154,14 @@ class Img
             }
         }
         return $re;
+    }
+
+    public static function trimImgHost($path)
+    {
+        $host = Config::get('app.imghost');
+        $length = strlen($host);
+        $obj = substr($path, $length);
+        return $obj;
     }
 
     public static function attachHost($crud = [])
