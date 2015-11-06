@@ -248,6 +248,10 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/product/{id}/favorite', 'ProductController@postFavorite');
     /* PRODUCT END*/
 
+    /* REPLY START*/
+    Route::get('v0/reply/related', 'ReplyController@getRelatedRelpies');
+    /* REPLY END*/
+
     /* BOOTH START*/
     Route::post('v0/booth/{id}/praise', 'BoothController@postPraise');
     Route::post('v0/booth/{id}/favorite', 'BoothController@postFavorite');

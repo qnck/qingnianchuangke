@@ -71,7 +71,9 @@ class CrowdFundingController extends \BaseController
             $crowdfunding = CrowdFunding::find($id);
             $crowdfunding->load([
                 'user',
-                'replies',
+                'replies' => function ($q) {
+                    $q->take(10)->orderBy('created_at', 'DESC');
+                },
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 },
@@ -102,7 +104,10 @@ class CrowdFundingController extends \BaseController
             if (count($crowdfunding->favorites) > 0) {
                 $data['is_favorited'] = 1;
             }
-
+            $take = 3;
+            if (count($data['replies']) > $take) {
+                $data['replies'] = array_slice($data['replies'], 0, $take);
+            }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());

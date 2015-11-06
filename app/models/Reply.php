@@ -8,6 +8,14 @@ class Reply extends Eloquent
 
     public $timestamps = false;
 
+    public static function getRepliableCate()
+    {
+        return [
+            'product' => 'Product',
+            'crowd' => 'CrowdFunding',
+        ];
+    }
+
     public function showInList()
     {
         $data = [];
