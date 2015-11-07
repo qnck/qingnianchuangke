@@ -102,14 +102,7 @@ class CrowdFunding extends Eloquent
         $data = [];
         $data['id'] = $this->cf_id;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
-        $content = json_decode($this->c_content, JSON_OBJECT_AS_ARRAY);
-        $prod_imgs = Img::filterKey('crowd_img_', $this->_imgs, true);
-        $pic_text = [];
-        foreach ((array)$prod_imgs as $key => $value) {
-            $tmp = ['img' => $value, 'text' => $content[$key]];
-            $pic_text[] = $tmp;
-        }
-        $data['content'] = $pic_text;
+        $data['content'] = $this->getContent();
         $data['brief'] = $this->c_brief;
         $data['title'] = $this->c_title;
         $data['status'] = $this->c_status;
@@ -218,6 +211,22 @@ class CrowdFunding extends Eloquent
             }
         }
         return $gap;
+    }
+
+    public function getContent()
+    {
+        $content = json_decode($this->c_content, JSON_OBJECT_AS_ARRAY);
+        $pic_text = [];
+        if (empty($this->_imgs)) {
+            $this->loadImgs();
+        }
+        $imgs = Img::filterKey('crowd_img_', $this->_imgs, true);
+        foreach ($imgs as $key => $img) {
+            $txt = empty($content[$key]) ? '' : $content[$key];
+            $pic_text[] = ['img' => $img, 'text' => $txt];
+        }
+
+        return $pic_text;
     }
 
     public function censor()
