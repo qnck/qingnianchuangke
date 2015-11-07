@@ -121,7 +121,7 @@
         	id = GetQueryString("id");
         	uid = GetQueryString("uid");
         	token = GetQueryString("token");
-            // BindData(id);
+            BindData(id);
             if(uid==null || uid==""){
             	$("#btnDown").show();
             	$("#btnBuy").hide();
@@ -233,7 +233,7 @@
 		<div style="clear:both"></div>
 	</div>
 
-<div class="theme-popover" style="display:block">
+<div class="theme-popover">
      <div style="background-color:#EBECEE;width:100%;border-radius:7px 7px 0px 0px;height:40px;border-bottom:1px solid #9A9A9C">
      	<div style="color:#818181;margin-left:12px;padding-top:7px;font-weight:bold;font-size:16px;float:left;">认筹明细</div>
      	<div style="float:right;padding-top:7px;padding-right:7px;" onclick="closeBuyInfo()"><img style="height:20px;width:20px;" src="images/gonggong_guanbi.png"/></div>
