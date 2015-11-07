@@ -356,5 +356,7 @@ Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');
 Route::post('wechat/user/login', 'UserController@index');
 Route::post('wechat/user', 'UserController@store');
 Route::get('wechat/verify/code', 'VerificationController@getVCode');
-Route::get();
+Route::post('wechat/user/me/resetpass', 'MeController@resetPass');
+Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
+
 /* WECHAT END*/
