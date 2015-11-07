@@ -17,9 +17,6 @@ class PayController extends \BaseController
             $alipay->verifyNotify();
 
             $orders = Order::getGroupOrdersByNo($order_no);
-
-            $amount_in_orders = 0;
-
             if ($ali_trade_status == 'TRADE_FINISHED' || $ali_trade_status == 'TRADE_SUCCESS') {
                 foreach ($orders as $key => $order) {
                     $order->pay(Alipay::PAYMENT_TAG);

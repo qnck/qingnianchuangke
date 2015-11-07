@@ -166,7 +166,7 @@ class Order extends Eloquent
 
     public function getSummary()
     {
-        $this->_carts = Cart::leftJoin('orders', function ($q) {
+        $this->_carts = Cart::select('carts.*')->join('orders', function ($q) {
             $q->on('carts.o_id', '=', 'orders.o_id')
             ->where('orders.o_group_number', '=', $this->o_group_number);
         })
@@ -251,7 +251,7 @@ class Order extends Eloquent
 
     public static function getGroupOrdersByNo($group_no)
     {
-        $orders = Order::where('o_group_number', '=', $group_no);
+        $orders = Order::where('o_group_number', '=', $group_no)->get();
         if (count($orders) == 0) {
             throw new Exception("没有找到订单", 9002);
         }
