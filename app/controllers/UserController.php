@@ -140,7 +140,7 @@ class UserController extends \BaseController
 
             $show_user = User::find($id);
             if (empty($show_user)) {
-                throw new Exception("请求的用户不存在", 1);
+                throw new Exception("请求的用户不存在", 3001);
             }
             $show_user->load([
                 'school',
@@ -152,14 +152,26 @@ class UserController extends \BaseController
                 }
                 ]);
             $data = $show_user->showDetail();
-            $data['is_friend'] = 0;
+
+            $is_friend = UsersFriend::$RELATION_NONE;
+            $userFriend = UsersFriend::findLinkById($u_id, $show_user->u_id);
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+            } else {
+                if ($userFriend->t_status == 1) {
+                    $is_friend = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+                } else {
+                    $is_friend = UsersFriend::$RELATION_CONFIRMED;
+                }
+            }
+
+            $data['is_friend'] = $is_friend;
             $data['is_praised'] = 0;
             $data['is_favorited'] = 0;
             if (count($show_user->praises) > 0) {
                 $data['is_praised'] = 1;
             }
             if (count($show_user->favorites) > 0) {
-                $data['is_favorited'];
+                $data['is_favorited'] = 1;
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
