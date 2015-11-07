@@ -5,7 +5,9 @@
 	<title>众筹明细</title>
     <meta charset="utf-8" />
     <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="common.js"></script>
 	<style type="text/css">
+    input{outline:none} 
 	body {
 		background-color: #EFF0F4;
 		color: #959796;
@@ -54,28 +56,63 @@
 	.shipping{
 		font-size: 16px;
 	}
-	</style>
+	
+
+.theme-popover-mask {
+	z-index: 9998;
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:#000;
+	opacity:0.4;
+	filter:alpha(opacity=40);
+	display:none
+}
+.theme-popover {
+	z-index:9999;
+	border-radius:10px;
+	border:solid 2px #666;
+	background-color:#fff;
+	display:none;
+	box-shadow: 0 0 10px #666;
+	width:300px;
+	height:360px;
+	position:fixed;
+	left:50%;
+	top:50%;
+	margin-left:-150px;
+	margin-top:-150px;
+}
+    </style>
 	<script>
-        var _url = "http://www.test.54qnck.com/";
+		var uid="";
+		var token="";
+		var id="";
+		var p_id="";
         $(document).ready(function () {
-        	var id = GetQueryString("id")
+        	id = GetQueryString("id");
+        	uid = GetQueryString("uid");
+        	token = GetQueryString("token");
             BindData(id);
         });
         function BindData(id) {
             $.ajax({
                 type: "get",
                 url: _url + "wechat/crowd/"+id,
-                data: {},
+                data: {u_id:1},
                 dataType: "json",
                 success: function (r) {
                     if (r.result == "2000") {
+                    	p_id = r.data.p_id;
                         $("#title").text(r.data.title);
                         $("#cover_img").attr("src",r.data.cover_img[0]);
                         $("#brief").text(r.data.brief);
                         $(".target_amount").text(r.data.target_amount);
                         $(".left_time").text(r.data.time_left);
                         $(".amount").text(r.data.amount);
-                        $(".percentage").text(r.data.amount / r.data.target_amount);
+                        $(".percentage").text((r.data.amount / r.data.target_amount).toFixed(2));
                         $(r.data.content).each(function (){
                         	var temp = '<img class="content_img" src="'+this.img+'"><p class="content_text">'+this.text+'</p>';
                         	$(".content").append(temp);
@@ -94,24 +131,52 @@
                 }
             });
         }
-        function buycrowd(){
-        	alert("微信端暂时无法支持，请下载【青年创】APP进行支持。");
+        function openBuyInfo(){
+        	$('.theme-popover-mask').fadeIn(100);
+			$('.theme-popover').slideDown(200);
         }
-        function GetQueryString(name)
-		{
-			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-			var r = window.location.search.substr(1).match(reg);
-			if(r!=null)return  unescape(r[2]); return null;
-		}
+        function closeBuyInfo(){
+        	$('.theme-popover-mask').fadeOut(100);
+			$('.theme-popover').slideUp(200);
+        }
+        function qrrc(){
+        	var gmfs = $("#gmfs").val();
+        	if(gmfs=="")
+        	{
+        		alert("请输入购买份数");
+        		return;
+        	}
+        	var sjrxm = $("#sjrxm").val();
+        	var sjrdh = $("#sjrdh").val();
+        	var sjrdz = $("#sjrdz").val();
+        	var bzxx = $("#bzxx").val();
+        	$.ajax({
+		        type: "post",
+		        url: _url + "wechat/crowd/"+id+"/order",
+		        data: {token:token,u_id:uid,product:p_id,quantity:gmfs,shipping_name:sjrxm,shipping_phone:sjrdh,shipping_address:sjrdz,comment:bzxx},
+		        dataType: "json",
+		        success: function (r) {
+		            if(r.result=="2000"){
+		                alert("认筹成功！");closeBuyInfo();
+		            }
+		            else{
+		                alert(r.info);
+		            }
+		        },
+		        error: function () {
+		            alert("加载失败!");
+		        }
+		    });
+        }
     </script>
 </head>
 <body>
 	<div class="top">
-		<img class="cover_img" id="cover_img" src="images/cover_img.png" />
-		<p class="title" style="font-weight: bold;margin-top:5px;margin-bottom:-10px;" id="title">我的众筹</p>
-		<p class="brief" style="padding-bottom:10px;" id="brief">这是我的第一个众筹, 我很激动很紧张, 希望能有很多钱, 去做大保健</p>
-		<p class="target blue_font" style="font-size:20px;margin:-10px 10px;">目标 <span class="target_amount">10000.00</span> 元</p>
-		<p class="info blue_font"><img style="width:16px;margin-top:5px;" src="images/shijian.png"/><span style="padding-left:2px;">剩余</span><span class="left_time">14</span>天&nbsp;&nbsp;已筹<span class="amount">1400</span>&nbsp;&nbsp;完成度<span class="percentage">150</span>%</p>
+		<img class="cover_img" id="cover_img" src="" />
+		<p class="title" style="font-weight: bold;margin-top:5px;margin-bottom:-10px;" id="title"></p>
+		<p class="brief" style="padding-bottom:10px;" id="brief"></p>
+		<p class="target blue_font" style="font-size:20px;margin:-10px 10px;">目标 <span class="target_amount">0.00</span> 元</p>
+		<p class="info blue_font"><img style="width:16px;margin-top:5px;" src="images/shijian.png"/><span style="padding-left:2px;">剩余</span><span class="left_time">0</span>天&nbsp;&nbsp;已筹<span class="amount">0</span>&nbsp;&nbsp;完成度<span class="percentage">0</span>%</p>
 	</div>
 	<div class="middle">
 		<div class="switch"></div>
@@ -126,9 +191,44 @@
 
 	<div style="width:100%;background-color:white;border-top:1px solid black;margin-left:-8px;padding-right:16px;">
 		<div class="blue_font" style="padding-left:10px;padding-top:20px;padding-bottom:10px;float:left;font-weight: bold;"><span style="font-size:24px;" id="price">200.00</span><span style="padding-left:5px;">元/每份</span></div>
-		<div style="float:right;margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" onclick="buycrowd()">立即支持</div>
+		<div style="float:right;margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" onclick="openBuyInfo()">立即支持</div>
 		<div style="clear:both"></div>
 	</div>
+
+<div class="theme-popover">
+     <div style="background-color:#EBECEE;width:100%;border-radius:7px 7px 0px 0px;height:40px;border-bottom:1px solid #9A9A9C">
+     	<div style="color:#818181;margin-left:12px;padding-top:7px;font-weight:bold;font-size:16px;float:left;">认筹明细</div>
+     	<div style="float:right;padding-top:7px;padding-right:7px;" onclick="closeBuyInfo()"><img style="height:20px;width:20px;" src="images/gonggong_guanbi.png"/></div>
+     	<div style="clear:both"></div>
+     </div>
+     <p>
+     	<label style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 20px;float:left;">购买份数</label>
+     	<input type="text" id="gmfs" placeholder="未填写" style="width:160px;border:0px;border-bottom:1px solid #C9C9C9;text-align:right;margin-left:10px;margin-top:13px;padding-bottom:5px;margin-right:5px;" />
+     	<label style="float:right;padding-top:10px;">></label>
+     </p>
+     <p>
+     	<label style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 14px;float:left;">收件人姓名</label>
+     	<input type="text" id="sjrxm" placeholder="未填写" style="width:160px;border:0px;border-bottom:1px solid #C9C9C9;text-align:right;margin-left:10px;margin-top:13px;padding-bottom:5px;margin-right:5px;" />
+     	<label style="float:right;padding-top:10px;">></label>
+     </p>
+     <p>
+     	<label style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 14px;float:left;">收件人电话</label>
+     	<input type="text" id="sjrdh" placeholder="未填写" style="width:160px;border:0px;border-bottom:1px solid #C9C9C9;text-align:right;margin-left:10px;margin-top:13px;padding-bottom:5px;margin-right:5px;" />
+     	<label style="float:right;padding-top:10px;">></label>
+     </p>
+     <p>
+     	<label style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 14px;float:left;">收件人地址</label>
+     	<input type="text" id="sjrdz" placeholder="未填写" style="width:160px;border:0px;border-bottom:1px solid #C9C9C9;text-align:right;margin-left:10px;margin-top:13px;padding-bottom:5px;margin-right:5px;" />
+     	<label style="float:right;padding-top:10px;">></label>
+     </p>
+     <p>
+     	<label style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 20px;float:left;">备注信息</label>
+     	<input type="text" id="bzxx" placeholder="未填写" style="width:160px;border:0px;border-bottom:1px solid #C9C9C9;text-align:right;margin-left:10px;margin-top:13px;padding-bottom:5px;margin-right:5px;" />
+     	<label style="float:right;padding-top:10px;">></label>
+     </p>
+     <p style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 20px;text-align:center;" onclick="qrrc()">确认认筹</p>
+</div>
+<div class="theme-popover-mask"></div>
 
 </body>
 </html>

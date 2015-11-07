@@ -5,6 +5,7 @@
     <title>校园众筹</title>
     <meta charset="utf-8" />
     <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="common.js"></script>
     <style type="text/css">
         body {
             background-color: #EFF0F4;
@@ -95,9 +96,12 @@
                 }
     </style>
     <script>
-        var _url = "http://www.test.54qnck.com/";
+        var uid="";
+        var token="";
         $(document).ready(function () {
             BindData();
+            uid = GetQueryString("uid");
+            token = GetQueryString("token");
         });
         function BindData() {
             $.ajax({
@@ -131,7 +135,7 @@
             });
         }
         function viewDetail(id){
-            window.location.href="zcdetail.html?id="+id;
+            window.location.href="zcdetail.html?id="+id+"&token="+token+"&uid="+uid;
         }
     </script>
 </head>
