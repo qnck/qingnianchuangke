@@ -20,7 +20,7 @@ class ReplyController extends \BaseController
                 throw new Exception("需要传入有效的评论分类", 2001);
             }
 
-            $query = Reply::select('replies.*')->where('replies.to_id', '=', 0)->where('replies.status', '=', 1);
+            $query = Reply::with(['user'])->select('replies.*')->where('replies.status', '=', 1);
             if ($last_id) {
                 $query = $query->where('replies.id', '<', $last_id);
             }
@@ -29,17 +29,10 @@ class ReplyController extends \BaseController
                 $q->on('repliables.reply_id', '=', 'replies.id')->where('repliables.repliable_type', '=', $cate)->where('repliables.repliable_id', '=', $id);
             });
             $list = $query->orderBy('replies.id', 'DESC')->paginate($per_page);
-            $ids = [];
+            $data = [];
             foreach ($list as $key => $reply) {
-                $ids[] = $reply->id;
+                $data[] = $reply->showInList();
             }
-            if (count($ids) > 0) {
-                $children = Reply::whereIn('to_id', $ids)->where('status', '=', 1)->orderBy('created_at', 'DESC')->get();
-            } else {
-                $children = [];
-            }
-            $all = $list->merge($children);
-            $data = Reply::makeTree($all);
             $re = Tools::reTrue('获取评论成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取评论失败:'.$e->getMessage());

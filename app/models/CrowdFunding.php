@@ -139,7 +139,11 @@ class CrowdFunding extends Eloquent
             $data['city'] = $this->city->showInList();
         }
         if ($this->replies) {
-            $data['replies'] = Reply::makeTree($this->replies);
+            $tmp = [];
+            foreach ($this->replies as $key => $reply) {
+                $tmp[] = $reply->showInList();
+            }
+            $data['replies'] = $tmp;
         }
         return $data;
     }

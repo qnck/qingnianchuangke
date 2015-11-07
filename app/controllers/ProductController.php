@@ -91,7 +91,9 @@ class ProductController extends \BaseController
                 },
                 'quantity',
                 'promo',
-                'replies',
+                'replies' => function ($q) {
+                    $q->take(3)->orderBy('created_at', 'DESC');
+                },
                 'favorites' => function ($q) {
                     $q->where('favorites.u_id', '=', $this->u_id);
                 },

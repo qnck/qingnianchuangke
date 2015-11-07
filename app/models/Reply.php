@@ -23,10 +23,17 @@ class Reply extends Eloquent
         $data['content'] = $this->content;
         $data['u_id'] = $this->u_id;
         $data['u_name'] = $this->u_name;
+        if (!empty($this->user)) {
+            $data['u_head_img'] = $this->user->getHeadImg();
+        }
         $data['to_u_id'] = $this->to_u_id;
         $data['to_u_name'] = $this->to_u_name;
+        if (!empty($this->userTo)) {
+            $data['to_u_head_img'] = $this->userTo->getHeadImg();
+        }
         $dateObj = new DateTime($this->created_at);
         $data['created_at'] = $dateObj->format('Y-m-d H:i:s');
+
 
         return $data;
     }
