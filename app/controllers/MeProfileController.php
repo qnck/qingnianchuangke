@@ -167,6 +167,7 @@ class MeProfileController extends \BaseController
         $nickname = Input::get('nickname', '');
         $gender = Input::get('gender', '');
         $bio = Input::get('bio', '');
+        $id_number = Input::get('id_number', '');
         $id_school = Input::get('id_school', 0);
         $entry_year = Input::get('entry_year', '');
         $major = Input::get('major', '');
@@ -204,6 +205,8 @@ class MeProfileController extends \BaseController
             }
             $profile->u_entry_year = $entry_year;
             $profile->u_major = $major;
+            $profile->u_id_number = $id_number;
+            $profile->u_student_number = $stu_num;
 
             if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('user', $img_token);
