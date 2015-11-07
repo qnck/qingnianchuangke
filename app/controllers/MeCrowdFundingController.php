@@ -73,10 +73,10 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_open_file = $open_file;
             if ($amount <= 2000) {
-                $this->c_status = 4;
-                $this->active_at = Tools::getNow();
+                $crowd_funding->c_status = 4;
+                $crowd_funding->active_at = Tools::getNow();
             } else {
-                $this->c_status = 1;
+                $crowd_funding->c_status = 1;
             }
             $crowd_funding->addCrowdFunding();
 
