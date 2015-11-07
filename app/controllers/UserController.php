@@ -155,10 +155,10 @@ class UserController extends \BaseController
             $data['is_friend'] = 0;
             $data['is_praised'] = 0;
             $data['is_favorited'] = 0;
-            if (count($product->praises) > 0) {
+            if (count($show_user->praises) > 0) {
                 $data['is_praised'] = 1;
             }
-            if (count($product->favorites) > 0) {
+            if (count($show_user->favorites) > 0) {
                 $data['is_favorited'];
             }
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
