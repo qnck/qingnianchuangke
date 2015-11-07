@@ -115,6 +115,7 @@
                     if (r.result == "2000") {
                         $(r.data).each(function (){
                             var temp = $("#zcinfodom").html();
+                            temp = temp.replace("@id",this.id);
                             if(this.cover_img.length>0)
                                 temp = temp.replace("@zst",this.cover_img[0]);
                             temp = temp.replace("@user_headimg",this.user.head_img);
@@ -135,6 +136,9 @@
                 }
             });
         }
+        function viewDetail(id){
+            window.location.href="fleadetail.html?id="+id+"&token="+token+"&uid="+uid;
+        }
     </script>
 </head>
 <body>
@@ -142,7 +146,7 @@
         
     </div>
     <script type="text/javascript" id="zcinfodom">
-        <div class="zcmain">
+        <div class="zcmain" onclick="viewDetail('@id')">
                 <div class="zst">
                     <img src="@zst" />
                 </div>
