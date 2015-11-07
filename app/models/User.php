@@ -57,7 +57,7 @@ class User extends Eloquent
         }
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
-        $this->u_nickname = $this->u_mobile;
+        $this->u_nickname = $this->u_name = '创客';
         $this->u_change = 1;
         $this->save();
         $re = [];
@@ -65,6 +65,7 @@ class User extends Eloquent
         $now = new Datetime();
         $now->modify('+ 30 days');
         $re['expire'] = $now->format('Y-m-d H:i:s');
+        $re['mobile'] = $user->u_mobile;
         $re['id'] = $this->u_id;
         $re['biograph'] = $this->u_biograph;
         $re['name'] = $this->u_name;
@@ -103,6 +104,7 @@ class User extends Eloquent
             $re['expire'] = $now->format('Y-m-d H:i:s');
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
+            $re['mobile'] = $user->u_mobile;
             $re['nickname'] = $user->u_nickname;
             $re['head_img'] = $user->getHeadImg();
             $re['biograph'] = $user->u_biograph;
@@ -243,6 +245,7 @@ class User extends Eloquent
             throw new Exception("no such user", 1);
         }
         $data = [];
+        $data['id'] = $this->u_id;
         $data['mobile'] = $this->u_mobile;
         $data['nickname'] = $this->u_nickname;
         $data['age'] = $this->u_age;

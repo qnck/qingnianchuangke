@@ -51,6 +51,7 @@ class MeProfileController extends \BaseController
             $data['gender'] = $user->u_sex;
             $data['home_imgs'] = Img::toArray($user->u_home_img, true);
             $data['head_img'] = $user->getHeadImg();
+            $data['mobile'] = $user->u_mobile;
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;

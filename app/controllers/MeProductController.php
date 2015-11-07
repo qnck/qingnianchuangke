@@ -15,6 +15,8 @@ class MeProductController extends \BaseController
         $price = Input::get('price', '');
         $publish = Input::get('publish', 1);
         $product_cate = Input::get('cate');
+
+        $open_file = Input::get('open_file', 0);
         if (!$product_cate) {
             $product_cate = 6;
         }
@@ -52,6 +54,7 @@ class MeProductController extends \BaseController
             $product->p_status = $publish == 1 ? 1 : 2;
             $product->p_cate = $product_cate;
             $product->p_type = 2;
+            $product->open_file = $open_file;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;
