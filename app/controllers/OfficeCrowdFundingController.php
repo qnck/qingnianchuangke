@@ -44,9 +44,6 @@ class OfficeCrowdFundingController extends \BaseController
         try {
             $funding = CrowdFunding::find($id);
             if ($check == 1) {
-                if ($funding->c_status == 1) {
-                    throw new Exception("正在审核中", 10001);
-                }
                 $funding->active_at = Tools::getNow();
                 $funding->c_status = 4;
             } else {
