@@ -145,6 +145,7 @@ class UserController extends \BaseController
         $pass = Input::get('pass');
         $school_id = Input::get('school');
         $vCode = Input::get('vcode');
+        DB::beginTransaction();
         try {
             $user = new User();
             $user->u_school_id = $school_id;
@@ -162,8 +163,10 @@ class UserController extends \BaseController
             $wallet->w_freez = 0.00;
             $wallet->save();
             $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
+            DB::commit();
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];
+            DB::rollback();
         }
         return Response::json($re);
     }

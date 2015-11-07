@@ -66,7 +66,7 @@ class User extends Eloquent
         $now->modify('+ 30 days');
         $re['expire'] = $now->format('Y-m-d H:i:s');
         $re['id'] = $this->u_id;
-        $re['biograph'] = $user->u_biograph;
+        $re['biograph'] = $this->u_biograph;
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
         $re['head_img'] = $this->getHeadImg();
