@@ -105,7 +105,7 @@ class ProductController extends \BaseController
                 $data['is_praised'] = 1;
             }
             if (count($product->favorites) > 0) {
-                $data['is_favorited'];
+                $data['is_favorited'] = 1;
             }
             $re = Tools::reTrue('获取产品成功', $data);
         } catch (Exception $e) {
