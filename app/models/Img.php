@@ -114,7 +114,7 @@ class Img
         }
         $array = Img::attachKey($crud);
         if (empty($array)) {
-            return null;
+            return [];
         }
         return $array;
     }
