@@ -37,7 +37,7 @@ class CrowdFundingProduct extends Eloquent
         $re = false;
         if ($this->p_max_quantity > 0) {
             $remain = $this->p_max_quantity - $this->p_sold_quantity;
-            if ($quantity < $remain) {
+            if ($quantity <= $remain) {
                 $up = true;
                 $limit = true;
             } else {
