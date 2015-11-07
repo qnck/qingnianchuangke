@@ -96,13 +96,19 @@
                 }
     </style>
     <script>
+        var uid="";
+        var token="";
+        var sid="";
         $(document).ready(function () {
+            uid = GetQueryString("uid");
+            token = GetQueryString("token");
+            sid = GetQueryString("sid");
             BindData();
         });
         function BindData() {
             $.ajax({
                 type: "get",
-                url: _url + "wechat/market/flea?u_id=1",
+                url: _url + "wechat/market/flea?u_id="+uid+"&school="+sid+"&range=3",
                 data: {},
                 dataType: "json",
                 success: function (r) {

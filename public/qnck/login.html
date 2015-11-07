@@ -45,7 +45,7 @@ function login(){
         dataType: "json",
         success: function (r) {
             if (r.result == "2000") {
-                window.location.href=rurl+"?token="+r.data.token+"&uid="+r.data.id;
+                window.location.href=rurl+"?token="+r.data.token+"&uid="+r.data.id+"&sid="+r.data.school.id;
             }else{
                 alert("登录失败");
             }

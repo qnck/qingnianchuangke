@@ -1,4 +1,4 @@
-var _url = "http://www.test.54qnck.dev/";
+var _url = "http://www.test.54qnck.com/";
 function GetQueryString(name)
 {
     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
