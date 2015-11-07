@@ -40,8 +40,8 @@ class MeProfileController extends \BaseController
                 $profile->save();
             } else {
                 $entry_year = $profile->u_entry_year;
-                $stu_imgs = Img::toArray($profile->u_student_imgs);
-                $id_imgs = Img::toArray($profile->u_id_imgs);
+                $stu_imgs = Img::toArray($profile->u_student_imgs, true);
+                $id_imgs = Img::toArray($profile->u_id_imgs, true);
             }
 
             $data['id'] = $user->u_id;
@@ -49,7 +49,7 @@ class MeProfileController extends \BaseController
             $data['nickname'] = $user->u_nickname;
             $data['biograph'] = $user->u_biograph;
             $data['gender'] = $user->u_sex;
-            $data['home_imgs'] = Img::toArray($user->u_home_img);
+            $data['home_imgs'] = Img::toArray($user->u_home_img, true);
             $data['head_img'] = $user->getHeadImg();
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;

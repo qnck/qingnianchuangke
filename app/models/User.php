@@ -264,7 +264,7 @@ class User extends Eloquent
         $data['following_count'] = $this->u_following_count;
         $data['status'] = $this->u_status;
         $data['remark'] = $this->u_remark;
-        $data['home_imgs'] = Img::toArray($this->u_home_img);
+        $data['home_imgs'] = Img::toArray($this->u_home_img, true);
         $data['biograph'] = $this->u_biograph;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;

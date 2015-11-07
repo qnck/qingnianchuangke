@@ -41,11 +41,11 @@ class TmpUserProfileBase extends Eloquent
 
         $this->load('school');
         $data['school'] = empty($this->school) ? null : $this->school->showInList();
-        $data['student_img'] = Img::toArray($this->u_student_imgs);
+        $data['student_img'] = Img::toArray($this->u_student_imgs, true);
         $data['student_number'] = $this->u_student_number;
         $data['student_verified'] = $this->u_is_student_verified;
         $data['identity_number'] = $this->u_id_number;
-        $data['identity_img'] = Img::toArray($this->u_id_imgs);
+        $data['identity_img'] = Img::toArray($this->u_id_imgs, true);
         $data['identity_verified'] = $this->u_is_id_verified;
         $data['entry_year'] = $this->u_entry_year;
         $data['major'] = $this->u_major;

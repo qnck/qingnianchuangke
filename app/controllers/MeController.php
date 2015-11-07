@@ -454,7 +454,7 @@ class MeController extends \BaseController
                 $imgs = $imgObj->getSavedImg($id, $booth->b_imgs, true);
                 $booth->b_imgs = implode(',', $imgs);
             } elseif (!$img_token) {
-                $imgs = Img::toArray($booth->b_imgs);
+                $imgs = Img::toArray($booth->b_imgs, true);
                 $imgs['logo'] = 'logo.'.$logo;
                 $booth->b_imgs = implode(',', $imgs);
             }
@@ -490,7 +490,7 @@ class MeController extends \BaseController
                 $data['fa_phone'] = '';
             } else {
                 $data['id_num'] = $detail->u_identity_number;
-                $imgs = Img::toArray($detail->u_identity_img);
+                $imgs = Img::toArray($detail->u_identity_img, true);
                 $data['id_img'] = $imgs;
                 $data['home_addr'] = $detail->u_home_adress;
                 $data['mo_name'] = $detail->u_mother_name;
@@ -611,7 +611,7 @@ class MeController extends \BaseController
                 $data['fr_name_2'] = $contact->u_frend_name2;
                 $data['fr_phone_2'] = $contact->u_frend_telephone2;
                 $data['stu_num'] = $contact->u_student_number;
-                $imgs = Img::toArray($contact->u_student_img);
+                $imgs = Img::toArray($contact->u_student_img, true);
                 $data['stu_img'] = $imgs;
                 $data['school'] = empty($contact->school) ? null : $contact->school->showInList();
                 $data['profession'] = $contact->u_prof;

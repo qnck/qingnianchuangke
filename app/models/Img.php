@@ -106,14 +106,20 @@ class Img
         return $filename;
     }
 
-    public static function toArray($string)
+    public static function toArray($string, $return_null = false)
     {
         $crud = explode(',', $string);
         if (empty($crud)) {
+            if ($return_null) {
+                return null;
+            }
             return [];
         }
         $array = Img::attachKey($crud);
         if (empty($array)) {
+            if ($return_null) {
+                return null;
+            }
             return [];
         }
         return $array;
