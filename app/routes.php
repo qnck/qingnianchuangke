@@ -346,4 +346,9 @@ Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFundi
 
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
+Route::get('wechat/market/flea', 'MarketController@flea');
+Route::get('wechat/product/{id}', 'ProductController@getProduct');
+Route::get('wechat/market/hot', 'MarketController@hot');
+Route::get('wechat/crowd', 'CrowdFundingController@listCrowdFunding');
+Route::get('wechat/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
 /* WECHAT END*/
