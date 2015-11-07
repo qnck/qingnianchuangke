@@ -159,6 +159,33 @@ class MeController extends \BaseController
         return Response::json($re);
     }
 
+    public function resetPassForWechat()
+    {
+        $mobile = Input::get('mobile');
+        $vcode = Input::get('vcode');
+        $newPass = Input::get('pass');
+
+        try {
+            $user = User::where('u_mobile', '=', $mobile)->first();
+
+            // chcek if mobile exsits
+            if (!isset($user->u_id)) {
+                throw new Exception("没有查找到与该手机号码绑定的用户", 2001);
+            }
+            $phone = new Phone($mobile);
+
+            if ($phone->authVCode($vcode)) {
+                $user->u_password = $newPass;
+                $user->updateUser();
+            }
+            $re = Tools::reTrue('重置密码成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '重置密码失败:'.$e->getMessage());
+        }
+
+        return Response::json($re);
+    }
+
     /**
      * replies from me
      * @author Kydz
