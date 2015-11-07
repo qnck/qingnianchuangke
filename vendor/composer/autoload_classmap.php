@@ -1665,7 +1665,7 @@ return array(
     'TmpUsersDetails' => $baseDir . '/app/models/TmpUsersDetails.php',
     'Tools' => $baseDir . '/app/models/Tools.php',
     'Trade' => $baseDir . '/app/models/Trade.php',
-    'TransactionLog' => $baseDir . '/app/models/TransactionLog.php',
+    'LogTransaction' => $baseDir . '/app/models/LogTransaction.php',
     'TxtMessage' => $baseDir . '/app/models/TxtMessage.php',
     'User' => $baseDir . '/app/models/User.php',
     'UserController' => $baseDir . '/app/controllers/UserController.php',

@@ -2,7 +2,7 @@
 /**
 *
 */
-class LogTransaction extends Eloqunet
+class LogTransaction extends Eloquent
 {
     public $primaryKey = 'l_id';
     public $timestamps = false;

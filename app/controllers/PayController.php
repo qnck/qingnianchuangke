@@ -15,7 +15,7 @@ class PayController extends \BaseController
         try {
             $alipay = new Alipay();
             $alipay->verifyNotify();
-            $transaction_id = ali_trade_no;
+            $transaction_id = $ali_trade_no;
             $orders = Order::getGroupOrdersByNo($order_no);
             if ($ali_trade_status == 'TRADE_FINISHED' || $ali_trade_status == 'TRADE_SUCCESS') {
                 $u_id = 0;
@@ -27,22 +27,23 @@ class PayController extends \BaseController
                 }
                 $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
                 if ($cart->c_type == 1) {
-                    $log_cate = TransactionLog::$CATE_PRODUCT;
+                    $log_cate = LogTransaction::$CATE_PRODUCT;
                 } elseif ($cart->c_type == 2) {
-                    $log_cate = TransactionLog::$CATE_CROWDFUNDING;
+                    $log_cate = LogTransaction::$CATE_CROWDFUNDING;
                 } else {
                     $log_cate = 0;
                 }
                 //add transaction log
-                $log = new TransactionLog();
-                $log->l_type = TransactionLog::$TYPE_TRADE;
+                $log = new LogTransaction();
+                $log->l_type = LogTransaction::$TYPE_TRADE;
                 $log->l_cate = $log_cate;
                 $log->l_amt = $amount;
-                $log->from_type = TransactionLog::$OPERATOR_USER;
+                $log->from_type = LogTransaction::$OPERATOR_USER;
                 $log->from_id = $u_id;
-                $log->to_type = TransactionLog::$OPERATOR_QNCK;
+                $log->to_type = LogTransaction::$OPERATOR_QNCK;
                 $log->to_id = 1;
-                $log->via_type = TransactionLog::$PAYMENT_ALIPAY;
+                $log->via_type = LogTransaction::$PAYMENT_ALIPAY;
+                $log->transaction_id = $transaction_id;
                 $log->addLog();
                 if (empty($log->l_id)) {
                     throw new Exception("添加交易记录失败", 2001);
@@ -87,22 +88,23 @@ class PayController extends \BaseController
 
             $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
             if ($cart->c_type == 1) {
-                $log_cate = TransactionLog::$CATE_PRODUCT;
+                $log_cate = LogTransaction::$CATE_PRODUCT;
             } elseif ($cart->c_type == 2) {
-                $log_cate = TransactionLog::$CATE_CROWDFUNDING;
+                $log_cate = LogTransaction::$CATE_CROWDFUNDING;
             } else {
                 $log_cate = 0;
             }
             //add transaction log
-            $log = new TransactionLog();
-            $log->l_type = TransactionLog::$TYPE_TRADE;
+            $log = new LogTransaction();
+            $log->l_type = LogTransaction::$TYPE_TRADE;
             $log->l_cate = $log_cate;
             $log->l_amt = $re['total_fee'];
-            $log->from_type = TransactionLog::$OPERATOR_USER;
+            $log->from_type = LogTransaction::$OPERATOR_USER;
             $log->from_id = $u_id;
-            $log->to_type = TransactionLog::$OPERATOR_QNCK;
+            $log->to_type = LogTransaction::$OPERATOR_QNCK;
             $log->to_id = 1;
-            $log->via_type = TransactionLog::$PAYMENT_WECHAT;
+            $log->via_type = LogTransaction::$PAYMENT_WECHAT;
+            $log->transaction_id = $transaction_id;
             $log->addLog();
             if (empty($log->l_id)) {
                 throw new Exception("添加交易记录失败", 2001);
