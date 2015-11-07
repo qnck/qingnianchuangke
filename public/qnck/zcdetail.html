@@ -96,6 +96,14 @@
         	uid = GetQueryString("uid");
         	token = GetQueryString("token");
             BindData(id);
+            if(uid==null || uid==""){
+            	$("#btnDown").show();
+            	$("#btnBuy").hide();
+            }
+            else{
+            	$("#btnBuy").show();
+            	$("#btnDown").hide();
+            }
         });
         function BindData(id) {
             $.ajax({
@@ -168,6 +176,9 @@
 		        }
 		    });
         }
+        function download () {
+    		window.location.href='http://www.test.54qnck.com/qnck/download.html';
+        }
     </script>
 </head>
 <body>
@@ -191,7 +202,8 @@
 
 	<div style="width:100%;background-color:white;border-top:1px solid black;margin-left:-8px;padding-right:16px;">
 		<div class="blue_font" style="padding-left:10px;padding-top:20px;padding-bottom:10px;float:left;font-weight: bold;"><span style="font-size:24px;" id="price">200.00</span><span style="padding-left:5px;">元/每份</span></div>
-		<div style="float:right;margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" onclick="openBuyInfo()">立即支持</div>
+		<div style="float:right;margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" id="btnBuy" onclick="openBuyInfo()">立即支持</div>
+		<div style="float:right;margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" id="btnDown" onclick="download()">下载青年创</div>
 		<div style="clear:both"></div>
 	</div>
 
