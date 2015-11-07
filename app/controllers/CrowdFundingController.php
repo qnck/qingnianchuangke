@@ -27,7 +27,7 @@ class CrowdFundingController extends \BaseController
             if (!$u_id) {
                 throw new Exception("请传入用户id", 7001);
             }
-            $query = CrowdFunding::with([
+            $query = CrowdFunding::select('crowd_fundings.*')->with([
                 'city',
                 'school',
                 'user',
@@ -40,9 +40,13 @@ class CrowdFundingController extends \BaseController
                 $query = $query->where('c_cate', '=', $cate);
             }
             if ($city && $range == 2) {
-                $query = $query->where('c_id', '=', $city);
+                $query = $query->join('dic_schools', function ($q) {
+                    $q->on('crowd_fundings.s_id', '=', 'dic_schools.t_id');
+                })->join('dic_cities', function ($q) use ($city) {
+                    $q->on('dic_cities.c_id', '=', 'crowd_fundings.c_id')->on('dic_cities.c_province_id', '=', 'dic_schools.t_province')->where('dic_cities.c_id', '=', $city);
+                });
             }
-            if ($school && $range = 3) {
+            if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
             $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
@@ -156,7 +160,7 @@ class CrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
-        
+
         $p_id = Input::get('product', 0);
         $quantity = Input::get('quantity', 0);
 
@@ -167,6 +171,14 @@ class CrowdFundingController extends \BaseController
 
         DB::beginTransaction();
         try {
+            $validator = Validator::make(
+                ['shipping_phone' => (string)$shipping_phone, 'shipping_name' => $shipping_name, 'shipping_address' => $shipping_address, 'product' => $p_id, 'quantity' => $quantity],
+                ['shipping_phone' => 'required|numeric|digits:11', 'shipping_name' => 'required', 'shipping_address' => 'required', 'product' => 'required|numeric', 'quantity' => 'required|numeric']
+            );
+            if ($validator->fails()) {
+                $msg = $validator->messages();
+                throw new Exception($msg->first(), 7001);
+            }
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
             $funding = CrowdFunding::find($id);
@@ -222,6 +234,9 @@ class CrowdFundingController extends \BaseController
 
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
+                if ($quantity > 1) {
+                    throw new Exception("此平台暂只支持筹人活动, 参加付费活动请下载客户端.", 7001);
+                }
                 $cart->c_status = 3;
                 $cart->checkout_at = Tools::getNow();
                 $cart->save();

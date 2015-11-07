@@ -91,7 +91,10 @@ class CrowdFunding extends Eloquent
             $data['school'] = $this->school->showInList();
         }
         if ($this->city) {
-            $data['city'] = $this->city->showInList();
+            if (empty($this->school)) {
+                $this->load('school');
+            }
+            $data['city'] = $this->city()->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }
@@ -136,7 +139,10 @@ class CrowdFunding extends Eloquent
             $data['school'] = $this->school->showInList();
         }
         if ($this->city) {
-            $data['city'] = $this->city->showInList();
+            if (empty($this->school)) {
+                $this-load('school');
+            }
+            $data['city'] = $this->city()->where('t_province_id', '=', $this->school->t_province);
         }
         if ($this->replies) {
             $tmp = [];
@@ -251,7 +257,7 @@ class CrowdFunding extends Eloquent
     // relations
     public function city()
     {
-        return $this->hasOne('DicCity', 'c_id', 'c_id');
+        return $this->hasMany('DicCity', 'c_id', 'c_id');
     }
 
     public function school()
