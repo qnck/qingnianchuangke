@@ -186,7 +186,10 @@ class CrowdFundingController extends \BaseController
             $cart->c_amount_origin = $product->p_price * $quantity;
             $cart->c_status = 2;
             $cart->c_type = 2;
-            $cart->save();
+            $re = $cart->save();
+            if (!$re) {
+                throw new Exception("提交库存失败", 7006);
+            }
             $product->loadProduct($quantity);
             if (!$funding->c_shipping) {
                 $shipping_address = '';

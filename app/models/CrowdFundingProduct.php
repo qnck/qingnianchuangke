@@ -48,7 +48,7 @@ class CrowdFundingProduct extends Eloquent
         }
         $query = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id);
         if ($limit) {
-            $query->where('p_max_quantity', '<=', '(p_sold_quantity + '.$quantity.')');
+            $query->where('p_max_quantity', '>=', '(p_sold_quantity + '.$quantity.')');
         }
         if ($up) {
             $re = $query->increment('p_sold_quantity', $quantity);
