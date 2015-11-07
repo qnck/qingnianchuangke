@@ -346,10 +346,15 @@ Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFundi
 
 /* WECHAT START*/
 Route::get('wechat/hengda/user', 'WechatController@getHengdaUsers');
+
 Route::get('wechat/market/flea', 'MarketController@flea');
 Route::get('wechat/product/{id}', 'ProductController@getProduct');
 Route::get('wechat/market/hot', 'MarketController@hot');
 Route::get('wechat/crowd', 'CrowdFundingController@listCrowdFunding');
 Route::get('wechat/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
 Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');
+Route::post('wechat/user/login', 'UserController@index');
+Route::post('wechat/user', 'UserController@store');
+Route::get('wechat/verify/code', 'VerificationController@getVCode');
+Route::get();
 /* WECHAT END*/
