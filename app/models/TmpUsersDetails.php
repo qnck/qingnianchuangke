@@ -30,7 +30,7 @@ class TmpUsersDetails extends Eloquent
     {
         $data = [];
         $data['identity_number'] = $this->u_identity_number;
-        $data['identity_imgs'] = Img::toArray($this->u_identity_img);
+        $data['identity_imgs'] = Img::toArray($this->u_identity_img, true);
         $data['home_adress'] = $this->u_home_adress;
         $data['father_name'] = $this->u_father_name;
         $data['father_telephone'] = $this->u_father_telephone;

@@ -96,7 +96,7 @@ class Cart extends Eloquent
         $inCart = Cart::where('c_status', '=', 1)->where('p_id', '=', $this->p_id)->sum('c_quantity');
         $remain = (int)$total - (int)$sold - (int)$inCart + $this->_quntityOri;
         if ($this->c_quantity > $remain) {
-            throw new Exception("产品库存不足", 7001);
+            throw new Exception("产品库存不足", 7006);
         }
         $product->quantity->q_cart = $inCart + $this->c_quantity - $this->_quntityOri;
         $product->quantity->save();

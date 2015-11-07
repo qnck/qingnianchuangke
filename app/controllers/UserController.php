@@ -30,6 +30,48 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    public function importLogin()
+    {
+        $ext_id = Input::get('ext_id', '');
+        $ext_token = Input::get('ext_token', '');
+        $nickname = Input::get('nickname', '');
+        $gender = Input::get('gender', 3);
+        $head_img = Input::get('head_img', '');
+        $import_type = Input::get('import_type', '');
+        $import_type = strtolower($import_type);
+
+        try {
+            if (!$ext_id || !$import_type) {
+                throw new Exception("需要正确的id, type参数", 3005);
+            }
+            $ext = [
+                'u_ext_id' => $ext_id,
+                'u_ext_token' => $ext_token,
+                'u_head_img' => $head_img,
+                'u_gender' => $gender,
+                'u_nickname' => $nickname,
+            ];
+            switch ($import_type) {
+                case 'qq':
+                    $qq_user = new UserImportQq($ext);
+                    $data = $qq_user->import();
+                    break;
+                case 'wechat':
+                    $wechat_user = new UserImportWechat($ext);
+                    $data = $wechat_user->import();
+                    break;
+                
+                default:
+                    throw new Exception("无效的登录类型", 3005);
+                    break;
+            }
+            $re = Tools::reTrue('登录成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '登录失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -90,13 +132,47 @@ class UserController extends \BaseController
      */
     public function show($id)
     {
-        $user = User::find($id);
-        if (!isset($user->u_id)) {
-            return Response::json(['result' => 2001, 'data' => [], 'info' => '没有找到请求的用户']);
-        }
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
         try {
-            $user->load(['school']);
-            $data = $user->showDetail();
+            $user = User::chkUserByToken($token, $u_id);
+
+            $show_user = User::find($id);
+            if (empty($show_user)) {
+                throw new Exception("请求的用户不存在", 3001);
+            }
+            $show_user->load([
+                'school',
+                'favorites' => function ($q) {
+                    $q->where('favorites.u_id', '=', $this->u_id);
+                },
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ]);
+            $data = $show_user->showDetail();
+
+            $is_friend = UsersFriend::$RELATION_NONE;
+            $userFriend = UsersFriend::findLinkById($u_id, $show_user->u_id);
+            if ($userFriend === UsersFriend::$RELATION_NONE) {
+            } else {
+                if ($userFriend->t_status == 1) {
+                    $is_friend = $userFriend->t_inviter == $u_id ? UsersFriend::$RELATION_INVITED : UsersFriend::$RELATION_PEDDING_CONFIRM;
+                } else {
+                    $is_friend = UsersFriend::$RELATION_CONFIRMED;
+                }
+            }
+
+            $data['is_friend'] = $is_friend;
+            $data['is_praised'] = 0;
+            $data['is_favorited'] = 0;
+            if (count($show_user->praises) > 0) {
+                $data['is_praised'] = 1;
+            }
+            if (count($show_user->favorites) > 0) {
+                $data['is_favorited'] = 1;
+            }
             $re = ['result' => 2000, 'data' => $data, 'info' => '读取用户成功'];
         } catch (Exception $e) {
             $re = ['result' => 2001, 'data' => [], 'info' => $e->getMessage()];
@@ -307,6 +383,73 @@ class UserController extends \BaseController
             $re = Tools::reTrue('搜索用户成功', $list, $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '搜索用户失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postPraise($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->praises()->where('praises.u_id', '=', $u_id)->first();
+            if ($type == 1) {
+                if (empty($chk)) {
+                    $data = [
+                        'u_id' => $u_id,
+                        'created_at' => Tools::getNow(),
+                        'u_name' => $user->u_name
+                    ];
+                    $praise = new Praise($data);
+                    $user->praises()->save($praise);
+                    $user->u_praise_count++;
+                }
+            } else {
+                if (!empty($chk)) {
+                    $user->praises()->detach($chk->id);
+                    $chk->delete();
+                    $user->u_praise_count = --$user->u_praise_count <= 0 ? 0 : $user->u_praise_count;
+                }
+            }
+            $user->save();
+            $re = Tools::reTrue('操作成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function postFavorite($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+        $type = Input::get('type', 0);
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $chk = $user->favorites()->where('favorites.u_id', '=', $u_id)->first();
+            if ($type == 1) {
+                if (empty($chk)) {
+                    $data = [
+                        'u_id' => $u_id,
+                        'created_at' => Tools::getNow(),
+                        'u_name' => $user->u_nickname
+                    ];
+                    $favorite = new Favorite($data);
+                    $user->favorites()->save($favorite);
+                }
+            } else {
+                if (!empty($chk)) {
+                    $user->favorites()->detach($chk->id);
+                    $chk->delete();
+                }
+            }
+            $re = Tools::reTrue('收藏成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '收藏失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

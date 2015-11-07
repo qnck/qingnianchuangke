@@ -41,7 +41,7 @@ class TmpUsersContactPeople extends Eloquent
 
         $this->load('school');
         $data['school'] = $this->school->showInList();
-        $data['student_img'] = Img::toArray($this->u_student_img);
+        $data['student_img'] = Img::toArray($this->u_student_img, true);
         $data['student_number'] = $this->u_student_number;
         $data['teacher_name'] = $this->u_teacher_name;
         $data['teacher_phone'] = $this->u_teacher_telephone;

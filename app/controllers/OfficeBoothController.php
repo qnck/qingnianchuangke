@@ -15,16 +15,14 @@ class OfficeBoothController extends \BaseController
             $query = Booth::with(['fund' => function ($q) {
             },
             'fund.loans',
-            'user'])->select('booths.*', 'tmp_users_details.u_status AS detail_status', 'tmp_users_contact_peoples.u_status AS contact_status', 'tmp_users_bank_cards.b_status AS bank_status');
+            'user'])->select('booths.*', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bankcards.b_status AS bank_status');
 
             $query = $query->leftJoin('funds', function ($q) {
                 $q->on('funds.b_id', '=', 'booths.b_id');
-            })->leftJoin('tmp_users_details', function ($q) {
-                $q->on('tmp_users_details.u_id', '=', 'booths.u_id');
-            })->leftJoin('tmp_users_contact_peoples', function ($q) {
-                $q->on('tmp_users_contact_peoples.u_id', '=', 'booths.u_id');
-            })->leftJoin('tmp_users_bank_cards', function ($q) {
-                $q->on('tmp_users_bank_cards.u_id', '=', 'booths.u_id');
+            })->leftJoin('tmp_user_profile_bases', function ($q) {
+                $q->on('tmp_user_profile_bases.u_id', '=', 'booths.u_id');
+            })->leftJoin('tmp_user_profile_bankcards', function ($q) {
+                $q->on('tmp_user_profile_bankcards.u_id', '=', 'booths.u_id');
             });
 
             if ($alloc == 1) {
@@ -38,8 +36,7 @@ class OfficeBoothController extends \BaseController
             foreach ($list as $key => $booth) {
                 $tmp = $booth->showInOffice();
                 if (!empty($tmp['user'])) {
-                    $tmp['user']['detail_status'] = $booth->detail_status;
-                    $tmp['user']['contact_status'] = $booth->contact_status;
+                    $tmp['user']['base_status'] = $booth->base_status;
                     $tmp['user']['bank_status'] = $booth->bank_status;
                 }
                 $data['rows'][] = $tmp;

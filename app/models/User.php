@@ -14,7 +14,7 @@ class User extends Eloquent
     {
         $validator = Validator::make(
             ['mobile' => $this->u_mobile, 'pass' => $this->u_password],
-            ['mobile' => 'required|digits:11', 'pass' => 'required|alpha_dash|min:6']
+            ['mobile' => 'required|digits:11', 'pass' => 'required|min:6']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -66,12 +66,18 @@ class User extends Eloquent
         $now->modify('+ 30 days');
         $re['expire'] = $now->format('Y-m-d H:i:s');
         $re['id'] = $this->u_id;
+        $re['biograph'] = $user->u_biograph;
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
-        $re['head_img'] = $this->u_head_img;
+        $re['head_img'] = $this->getHeadImg();
         $school = DicSchool::find($this->u_school_id);
-        $re['site'] = $school->t_city;
-        $re['school'] = $school->showInList();
+        if (empty($school)) {
+            $re['site'] = null;
+            $re['school'] = null;
+        } else {
+            $re['site'] = $school->t_city;
+            $re['school'] = $school->showInList();
+        }
         return $re;
     }
 
@@ -98,10 +104,16 @@ class User extends Eloquent
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
             $re['nickname'] = $user->u_nickname;
-            $re['head_img'] = $user->u_head_img;
+            $re['head_img'] = $user->getHeadImg();
+            $re['biograph'] = $user->u_biograph;
             $school = DicSchool::find($user->u_school_id);
-            $re['site'] = $school->t_city;
-            $re['school'] = $school->showInList();
+            if (empty($school)) {
+                $re['site'] = null;
+                $re['school'] = null;
+            } else {
+                $re['site'] = $school->t_city;
+                $re['school'] = $school->showInList();
+            }
             $re['gender'] = $user->u_sex;
             $user->load('booths');
             $booths = null;
@@ -111,6 +123,7 @@ class User extends Eloquent
                 }
             }
             $re['boohts'] = $booths;
+            $re['import_type'] = 'phone';
             return $re;
         }
     }
@@ -154,6 +167,7 @@ class User extends Eloquent
         if ($imgToken) {
             $img = new Img('user', $imgToken);
             $user->u_head_img = $img->getSavedImg($user->u_id, $user->u_head_img);
+            $user->u_head_img = implode(',', $user->u_head_img);
         }
 
         $user->updated_at = date('Y-m-d H:i:s');
@@ -175,7 +189,7 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -189,13 +203,21 @@ class User extends Eloquent
         return $data;
     }
 
+    public function showInImList()
+    {
+        $data['id'] = $this->u_id;
+        $data['head_img'] = $this->getHeadImg();
+        $data['nickname'] = $this->u_nickname;
+        return $data;
+    }
+
     public function showInOffice()
     {
         $data = [];
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
-        $data['head_img'] = $this->u_head_img;
+        $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -227,6 +249,7 @@ class User extends Eloquent
         $data['name'] = $this->u_name;
         $data['gender'] = $this->u_sex;
         $data['sex'] = $this->u_sex;
+        $data['praise_count'] = $this->u_praise_count;
         if (!empty($this->u_birthday)) {
             $birthday = new DateTime($this->u_birthday);
             $birthday = $birthday->format('Y-m-d');
@@ -234,16 +257,14 @@ class User extends Eloquent
             $birthday = null;
         }
         $data['birth'] = $birthday;
-        $path = explode(',', $this->u_head_img);
-        $path = array_pop($path);
-        $data['head_img'] = $path;
+        $data['head_img'] = $this->getHeadImg();
         $data['school_id'] = $this->u_school_id;
         $data['created_at'] = $this->created_at->format('Y-m-d H:i:s');
         $data['follower_count'] = $this->u_follower_count;
         $data['following_count'] = $this->u_following_count;
         $data['status'] = $this->u_status;
         $data['remark'] = $this->u_remark;
-        $data['home_imgs'] = Img::toArray($this->u_home_img);
+        $data['home_imgs'] = Img::toArray($this->u_home_img, true);
         $data['biograph'] = $this->u_biograph;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -389,6 +410,29 @@ class User extends Eloquent
         // todo delete rlations with booth, product, set status to 3
     }
 
+    public function getHeadImg()
+    {
+        if (!empty($this->u_head_img)) {
+            $img = Img::toArray($this->u_head_img);
+            $img = empty($img) ? '' : reset($img);
+            return $img;
+        } else {
+            $this->load('importQq');
+            if (!empty($this->importQq)) {
+                if ($this->importQq->u_head_img) {
+                    return $this->importQq->u_head_img;
+                }
+            }
+            $this->load('importWechat');
+            if (!empty($this->importWechat)) {
+                if ($this->importWechat->u_head_img) {
+                    return $this->importWechat->u_head_img;
+                }
+            }
+        }
+        return '';
+    }
+
     public static function filterByDistance($lat, $lng, $distance)
     {
         $distance = $distance * $distance;
@@ -451,14 +495,9 @@ class User extends Eloquent
         return $this->belongsToMany('User', 'attentions', 'u_fans_id', 'u_id');
     }
 
-    public function bankCards()
+    public function bankCard()
     {
-        return $this->hasMany('UsersBankCard', 'u_id', 'u_id');
-    }
-
-    public function contact()
-    {
-        return $this->hasOne('UsersContactPeople', 'u_id', 'u_id');
+        return $this->hasOne('UserProfileBankcard', 'u_id', 'u_id');
     }
 
     public function school()
@@ -476,8 +515,38 @@ class User extends Eloquent
         return $this->hasMany('PromotionPraise', 'u_id', 'u_id');
     }
 
+    public function booth()
+    {
+        return $this->hasOne('Booth', 'u_id', 'u_id');
+    }
+
     public function booths()
     {
         return $this->hasMany('Booth', 'u_id', 'u_id');
+    }
+
+    public function profileBase()
+    {
+        return $this->hasOne('UserProfileBase', 'u_id', 'u_id');
+    }
+
+    public function praises()
+    {
+        return $this->morphToMany('Praise', 'praisable');
+    }
+
+    public function favorites()
+    {
+        return $this->morphToMany('Favorite', 'favoriable');
+    }
+
+    public function importQq()
+    {
+        return $this->hasOne('UserImportQq', 'u_id', 'u_id');
+    }
+
+    public function importWechat()
+    {
+        return $this->hasOne('UserImportWechat', 'u_id', 'u_id');
     }
 }

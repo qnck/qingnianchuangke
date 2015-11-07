@@ -14,7 +14,7 @@
      overflow-x: hidden;
     border-right: solid 3px gray;
     z-index: 100;
-    background: #070815;
+    background: #252631;
     /*background: url(../images/left-background.jpg);*/
 }
 #left div{
@@ -46,8 +46,8 @@
     cursor: pointer;
 }
 #left-ul li:hover{
-    background: rgb(32, 32, 36);
-    color: #e77817;
+    background: rgb(46, 46, 61);
+    color: #46B4E7;
 }
 #left-contact li div {
     width: 100%;
@@ -66,9 +66,10 @@
     margin: 0px;
     padding:0;
     font-weight: bold ;
-    background: -webkit-gradient(linear,left top,right bottom,from(#d7394f),to(#ec8c64));
+    color: #46B4E7;
+    /*background: -webkit-gradient(linear,left top,right bottom,from(#d7394f),to(#ec8c64));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: transparent;*/
 }
 #right {
     position: relative;
@@ -398,29 +399,31 @@
     height: 70px;
     float: left;
     color: white;
-    margin-left: 15px;
+    width: 33.3%;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
 }
-.nav-right ul li:last-child div {
-    background:#212020;
-    height: 40px;
+.nav-right ul li div {
+    height: 30px;
     line-height: 30px;
-    padding: 2px 15px 2px 15px;
-    margin-top: 15px;
-    border: solid 2px #c35633;
+    margin-top: 20px;
+    text-align: center;
+    padding: 0 5px 0 5px;
+    width: 90px!important;
+}
+.nav-right ul li div:hover {
+    background:#252324;
     border-radius: 20px;
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -o-border-radius: 15px;
+    color: #46B4E7;
 }
-.nav-right ul li div {
-    width: auto!important;
-}
-.nav-right ul li:hover {
+
+/*.nav-right ul li:hover {
     color: #e77817;
-}
+}*/
 #left_menu {
     cursor: pointer;
 }
@@ -468,23 +471,50 @@
     width: 100%;
     overflow-y: hidden;
 }
-.second-content div:last-child{
+#secondFont{
     top: 470px;
     color: gray;
-    padding: 50px 150px 50px 150px;
+    padding: 0px 50px 0px 50px;
     background: #070815;
+    float: left;
     height:auto;
 }
-.second-content div:last-child p{
-    margin: 0px 0 15px;
-    
-}
+
 #secondTitel {
+    margin: 15px 0 0 0;
+    padding: 0;
     font-size:25px;
     font-weight: bold;
 }
 #secondContent {
-    font-size:14px;
+    float: left;
+    }
+#secondContent p {
+    margin: 0;
+    padding: 0;
+    text-indent: 2em;
+    font-size:22px;
+}
+.faq-p {
+    text-indent: 0!important;
+}
+.faq-p-color {
+    color: red;
+}
+.faq-p img {
+    width: 100%;
+}
+.law-p {
+    text-indent: 0!important;
+}
+.law-p-center {
+    text-align: center!important;
+}
+.law-p-bold {
+    font-weight: bold;
+}
+.law-p-line {
+    text-decoration: underline;
 }
 .display-none {
     display: none;
@@ -494,6 +524,7 @@
 }
 .fun{
     width: 100%;
+    /*background: #f3f5f8;*/
     z-index: 100;
     position: absolute;
     text-align: center;
@@ -548,6 +579,7 @@
     height: 290px;
     position: absolute;
     overflow: hidden ;
+    background-size: 100% 100%;
 }
 .fun-list ul li div div:first-child{
     z-index: 200;
@@ -603,6 +635,8 @@
     z-index: 100;
     top: 27px;
     left: 50%;
+    width: 1000px;
+    height: 630px;
     margin-left: -500px;
 }
 #funLeft{
@@ -751,6 +785,12 @@
     line-height: 30px;
     list-style: none;
     cursor: pointer;
+}
+.menu02 li a,.menu02 li a:hover{
+    color: #444;
+}
+#download a,#download a:hover {
+    color: white;
 }
 .footer {
     top: 590%;
