@@ -15,13 +15,42 @@ class PayController extends \BaseController
         try {
             $alipay = new Alipay();
             $alipay->verifyNotify();
-
+            $transaction_id = ali_trade_no;
             $orders = Order::getGroupOrdersByNo($order_no);
             if ($ali_trade_status == 'TRADE_FINISHED' || $ali_trade_status == 'TRADE_SUCCESS') {
+                $u_id = 0;
                 foreach ($orders as $key => $order) {
+                    $u_id = $order->u_id;
+                    $o_id = $order->o_id;
                     $order->pay(Alipay::PAYMENT_TAG);
                     $order->checkoutCarts();
                 }
+                $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
+                if ($cart->c_type == 1) {
+                    $log_cate = TransactionLog::$CATE_PRODUCT;
+                } elseif ($cart->c_type == 2) {
+                    $log_cate = TransactionLog::$CATE_CROWDFUNDING;
+                } else {
+                    $log_cate = 0;
+                }
+                //add transaction log
+                $log = new TransactionLog();
+                $log->l_type = TransactionLog::$TYPE_TRADE;
+                $log->l_cate = $log_cate;
+                $log->l_amt = $amount;
+                $log->from_type = TransactionLog::$OPERATOR_USER;
+                $log->from_id = $u_id;
+                $log->to_type = TransactionLog::$OPERATOR_QNCK;
+                $log->to_id = 1;
+                $log->via_type = TransactionLog::$PAYMENT_ALIPAY;
+                $log->addLog();
+                if (empty($log->l_id)) {
+                    throw new Exception("添加交易记录失败", 2001);
+                }
+                $log_order = new LogTransactionOrders();
+                $log_order->l_id = $log->l_id;
+                $log_order->o_group_number = $order_no;
+                $log_order->save();
             }
             DB::commit();
             echo "success";
@@ -44,14 +73,44 @@ class PayController extends \BaseController
             $wechat->log->INFO('POSTED DATE FRON WX SERVER:'.$input);
 
             $re = $wechat->verifyNotify();
+            $transaction_id = $re['transaction_id'];
             $re['total_fee'] = $re['total_fee'] * 0.01;
             $orders = Order::getGroupOrdersByNo($re['out_trade_no']);
             foreach ($orders as $key => $order) {
+                $u_id = $order->u_id;
+                $o_id = $order->o_id;
                 $order->pay(WechatPay::PAYMENT_TAG);
                 $order->checkoutCarts();
             }
             $wechat->_notify->SetReturn_code('SUCCESS');
             $wechat->_notify->SetReturn_msg('OK');
+
+            $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
+            if ($cart->c_type == 1) {
+                $log_cate = TransactionLog::$CATE_PRODUCT;
+            } elseif ($cart->c_type == 2) {
+                $log_cate = TransactionLog::$CATE_CROWDFUNDING;
+            } else {
+                $log_cate = 0;
+            }
+            //add transaction log
+            $log = new TransactionLog();
+            $log->l_type = TransactionLog::$TYPE_TRADE;
+            $log->l_cate = $log_cate;
+            $log->l_amt = $re['total_fee'];
+            $log->from_type = TransactionLog::$OPERATOR_USER;
+            $log->from_id = $u_id;
+            $log->to_type = TransactionLog::$OPERATOR_QNCK;
+            $log->to_id = 1;
+            $log->via_type = TransactionLog::$PAYMENT_WECHAT;
+            $log->addLog();
+            if (empty($log->l_id)) {
+                throw new Exception("添加交易记录失败", 2001);
+            }
+            $log_order = new LogTransactionOrders();
+            $log_order->l_id = $log->l_id;
+            $log_order->o_group_number = $order_no;
+            $log_order->save();
             DB::commit();
         } catch (Exception $e) {
             $wechat->log->ERROR('exeception caught:'.$e->getMessage());
@@ -69,7 +128,7 @@ class PayController extends \BaseController
     {
         $order_no = Input::get('order_no', '');
         $token = Input::get('token', '');
-        $u_id = Input::get('u_d', 0);
+        $u_id = Input::get('u_id', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
