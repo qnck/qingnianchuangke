@@ -166,7 +166,7 @@ class MeProfileController extends \BaseController
         $name = Input::get('name');
         $nickname = Input::get('nickname', '');
         $gender = Input::get('gender', '');
-        $bio = Input::get('bio', '');
+        $bio = Input::get('biograph', '');
         $id_number = Input::get('id_number', '');
         $id_school = Input::get('id_school', 0);
         $entry_year = Input::get('entry_year', '');
