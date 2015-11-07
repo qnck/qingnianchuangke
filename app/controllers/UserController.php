@@ -30,6 +30,22 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    public function loginFromWechat()
+    {
+        $mobile = Input::get('mobile');
+        $pass = Input::get('pass');
+        try {
+            $user = new User();
+            $user->u_mobile = $mobile;
+            $user->u_password = $pass;
+            $data = $user->login();
+            $re = ['data' => $data, 'result' => 2000, 'info' => '登陆成功'];
+        } catch (Exception $e) {
+            $re = ['data' => [], 'result' => 2001, 'info' => $e->getMessage()];
+        }
+        return Response::json($re);
+    }
+
     public function importLogin()
     {
         $ext_id = Input::get('ext_id', '');
@@ -123,6 +139,34 @@ class UserController extends \BaseController
         return Response::json($re);
     }
 
+    public function postUserFromWechat()
+    {
+        $mobile = Input::get('mobile');
+        $pass = Input::get('pass');
+        $school_id = Input::get('school');
+        $vCode = Input::get('vcode');
+        try {
+            $user = new User();
+            $user->u_school_id = $school_id;
+            $user->u_mobile = $mobile;
+            $user->u_password = $pass;
+
+            // verify vcode via phone
+            $phone = new Phone($mobile);
+            $phone->authVCode($vCode);
+            $data = $user->register();
+            // add user wallet
+            $wallet = new UsersWalletBalances();
+            $wallet->u_id = $user->u_id;
+            $wallet->w_balance = 0.00;
+            $wallet->w_freez = 0.00;
+            $wallet->save();
+            $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
+        } catch (Exception $e) {
+            $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];
+        }
+        return Response::json($re);
+    }
 
     /**
      * Display the specified resource.
