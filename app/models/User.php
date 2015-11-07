@@ -65,7 +65,7 @@ class User extends Eloquent
         $now = new Datetime();
         $now->modify('+ 30 days');
         $re['expire'] = $now->format('Y-m-d H:i:s');
-        $re['mobile'] = $user->u_mobile;
+        $re['mobile'] = $this->u_mobile;
         $re['id'] = $this->u_id;
         $re['biograph'] = $this->u_biograph;
         $re['name'] = $this->u_name;

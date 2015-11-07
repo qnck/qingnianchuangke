@@ -219,12 +219,24 @@ class CrowdFundingController extends \BaseController
             $order->o_number = $order_no;
             $order->o_group_number = $order_group_no;
             $o_id = $order->addOrder();
+
+            // change order to finish if price = 0
+            if ($order->o_amount == 0) {
+                $cart->c_status = 3;
+                $cart->checkout_at = Tools::getNow();
+                $cart->save();
+                $order->o_status = 2;
+                $order->o_shipping_status = 10;
+                $order->paied_at = Tools::getNow();
+                $order->save();
+            }
+
             Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
             // push msg to seller
             $booth = Booth::find($cart->b_id);
             $msg = new PushMessage($booth->u_id);
-            $msg->pushMessage('您有新的订单, 请及时发货');
+            $msg->pushMessage('您的众筹已有人认购');
             $data = ['order_no' => $order_group_no];
             $re = Tools::reTrue('提交订单成功', $data);
             DB::commit();

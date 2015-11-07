@@ -179,7 +179,6 @@ class CrowdFunding extends Eloquent
         $this->baseValidate();
         $now = Tools::getNow();
         $this->created_at = $now;
-        $this->c_status = 1;
         return $this->save();
     }
 
