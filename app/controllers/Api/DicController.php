@@ -120,7 +120,7 @@ class DicController extends \BaseController
                 $q->on('dic_provinces.id', '=', 'dic_schools.t_province');
             })
             ->leftJoin('dic_cities', function ($q) {
-                $q->on('dic_cities.c_id', '=', 'dic_schools.t_city');
+                $q->on('dic_cities.c_id', '=', 'dic_schools.t_city')->on('dic_cities.c_province_id', '=', 'dic_schools.t_province');
             })
             ->where('dic_schools.t_name', 'LIKE', '%'.$key.'%')->groupBy('dic_schools.t_id')->get();
             $data = [];
