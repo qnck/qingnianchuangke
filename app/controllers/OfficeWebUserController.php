@@ -47,13 +47,13 @@ class OfficeWebUserController extends \BaseController
             }
 
             if (empty($bank)) {
-                $user_bank = [];
+                $user_bank = null;
             } else {
                 $user_bank = $bank->showDetail();
             }
 
             if (empty($base)) {
-                $user_base = [];
+                $user_base = null;
             } else {
                 $user_base = $base->showDetail();
             }

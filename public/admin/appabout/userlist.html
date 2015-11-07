@@ -203,7 +203,7 @@ $(document).ready(function () {
 		clearWindowData();
 		var sdata = $("#tt").datagrid("getSelected");
 		$("#username").text(sdata.u_name);//姓名
-		if(data.base.length > 0){
+		if(data.base){
 			$("#sfzhm").text(data.base.identity_number);//身份证号码
 			if(data.base.identity_img){
 				$("#sfzzp_zm").attr("src",data.base.identity_img.identity_img_front);//身份证正面照片
@@ -247,7 +247,7 @@ $(document).ready(function () {
 			$("#mqxm").text(data.base.mother_name);//母亲姓名
 			$("#mqdh").text(data.base.mother_telephone);//母亲电话
 		}
-		if(data.bank.length > 0){
+		if(data.bank){
 			$("#khh").text(data.bank.bank.name);//开户行
 			$("#yhkh").text(data.bank.card_number);//银行卡号
 			$("#hzxm").text(data.bank.holder_name);//户主姓名
