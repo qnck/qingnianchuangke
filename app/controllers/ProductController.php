@@ -85,6 +85,10 @@ class ProductController extends \BaseController
 
         try {
             $product = Product::with([
+                'user',
+                'booth' => function ($q) {
+                    $q->with(['school']);
+                },
                 'quantity',
                 'promo',
                 'replies',
@@ -99,6 +103,12 @@ class ProductController extends \BaseController
                 throw new Exception("无法找到请求的产品", 7001);
             }
             $data = $product->showDetail();
+            if (empty($data['booth']['school'])) {
+                $data['school'] = [];
+            } else {
+                $data['school'] = $data['booth']['school'];
+                unset($data['booth']);
+            }
             $data['is_praised'] = 0;
             $data['is_favorited'] = 0;
             if (count($product->praises) > 0) {

@@ -111,8 +111,9 @@ class MarketController extends \BaseController
                 throw new Exception("请传入有效的用户id", 2001);
             }
             $query = Product::with([
+                'user',
                 'booth' => function ($q) {
-                    $q->with(['user', 'school']);
+                    $q->with(['school']);
                 },
                 'quantity',
                 'praises' => function ($q) {
@@ -156,6 +157,12 @@ class MarketController extends \BaseController
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
+                if (empty($tmp['booth']['school'])) {
+                    $tmp['school'] = [];
+                } else {
+                    $tmp['school'] = $tmp['booth']['school'];
+                    unset($tmp['booth']);
+                }
                 if (!empty($product->praises)) {
                     $tmp['is_praised'] = 1;
                 } else {
