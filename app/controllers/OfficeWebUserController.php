@@ -55,6 +55,7 @@ class OfficeWebUserController extends \BaseController
             if (empty($base)) {
                 $user_base = null;
             } else {
+                $base->load('school');
                 $user_base = $base->showDetail();
             }
 

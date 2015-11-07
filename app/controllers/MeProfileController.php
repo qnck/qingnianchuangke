@@ -227,10 +227,11 @@ class MeProfileController extends \BaseController
                 $new_paths = Img::attachHost($new_paths);
                 
                 $user->u_home_img = implode(',', $new_paths);
-                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs, $user->u_home_img]), true);
+                $imgs = $imgObj->getSavedImg($u_id, implode(',', [$profile->u_id_imgs, $profile->u_student_imgs, $user->u_home_img, $user->u_head_img]), true);
                 $stu_imgs = Img::filterKey('student_img_', $imgs);
                 $id_imgs = Img::filterKey('identity_img_', $imgs);
                 $home_imgs = Img::filterKey('home_img_', $imgs);
+                $head_img = Img::filterKey('head_img', $imgs);
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $del) {
                         if (array_key_exists($del, $home_imgs)) {
@@ -241,6 +242,7 @@ class MeProfileController extends \BaseController
                 $profile->u_student_imgs = implode(',', $stu_imgs);
                 $profile->u_id_imgs = implode(',', $id_imgs);
                 $user->u_home_img = implode(',', $home_imgs);
+                $user->u_head_img = implode(',', $head_img);
             }
             $profile->save();
             $user->save();

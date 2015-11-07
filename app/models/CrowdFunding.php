@@ -63,6 +63,7 @@ class CrowdFunding extends Eloquent
         $data['id'] = $this->cf_id;
         $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
         $data['title'] = $this->c_title;
+        $data['brief'] = $this->c_brief;
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
         $data['time'] = $this->c_time;
