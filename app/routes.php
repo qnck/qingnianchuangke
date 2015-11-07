@@ -351,4 +351,5 @@ Route::get('wechat/product/{id}', 'ProductController@getProduct');
 Route::get('wechat/market/hot', 'MarketController@hot');
 Route::get('wechat/crowd', 'CrowdFundingController@listCrowdFunding');
 Route::get('wechat/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
+Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');
 /* WECHAT END*/

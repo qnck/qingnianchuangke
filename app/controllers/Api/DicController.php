@@ -104,4 +104,33 @@ class DicController extends \BaseController
 
         return Response::json($re);
     }
+
+    public function getSchoolWthCity()
+    {
+        $key = Input::get('key', '');
+
+        if (!$key) {
+            $re = \Tools::reTrue('请先传入关键字');
+            return Response::json($re);
+        }
+
+        try {
+            $list = \DB::table('dic_schools')->select('dic_schools.t_district', 'dic_schools.t_name', 'dic_cities.c_name', 'dic_provinces.province')
+            ->leftJoin('dic_provinces', function ($q) {
+                $q->on('dic_provinces.id', '=', 'dic_schools.t_province');
+            })
+            ->leftJoin('dic_cities', function ($q) {
+                $q->on('dic_cities.c_id', '=', 'dic_schools.t_city');
+            })
+            ->where('dic_schools.t_name', 'LIKE', '%'.$key.'%')->groupBy('dic_schools.t_id')->get();
+            $data = [];
+            foreach ($list as $key => $value) {
+                $data[] = ['district' => $value->t_district, 'school' => $value->t_name, 'city' => $value->c_name, 'province' => $value->province];
+            }
+            $re = \Tools::reTrue('获取成功', $data);
+        } catch (Exception $e) {
+            $re = \Tools::reFalse($e->getCode(), '获取失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }
