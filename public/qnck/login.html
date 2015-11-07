@@ -26,18 +26,15 @@
 var rurl  = "";
 $(document).ready(function () {
     rurl = GetQueryString("rurl");
+    var tel = getCookie("tel");
+    var pass = getCookie("pass");
+    if(tel!=null && tel!="")
+        autologin(tel,pass);
 });
 function registr(){
     window.location.href="chooseschool.html?rurl="+rurl;
 }
-function login(){
-    var tel = $("#mobileNum").val();
-    var pass = $("#password").val();
-    var telReg = !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/);
-    if(!telReg){
-        alert("请输入正确的手机号码");
-        return;
-    }
+function autologin(tel,pass){
     $.ajax({
         type: "post",
         url: _url + "wechat/user/login",
@@ -54,6 +51,45 @@ function login(){
             alert("加载失败!");
         }
     });
+}
+function login(){
+    var tel = $("#mobileNum").val();
+    var pass = $("#password").val();
+    var telReg = !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/);
+    if(!telReg){
+        alert("请输入正确的手机号码");
+        return;
+    }
+    $.ajax({
+        type: "post",
+        url: _url + "wechat/user/login",
+        data: {mobile:tel,pass:pass},
+        dataType: "json",
+        success: function (r) {
+            if (r.result == "2000") {
+                SetCookie("tel",tel);
+                SetCookie("pass",pass);
+                window.location.href=rurl+"?token="+r.data.token+"&uid="+r.data.id+"&sid="+r.data.school.id;
+            }else{
+                alert("登录失败");
+            }
+        },
+        error: function () {
+            alert("加载失败!");
+        }
+    });
+}
+function SetCookie(name,value)//两个参数，一个是cookie的名子，一个是值
+{
+    var Days = 7; //此 cookie 将被保存 30 天
+    var exp  = new Date();    //new Date("December 31, 9998");
+    exp.setTime(exp.getTime() + Days*24*60*60*1000);
+    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
+}
+function getCookie(name)//取cookies函数       
+{
+    var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+     if(arr != null) return (arr[2]); return null;
 }
 function forgetpwd () {
     window.location.href='zhmm.html?rurl='+rurl;
