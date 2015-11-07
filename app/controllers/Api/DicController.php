@@ -115,7 +115,7 @@ class DicController extends \BaseController
         }
 
         try {
-            $list = \DB::table('dic_schools')->select('dic_schools.t_district', 'dic_schools.t_name', 'dic_cities.c_name', 'dic_provinces.province')
+            $list = \DB::table('dic_schools')->select('dic_schools.t_id', 'dic_schools.t_district', 'dic_schools.t_name', 'dic_cities.c_name', 'dic_provinces.province')
             ->leftJoin('dic_provinces', function ($q) {
                 $q->on('dic_provinces.id', '=', 'dic_schools.t_province');
             })
@@ -125,7 +125,7 @@ class DicController extends \BaseController
             ->where('dic_schools.t_name', 'LIKE', '%'.$key.'%')->groupBy('dic_schools.t_id')->get();
             $data = [];
             foreach ($list as $key => $value) {
-                $data[] = ['district' => $value->t_district, 'school' => $value->t_name, 'city' => $value->c_name, 'province' => $value->province];
+                $data[] = ['id' => $value->t_id, 'district' => $value->t_district, 'school' => $value->t_name, 'city' => $value->c_name, 'province' => $value->province];
             }
             $re = \Tools::reTrue('获取成功', $data);
         } catch (Exception $e) {
