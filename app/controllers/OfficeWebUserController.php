@@ -115,6 +115,7 @@ class OfficeWebUserController extends \BaseController
                 $base->u_mother_name = $tmp_base->u_mother_name;
                 $base->u_mother_phone = $tmp_base->u_mother_phone;
                 $base->u_home_address = $tmp_base->u_home_address;
+                $base->u_status = 1;
                 $base->save();
                 $tmp_base->u_status = 1;
                 $tmp_base->remark = '';
