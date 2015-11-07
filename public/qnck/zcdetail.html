@@ -191,7 +191,7 @@
 		        dataType: "json",
 		        success: function (r) {
 		            if(r.result=="2000"){
-		                alert("认筹成功！");closeBuyInfo();
+		                alert("认筹成功！");closeBuyInfo();BindData(id);
 		            }
 		            else{
 		                alert(r.info);
