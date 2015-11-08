@@ -17,7 +17,7 @@ class UserImportWechat extends UserImport
             $this->created_at = Tools::getNow();
             $this->save();
         }
-        $re = $this->login($this->u_id);
+        $re = $this->login($re['u_id']);
         $re['import_type'] = 'wechat';
         return $re;
     }

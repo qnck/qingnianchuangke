@@ -39,9 +39,6 @@ class MeCrowdFundingController extends \BaseController
             if (empty($user->profileBase)) {
                 throw new Exception("请先提交个人资料审核", 3004);
             }
-            if ($user->profileBase->u_status != 1) {
-                throw new Exception("您的个人资料还未通过审核", 3004);
-            }
             if ($apartment_no) {
                 $user->profileBase->u_apartment_no = $apartment_no;
                 $user->profileBase->save();

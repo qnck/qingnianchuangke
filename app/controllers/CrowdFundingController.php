@@ -23,6 +23,8 @@ class CrowdFundingController extends \BaseController
         $city = Input::get('city', 0);
         $school = Input::get('school', 0);
 
+        $key = Input::get('key', '');
+
         try {
             if (!$u_id) {
                 throw new Exception("请传入用户id", 7001);
@@ -49,7 +51,15 @@ class CrowdFundingController extends \BaseController
             if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
-            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
+            if ($key) {
+                $query = $query->where(function ($q) use ($key) {
+                    $q->where('crowd_fundings.c_title', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_brief', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_yield_desc', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
+                });
+            }
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
