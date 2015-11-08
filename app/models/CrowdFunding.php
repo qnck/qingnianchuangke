@@ -241,10 +241,10 @@ class CrowdFunding extends Eloquent
 
     public function censor()
     {
-        $old_status = '审核之前的状态为: '.CrowdFunding::getStutus($this->getOriginal('b_status')).', 审核之后的状态为: '.CrowdFunding::getStutus($this->b_status).'.';
-        if ($this->b_status == 2) {
+        $old_status = '审核之前的状态为: '.CrowdFunding::getStutus($this->getOriginal('c_status')).', 审核之后的状态为: '.CrowdFunding::getStutus($this->c_status).'.';
+        if ($this->c_status == 2) {
             $content = '众筹审核未通过, '.$old_status.' 备注: '.$this->remark;
-        } elseif ($this->b_status == 1) {
+        } elseif ($this->c_status == 1) {
             $content = '众筹审核通过, '.$old_status;
         } else {
             $content = '审核众筹记录, '.$old_status;
