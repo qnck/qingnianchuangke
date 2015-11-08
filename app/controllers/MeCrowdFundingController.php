@@ -37,8 +37,6 @@ class MeCrowdFundingController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $user->load('booth', 'profileBase', 'school');
             if ($apartment_no) {
-                $user->profileBase->u_apartment_no = $apartment_no;
-                $user->profileBase->save();
                 $tmp_base = TmpUserProfileBase::find($user->u_id);
                 $tmp_base->u_apartment_no = $apartment_no;
                 $tmp_base->save();
