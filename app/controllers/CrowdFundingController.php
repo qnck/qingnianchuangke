@@ -188,10 +188,13 @@ class CrowdFundingController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
             if ($product->p_price == 0) {
+                if ($quantity != 1) {
+                    throw new Exception("此类众筹只能认筹一份", 1);
+                }
                 // check if user has bought
                 $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
                 if (!empty($chk)) {
-                    throw new Exception("此类众筹每人限认筹一次", 2001);
+                    throw new Exception("此类众筹每人限认筹一次", 7001);
                 }
             }
             $funding = CrowdFunding::find($id);
@@ -251,9 +254,6 @@ class CrowdFundingController extends \BaseController
 
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
-                if ($quantity > 1) {
-                    throw new Exception("此平台暂只支持筹人活动, 参加付费活动请下载客户端.", 7001);
-                }
                 $cart->c_status = 3;
                 $cart->checkout_at = Tools::getNow();
                 $cart->save();
