@@ -178,6 +178,9 @@ class CrowdFundingController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
             $funding = CrowdFunding::find($id);
+            if ($funding->u_id == $u_id) {
+                throw new Exception("您不能认筹自己发起的众筹", 2001);
+            }
 
             // sku need to be calulated before cart generated
             $product->loadProduct($quantity);

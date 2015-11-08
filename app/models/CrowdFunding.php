@@ -32,6 +32,7 @@ class CrowdFunding extends Eloquent
     public static function getCrowdFundingCate()
     {
         return [
+            8 => '官方发布',
             1 => '娱乐活动',
             2 => '个人生活',
             3 => '创业募集',
@@ -39,7 +40,6 @@ class CrowdFunding extends Eloquent
             5 => '创意发明',
             6 => '调查学习',
             7 => '公益事业',
-            8 => '官方发布'
         ];
     }
 
@@ -73,10 +73,10 @@ class CrowdFunding extends Eloquent
         $data['praise_count'] = $this->c_praise_count;
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
+        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
-            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
@@ -121,10 +121,10 @@ class CrowdFunding extends Eloquent
         $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
         $data['open_file'] = $this->c_open_file;
+        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
-            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
