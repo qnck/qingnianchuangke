@@ -168,7 +168,7 @@ class MarketController extends \BaseController
                     $tmp['school'] = $tmp['booth']['school'];
                     unset($tmp['booth']);
                 }
-                if (!empty($product->praises)) {
+                if (count($product->praises) > 0) {
                     $tmp['is_praised'] = 1;
                 } else {
                     $tmp['is_praised'] = 0;
