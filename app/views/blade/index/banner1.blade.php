@@ -44,11 +44,7 @@
 <body>
     <div class="bg" id="bg"></div>
     <div class="menu" id="menu">
-        @if($share_type == "app")
         <a href="{{$link}}" target="_blank"><div id="btn_download" class="download btn center"></div></a>
-        @else
-        <a><div id="btn_share" class="share btn center"></div></a>
-        @endif
     </div>
 </body>
 </html>
