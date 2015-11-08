@@ -252,6 +252,8 @@ class CrowdFundingController extends \BaseController
             $order->o_group_number = $order_group_no;
             $o_id = $order->addOrder();
 
+            Cart::bindOrder([$order->o_id => [$cart->c_id]]);
+
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
                 $cart->checkout();
@@ -260,8 +262,6 @@ class CrowdFundingController extends \BaseController
                 $order->paied_at = Tools::getNow();
                 $order->save();
             }
-
-            Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
             $data = ['order_no' => $order_group_no];
             $re = Tools::reTrue('提交订单成功', $data);
