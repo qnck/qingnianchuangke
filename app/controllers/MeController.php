@@ -1845,7 +1845,7 @@ class MeController extends \BaseController
                 $q->with(['school']);
             }])
             ->join('favoriables', function ($q) {
-                $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'User');
+                $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Product');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
             })->orderBy('favorites.created_at', 'DESC')->get();
@@ -1853,9 +1853,9 @@ class MeController extends \BaseController
             foreach ($list as $key => $product) {
                 $data[] = $product->showInList();
             }
-            $re = Tools::reTrue('获取用户列表成功', $data);
+            $re = Tools::reTrue('获取收藏列表成功', $data);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取用户列表失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取收藏列表失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
