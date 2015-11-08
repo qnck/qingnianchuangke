@@ -143,9 +143,13 @@
                         $("#title").text(r.data.title);
                         $("#cover_img").attr("src",r.data.cover_img[0]);
                         $("#brief").text(r.data.brief);
-                        $(".target_amount").text(r.data.target_amount);
+                        if (r.data.target_amount) {
+	                        $(".target_amount").text('共'+r.data.target_amount+'元');
+	                        $(".target_amount").show();
+                        }
                         $(".left_time").text(r.data.time_left);
                         $(".sold").text(r.data.sold_quantity);
+                        $(".target_quantity").text(r.data.target_quantity);
                         $(".percentage").text((r.data.sold_quantity / r.data.target_quantity).toFixed(2));
                         $(r.data.content).each(function (){
                         	var temp = '<img class="content_img" src="'+this.img+'"><p class="content_text">'+this.text+'</p>';
@@ -216,7 +220,7 @@
 		<img class="cover_img" id="cover_img" src="" />
 		<p class="title" style="font-weight: bold;margin-top:5px;margin-bottom:-10px;" id="title"></p>
 		<p class="brief" style="padding-bottom:10px;" id="brief"></p>
-		<p class="target blue_font" style="font-size:20px;margin:-10px 10px;">目标 <span class="target_amount">0.00</span> 元</p>
+		<p class="target blue_font" style="font-size:20px;margin:-10px 10px;">目标 <span class="target_quantity">0</span>份&nbsp;&nbsp;<span class="target_amount" style="display:none"></span></p>
 		<p class="info blue_font"><img style="width:16px;margin-top:5px;" src="images/shijian.png"/><span style="padding-left:2px;">剩余</span><span class="left_time">0</span>天&nbsp;&nbsp;已筹<span class="sold">0</span>份&nbsp;<span class="amount" style="display:none"></span>&nbsp;&nbsp;完成度<span class="percentage">0</span>%</p>
 	</div>
 	<div class="middle">
