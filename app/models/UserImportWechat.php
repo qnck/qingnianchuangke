@@ -11,13 +11,17 @@ class UserImportWechat extends UserImport
     {
         $this->baseValidate();
         $chk = UserImportWechat::where('u_ext_id', '=', $this->ext_id)->first();
+        $u_id = 0;
         if (empty($chk)) {
             $re = $this->register($this->ext_id, $this->ext_token, $this->u_nickname, $this->u_head_img, $this->u_gender);
             $this->u_id = $re['u_id'];
             $this->created_at = Tools::getNow();
             $this->save();
+            $u_id = $re['u_id'];
+        } else {
+            $u_id = $chk->u_id;
         }
-        $re = $this->login($re['u_id']);
+        $re = $this->login($u_id);
         $re['import_type'] = 'wechat';
         return $re;
     }
