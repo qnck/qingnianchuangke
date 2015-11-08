@@ -77,6 +77,7 @@ class CrowdFunding extends Eloquent
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
+            $data['percentage'] = $this->product->getPercentage();
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
@@ -125,6 +126,7 @@ class CrowdFunding extends Eloquent
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
+            $data['percentage'] = $this->product->getPercentage();
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {

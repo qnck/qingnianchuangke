@@ -21,6 +21,12 @@ class CrowdFundingProduct extends Eloquent
         }
     }
 
+    public function getPercentage()
+    {
+        $re = ($this->p_sold_quantity / $this->p_target_quantity) * 100;
+        return $re;
+    }
+
     public function addProduct()
     {
         $this->baseValidate();
