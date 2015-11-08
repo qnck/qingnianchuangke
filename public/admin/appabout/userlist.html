@@ -320,14 +320,18 @@ $(document).ready(function () {
 	function formatSfzxx(value,row){
 		if(value=="0")
 			return "无";
-		else
+		else if(value=="1")
 			return "有";
+		else
+			return "";
 	}
 	function formatXszxx(value,row){
 		if(value=="0")
 			return "无";
-		else
+		else if(value=="1")
 			return "有";
+		else
+			return "";
 	}
 </script>
 </head>
