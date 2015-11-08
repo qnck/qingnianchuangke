@@ -187,6 +187,13 @@ class CrowdFundingController extends \BaseController
             }
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
+            if ($product->p_price == 0) {
+                // check if user has bought
+                $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
+                if (!empty($chk)) {
+                    throw new Exception("此类众筹每人限认筹一次", 2001);
+                }
+            }
             $funding = CrowdFunding::find($id);
             if ($funding->u_id == $u_id) {
                 throw new Exception("您不能认筹自己发起的众筹", 2001);
