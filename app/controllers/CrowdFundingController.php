@@ -107,10 +107,6 @@ class CrowdFundingController extends \BaseController
             if (count($crowdfunding->favorites) > 0) {
                 $data['is_favorited'] = 1;
             }
-            $take = 3;
-            if (count($data['replies']) > $take) {
-                $data['replies'] = array_slice($data['replies'], 0, $take);
-            }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
@@ -172,8 +168,8 @@ class CrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $validator = Validator::make(
-                ['shipping_phone' => (string)$shipping_phone, 'shipping_name' => $shipping_name, 'shipping_address' => $shipping_address, 'product' => $p_id, 'quantity' => $quantity],
-                ['shipping_phone' => 'required|numeric|digits:11', 'shipping_name' => 'required', 'shipping_address' => 'required', 'product' => 'required|numeric', 'quantity' => 'required|numeric']
+                ['收货人电话' => (string)$shipping_phone, '收货人姓名' => $shipping_name, '收获地址' => $shipping_address, '产品' => $p_id, '数量' => $quantity],
+                ['收货人电话' => 'required|numeric|digits:11', '收货人姓名' => 'required', '收获地址' => 'required', '产品' => 'required|numeric', '数量' => 'required|numeric']
             );
             if ($validator->fails()) {
                 $msg = $validator->messages();
@@ -183,6 +179,8 @@ class CrowdFundingController extends \BaseController
             $product = CrowdFundingProduct::find($p_id);
             $funding = CrowdFunding::find($id);
 
+            // sku need to be calulated before cart generated
+            $product->loadProduct($quantity);
             // add cart
             $cart = new Cart();
             $cart->p_id = $p_id;
@@ -202,7 +200,6 @@ class CrowdFundingController extends \BaseController
             if (!$re) {
                 throw new Exception("提交库存失败", 7006);
             }
-            $product->loadProduct($quantity);
             if (!$funding->c_shipping) {
                 $shipping_address = '';
             }

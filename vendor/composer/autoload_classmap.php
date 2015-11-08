@@ -472,6 +472,7 @@ return array(
     'MeFriendController' => $baseDir . '/app/controllers/MeFriendController.php',
     'MeProductController' => $baseDir . '/app/controllers/MeProductController.php',
     'MeProfileController' => $baseDir . '/app/controllers/MeProfileController.php',
+    'Migrate2015110801' => $baseDir . '/app/database/migrations/2015_11_08_143806_migrate_2015110801.php',
     'MigratePatch20151105' => $baseDir . '/app/database/migrations/2015_11_05_205736_migrate_patch_20151105.php',
     'MigratePatch20151107' => $baseDir . '/app/database/migrations/2015_11_07_213050_migrate_patch_20151107.php',
     'MigratePatch20151108' => $baseDir . '/app/database/migrations/2015_11_08_022451_migrate_patch_20151108.php',

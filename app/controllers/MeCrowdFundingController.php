@@ -78,6 +78,11 @@ class MeCrowdFundingController extends \BaseController
             } else {
                 $crowd_funding->c_status = 1;
             }
+
+            // if the user is an official user, set funding type to offical
+            if ($user->u_type == 2) {
+                $crowd_funding->c_cate = 8;
+            }
             $crowd_funding->addCrowdFunding();
 
             if ($img_token) {

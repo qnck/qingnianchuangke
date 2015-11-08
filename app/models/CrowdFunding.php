@@ -38,7 +38,8 @@ class CrowdFunding extends Eloquent
             4 => '艺术创作',
             5 => '创意发明',
             6 => '调查学习',
-            7 => '公益事业'
+            7 => '公益事业',
+            8 => '官方发布'
         ];
     }
 
@@ -227,7 +228,7 @@ class CrowdFunding extends Eloquent
         $content = json_decode($this->c_content, JSON_OBJECT_AS_ARRAY);
         $pic_text = [];
         if (empty($this->_imgs)) {
-            $this->loadImgs();
+            $this->loadImg();
         }
         $imgs = Img::filterKey('crowd_img_', $this->_imgs, true);
         foreach ($imgs as $key => $img) {

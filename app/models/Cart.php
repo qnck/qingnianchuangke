@@ -7,6 +7,12 @@ class Cart extends Eloquent
     public $primaryKey = 'c_id';
     public $timestamps = false;
 
+    public static $STATUS_DELETED = -1;
+    public static $STATUS_INVALID = 0;
+    public static $STATUS_PENDDING_CONFIRM = 1;
+    public static $STATUS_PENDDING_PAY = 2;
+    public static $STATUS_PAIED = 3;
+
     private $_quntityOri = 0;
 
     private function baseValidate()
@@ -192,5 +198,10 @@ class Cart extends Eloquent
     public function booth()
     {
         return $this->hasOne('Booth', 'b_id', 'b_id');
+    }
+
+    public function order()
+    {
+        return $this->belongsTo('Order', 'o_id', 'o_id');
     }
 }
