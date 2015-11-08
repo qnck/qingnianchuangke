@@ -477,6 +477,7 @@ return array(
     'MigratePatch20151107' => $baseDir . '/app/database/migrations/2015_11_07_213050_migrate_patch_20151107.php',
     'MigratePatch20151108' => $baseDir . '/app/database/migrations/2015_11_08_022451_migrate_patch_20151108.php',
     'MigratePatch2015110802' => $baseDir . '/app/database/migrations/2015_11_08_163725_migrate_patch_2015110802.php',
+    'MigratePatch2015110803' => $baseDir . '/app/database/migrations/2015_11_08_171255_migrate_patch_2015110803.php',
     'MigrateUserAccountImport' => $baseDir . '/app/database/migrations/2015_11_04_162147_migrate_user_account_import.php',
     'MiscFileController' => $baseDir . '/app/controllers/MiscFileController.php',
     'Monolog\\ErrorHandler' => $vendorDir . '/monolog/monolog/src/Monolog/ErrorHandler.php',

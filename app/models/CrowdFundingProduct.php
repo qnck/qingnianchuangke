@@ -36,7 +36,7 @@ class CrowdFundingProduct extends Eloquent
         $limit = false;
         $re = false;
         if ($this->p_max_quantity > 0) {
-            $remain = $this->p_max_quantity - $this->p_sold_quantity;
+            $remain = $this->p_max_quantity - $this->p_sold_quantity - $this->p_cart_quantity;
             if ($quantity <= $remain) {
                 $up = true;
                 $limit = true;
@@ -54,11 +54,11 @@ class CrowdFundingProduct extends Eloquent
         }
         $query = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id);
         if ($limit) {
-            $query->where('p_max_quantity', '>=', '(p_sold_quantity + '.$quantity.')');
+            $query->where('p_max_quantity', '>=', '(p_sold_quantity + p_cart_quantity + '.$quantity.')');
         }
         if ($up) {
-            $re = $query->increment('p_sold_quantity', $quantity);
-            $this->p_sold_quantity += $quantity;
+            $re = $query->increment('p_cart_quantity', $quantity);
+            $this->p_cart_quantity += $quantity;
         } else {
             throw new Exception("修改库存失败", 7001);
         }
@@ -69,21 +69,27 @@ class CrowdFundingProduct extends Eloquent
     {
         $down = false;
         $re = false;
-        if ($quantity > $this->p_sold_quantity) {
-            throw new Exception("最多还能退".$this->p_sold_quantity.'份', 7001);
+        if ($quantity > $this->p_cart_quantity) {
+            throw new Exception("最多还能退".$this->p_cart_quantity.'份', 7001);
         } else {
             $down = true;
         }
-        $re = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->where('p_sold_quantity', '<=', $quantity)->decrement('p_sold_quantity', $quantity);
-        $this->p_sold_quantity -= $quantity;
+        $re = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->where('p_cart_quantity', '<=', $quantity)->decrement('p_cart_quantity', $quantity);
+        $this->p_cart_quantity -= $quantity;
         return $re;
+    }
+
+    public function confirmProduct($quantity)
+    {
+        DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->lockForUpdate()->decrement('p_cart_quantity', $quantity);
+        DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->lockForUpdate()->increment('p_sold_quantity', $quantity);
+        $this->p_cart_quantity -= $quantity;
+        $this->p_sold_quantity += $quantity;
     }
 
     public function retriveStock()
     {
-        $now = Tools::getNow(false);
-        $now->modify('-3 days');
-        $carts = Cart::with(['order'])->where('p_id', '=', $this->p_id)->where('c_type', '=', 2)->where('created_at', '<', $now->format('Y-m-d H:i:s'))
+        $carts = Cart::with(['order'])->where('p_id', '=', $this->p_id)->where('c_type', '=', 2)
         ->where(function ($q) {
             $q->where('c_status', '=', Cart::$STATUS_PENDDING_CONFIRM)->orWhere('c_status', '=', Cart::$STATUS_PENDDING_PAY);
         })->get();
@@ -104,7 +110,7 @@ class CrowdFundingProduct extends Eloquent
             }
         }
         $this->save();
-        $remain = $this->p_max_quantity - $this->p_sold_quantity;
+        $remain = $this->p_max_quantity - $this->p_sold_quantity - $this->p_cart_quantity;
         return $remain;
     }
     // relation

@@ -157,7 +157,7 @@ class Cart extends Eloquent
     {
         $now = new DateTime();
         $this->checkout_at = $now->format('Y-m-d H:i:s');
-        $this->addAmountToCrowdFunding();
+        $this->checkoutCrowdFunding();
         $this->c_status = 3;
         if (!$this->save()) {
             throw new Exception("结算购物车失败", 9005);
@@ -165,13 +165,19 @@ class Cart extends Eloquent
         return true;
     }
 
-    public function addAmountToCrowdFunding()
+    public function checkoutCrowdFunding()
     {
         if ($this->c_type != 2) {
             return true;
         }
 
+        // push msg to seller
+        $booth = Booth::find($this->b_id);
+        $msg = new PushMessage($booth->u_id);
+        $msg->pushMessage('您的众筹已有人认购');
+
         $product = CrowdFundingProduct::find($this->p_id);
+        $product->confirmProduct($this->c_quantity);
         $funding = CrowdFunding::find($product->cf_id);
         $funding->c_amount += $this->c_amount;
         $funding->save();

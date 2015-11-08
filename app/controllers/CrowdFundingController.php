@@ -248,10 +248,6 @@ class CrowdFundingController extends \BaseController
 
             Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
-            // push msg to seller
-            $booth = Booth::find($cart->b_id);
-            $msg = new PushMessage($booth->u_id);
-            $msg->pushMessage('您的众筹已有人认购');
             $data = ['order_no' => $order_group_no];
             $re = Tools::reTrue('提交订单成功', $data);
             DB::commit();

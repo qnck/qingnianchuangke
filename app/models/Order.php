@@ -170,6 +170,7 @@ class Order extends Eloquent
             $q->on('carts.o_id', '=', 'orders.o_id')
             ->where('orders.o_group_number', '=', $this->o_group_number);
         })
+        ->where('carts.c_status', '<>', -1)
         ->get();
         foreach ($this->_carts as $key => $cart) {
             if (empty($this->_bills[$cart->b_id])) {
