@@ -36,12 +36,6 @@ class MeCrowdFundingController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $user->load('booth', 'profileBase', 'school');
-            if (empty($user->profileBase)) {
-                throw new Exception("请先提交个人资料审核", 3004);
-            }
-            if ($user->profileBase->u_is_student_verified != 1 || $user->profileBase->u_is_id_verified != 1) {
-                throw new Exception("您的个人资料还未通过审核", 3004);
-            }
             if ($apartment_no) {
                 $user->profileBase->u_apartment_no = $apartment_no;
                 $user->profileBase->save();
