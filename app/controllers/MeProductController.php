@@ -201,7 +201,7 @@ class MeProductController extends \BaseController
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
-                if (!empty($product->praises)) {
+                if (count($product->praises) > 0) {
                     $tmp['is_praised'] = 1;
                 } else {
                     $tmp['is_praised'] = 0;
