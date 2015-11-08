@@ -111,7 +111,7 @@ class PayController extends \BaseController
             }
             $log_order = new LogTransactionOrders();
             $log_order->l_id = $log->l_id;
-            $log_order->o_group_number = $order_no;
+            $log_order->o_group_number = $re['out_trade_no'];
             $log_order->save();
             DB::commit();
         } catch (Exception $e) {
