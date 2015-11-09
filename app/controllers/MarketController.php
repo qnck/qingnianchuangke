@@ -107,6 +107,9 @@ class MarketController extends \BaseController
         $perPage = Input::get('per_page', 30);
 
         try {
+            if (!$range) {
+                $range = 2;
+            }
             if (!$u_id) {
                 throw new Exception("请传入有效的用户id", 2001);
             }
