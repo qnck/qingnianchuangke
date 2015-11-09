@@ -317,6 +317,22 @@ $(document).ready(function () {
 		$("#yhkh").text("");//银行卡号
 		$("#hzxm").text("");//户主姓名
 	}
+	function formatSfzxx(value,row){
+		if(value=="0")
+			return "无";
+		else if(value=="1")
+			return "有";
+		else
+			return "";
+	}
+	function formatXszxx(value,row){
+		if(value=="0")
+			return "无";
+		else if(value=="1")
+			return "有";
+		else
+			return "";
+	}
 </script>
 </head>
 
@@ -331,13 +347,15 @@ $(document).ready(function () {
             toolbar:'#menuTollbar'">
     <thead>
         <tr>
-            <th data-options="field:'id',width:120,align:'left',halign:'center',sortable:true">id</th>
-            <th data-options="field:'u_mobile',width:120,align:'left',halign:'center',sortable:true">手机号码</th>
-            <th data-options="field:'u_name',width:120,align:'left',halign:'center',sortable:true">姓名</th>
-            <th data-options="field:'t_name',width:200,align:'left',halign:'center',sortable:true">学校</th>
-            <th data-options="field:'status',width:80,align:'left',halign:'center',sortable:true,formatter:formatStatus">状态</th>
-            <th data-options="field:'u_remark',width:100,align:'left',halign:'center',sortable:true">禁用原因</th>
-            <th data-options="field:'options',width:160,align:'center',halign:'center',sortable:true,formatter:formatOpt">操作</th>
+            <th data-options="field:'id',width:120,align:'left',halign:'center'">id</th>
+            <th data-options="field:'u_mobile',width:120,align:'left',halign:'center'">手机号码</th>
+            <th data-options="field:'u_name',width:120,align:'left',halign:'center'">姓名</th>
+            <th data-options="field:'t_name',width:200,align:'left',halign:'center'">学校</th>
+            <th data-options="field:'has_id_img',width:200,align:'left',halign:'center',formatter:formatSfzxx">身份证认证数据</th>
+            <th data-options="field:'has_student_img',width:200,align:'left',halign:'center',formatter:formatXszxx">学生证认证数据</th>
+            <th data-options="field:'status',width:80,align:'left',halign:'center',formatter:formatStatus">状态</th>
+            <th data-options="field:'u_remark',width:100,align:'left',halign:'center'">禁用原因</th>
+            <th data-options="field:'options',width:160,align:'center',halign:'center',formatter:formatOpt">操作</th>
         </tr>
     </thead>
 </table>

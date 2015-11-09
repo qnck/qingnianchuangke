@@ -94,14 +94,6 @@
         	uid = GetQueryString("uid");
         	token = GetQueryString("token");
             BindData(id);
-            if(uid==null || uid==""){
-            	$("#btnDown").show();
-            	$("#btnBuy").hide();
-            }
-            else{
-            	$("#btnBuy").show();
-            	$("#btnDown").hide();
-            }
         });
         function BindData(id) {
             $.ajax({
@@ -127,6 +119,9 @@
                 }
             });
         }
+        function download () {
+    		window.location.href='http://www.54qnck.com/qnck/download.html';
+        }
     </script>
 </head>
 <body>
@@ -144,6 +139,9 @@
 		<div class="switch"></div>
 		<div class="content">
 		</div>
+	</div>
+	<div style="text-align:center;">以上信息来自青年创<br/>
+		<div style="margin-top:15px;padding-top:10px;padding-bottom:10px;font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px; padding-left:30px;padding-right:30px;" id="btnDown" onclick="download()">下载青年创APP</div>
 	</div>
 </body>
 </html>
