@@ -107,7 +107,7 @@ class MarketController extends \BaseController
         $perPage = Input::get('per_page', 30);
 
         try {
-            if (!$range) {
+            if (!$school) {
                 $range = 2;
             }
             if (!$u_id) {
