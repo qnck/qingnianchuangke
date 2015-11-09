@@ -150,7 +150,7 @@
                         $(".left_time").text(r.data.time_left);
                         $(".sold").text(r.data.sold_quantity);
                         $(".target_quantity").text(r.data.target_quantity);
-                        $(".percentage").text((r.data.sold_quantity / r.data.target_quantity).toFixed(2));
+                        $(".percentage").text(r.data.percentage);
                         $(r.data.content).each(function (){
                         	var temp = '<img class="content_img" src="'+this.img+'"><p class="content_text">'+this.text+'</p>';
                         	$(".content").append(temp);
