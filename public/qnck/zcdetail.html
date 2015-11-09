@@ -122,7 +122,7 @@
         	uid = GetQueryString("uid");
         	token = GetQueryString("token");
             BindData(id);
-            if(uid==null || uid==""){
+            if(uid==null || uid=="null" || uid==""){
             	$("#btnDown").show();
             	$("#btnBuy").hide();
             }
@@ -215,7 +215,7 @@
 		    });
         }
         function download () {
-    		window.location.href='http://www.test.54qnck.com/qnck/download.html';
+    		window.location.href='http://www.54qnck.com/qnck/download.html';
         }
     </script>
 </head>
