@@ -71,6 +71,7 @@ class CrowdFunding extends Eloquent
         $data['time_left'] = $this->calculateTimeLeft();
         $data['target_amount'] = $this->c_target_amount;
         $data['praise_count'] = $this->c_praise_count;
+        $data['mobile'] = $this->u_mobile;
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
         $data['amount'] = $this->c_amount;
@@ -118,6 +119,7 @@ class CrowdFunding extends Eloquent
         $data['target_amount'] = $this->c_target_amount;
         $data['shipping'] = $this->c_shipping;
         $data['shipping_fee'] = $this->c_shipping_fee;
+        $data['mobile'] = $this->u_mobile;
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
