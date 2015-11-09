@@ -21,6 +21,12 @@ class CrowdFundingProduct extends Eloquent
         }
     }
 
+    public function getPercentage()
+    {
+        $re = ($this->p_sold_quantity / $this->p_target_quantity) * 100;
+        return number_format($re, 2);
+    }
+
     public function addProduct()
     {
         $this->baseValidate();
@@ -36,22 +42,29 @@ class CrowdFundingProduct extends Eloquent
         $limit = false;
         $re = false;
         if ($this->p_max_quantity > 0) {
-            $remain = $this->p_max_quantity - $this->p_sold_quantity;
+            $remain = $this->p_max_quantity - $this->p_sold_quantity - $this->p_cart_quantity;
             if ($quantity <= $remain) {
                 $up = true;
                 $limit = true;
             } else {
-                throw new Exception("库存不足", 7006);
+                // retrive stock
+                $remain = $this->retriveStock();
+                if ($quantity > $remain) {
+                    throw new Exception("库存不足", 7006);
+                } else {
+                    $up = true;
+                }
             }
         } else {
             $up = true;
         }
         $query = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id);
         if ($limit) {
-            $query->where('p_max_quantity', '>=', '(p_sold_quantity + '.$quantity.')');
+            $query->where('p_max_quantity', '>=', '(p_sold_quantity + p_cart_quantity + '.$quantity.')');
         }
         if ($up) {
-            $re = $query->increment('p_sold_quantity', $quantity);
+            $re = $query->increment('p_cart_quantity', $quantity);
+            $this->p_cart_quantity += $quantity;
         } else {
             throw new Exception("修改库存失败", 7001);
         }
@@ -62,14 +75,49 @@ class CrowdFundingProduct extends Eloquent
     {
         $down = false;
         $re = false;
-        if ($quantity > $this->p_sold_quantity) {
-            throw new Exception("最多还能退".$this->p_sold_quantity.'份', 7001);
+        if ($quantity > $this->p_cart_quantity) {
+            throw new Exception("最多还能退".$this->p_cart_quantity.'份', 7001);
         } else {
             $down = true;
         }
-        $re = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->where('p_sold_quantity', '<=', $quantity)->decrement('p_sold_quantity', $quantity);
+        $re = DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->where('p_cart_quantity', '<=', $quantity)->decrement('p_cart_quantity', $quantity);
+        $this->p_cart_quantity -= $quantity;
         return $re;
     }
 
+    public function confirmProduct($quantity)
+    {
+        DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->lockForUpdate()->decrement('p_cart_quantity', $quantity);
+        DB::table('crowd_funding_products')->where('p_id', '=', $this->p_id)->lockForUpdate()->increment('p_sold_quantity', $quantity);
+        $this->p_cart_quantity -= $quantity;
+        $this->p_sold_quantity += $quantity;
+    }
+
+    public function retriveStock()
+    {
+        $carts = Cart::with(['order'])->where('p_id', '=', $this->p_id)->where('c_type', '=', 2)
+        ->where(function ($q) {
+            $q->where('c_status', '=', Cart::$STATUS_PENDDING_CONFIRM)->orWhere('c_status', '=', Cart::$STATUS_PENDDING_PAY);
+        })->get();
+        $orders = [];
+        foreach ($carts as $key => $cart) {
+            if (!empty($cart->order) && $cart->order->o_status == 1) {
+                $orders[$cart->order->o_id] = $cart->order;
+                $this->unloadProduct($cart->c_quantity);
+                $cart->c_status = -1;
+                $cart->save();
+            }
+        }
+        if (!empty($orders)) {
+            foreach ($orders as $key => $order) {
+                $order->o_status = -1;
+                $order->o_remark = '超时未支付, 自动回收订单';
+                $order->save();
+            }
+        }
+        $this->save();
+        $remain = $this->p_max_quantity - $this->p_sold_quantity - $this->p_cart_quantity;
+        return $remain;
+    }
     // relation
 }

@@ -28,6 +28,7 @@ class MeCrowdFundingController extends \BaseController
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
+        $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
 
@@ -35,11 +36,10 @@ class MeCrowdFundingController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $user->load('booth', 'profileBase', 'school');
-            if (empty($user->profileBase)) {
-                throw new Exception("请先提交个人资料审核", 3004);
-            }
-            if ($user->profileBase->u_status != 1) {
-                throw new Exception("您的个人资料还未通过审核", 3004);
+            if ($apartment_no) {
+                $tmp_base = TmpUserProfileBase::find($user->u_id);
+                $tmp_base->u_apartment_no = $apartment_no;
+                $tmp_base->save();
             }
             if (empty($user->booth)) {
                 $booth = new Booth();
@@ -77,6 +77,11 @@ class MeCrowdFundingController extends \BaseController
                 $crowd_funding->active_at = Tools::getNow();
             } else {
                 $crowd_funding->c_status = 1;
+            }
+
+            // if the user is an official user, set funding type to offical
+            if ($user->u_type == 2) {
+                $crowd_funding->c_cate = 8;
             }
             $crowd_funding->addCrowdFunding();
 

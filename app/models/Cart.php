@@ -7,6 +7,12 @@ class Cart extends Eloquent
     public $primaryKey = 'c_id';
     public $timestamps = false;
 
+    public static $STATUS_DELETED = -1;
+    public static $STATUS_INVALID = 0;
+    public static $STATUS_PENDDING_CONFIRM = 1;
+    public static $STATUS_PENDDING_PAY = 2;
+    public static $STATUS_PAIED = 3;
+
     private $_quntityOri = 0;
 
     private function baseValidate()
@@ -151,10 +157,30 @@ class Cart extends Eloquent
     {
         $now = new DateTime();
         $this->checkout_at = $now->format('Y-m-d H:i:s');
+        $this->checkoutCrowdFunding();
         $this->c_status = 3;
         if (!$this->save()) {
             throw new Exception("结算购物车失败", 9005);
         }
+        return true;
+    }
+
+    public function checkoutCrowdFunding()
+    {
+        if ($this->c_type != 2) {
+            return true;
+        }
+
+        // push msg to seller
+        $booth = Booth::find($this->b_id);
+        $msg = new PushMessage($booth->u_id);
+        $msg->pushMessage('您的众筹已有人认购');
+
+        $product = CrowdFundingProduct::find($this->p_id);
+        $product->confirmProduct($this->c_quantity);
+        $funding = CrowdFunding::find($product->cf_id);
+        $funding->c_amount += $this->c_amount;
+        $funding->save();
         return true;
     }
 
@@ -192,5 +218,10 @@ class Cart extends Eloquent
     public function booth()
     {
         return $this->hasOne('Booth', 'b_id', 'b_id');
+    }
+
+    public function order()
+    {
+        return $this->belongsTo('Order', 'o_id', 'o_id');
     }
 }

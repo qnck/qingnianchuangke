@@ -73,10 +73,10 @@ class User extends Eloquent
         $re['head_img'] = $this->getHeadImg();
         $school = DicSchool::find($this->u_school_id);
         if (empty($school)) {
-            $re['site'] = null;
+            $re['city'] = null;
             $re['school'] = null;
         } else {
-            $re['site'] = $school->t_city;
+            $re['city'] = $school->t_city;
             $re['school'] = $school->showInList();
         }
         return $re;
@@ -98,7 +98,7 @@ class User extends Eloquent
             throw new Exception("密码错误", 1);
         } else {
             $re = [];
-            $re['token'] = $user->u_token;
+            $re['token'] = $user->u_token = $this->getUniqueToken();
             $now = new Datetime();
             $now->modify('+ 30 days');
             $re['expire'] = $now->format('Y-m-d H:i:s');
@@ -110,10 +110,10 @@ class User extends Eloquent
             $re['biograph'] = $user->u_biograph;
             $school = DicSchool::find($user->u_school_id);
             if (empty($school)) {
-                $re['site'] = null;
+                $re['city'] = null;
                 $re['school'] = null;
             } else {
-                $re['site'] = $school->t_city;
+                $re['city'] = $school->t_city;
                 $re['school'] = $school->showInList();
             }
             $re['gender'] = $user->u_sex;
@@ -126,6 +126,7 @@ class User extends Eloquent
             }
             $re['boohts'] = $booths;
             $re['import_type'] = 'phone';
+            $user->save();
             return $re;
         }
     }

@@ -23,11 +23,13 @@ class CrowdFundingController extends \BaseController
         $city = Input::get('city', 0);
         $school = Input::get('school', 0);
 
+        $key = Input::get('key', '');
+
         try {
             if (!$u_id) {
                 throw new Exception("请传入用户id", 7001);
             }
-            $query = CrowdFunding::with([
+            $query = CrowdFunding::select('crowd_fundings.*')->with([
                 'city',
                 'school',
                 'user',
@@ -40,12 +42,24 @@ class CrowdFundingController extends \BaseController
                 $query = $query->where('c_cate', '=', $cate);
             }
             if ($city && $range == 2) {
-                $query = $query->where('c_id', '=', $city);
+                $query = $query->join('dic_schools', function ($q) {
+                    $q->on('crowd_fundings.s_id', '=', 'dic_schools.t_id');
+                })->join('dic_cities', function ($q) use ($city) {
+                    $q->on('dic_cities.c_id', '=', 'crowd_fundings.c_id')->on('dic_cities.c_province_id', '=', 'dic_schools.t_province')->where('dic_cities.c_id', '=', $city);
+                });
             }
-            if ($school && $range = 3) {
+            if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
-            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
+            if ($key) {
+                $query = $query->where(function ($q) use ($key) {
+                    $q->where('crowd_fundings.c_title', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_brief', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_yield_desc', 'LIKE', '%'.$key.'%')
+                    ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
+                });
+            }
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
@@ -85,7 +99,7 @@ class CrowdFundingController extends \BaseController
             $apartment_no = '';
             if ($crowdfunding->c_open_file) {
                 $mobile = $crowdfunding->user->u_mobile;
-                $base = UserProfileBase::find($crowdfunding->user->u_id);
+                $base = TmpUserProfileBase::find($crowdfunding->user->u_id);
                 if (!empty($base)) {
                     $apartment_no = $base->u_apartment_no;
                 }
@@ -102,10 +116,6 @@ class CrowdFundingController extends \BaseController
             }
             if (count($crowdfunding->favorites) > 0) {
                 $data['is_favorited'] = 1;
-            }
-            $take = 3;
-            if (count($data['replies']) > $take) {
-                $data['replies'] = array_slice($data['replies'], 0, $take);
             }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
@@ -156,7 +166,7 @@ class CrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
-        
+
         $p_id = Input::get('product', 0);
         $quantity = Input::get('quantity', 0);
 
@@ -167,10 +177,33 @@ class CrowdFundingController extends \BaseController
 
         DB::beginTransaction();
         try {
+            $validator = Validator::make(
+                ['收货人电话' => (string)$shipping_phone, '收货人姓名' => $shipping_name, '收获地址' => $shipping_address, '产品' => $p_id, '数量' => $quantity],
+                ['收货人电话' => 'required|numeric|digits:11', '收货人姓名' => 'required', '收获地址' => 'required', '产品' => 'required|numeric', '数量' => 'required|numeric']
+            );
+            if ($validator->fails()) {
+                $msg = $validator->messages();
+                throw new Exception($msg->first(), 7001);
+            }
             $user = User::chkUserByToken($token, $u_id);
             $product = CrowdFundingProduct::find($p_id);
+            if ($product->p_price == 0) {
+                if ($quantity != 1) {
+                    throw new Exception("此类众筹只能认筹一份", 1);
+                }
+                // check if user has bought
+                $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
+                if (!empty($chk)) {
+                    throw new Exception("此类众筹每人限认筹一次", 7001);
+                }
+            }
             $funding = CrowdFunding::find($id);
+            if ($funding->u_id == $u_id) {
+                throw new Exception("您不能认筹自己发起的众筹", 2001);
+            }
 
+            // sku need to be calulated before cart generated
+            $product->loadProduct($quantity);
             // add cart
             $cart = new Cart();
             $cart->p_id = $p_id;
@@ -190,7 +223,6 @@ class CrowdFundingController extends \BaseController
             if (!$re) {
                 throw new Exception("提交库存失败", 7006);
             }
-            $product->loadProduct($quantity);
             if (!$funding->c_shipping) {
                 $shipping_address = '';
             }
@@ -220,23 +252,17 @@ class CrowdFundingController extends \BaseController
             $order->o_group_number = $order_group_no;
             $o_id = $order->addOrder();
 
+            Cart::bindOrder([$order->o_id => [$cart->c_id]]);
+
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
-                $cart->c_status = 3;
-                $cart->checkout_at = Tools::getNow();
-                $cart->save();
+                $cart->checkout();
                 $order->o_status = 2;
                 $order->o_shipping_status = 10;
                 $order->paied_at = Tools::getNow();
                 $order->save();
             }
 
-            Cart::bindOrder([$order->o_id => [$cart->c_id]]);
-
-            // push msg to seller
-            $booth = Booth::find($cart->b_id);
-            $msg = new PushMessage($booth->u_id);
-            $msg->pushMessage('您的众筹已有人认购');
             $data = ['order_no' => $order_group_no];
             $re = Tools::reTrue('提交订单成功', $data);
             DB::commit();

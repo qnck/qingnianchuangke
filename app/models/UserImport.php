@@ -24,8 +24,8 @@ class UserImport extends Eloquent
     {
         $user = new User();
         $user->u_nickname = $nickname;
+        $user->u_name = $nickname;
         $user->u_sex = $gender;
-        $user->u_name = '';
         $user->u_token = $user->getUniqueToken();
         $user->created_at = Tools::getNow();
         $user->updated_at = Tools::getNow();
@@ -53,10 +53,10 @@ class UserImport extends Eloquent
         $re['biograph'] = $user->u_biograph;
         $school = DicSchool::find($user->u_school_id);
         if (empty($school)) {
-            $re['site'] = null;
+            $re['city'] = null;
             $re['school'] = null;
         } else {
-            $re['site'] = $school->t_city;
+            $re['city'] = $school->t_city;
             $re['school'] = $school->showInList();
         }
         $re['gender'] = $user->u_sex;

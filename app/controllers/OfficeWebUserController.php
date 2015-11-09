@@ -9,7 +9,7 @@ class OfficeWebUserController extends \BaseController
         $per_page = Input::get('per_page', 10000000);
 
         try {
-            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_status', 'users.u_remark', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bankcards.b_status AS bank_status')
+            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_status', 'users.u_remark', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs AS id_imgs', 'tmp_user_profile_bases.u_student_imgs AS stu_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status')
             ->leftJoin('tmp_user_profile_bases', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bases.u_id');
             })->leftJoin('tmp_user_profile_bankcards', function ($q) {
@@ -22,6 +22,18 @@ class OfficeWebUserController extends \BaseController
             $array = $list->toArray();
             $data['rows'] = [];
             foreach ($array['data'] as $key => $userProfile) {
+                if ($userProfile->id_imgs) {
+                    $userProfile->has_id_img = 1;
+                } else {
+                    $userProfile->has_id_img = 0;
+                }
+                if ($userProfile->stu_imgs) {
+                    $userProfile->has_student_img = 1;
+                } else {
+                    $userProfile->has_student_img = 0;
+                }
+                unset($userProfile->id_imgs);
+                unset($userProfile->stu_imgs);
                 $data['rows'][] = $userProfile;
             }
             $data['total'] = $list->getTotal();

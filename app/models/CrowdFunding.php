@@ -32,13 +32,14 @@ class CrowdFunding extends Eloquent
     public static function getCrowdFundingCate()
     {
         return [
+            8 => '官方发布',
             1 => '娱乐活动',
             2 => '个人生活',
             3 => '创业募集',
             4 => '艺术创作',
             5 => '创意发明',
             6 => '调查学习',
-            7 => '公益事业'
+            7 => '公益事业',
         ];
     }
 
@@ -72,10 +73,11 @@ class CrowdFunding extends Eloquent
         $data['praise_count'] = $this->c_praise_count;
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
+        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
-            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
+            $data['percentage'] = $this->product->getPercentage();
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
@@ -91,7 +93,10 @@ class CrowdFunding extends Eloquent
             $data['school'] = $this->school->showInList();
         }
         if ($this->city) {
-            $data['city'] = $this->city->showInList();
+            if (empty($this->school)) {
+                $this->load('school');
+            }
+            $data['city'] = $this->city()->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }
@@ -117,10 +122,11 @@ class CrowdFunding extends Eloquent
         $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
         $data['open_file'] = $this->c_open_file;
+        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
-            $data['amount'] = $this->product->p_sold_quantity * $this->product->p_price;
+            $data['percentage'] = $this->product->getPercentage();
             $data['sold_quantity'] = $this->product->p_sold_quantity;
             $data['target_quantity'] = $this->product->p_target_quantity;
             if ($this->product->p_max_quantity == $this->product->p_target_quantity) {
@@ -136,7 +142,10 @@ class CrowdFunding extends Eloquent
             $data['school'] = $this->school->showInList();
         }
         if ($this->city) {
-            $data['city'] = $this->city->showInList();
+            if (empty($this->school)) {
+                $this-load('school');
+            }
+            $data['city'] = $this->city()->where('t_province_id', '=', $this->school->t_province);
         }
         if ($this->replies) {
             $tmp = [];
@@ -221,7 +230,7 @@ class CrowdFunding extends Eloquent
         $content = json_decode($this->c_content, JSON_OBJECT_AS_ARRAY);
         $pic_text = [];
         if (empty($this->_imgs)) {
-            $this->loadImgs();
+            $this->loadImg();
         }
         $imgs = Img::filterKey('crowd_img_', $this->_imgs, true);
         foreach ($imgs as $key => $img) {
@@ -234,10 +243,10 @@ class CrowdFunding extends Eloquent
 
     public function censor()
     {
-        $old_status = '审核之前的状态为: '.CrowdFunding::getStutus($this->getOriginal('b_status')).', 审核之后的状态为: '.CrowdFunding::getStutus($this->b_status).'.';
-        if ($this->b_status == 2) {
+        $old_status = '审核之前的状态为: '.CrowdFunding::getStutus($this->getOriginal('c_status')).', 审核之后的状态为: '.CrowdFunding::getStutus($this->c_status).'.';
+        if ($this->c_status == 2) {
             $content = '众筹审核未通过, '.$old_status.' 备注: '.$this->remark;
-        } elseif ($this->b_status == 1) {
+        } elseif ($this->c_status == 1) {
             $content = '众筹审核通过, '.$old_status;
         } else {
             $content = '审核众筹记录, '.$old_status;
@@ -251,7 +260,7 @@ class CrowdFunding extends Eloquent
     // relations
     public function city()
     {
-        return $this->hasOne('DicCity', 'c_id', 'c_id');
+        return $this->hasMany('DicCity', 'c_id', 'c_id');
     }
 
     public function school()

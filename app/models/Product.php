@@ -118,6 +118,7 @@ class Product extends Eloquent
         $data['remark'] = $this->p_remark;
         $data['praise_count'] = $this->p_praise_count;
         $data['cate'] = $this->p_cate;
+        $data['open_file'] = $this->open_file;
         $data['cate_label'] = $this->getCateLabel();
 
         $quantity = null;
