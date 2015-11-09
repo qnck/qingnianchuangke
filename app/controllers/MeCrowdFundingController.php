@@ -66,6 +66,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
+            $crowd_funding->u_mobile = $mobile;
             $crowd_funding->c_time = $time;
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
@@ -107,10 +108,6 @@ class MeCrowdFundingController extends \BaseController
                 $funding_product->p_max_quantity = 0;
             }
 
-            if ($mobile && !$user->u_mobile) {
-                $user->u_mobile = $mobile;
-                $user->save();
-            }
             $funding_product->addProduct();
             $re = Tools::reTrue('添加众筹成功');
             DB::commit();

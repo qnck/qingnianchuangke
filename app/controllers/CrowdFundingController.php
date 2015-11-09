@@ -98,14 +98,12 @@ class CrowdFundingController extends \BaseController
             $mobile = '';
             $apartment_no = '';
             if ($crowdfunding->c_open_file) {
-                $mobile = $crowdfunding->user->u_mobile;
                 $base = TmpUserProfileBase::find($crowdfunding->user->u_id);
                 if (!empty($base)) {
                     $apartment_no = $base->u_apartment_no;
                 }
             }
 
-            $data['mobile'] = $mobile;
             $data['apartment_no'] = $apartment_no;
 
             $data['participates_count'] = $crowdfunding->getParticipates(0, true);
