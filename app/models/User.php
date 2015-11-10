@@ -57,10 +57,10 @@ class User extends Eloquent
         }
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
-        $this->u_nickname = $this->u_name = '创客';
         $this->u_change = 1;
         $this->save();
         $re = [];
+        $this->u_nickname = $this->u_name = $this->u_id;
         $re['token'] = $this->u_token;
         $now = new Datetime();
         $now->modify('+ 30 days');
@@ -79,6 +79,7 @@ class User extends Eloquent
             $re['city'] = $school->t_city;
             $re['school'] = $school->showInList();
         }
+        $this->save();
         return $re;
     }
 

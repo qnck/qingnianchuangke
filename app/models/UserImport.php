@@ -31,6 +31,11 @@ class UserImport extends Eloquent
         $user->updated_at = Tools::getNow();
         $user->u_status = 1;
         $user->save();
+        if (!$nickname) {
+            $user->u_nickname = $this->u_id;
+            $user->u_name = $this-u_id;
+            $user->save();
+        }
         $data = ['u_id' => $user->u_id, 'ext_id' => $ext_id, 'ext_token' => $ext_token];
         return $data;
     }
