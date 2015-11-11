@@ -361,6 +361,7 @@ class CrowdFundingController extends \BaseController
             $data = [];
             foreach ($participates as $key => $user) {
                 $tmp = $user->showInList();
+                $tmp['o_id'] = $user->o_id;
                 $tmp['shipping_address'] = $user->o_shipping_address;
                 $tmp['comment'] = $user->o_comment;
                 $tmp['shipping_phone'] = $user->o_shipping_phone;
