@@ -27,6 +27,7 @@ class EmergencyController extends \BaseController
                 if (empty($order)) {
                     continue;
                 }
+                $phones = $order->o_shipping_phone;
                 $pushObj = new PushMessage($order->u_id);
                 $pushObj->pushMessage($str_push);
                 echo 'pushed to '.$order->u_id.' </br>';
@@ -34,6 +35,9 @@ class EmergencyController extends \BaseController
                 $phoneObj->sendText($str_text);
                 echo 'texted to '.$order->o_shipping_phone.' </br>';
             }
+
+            File::put('/var/www/qingnianchuangke/phones', implode(',', $phones));
+
             $re = Tools::reTrue('发送中奖信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '发送中奖信息失败:'.$e->getMessage());
