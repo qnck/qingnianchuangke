@@ -26,7 +26,7 @@ class DicController extends \BaseController
             if ($city) {
                 $query = $query->where('t_city', '=', $city);
             }
-            $list = $query->get();
+            $list = $query->orderBy('t_name')->get();
             $data = [];
             foreach ($list as $key => $school) {
                 $data[] = $school->showInList();
