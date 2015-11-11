@@ -349,6 +349,7 @@ class CrowdFundingController extends \BaseController
     public function listParticipates($id)
     {
         $per_page = Input::get('per_page');
+        $per_page = 100000;
 
         try {
             $funding = CrowdFunding::find($id);
