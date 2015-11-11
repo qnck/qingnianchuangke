@@ -359,3 +359,8 @@ Route::get('wechat/verify/code', 'VerificationController@getVCode');
 Route::post('wechat/user/me/resetpass', 'MeController@resetPassForWechat');
 Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
 /* WECHAT END*/
+
+/* SO CALLED EMERGENCY START*/
+Route::get('so/called/emergency/fuck', 'EmergencyController@getFuck');
+Route::get('so/called/emergency/you', 'EmergencyController@sendYou');
+/* SO CALLED EMERGENCY END*

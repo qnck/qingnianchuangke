@@ -196,6 +196,7 @@ class CrowdFundingController extends \BaseController
                 }
             }
             $funding = CrowdFunding::find($id);
+
             if ($funding->u_id == $u_id) {
                 throw new Exception("您不能认筹自己发起的众筹", 2001);
             }
