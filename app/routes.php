@@ -361,7 +361,7 @@ Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/
-// Route::post('so/called/emergency/orders', 'EmergencyController@sendOrders');
+Route::get('so/called/emergency/orders', 'EmergencyController@sendOrders');
 Route::get('so/called/emergency/test', 'EmergencyController@test');
 Route::get('v0/crowd/{id}/participates', 'CrowdFundingController@listParticipates');
 /* SO CALLED EMERGENCY END*

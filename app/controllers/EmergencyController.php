@@ -7,44 +7,32 @@ class EmergencyController extends \BaseController
     public function sendOrders()
     {
         set_time_limit(60000);
-
-        $cf_id = Input::get('cf_id');
-
-        $orders = Input::get('orders', '');
-
-        $time_from = Input::get('time_from', '');
-        $time_to = Input::get('time_to', '');
-        $address = Input::get('address', '');
-        $action = Input::get('action', '');
-
         try {
-            $funding = CrowdFunding::find($cf_id);
-            if (empty($funding)) {
-                throw new Exception("没有找到请求的众筹", 2001);
+            $user = User::find(5);
+            if ($user->u_priase_count == 0) {
+                throw new Exception("已经执行过了", 30001);
+            } else {
+                $user->u_priase_count = 0;
+                $user->save();
             }
+            $str_text = '恭喜“双11不怕剁手”众筹活动已成功，您被众筹发起者选中，请于12日18时前凭此信息到零栋铺子领取众筹回报。4006680550';
+            $str_push = '恭喜“双11不怕剁手”众筹活动已成功，您被众筹发起者选中，请于12日18时前凭此信息到零栋铺子领取众筹回报。4006680550';
 
-            $title = $funding->c_title;
-
-            $str_text = '尊敬的用户，您好，您在【青年创】参加的众筹【'.$title.'】已众筹成功，恭喜您被众筹发起者选中，请于'.$time_from.'至'.$time_to.'内，前往['.$address.']处'.$action.'。';
-            $str_push = '尊敬的用户，您好，您参加的众筹【'.$title.'】已众筹成功，恭喜您被众筹发起者选中，请于'.$time_from.'至'.$time_to.'内，前往['.$address.']处'.$action.'。';
-
-
-            $o_ids = explode(',', $orders);
-            foreach ($o_ids as $key => $o_id) {
-                if (!is_numeric($o_id)) {
-                    unset($o_ids[$key]);
-                }
-            }
-            $o_ids = [];
-            foreach ($o_ids as $key => $o_id) {
-                $order = Order::find($o_id);
+            $orders = Order::selectRaw('right(`t_orders`.`o_number`, 4) AS seed, `t_orders`.*')
+            ->join('carts', function ($q) {
+                $q->on('orders.o_id', '=', 'carts.o_id');
+            })->where('carts.c_type', '=', 2)->where('carts.p_id', '=', 4)->orderBy('seed', 'DESC')->limit(111)->get();
+            
+            foreach ($orders as $key => $order) {
                 if (empty($order)) {
                     continue;
                 }
                 $pushObj = new PushMessage($order->u_id);
                 $pushObj->pushMessage($str_push);
+                echo 'pushed to '.$order->u_id.' </br>';
                 $phoneObj = new Phone($order->o_shipping_phone);
                 $phoneObj->sendText($str_text);
+                echo 'texted to '.$order->o_shipping_phone.' </br>';
             }
             $re = Tools::reTrue('发送中奖信息成功');
         } catch (Exception $e) {
@@ -56,7 +44,7 @@ class EmergencyController extends \BaseController
 
     public function test()
     {
-        $str = '尊敬的用户，您好，您在【青年创】参加的众筹【悠悠川大情，心系老年人】已众筹成功，恭喜您被众筹发起者选中，请于2015-11-11 14:30:00至2015-11-13 14:30:00内，前往[成都市桐梓林北路中华园中苑3栋2单元A座]处领取回报。';
+        $str = '恭喜“双11不怕剁手”众筹活动已成功，您被众筹发起者选中，请于12日18时前凭此信息到零栋铺子领取众筹回报。4006680550';
         $phone = new Phone('18508237273');
         $re = $phone->sendText($str);
         var_dump($re);

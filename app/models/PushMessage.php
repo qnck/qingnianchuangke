@@ -31,7 +31,7 @@ class PushMessage extends Eloquent
         if (!empty($re->objectId)) {
             return true;
         } else {
-            throw new Exception("推送消息失败", 2002);
+            return false;
         }
     }
 
