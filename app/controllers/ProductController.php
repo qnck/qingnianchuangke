@@ -92,13 +92,13 @@ class ProductController extends \BaseController
                 'quantity',
                 'promo',
                 'replies' => function ($q) {
-                    $q->take(3)->orderBy('created_at', 'DESC');
+                    $q->with(['user'])->take(3)->orderBy('created_at', 'DESC');
                 },
                 'favorites' => function ($q) {
                     $q->where('favorites.u_id', '=', $this->u_id);
                 },
                 'praises' => function ($q) {
-                    $q->with(['user'])->where('praises.u_id', '=', $this->u_id);
+                    $q->where('praises.u_id', '=', $this->u_id);
                 }
                 ])->find($id);
             if (empty($product->p_id)) {
