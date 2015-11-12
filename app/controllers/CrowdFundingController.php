@@ -85,7 +85,7 @@ class CrowdFundingController extends \BaseController
             $crowdfunding->load([
                 'user',
                 'replies' => function ($q) {
-                    $q->take(3)->orderBy('created_at', 'DESC');
+                    $q->with(['user'])->take(3)->orderBy('created_at', 'DESC');
                 },
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
