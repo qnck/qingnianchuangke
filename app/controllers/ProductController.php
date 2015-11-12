@@ -98,7 +98,7 @@ class ProductController extends \BaseController
                     $q->where('favorites.u_id', '=', $this->u_id);
                 },
                 'praises' => function ($q) {
-                    $q->where('praises.u_id', '=', $this->u_id);
+                    $q->with(['user'])->where('praises.u_id', '=', $this->u_id);
                 }
                 ])->find($id);
             if (empty($product->p_id)) {
