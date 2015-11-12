@@ -175,6 +175,15 @@ class CrowdFundingController extends \BaseController
 
         DB::beginTransaction();
         try {
+            $funding = CrowdFunding::find($id);
+            $date_end = new DateTime($funding->active_at);
+            $date_end->modify('+ '.$funding->c_time.' days');
+
+            $now = new DateTime();
+            if ($now > $date_end) {
+                throw new Exception("抱歉, 众筹已经结束", 2001);
+            }
+
             $validator = Validator::make(
                 ['收货人电话' => (string)$shipping_phone, '收货人姓名' => $shipping_name, '收获地址' => $shipping_address, '产品' => $p_id, '数量' => $quantity],
                 ['收货人电话' => 'required|numeric|digits:11', '收货人姓名' => 'required', '收获地址' => 'required', '产品' => 'required|numeric', '数量' => 'required|numeric']
@@ -195,7 +204,6 @@ class CrowdFundingController extends \BaseController
                     throw new Exception("此类众筹每人限认筹一次", 7001);
                 }
             }
-            $funding = CrowdFunding::find($id);
 
             if ($funding->u_id == $u_id) {
                 throw new Exception("您不能认筹自己发起的众筹", 2001);
