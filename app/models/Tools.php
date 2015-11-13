@@ -91,4 +91,16 @@ class Tools
             return $now;
         }
     }
+
+    public static function checkNoImg($img)
+    {
+        $no_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/noimg.jpg';
+        if (is_array($img) && empty($img)) {
+            return [$no_img];
+        }
+        if (!$img) {
+            return $no_img;
+        }
+        return $img;
+    }
 }
