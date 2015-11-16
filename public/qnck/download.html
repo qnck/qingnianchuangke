@@ -36,19 +36,24 @@
             if (browser.versions.android) {//安卓手机
                 if (ua.indexOf('micromessenger') > -1) {
                     $("#wxts").text("温馨提示：请点击微信右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装");
+                    return;
                 }
                 if (ua.match(/WeiBo/i) == "weibo") {
                     $("#wxts").text("温馨提示：请点击微博右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装");
+                    return;
                 }
                 if (ua.match(/QQ/i) == "qq") {
                     $("#wxts").text("温馨提示：请点击QQ右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装");
+                    return;
                 }
             } else {
                 $("#wxts").text("温馨提示：客户端暂只支持Android手机，ios稍后开放，敬请期待");
+                return;
             }
         }
         else{
             $("#wxts").text("温馨提示：请在手机上使用浏览器打开本页面，或者扫描下面的二维码，即可安装");
+            return;
         }
     });
     var browser = {
