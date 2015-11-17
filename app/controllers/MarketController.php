@@ -161,7 +161,7 @@ class MarketController extends \BaseController
                     ->orWhere('products.p_desc', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
+            $list = $query->orderBy('products.created_at', 'DESC')->remember(5)->paginate($perPage);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
@@ -169,8 +169,13 @@ class MarketController extends \BaseController
                     $tmp['school'] = [];
                 } else {
                     $tmp['school'] = $tmp['booth']['school'];
-                    unset($tmp['booth']);
                 }
+                if (empty($tmp['booth']['city'])) {
+                    $tmp['city'] = [];
+                } else {
+                    $tmp['city'] = $tmp['booth']['city'];
+                }
+                unset($tmp['booth']);
                 if (count($product->praises) > 0) {
                     $tmp['is_praised'] = 1;
                 } else {

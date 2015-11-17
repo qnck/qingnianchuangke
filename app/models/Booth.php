@@ -65,9 +65,7 @@ class Booth extends Eloquent
         }
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
-        }
-        if (!empty($this->city)) {
-            $data['city']  = $this->city->showInList();
+            $data['city'] = DicCity::where('c_id', '=', $this->school->t_city)->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }
@@ -105,9 +103,7 @@ class Booth extends Eloquent
         $data['user'] = $user;
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
-        }
-        if (!empty($this->city)) {
-            $data['city']  = $this->city->showInList();
+            $data['city'] = DicCity::where('c_id', '=', $this->school->t_city)->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }

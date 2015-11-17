@@ -59,7 +59,7 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->paginate($per_page);
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->remember(5)->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
@@ -358,8 +358,6 @@ class CrowdFundingController extends \BaseController
     public function listParticipates($id)
     {
         $per_page = Input::get('per_page');
-        $per_page = 100000;
-
         try {
             $funding = CrowdFunding::find($id);
             if (empty($funding) || $funding->c_status < 3) {
