@@ -1792,7 +1792,14 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = Booth::select('booths.*', 'favorites.created_at')->with(['user', 'school', 'city'])
+            $list = Booth::select('booths.*', 'favorites.created_at')->with([
+                'user',
+                'school',
+                'city',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])
             ->join('favoriables', function ($q) {
                 $q->on('booths.b_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Booth');
             })->join('favorites', function ($q) {
@@ -1800,7 +1807,12 @@ class MeController extends \BaseController
             })->orderBy('favorites.created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $booth) {
-                $data[] = $booth->showInList();
+                $tmp = $booth->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($booth->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取店铺成功', $data);
         } catch (Exception $e) {
@@ -1816,7 +1828,12 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = User::select('users.*', 'favorites.created_at')->with(['school'])
+            $list = User::select('users.*', 'favorites.created_at')->with([
+                'school',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])
             ->join('favoriables', function ($q) {
                 $q->on('users.u_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'User');
             })->join('favorites', function ($q) {
@@ -1824,7 +1841,12 @@ class MeController extends \BaseController
             })->orderBy('favorites.created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $user) {
-                $data[] = $user->showInList();
+                $tmp = $user->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($user->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取用户列表成功', $data);
         } catch (Exception $e) {
@@ -1841,9 +1863,14 @@ class MeController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $list = Product::select('products.*', 'favorites.created_at')
-            ->with(['user' => function ($q) {
-                $q->with(['school']);
-            }])
+            ->with([
+                'user' => function ($q) {
+                    $q->with(['school']);
+                },
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+            ])
             ->join('favoriables', function ($q) {
                 $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Product');
             })->join('favorites', function ($q) {
@@ -1851,7 +1878,12 @@ class MeController extends \BaseController
             })->orderBy('favorites.created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $product) {
-                $data[] = $product->showInList();
+                $tmp = $product->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($product->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取收藏列表成功', $data);
         } catch (Exception $e) {
@@ -1867,7 +1899,14 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = CrowdFunding::select('crowd_fundings.*', 'favorites.created_at')->with(['user', 'city', 'school'])
+            $list = CrowdFunding::select('crowd_fundings.*', 'favorites.created_at')->with([
+                'user',
+                'city',
+                'school',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])
             ->join('favoriables', function ($q) {
                 $q->on('crowd_fundings.cf_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'CrowdFunding');
             })->join('favorites', function ($q) {
@@ -1875,7 +1914,12 @@ class MeController extends \BaseController
             })->orderBy('favorites.created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $funding) {
-                $data[] = $funding->showInList();
+                $tmp = $funding->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($funding->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取用户列表成功', $data);
         } catch (Exception $e) {

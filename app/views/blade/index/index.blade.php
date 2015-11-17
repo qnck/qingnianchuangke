@@ -82,19 +82,18 @@
                         <li id="unionLink">
                              <div>创客联盟</div>
                         </li>
+                        <!--<li id="backLogin">-->
+                            <!--<div> <a class="back_Login" href="">WEB用户登录</a></div>-->
+                        <!--</li>-->
                     </ul>
                 </div>
             </div>
-            <div class="js-flickity" data-js-module="hero-gallery">
-                <div >
-                    <img id="one" src="./images/bg01.jpg"/>
-                </div>
-                <div>
-                    <img id="two" src="./images/bg02.jpg"/>
-                </div>
-                <div>
-                    <img id="three" src="./images/bg03.jpg"/>
-                </div>
+            <div class="flexslider js-flickity">
+                <ul class="slides">
+                    <li ><img id="one" src="./images/bg01.jpg"/></li>
+                    <li ><img id="two" src="./images/bg02.jpg"/></li>
+                    <li ><img id="three" src="./images/bg03.jpg"/></li>
+                </ul>
             </div>
             <div class="second-content">
                 <div>
@@ -207,11 +206,11 @@
                 </div>
             </div>
             <div class="develop">
-                <!--<div style="width:100%;position: absolute;z-index: 101;text-align: center;margin:70px 0 0 0">
+                <div style="width:100%;position: absolute;z-index: 101;text-align: center;margin:70px 0 0 0">
                     <img src="./images/develop.png"/>
                     <div style="color:white;font-size: 37px;text-align:center;margin:10px 0 15px 0;padding: 0;line-height:30px">立足川内 辐射全国</div>
                     <div style="color:white;font-size: 16px;text-align:center;">青年创客 全心支持每一位校园创客</div>
-                </div>-->
+                </div>
                 <img src="./images/map.png" style="width:1000px;margin:5px 0 0 -500px;position: absolute;z-index: 100;left:50%"/>
 <!--                <img src="./images/register.png" style="position: absolute;z-index: 101;left: 50%;margin-left:-118px;bottom:-26px;cursor: pointer"/>-->
             </div>
@@ -259,8 +258,13 @@
 </body>
     <script src="./js/word.js"></script>
     <script src="./js/chuangke.js"></script>
-    <script src="js/wheel.js"></script>
+    <!--<script src="js/wheel.js"></script>-->
+    <script src="js/jquery.flexslider-min.js"></script>
     <script>
+        $('.flexslider').flexslider({
+            directionNav: true,
+            pauseOnAction: false
+        });
         var broWidth;
         broWidth = document.body.clientWidth;
         var imgHeight = 1135 * broWidth / 2396;

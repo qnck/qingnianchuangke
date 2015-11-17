@@ -46,6 +46,15 @@ class EmergencyController extends \BaseController
         return Response::json($re);
     }
 
+    public function countUsers()
+    {
+        $count = DB::table('users')->count();
+        $data = ['count' => $count];
+
+        $re = Tools::reTrue('统计成功', $data);
+        return Response::json($re);
+    }
+
     public function test()
     {
         $str = '恭喜“双11不怕剁手”众筹活动已成功，您被众筹发起者选中，请于12日18时前凭此信息到零栋铺子领取众筹回报。4006680550';

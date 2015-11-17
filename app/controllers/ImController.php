@@ -30,7 +30,7 @@ class ImController extends BaseController
 
         try {
             $user = User::chkUserByToken($token);
-            $friends = User::whereIn('u_id', $ids)->get();
+            $friends = User::whereIn('u_id', $ids)->get();  // return all users without any restriction case IM will use all users
             $data = [];
             foreach ($friends as $key => $friend) {
                 $data[] = $friend->showInImList();

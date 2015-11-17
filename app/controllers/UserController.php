@@ -210,7 +210,6 @@ class UserController extends \BaseController
                     $is_friend = UsersFriend::$RELATION_CONFIRMED;
                 }
             }
-
             $data['is_friend'] = $is_friend;
             $data['is_praised'] = 0;
             $data['is_favorited'] = 0;

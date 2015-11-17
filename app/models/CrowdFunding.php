@@ -12,11 +12,11 @@ class CrowdFunding extends Eloquent
     public static function getStutus($key = null, $all = false)
     {
         $status = [
-            '1' => '审核中',
-            '2' => '审核未通过',
-            '3' => '众筹失败',
-            '4' => '众筹中',
-            '5' => '众筹成功'
+            1 => '审核中',
+            2 => '审核未通过',
+            3 => '众筹失败',
+            4 => '众筹中',
+            5 => '众筹成功'
         ];
         if ($key !== null && array_key_exists($key, $status)) {
             return $status[$key];

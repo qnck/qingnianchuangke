@@ -76,7 +76,7 @@ class User extends Eloquent
             $re['city'] = null;
             $re['school'] = null;
         } else {
-            $re['city'] = $school->t_city;
+            $re['city'] = DicCity::where('c_id', '=', $school->t_city)->where('c_province_id', '=', $school->t_province)->first()->showInList();
             $re['school'] = $school->showInList();
         }
         $this->save();
@@ -114,7 +114,7 @@ class User extends Eloquent
                 $re['city'] = null;
                 $re['school'] = null;
             } else {
-                $re['city'] = $school->t_city;
+                $re['city'] = DicCity::where('c_id', '=', $school->t_city)->where('c_province_id', '=', $school->t_province)->first()->showInList();
                 $re['school'] = $school->showInList();
             }
             $re['gender'] = $user->u_sex;
@@ -275,6 +275,7 @@ class User extends Eloquent
         $data['lng'] = $this->longitude;
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
+            $data['city'] = DicCity::where('c_id', '=', $this->school->t_city)->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }

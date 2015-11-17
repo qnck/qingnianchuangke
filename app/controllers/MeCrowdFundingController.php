@@ -125,11 +125,24 @@ class MeCrowdFundingController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $query = CrowdFunding::with(['city', 'school', 'user', 'product'])->where('u_id', '=', $u_id);
+            $query = CrowdFunding::with([
+                'city',
+                'school',
+                'user',
+                'product',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])->where('u_id', '=', $u_id);
             $list = $query->orderBy('created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $funding) {
-                $data[] = $funding->showInList();
+                $tmp = $funding->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($funding->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
@@ -145,7 +158,15 @@ class MeCrowdFundingController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $query = CrowdFunding::select('crowd_fundings.*')->with(['city', 'school', 'user', 'product'])
+            $query = CrowdFunding::select('crowd_fundings.*')->with([
+                'city',
+                'school',
+                'user',
+                'product',
+                'praises' => function ($q) {
+                    $q->where('praises.u_id', '=', $this->u_id);
+                }
+                ])
             ->join('crowd_funding_products', function ($q) {
                 $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
             })
@@ -155,7 +176,12 @@ class MeCrowdFundingController extends \BaseController
             $list = $query->orderBy('created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $funding) {
-                $data[] = $funding->showInList();
+                $tmp = $funding->showInList();
+                $tmp['is_praised'] = 0;
+                if (count($funding->praises) > 0) {
+                    $tmp['is_praised'] = 1;
+                }
+                $data[] = $tmp;
             }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
