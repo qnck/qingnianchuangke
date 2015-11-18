@@ -72,7 +72,4 @@ class Organization extends \Eloquent
         $log->admin_id = Tools::getAdminId();
         $log->addLog();
     }
-
-    
-
 }

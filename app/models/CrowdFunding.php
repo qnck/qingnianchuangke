@@ -40,6 +40,7 @@ class CrowdFunding extends Eloquent
             5 => '创意发明',
             6 => '调查学习',
             7 => '公益事业',
+            9 => '下课约',
         ];
     }
 

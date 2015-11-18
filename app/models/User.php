@@ -68,6 +68,7 @@ class User extends Eloquent
         $re['mobile'] = $this->u_mobile;
         $re['id'] = $this->u_id;
         $re['biograph'] = $this->u_biograph;
+        $re['is_verified'] = $this->u_is_verified;
         $re['name'] = $this->u_name;
         $re['nickname'] = $this->u_nickname;
         $re['head_img'] = $this->getHeadImg();
@@ -107,6 +108,7 @@ class User extends Eloquent
             $re['name'] = $user->u_name;
             $re['mobile'] = $user->u_mobile;
             $re['nickname'] = $user->u_nickname;
+            $re['is_verified'] = $user->u_is_verified;
             $re['head_img'] = $user->getHeadImg();
             $re['biograph'] = $user->u_biograph;
             $school = DicSchool::find($user->u_school_id);
@@ -192,6 +194,7 @@ class User extends Eloquent
         $data = [];
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
+        $data['is_verified'] = $this->u_is_verified;
         $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
@@ -210,6 +213,7 @@ class User extends Eloquent
     public function showInImList()
     {
         $data['id'] = $this->u_id;
+        $data['is_verified'] = $this->u_is_verified;
         $data['head_img'] = $this->getHeadImg();
         $data['nickname'] = $this->u_nickname;
         return $data;
@@ -222,6 +226,7 @@ class User extends Eloquent
         $data['name'] = $this->u_name;
         $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->getHeadImg();
+        $data['is_verified'] = $this->u_is_verified;
         $data['gender'] = $this->u_sex;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
@@ -270,6 +275,7 @@ class User extends Eloquent
         $data['status'] = $this->u_status;
         $data['remark'] = $this->u_remark;
         $data['home_imgs'] = Img::toArray($this->u_home_img, true);
+        $data['is_verified'] = $this->u_is_verified;
         $data['biograph'] = $this->u_biograph;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
