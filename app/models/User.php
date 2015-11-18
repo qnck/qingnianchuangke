@@ -277,6 +277,7 @@ class User extends Eloquent
         $data['home_imgs'] = Img::toArray($this->u_home_img, true);
         $data['is_verified'] = $this->u_is_verified;
         $data['biograph'] = $this->u_biograph;
+        $data['age'] = $this->u_age;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
         if (!empty($this->school)) {

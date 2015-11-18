@@ -104,6 +104,7 @@ class MeProfileController extends \BaseController
         $em_name = Input::get('emergency_name', '');
         $em_phoen = Input::get('emergency_phone', '');
         $father_name = Input::get('father_name', '');
+        $age = Input::get('age', '');
         $father_phone = Input::get('father_phone', '');
         $mother_name = Input::get('mother_name', '');
         $mother_phone = Input::get('mother_phone', '');
@@ -130,6 +131,7 @@ class MeProfileController extends \BaseController
             }
 
             $user->u_name = $name;
+            $user->u_age = $age;
             $profile->u_id_number = $id_num;
             $profile->u_entry_year = $entry_year;
             $profile->u_major = $major;
@@ -174,6 +176,7 @@ class MeProfileController extends \BaseController
         $major = Input::get('major', '');
         $stu_num = Input::get('stu_num', '');
         $mobile = Input::get('mobile', '');
+        $age = Input::get('age', '');
 
         $img_token = Input::get('img_token', '');
 
@@ -195,6 +198,7 @@ class MeProfileController extends \BaseController
             $user->u_nickname = $nickname;
             $user->u_sex = $gender;
             $user->u_biograph = $bio;
+            $user->u_age = $age;
 
             if ($id_school) {
                 $profile->s_id = $id_school;

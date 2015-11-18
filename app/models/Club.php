@@ -2,9 +2,9 @@
 /**
 *
 */
-class Organization extends \Eloquent
+class Club extends \Eloquent
 {
-    public $primaryKey = 'o_id';
+    public $primaryKey = 'c_id';
     public $timestamps = false;
 
     public static function getStutus($key = null, $all = false)
@@ -28,7 +28,7 @@ class Organization extends \Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['组织名称' => $this->o_title, '用户' => $this->u_id],
+            ['组织名称' => $this->c_title, '用户' => $this->u_id],
             ['组织名称' => 'required', '用户' => 'required']
         );
         if ($validator->fails()) {
@@ -39,10 +39,10 @@ class Organization extends \Eloquent
         }
     }
 
-    public function addOrganiztion()
+    public function addClub()
     {
         $this->created_at = Tools::getNow();
-        $this->o_status = 1;
+        $this->c_status = 1;
         $this->save();
     }
 
