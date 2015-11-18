@@ -79,6 +79,20 @@ class MeProfileController extends \BaseController
                 $data['card_number'] = $card->b_card_number;
             }
 
+            $club = Club::where('u_id', '=', $u_id)->first();
+            if (empty($club)) {
+                $data['club_title'] = '';
+                $data['club_brief'] = '';
+                $data['club_proof_img'] = null;
+            } else {
+                $data['club_title'] = $club->c_title;
+                $data['club_brief'] = $club->c_brief;
+                $imgs = Img::toArray($$club->c_imgs);
+                $data['club_proof_img'] = Img::filterKey('proof_img', $imgs);
+                $data['club_proof_img'] = array_pop($data['club_proof_img']);
+            }
+            $data['is_club_verified'] = $user->u_is_club_verified;
+
             $data['father_name'] = $profile->u_father_name;
             $data['father_phone'] = $profile->u_father_phone;
             $data['mother_name'] = $profile->u_mother_name;
@@ -112,7 +126,12 @@ class MeProfileController extends \BaseController
         $apartment_no = Input::get('apartment_no', '');
         $mobile = Input::get('mobile', '');
 
+        // club info
+        $club_title = Input::get('club_title', '');
+        $club_brief = Input::get('club_brief', '');
+
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -153,6 +172,8 @@ class MeProfileController extends \BaseController
                 $profile->u_student_imgs = implode(',', $stu_imgs);
                 $profile->u_id_imgs = implode(',', $id_imgs);
             }
+
+            $this->saveClubInfo();
             $user->save();
             $profile->save();
             $re = Tools::reTrue('提交信息成功');
@@ -254,6 +275,8 @@ class MeProfileController extends \BaseController
                 $user->u_home_img = implode(',', $home_imgs);
                 $user->u_head_img = implode(',', $head_img);
             }
+
+            $this->saveClubInfo();
             $profile->save();
             $user->save();
             $re = Tools::reTrue('提交信息成功');
@@ -331,5 +354,29 @@ class MeProfileController extends \BaseController
             $re = Tools::reFalse($e->getCode(), '提交银行卡信息失败:'.$e->getMessage());
         }
         return Response::json($re);
+    }
+
+    private function saveClubInfo($user)
+    {
+        $title = Input::get('club_title', '');
+        $brief = Input::get('club_brief', '');
+        $img_token = Input::get('img_token_2', '');
+        if ($title) {
+            $club = Club::where('u_id', '=', $user->u_id)->first();
+            if (empty($club)) {
+                $club = new Club();
+                $club->u_id = $user->u_id;
+                $club->s_id = $user->u_school_id;
+                $club->c_title = $title;
+                $club->addClub();
+            }
+            $club->c_title = $title;
+            $club->c_brief = $brief;
+            $c_id = $club->c_id;
+            $imgObj = new Img('club', $img_token);
+            $club->c_imgs = $imgObj->getSavedImg($c_id, $club->c_imgs);
+            $club->save();
+        }
+        return true;
     }
 }

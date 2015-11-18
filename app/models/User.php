@@ -562,4 +562,9 @@ class User extends Eloquent
     {
         return $this->hasOne('UserImportWechat', 'u_id', 'u_id');
     }
+
+    public function club()
+    {
+        return $this->hasOne('Club', 'u_id', 'u_id');
+    }
 }

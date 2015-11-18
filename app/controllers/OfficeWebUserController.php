@@ -72,7 +72,6 @@ class OfficeWebUserController extends \BaseController
             }
 
             $data = [];
-            // $data['user'] = $user_data;
             $data['bank'] = $user_bank;
             $data['base'] = $user_base;
 
