@@ -32,7 +32,7 @@ class MigratePatch2015111301 extends Migration {
         Schema::create('clubs', function ($table) {
             $table->increments('c_id');
             $table->integer('u_id');    // 寄生用户
-            $table->string('c_titile', 63);
+            $table->string('c_title', 63);
             $table->text('c_brief')->nullable();
             $table->string('c_official_url')->nullable();
             $table->tinyInteger('c_status');    // 组织状态 1-待审核, 2-审核通过, 3-审核不通过

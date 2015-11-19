@@ -87,7 +87,7 @@ class MeProfileController extends \BaseController
             } else {
                 $data['club_title'] = $club->c_title;
                 $data['club_brief'] = $club->c_brief;
-                $imgs = Img::toArray($$club->c_imgs);
+                $imgs = Img::toArray($club->c_imgs);
                 $data['club_proof_img'] = Img::filterKey('proof_img', $imgs);
                 $data['club_proof_img'] = array_pop($data['club_proof_img']);
             }
