@@ -173,7 +173,7 @@ class MeProfileController extends \BaseController
                 $profile->u_id_imgs = implode(',', $id_imgs);
             }
 
-            $this->saveClubInfo();
+            $this->saveClubInfo($user);
             $user->save();
             $profile->save();
             $re = Tools::reTrue('提交信息成功');
@@ -276,7 +276,7 @@ class MeProfileController extends \BaseController
                 $user->u_head_img = implode(',', $head_img);
             }
 
-            $this->saveClubInfo();
+            $this->saveClubInfo($user);
             $profile->save();
             $user->save();
             $re = Tools::reTrue('提交信息成功');
