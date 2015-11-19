@@ -49,10 +49,8 @@ class EmergencyController extends \BaseController
     public function countUsers()
     {
         $count = DB::table('users')->count();
-        $data = ['count' => $count];
-
-        $re = Tools::reTrue('统计成功', $data);
-        return Response::json($re);
+        echo "当前注册人数:".$count.'人';
+        exit();
     }
 
     public function test()
