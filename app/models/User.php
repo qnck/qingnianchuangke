@@ -5,11 +5,12 @@ class User extends Eloquent
 
     public $primaryKey = 'u_id';
 
-    public static function getUserType()
+    public static function getVerifyType()
     {
         return [
-            1 => '普通用户',
-            2 => '官方用户',
+            1 => '校园认证',
+            2 => '社团认证',
+            3 => '官方认证'
         ];
     }
 
@@ -203,10 +204,10 @@ class User extends Eloquent
         $data['id'] = $this->u_id;
         $data['name'] = $this->u_name;
         $data['is_verified'] = $this->u_is_verified;
+        $data['verify'] = $this->getVerify();
         $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
-        $data['type'] = $this->u_type;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
         $school = null;
@@ -285,11 +286,11 @@ class User extends Eloquent
         $data['remark'] = $this->u_remark;
         $data['home_imgs'] = Img::toArray($this->u_home_img, true);
         $data['is_verified'] = $this->u_is_verified;
+        $data['verify'] = $this->getVerify();
         $data['biograph'] = $this->u_biograph;
         $data['age'] = $this->u_age;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
-        $data['type'] = $this->u_type;
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
             $data['city'] = DicCity::where('c_id', '=', $this->school->t_city)->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
@@ -454,6 +455,22 @@ class User extends Eloquent
             }
         }
         return '';
+    }
+
+    private function getVerify()
+    {
+        $verify_tag = 'V';
+        if ($this->u_is_verified) {
+            $verify_type = 1;
+        } elseif ($this->u_is_club_verified) {
+            $verify_type = 2;
+        } elseif ($this->u_type == 2) {
+            $verify_type = 3;
+        } else {
+            $verify_type = 0;
+            $verify_tag = '';
+        }
+        return ['verify_tag' => $verify_tag, 'verify_type' => $verify_type];
     }
 
     public static function filterByDistance($lat, $lng, $distance)
