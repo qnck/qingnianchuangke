@@ -26,7 +26,7 @@ class MigratePatch2015111301 extends Migration {
             $table->tinyInteger('o_status');    // 组织状态 1-待审核, 2-审核通过, 3-审核不通过
             $table->string('o_imgs', 2047)->nullable();
             $table->timestamp('created_at');
-            $table->tinyInteger('o_type');      //组织类型, 1-青创官方 2-普通组织
+            $table->tinyInteger('o_type');      //组织类型, 1-普通组织 2-青创官方
         });
 
         Schema::create('clubs', function ($table) {

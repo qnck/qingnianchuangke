@@ -198,6 +198,7 @@ class User extends Eloquent
         $data['nickname'] = $this->u_nickname;
         $data['head_img'] = $this->getHeadImg();
         $data['gender'] = $this->u_sex;
+        $data['type'] = $this->u_type;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
         $school = null;
@@ -280,6 +281,7 @@ class User extends Eloquent
         $data['age'] = $this->u_age;
         $data['lat'] = $this->latitude;
         $data['lng'] = $this->longitude;
+        $data['type'] = $this->u_type;
         if (!empty($this->school)) {
             $data['school'] = $this->school->showInList();
             $data['city'] = DicCity::where('c_id', '=', $this->school->t_city)->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
