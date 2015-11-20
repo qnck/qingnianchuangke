@@ -151,6 +151,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/{id}/followings', 'UserController@followings');
     Route::post('v0/user/{id}/praise', 'UserController@postPraise');
     Route::post('v0/user/{id}/favorite', 'UserController@postFavorite');
+    Route::get('v0/user/type', 'UserController@getUserType');
     Route::resource('v0/user', 'UserController');
     Route::post('v0/user/import/login', 'UserController@importLogin');
     /* USER END*/

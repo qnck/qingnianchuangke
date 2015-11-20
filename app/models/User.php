@@ -5,6 +5,14 @@ class User extends Eloquent
 
     public $primaryKey = 'u_id';
 
+    public static function getUserType()
+    {
+        return [
+            1 => '普通用户',
+            2 => '官方用户',
+        ];
+    }
+
     /**
      * validate base info
      * @author Kydz 2015-06-14

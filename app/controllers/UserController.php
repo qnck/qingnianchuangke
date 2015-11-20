@@ -499,4 +499,11 @@ class UserController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getUserType()
+    {
+        $data = User::getUserType();
+        $re = Tools::reTrue('获取用户类型成功', $data);
+        return Response::json($re);
+    }
 }
