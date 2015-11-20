@@ -108,6 +108,8 @@ class OfficeWebUserController extends \BaseController
                 $base = new UserProfileBase();
             }
 
+            $user = User::find($id);
+
             if ($check == 1) {
                 $base->u_id = $tmp_base->u_id;
                 $base->u_id_number = $tmp_base->u_id_number;
@@ -131,10 +133,13 @@ class OfficeWebUserController extends \BaseController
                 $base->save();
                 $tmp_base->u_status = 1;
                 $tmp_base->remark = '';
+                $user->u_is_verified = 1;
             } else {
                 $tmp_base->u_status = 2;
                 $tmp_base->remark = $remark;
+                $user->u_is_verified = 0;
             }
+            $user->save();
             $tmp_base->censor();
             $re = Tools::reTrue('审核用户联系人信息成功');
         } catch (Exception $e) {
