@@ -9,8 +9,8 @@ class User extends Eloquent
     {
         return [
             1 => '校园认证',
-            2 => '社团认证',
-            3 => '官方认证'
+            2 => '官方认证',
+            3 => '社团认证'
         ];
     }
 
@@ -463,9 +463,9 @@ class User extends Eloquent
         if ($this->u_is_verified) {
             $verify_type = 1;
         } elseif ($this->u_is_club_verified) {
-            $verify_type = 2;
-        } elseif ($this->u_type == 2) {
             $verify_type = 3;
+        } elseif ($this->u_type == 2) {
+            $verify_type = 2;
         } else {
             $verify_type = 0;
             $verify_tag = '';
