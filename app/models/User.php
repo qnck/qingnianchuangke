@@ -264,7 +264,7 @@ class User extends Eloquent
             $birthday = new DateTime($this->u_birthday);
             $birthday = $birthday->format('Y-m-d');
         } else {
-            $birthday = null;
+            $birthday = '';
         }
         $data['birth'] = $birthday;
         $data['head_img'] = $this->getHeadImg();

@@ -56,6 +56,7 @@ class MeProfileController extends \BaseController
             $data['stu_imgs'] = $stu_imgs;
             $data['id_imgs'] = $id_imgs;
             $data['entry_year'] = $entry_year;
+            $data['birth'] = $user->u_birthday;
             $data['major'] = $profile->u_major;
             $data['id_verified'] = $profile->u_is_id_verified;
             $data['stu_verified'] = $profile->u_is_student_verified;
@@ -124,6 +125,7 @@ class MeProfileController extends \BaseController
         $mother_name = Input::get('mother_name', '');
         $mother_phone = Input::get('mother_phone', '');
         $apartment_no = Input::get('apartment_no', '');
+        $birth = Input::get('birth', '');
         $mobile = Input::get('mobile', '');
 
         // club info
@@ -152,6 +154,7 @@ class MeProfileController extends \BaseController
 
             $user->u_name = $name;
             $user->u_age = $age;
+            $user->u_birthday = $birth;
             $profile->u_id_number = $id_num;
             $profile->u_entry_year = $entry_year;
             $profile->u_major = $major;
@@ -199,6 +202,7 @@ class MeProfileController extends \BaseController
         $stu_num = Input::get('stu_num', '');
         $mobile = Input::get('mobile', '');
         $age = Input::get('age', '');
+        $birth = Input::get('birth', '');
 
         $img_token = Input::get('img_token', '');
 
