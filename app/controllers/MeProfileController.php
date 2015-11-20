@@ -225,6 +225,7 @@ class MeProfileController extends \BaseController
             $user->u_sex = $gender;
             $user->u_biograph = $bio;
             $user->u_age = $age;
+            $user->u_birthday = $birth;
 
             if ($id_school) {
                 $profile->s_id = $id_school;
