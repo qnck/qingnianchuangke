@@ -43,6 +43,11 @@ class Tools
         return Session::get('admin_id');
     }
 
+    public static function getOfficialOrgnizationId()
+    {
+        return 1;
+    }
+
     public static function generateDateUserRandomNo($u_id)
     {
         $now = new DateTime();

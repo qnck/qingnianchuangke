@@ -351,6 +351,10 @@ Route::get('office/dic/city', 'Api\DicController@getCities');
 Route::get('office/dic/bank', 'Api\DicController@getBanks');
 /* DIC END*/
 
+/* AD START*/
+Route::post('office/ad', 'OfficeAdController@postAd');
+/* AD END*/
+
 /*********** PROTAL **********/
 
 /* WECHAT START*/

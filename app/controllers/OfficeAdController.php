@@ -1,0 +1,74 @@
+<?php
+/**
+*
+*/
+class OfficeAdController extends \BaseController
+{
+    public function postAd()
+    {
+        $title = Input::get('title', '');
+        $url = Input::get('url', '');
+        $brief = Input::get('brief', '');
+        $range = Input::get('range', '');
+        $cities = Input::get('cities', '');
+        $schools = Input::get('schools', '');
+        $positions = Input::get('positions', '');
+        $start_at = Input::get('start_at', '');
+        $end_at = Input::get('end_at', '');
+
+        $img_token = Input::get('img_token', '');
+
+        try {
+            $o_id = Tools::getOfficialOrgnizationId();
+            $ad_event = new EventItem();
+            $ad_event->o_id = $o_id;
+            $ad_event->e_title = $title;
+            $ad_event->e_brief = $brief;
+            $ad_event->url = $url;
+            $ad_event->e_range = $range;
+            $ad_event->e_start_at = $start_at;
+            $ad_event->e_end_at = $end_at;
+            $ad_event->addEvent();
+            $e_id = $ad_event->e_id;
+            if ($cities) {
+                $city_sets = explode(',', $cities);
+                foreach ($city_sets as $set) {
+                    $array = explode('|', $set);
+                    $event_range = new EventRange(['c_id' => $array[0], 'p_id' => $array[1]]);
+                    $ad_event->ranges()->save($event_range);
+                }
+            }
+
+            if ($schools) {
+                $schools = explode(',', $schools);
+                foreach ($schools as $school) {
+                    $event_range = new EventRange(['s_id' => $school]);
+                    $ad_event->ranges()->save($event_range);
+                }
+            }
+
+            if ($positions) {
+                $positions = explode(',', $positions);
+                foreach ($positions as $key => $position) {
+                    $event_position = new EventPosition(['position' => $position]);
+                    $ad_event->positions()->save($event_position);
+                }
+            }
+
+            if ($img_token) {
+                $imgObj = new Img('event', $img_token);
+                $ad_event->cover_img = $imgObj->getSavedImg($e_id);
+                $ad_event->save();
+            }
+
+            $ad = new Advertisement();
+            $ad->e_id = $e_id;
+            $ad->o_id = Tools::getOfficialOrgnizationId();
+            $ad->addAd();
+            $re = Tools::reTrue('添加广告成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '添加广告失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+}
