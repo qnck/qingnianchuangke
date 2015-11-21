@@ -89,7 +89,7 @@ class MarketController extends \BaseController
             }
             $ad = [
                 'id' => 1,
-                'url' => 'www.bing.com',
+                'url' => 'http://www.bing.com',
                 'cover_img' => ['http://qnckimg.oss-cn-hangzhou.aliyuncs.com/crowd_funding/14/cover_img.748849.jpg'],
                 'title' => '邪恶的图片',
                 'brief' => '好邪恶啊好邪恶',
@@ -196,7 +196,7 @@ class MarketController extends \BaseController
             }
             $ad = [
                 'id' => 1,
-                'url' => 'www.bing.com',
+                'url' => 'http://www.bing.com',
                 'cover_img' => ['http://qnckimg.oss-cn-hangzhou.aliyuncs.com/crowd_funding/14/cover_img.748849.jpg'],
                 'title' => '邪恶的图片',
                 'brief' => '好邪恶啊好邪恶',
