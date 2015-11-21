@@ -1,0 +1,21 @@
+<?php
+/**
+*
+*/
+class Advertisement extends Eloquent
+{
+    public $primaryKey = 'ad_id';
+    public $timestamps = false;
+
+    public function addAd()
+    {
+        $this->created_at = Tools::getNow();
+        $this->ad_status = 1;
+        return $this->save();
+    }
+
+    public function showInList()
+    {
+        $data = [];
+    }
+}

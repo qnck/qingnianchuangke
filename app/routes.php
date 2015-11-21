@@ -210,6 +210,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* DATA DICTIONARY START*/
     Route::get('v0/dic/school', 'Api\DicController@getSchools');
+    Route::get('v0/dic/province', 'Api\DicController@getProvinces');
     Route::get('v0/dic/city', 'Api\DicController@getCities');
     Route::get('v0/dic/bank', 'Api\DicController@getBanks');
     /* DATA DICTIONARY END*/

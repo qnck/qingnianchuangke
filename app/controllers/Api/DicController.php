@@ -75,6 +75,36 @@ class DicController extends \BaseController
         return Response::json($re);
     }
 
+    public function getProvinces()
+    {
+        $key = Input::get('key', '');
+        $ver = Input::get('ver', 0);
+
+        $currentVer = \DicProvince::VER;
+
+        if ($ver >= $currentVer && !$key) {
+            return Response::json(['result' => 2000, 'data' => [], 'info' => '获取城市成功', 'ver' => $currentVer]);
+        }
+        
+        try {
+            $query = \DicProvince::where('id', '>', 0);
+            if ($key) {
+                $query = $query->where('province', 'LIKE', '%'.$key.'%');
+            }
+            $list = $query->get();
+            $data = [];
+            foreach ($list as $key => $province) {
+                $data[] = $province->showInList();
+            }
+            $paginate = ['total_record' => $list->count(), 'total_page' => 1, 'per_page' => $list->count(), 'current_page' => 1];
+            $re = ['result' => 2000, 'data' => $data, 'info' => '获取城市成功', 'ver' => $currentVer, 'pagination' => $paginate];
+        } catch (Exception $e) {
+            $re = ['result' => 2001, 'data' => [], 'info' => '获取城市失败:'.$e->getMessage(), 'ver' => $currentVer];
+        }
+
+        return Response::json($re);
+    }
+
     public function getBanks()
     {
         $key = Input::get('key', '');

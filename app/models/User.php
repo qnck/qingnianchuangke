@@ -461,6 +461,7 @@ class User extends Eloquent
     {
         $verify_tag = 'V';
         if ($this->u_is_verified) {
+            $verify_tag = '认';
             $verify_type = 1;
         } elseif ($this->u_is_club_verified) {
             $verify_type = 3;
