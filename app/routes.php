@@ -344,6 +344,13 @@ Route::get('office/crowd/{id}', 'OfficeCrowdFundingController@getFunding');
 Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFunding');
 /* CROWDFUNDING END*/
 
+/* DIC START*/
+Route::get('office/dic/school', 'Api\DicController@getSchools');
+Route::get('office/dic/province', 'Api\DicController@getProvinces');
+Route::get('office/dic/city', 'Api\DicController@getCities');
+Route::get('office/dic/bank', 'Api\DicController@getBanks');
+/* DIC END*/
+
 /*********** PROTAL **********/
 
 /* WECHAT START*/
