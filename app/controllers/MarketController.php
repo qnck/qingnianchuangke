@@ -84,8 +84,18 @@ class MarketController extends \BaseController
                 } else {
                     $tmp['is_praised'] = 0;
                 }
+                $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
+            $ad = [
+                'id' => 1,
+                'url' => 'www.bing.com',
+                'cover_img' => ['http://qnckimg.oss-cn-hangzhou.aliyuncs.com/crowd_funding/14/cover_img.748849.jpg'],
+                'title' => '邪恶的图片',
+                'brief' => '好邪恶啊好邪恶',
+                'item_type' => 2
+            ];
+            $data[] = $ad;
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取首页商品失败:'.$e->getMessage());
@@ -181,6 +191,7 @@ class MarketController extends \BaseController
                 } else {
                     $tmp['is_praised'] = 0;
                 }
+                $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
