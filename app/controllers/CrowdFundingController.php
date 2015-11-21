@@ -73,7 +73,7 @@ class CrowdFundingController extends \BaseController
             $ad = [
                 'id' => 1,
                 'url' => 'www.bing.com',
-                'cover_img' => 'http://pic.mmfile.net/2015/11/15t04.jpg',
+                'cover_img' => ['http://pic.mmfile.net/2015/11/15t04.jpg'],
                 'title' => '邪恶的图片',
                 'brief' => '好邪恶啊好邪恶',
                 'item_type' => 2
