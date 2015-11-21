@@ -67,8 +67,18 @@ class CrowdFundingController extends \BaseController
                 if (count($funding->praises) > 0) {
                     $tmp['is_praised'] = 1;
                 }
+                $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
+            $ad = [
+                'id' => 1,
+                'url' => 'www.bing.com',
+                'cover_img' => 'http://pic.mmfile.net/2015/11/15t04.jpg',
+                'title' => '邪恶的图片',
+                'brief' => '好邪恶啊好邪恶',
+                'item_type' => 2
+            ];
+            $data[] = $ad;
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
