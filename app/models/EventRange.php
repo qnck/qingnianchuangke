@@ -10,9 +10,37 @@ class EventRange extends Eloquent
     public function showInList()
     {
         $data = [];
-        $data['s_id'] = $this->s_id;
-        $data['c_id'] = $this->c_id;
-        $data['p_id'] = $this->p_id;
+        $data['city'] = $this->city();
+        $this->load('school');
+        if (empty($this->school)) {
+            $data['school'] = [
+                'id' => '',
+                'school_name' => '',
+            ];
+        } else {
+            $data['school'] = $this->school->showInList();
+        }
         return $data;
     }
+
+    public function city()
+    {
+        $city = DicCity::where('c_id', '=', $this->c_id)->where('c_province_id', '=', $this->p_id)->first();
+        if (empty($city)) {
+            $data['id'] = '';
+            $data['name'] = '';
+            $data['province_id'] = '';
+        } else {
+            $data = $city->showInList();
+        }
+        return $data;
+    }
+
+    // relations
+    // 
+    public function school()
+    {
+        return $this->hasOne('DicSchool', 't_id', 's_id');
+    }
+
 }

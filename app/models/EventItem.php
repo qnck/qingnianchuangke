@@ -23,7 +23,7 @@ class EventItem extends Eloquent
     public function showDetail()
     {
         $data = [];
-        $data['title'] = $this->title;
+        $data['title'] = $this->e_title;
         $data['cover_img'] = $this->cover_img;
         $data['url'] = $this->url;
         $data['range'] = $this->e_range;
