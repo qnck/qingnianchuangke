@@ -353,6 +353,8 @@ Route::get('office/dic/bank', 'Api\DicController@getBanks');
 
 /* AD START*/
 Route::post('office/ad', 'OfficeAdController@postAd');
+Route::get('office/ad/{id}', 'OfficeAdController@getAd');
+Route::delete('office/ad/{id}', 'OfficeAdController@delAd');
 /* AD END*/
 
 /*********** PROTAL **********/

@@ -71,4 +71,32 @@ class OfficeAdController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getAd($id)
+    {
+        try {
+            $ad = Advertisement::find($id);
+            $data = $ad->showDetail();
+            $re = Tools::reTrue('获取广告成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取广告失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delAd($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $ad = Advertisement::find($id);
+            $ad->delAd();
+            $re = Tools::reTrue('删除成功');
+            DB::commit();
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除失败:'.$e->getMessage());
+            DB::rollback();
+        }
+        return Response::json($re);
+    }
 }

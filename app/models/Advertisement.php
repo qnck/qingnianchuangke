@@ -19,17 +19,17 @@ class Advertisement extends Eloquent
         $data = [];
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
-        if (empty($this->event)) {
-            $this->load('event');
+        if (empty($this->eventItem)) {
+            $this->load('eventItem');
         }
-        if (empty($this->event)) {
+        if (empty($this->eventItem)) {
             $data['title'] = '';
             $data['cover_img'] = '';
             $data['url'] = '';
         }
-        $data['title'] = $this->event->title;
-        $data['cover_img'] = $this->event->cover_img;
-        $data['url'] = $this->event->url;
+        $data['title'] = $this->eventItem->title;
+        $data['cover_img'] = $this->eventItem->cover_img;
+        $data['url'] = $this->eventItem->url;
 
         return $data;
     }
@@ -40,10 +40,10 @@ class Advertisement extends Eloquent
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
         $data['o_id'] = $this->o_id;
-        if (empty($this->event)) {
-            $this->load('event');
+        if (empty($this->eventItem)) {
+            $this->load('eventItem');
         }
-        if (empty($this->event)) {
+        if (empty($this->eventItem)) {
             $data['title'] = '';
             $data['cover_img'] = '';
             $data['url'] = '';
@@ -51,18 +51,23 @@ class Advertisement extends Eloquent
             $data['position'] = '';
             $data['start_at'] = '';
             $data['end_at'] = '';
+        } else {
+            $data = array_merge($data, $this->eventItem->showDetail());            
         }
-        $data['title'] = $this->event->title;
-        $data['cover_img'] = $this->event->cover_img;
-        $data['url'] = $this->event->url;
-        $data['range'] = $this->event->e_range;
-        $data['position'] = $this->event->e_position;
-        $data['start_at'] = $this->event->e_start_at;
-        $data['end_at'] = $this->event->e_end_at;
+        return $data;
     }
 
-    public function event()
+    public function delAd()
     {
-        return $this->hasOne('Event', 'e_id', 'e_id');
+        $this->load(['eventItem']);
+        if (!empty($this->eventItem)) {
+            $this->eventItem->delEventItem();
+        }
+        $this->delete();
+    }
+
+    public function eventItem()
+    {
+        return $this->hasOne('EventItem', 'e_id', 'e_id');
     }
 }

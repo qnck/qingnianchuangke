@@ -20,6 +20,50 @@ class EventItem extends Eloquent
         return $data;
     }
 
+    public function showDetail()
+    {
+        $data = [];
+        $data['title'] = $this->title;
+        $data['cover_img'] = $this->cover_img;
+        $data['url'] = $this->url;
+        $data['range'] = $this->e_range;
+        if (count($this->positions) > 0) {
+            $positions = [];
+            foreach ($this->positions as $position) {
+                $positions[] = $position->showInList();
+            }
+            $data['positions'] = $positions;
+        }
+
+        if (count($this->ranges) > 0) {
+            $ranges = [];
+            foreach ($this->ranges as $range) {
+                $ranges[] = $range->showInList();
+            }
+            $data['ranges'] = $ranges;
+        }
+        $data['start_at'] = $this->e_start_at;
+        $data['end_at'] = $this->e_end_at;
+        return $data;
+    }
+
+    public function delEventItem()
+    {
+        $this->load(['ranges', 'positions']);
+        if (count($this->positions) > 0) {
+            foreach ($this->positions as $position) {
+                $positions[] = $position->delete();
+            }
+        }
+
+        if (count($this->ranges) > 0) {
+            foreach ($this->ranges as $range) {
+                $ranges[] = $range->delete();
+            }
+        }
+        $this->delete();
+    }
+
     // relations
     public function ranges()
     {
