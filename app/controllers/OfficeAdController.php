@@ -49,7 +49,13 @@ class OfficeAdController extends \BaseController
             $ad_event->e_end_at = $end_at;
             $ad_event->addEvent();
             $e_id = $ad_event->e_id;
-            if ($cities) {
+
+            if ($range == 1) {
+                $event_range = new EventRange(['c_id' => 0, 'p_id' => 0, 's_id' => 0]);
+                $ad_event->ranges()->save($event_range);
+            }
+
+            if ($cities  && $range == 2) {
                 $city_sets = explode(',', $cities);
                 foreach ($city_sets as $set) {
                     $array = explode('|', $set);
@@ -58,7 +64,7 @@ class OfficeAdController extends \BaseController
                 }
             }
 
-            if ($schools) {
+            if ($schools && $range == 3) {
                 $schools = explode(',', $schools);
                 foreach ($schools as $school) {
                     $event_range = new EventRange(['s_id' => $school]);

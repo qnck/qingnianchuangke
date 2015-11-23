@@ -29,6 +29,8 @@ class CrowdFundingController extends \BaseController
             if (!$u_id) {
                 throw new Exception("请传入用户id", 7001);
             }
+            $user = User::find($u_id);
+            $user->load('school');
             $query = CrowdFunding::select('crowd_fundings.*')->with([
                 'city',
                 'school',
@@ -70,15 +72,10 @@ class CrowdFundingController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = [
-                'id' => 1,
-                'url' => 'http://www.bing.com',
-                'cover_img' => ['http://qnckimg.oss-cn-hangzhou.aliyuncs.com/crowd_funding/14/cover_img.748849.jpg'],
-                'title' => '邪恶的图片',
-                'brief' => '好邪恶啊好邪恶',
-                'item_type' => 2
-            ];
-            $data[] = $ad;
+            $ad = Advertisement::fetchAd(1, $user->school->t_id, $user->school->t_city, $user->school->t_province);
+            if ($ad) {
+                $data[] = $ad;
+            }
             $re = Tools::reTrue('获取众筹成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
