@@ -13,7 +13,7 @@ class OfficeAdController extends \BaseController
             $data = [];
             $data['rows'] = [];
             foreach ($list as $key => $ad) {
-                $data['rows'][] = $ad->showInList();
+                $data['rows'][] = $ad->showDetail();
             }
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取广告成功', $data);
