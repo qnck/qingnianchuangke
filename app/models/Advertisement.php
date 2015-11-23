@@ -27,7 +27,7 @@ class Advertisement extends Eloquent
             $data['cover_img'] = '';
             $data['url'] = '';
         }
-        $data['title'] = $this->eventItem->title;
+        $data['title'] = $this->eventItem->e_title;
         $data['cover_img'] = $this->eventItem->cover_img;
         $data['url'] = $this->eventItem->url;
 

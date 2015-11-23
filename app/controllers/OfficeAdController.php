@@ -4,6 +4,25 @@
 */
 class OfficeAdController extends \BaseController
 {
+    public function listAds()
+    {
+        $per_page = Input::get('per_page', 10000000);
+
+        try {
+            $list = Advertisement::with(['eventItem'])->paginate($per_page);
+            $data = [];
+            $data['rows'] = [];
+            foreach ($list as $key => $ad) {
+                $data['rows'][] = $ad->showInList();
+            }
+            $data['total'] = $list->getTotal();
+            $re = Tools::reTrue('获取广告成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reTrue($e->getCode(), '获取广告失败:'.$e->getMessage());            
+        }
+        return Response::json($re);
+    }
+
     public function postAd()
     {
         $title = Input::get('title', '');
