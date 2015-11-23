@@ -7,9 +7,17 @@ class OfficeWebUserController extends \BaseController
     public function listUserProfiles()
     {
         $per_page = Input::get('per_page', 10000000);
+        $s_id = Input::get('s_id', 0);
+        $s_name = Input::get('s_name', '');
+        $name = Input::get('name', '');
+        $has_id_img = Input::get('has_id_img', 0);
+        $has_stu_img = Input::get('has_stu_img', 0);
+
 
         try {
-            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_status', 'users.u_remark', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs AS id_imgs', 'tmp_user_profile_bases.u_student_imgs AS stu_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status')
+            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name',
+                'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs',
+                'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified')
             ->leftJoin('tmp_user_profile_bases', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bases.u_id');
             })->leftJoin('tmp_user_profile_bankcards', function ($q) {
@@ -18,22 +26,44 @@ class OfficeWebUserController extends \BaseController
                 $q->on('dic_schools.t_id', '=', 'users.u_school_id');
             });
 
+            if ($s_id) {
+                $query = $query->where('users.u_school_id', '=', $s_id);
+            }
+
+            if ($s_name) {
+                $query = $query->where('dic_schools.t_name', 'LIKE', '%'.$s_name.'%');
+            }
+
+            if ($name) {
+                $query = $query->where(function ($q) use ($name) {
+                    $q->where('users.u_name','LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%');
+                });
+            }
+
+            if ($has_id_img) {
+                $query = $query->whereNotNull('tmp_user_profile_bases.u_id_imgs')->where('tmp_user_profile_bases.u_id_imgs', '<>', '');
+            }
+
+            if ($has_stu_img) {
+                $query = $query->whereNotNull('tmp_user_profile_bases.u_student_imgs')->where('tmp_user_profile_bases.u_student_imgs', '<>', '');
+            }
+            // var_dump($query->toSql());exit;
             $list = $query->paginate($per_page);
             $array = $list->toArray();
             $data['rows'] = [];
             foreach ($array['data'] as $key => $userProfile) {
-                if ($userProfile->id_imgs) {
+                if ($userProfile->u_id_imgs) {
                     $userProfile->has_id_img = 1;
                 } else {
                     $userProfile->has_id_img = 0;
                 }
-                if ($userProfile->stu_imgs) {
+                if ($userProfile->u_student_imgs) {
                     $userProfile->has_student_img = 1;
                 } else {
                     $userProfile->has_student_img = 0;
                 }
-                unset($userProfile->id_imgs);
-                unset($userProfile->stu_imgs);
+                unset($userProfile->u_id_imgs);
+                unset($userProfile->u_student_imgs);
                 $data['rows'][] = $userProfile;
             }
             $data['total'] = $list->getTotal();
