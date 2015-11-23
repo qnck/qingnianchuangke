@@ -418,10 +418,9 @@
 		    f.action = _url+"img?img_token="+img_token+"&cate="+cate;
 		    f.method = "post";
 		    f.enctype="multipart/form-data";
-		    var input=document.createElement("input");
-			input.setAttribute("type","file");
-			input.setAttribute("name","cover_img");
-			$(input).val(imgpath);
+
+			var input=$("#imgUpload").clone();
+			$(input).attr("name","cover_img");
     		$(input).appendTo(f);
     		$(f).ajaxSubmit(function(s){
 		        if(s.result=="2000");
