@@ -425,11 +425,8 @@
     		$(f).ajaxSubmit(function(s){
 		        if(s.result=="2000");
 		        {
-		            var ty = $('#provide-dlg').attr('ty');
-		            var payid = $('#provide-dlg').attr('payid');
-		            var remark = $("#txtReamrk").val();
 		            $.ajax({
-		                type: "put",
+		                type: "post",
 		                url: _url+"office/ad",
 		                data: {title:adname,url:adurl,range:range,cities:cities,schools:schools,position:position,start_at:start_at,end_at:end_at,img_token:img_token},
 		                dataType: "text",
