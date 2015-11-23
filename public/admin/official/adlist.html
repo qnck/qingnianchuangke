@@ -48,14 +48,6 @@
 		var d2 = myformatter(new Date((new Date()/1000+86400)*1000));
     	$('#start_time').datetimebox('setValue',d1);
     	$('#end_time').datetimebox('setValue',d2);
-        $("#imgUpload").change(function (e) {
-            var file = e.target.files[0];
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $("#logoPic").attr({'src': e.target.result});
-            };
-            reader.readAsDataURL(file);
-        });
         bindProvince();
         bindProvince2();
     });
@@ -307,7 +299,15 @@
     function clearAllInputValue(){
 		$("#adname").val("");//广告名称
 		$("#logoPic").attr("src","");//展示图片
-		$("#imgUpload").val("");//展示图片上传按钮
+		$("#fileDiv").html('<input type="file" id="imgUpload" name="cover_img" draggable="true" single/>');
+        $("#imgUpload").change(function (e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $("#logoPic").attr({'src': e.target.result});
+            };
+            reader.readAsDataURL(file);
+        });
 		$("#adurl").val("");//链接地址
 		$("span[name='fbfw']").css("background-color","#fff").attr("ck","0");//全国
 		$("span[name='fbfw']").eq(0).css("background-color","#76C5F0").attr("ck","1");//全国
@@ -375,7 +375,7 @@
 					case "xx":
 						range="3";
 						$($("#choosedschoolDiv").children()).each(function(){
-							cities += $(this).attr("id")+",";
+							schools += $(this).attr("id")+",";
 						});
 						break;
 				}
@@ -419,9 +419,10 @@
 		    f.method = "post";
 		    f.enctype="multipart/form-data";
 
-			var input=$("#imgUpload").clone();
-			$(input).attr("name","cover_img");
-    		$(input).appendTo(f);
+			// var input=$("#imgUpload").clone();
+
+    		$($("#imgUpload")).appendTo(f);
+    		
     		$(f).ajaxSubmit(function(s){
 		        if(s.result=="2000");
 		        {
@@ -429,11 +430,11 @@
 		                type: "post",
 		                url: _url+"office/ad",
 		                data: {title:adname,url:adurl,range:range,cities:cities,schools:schools,position:position,start_at:start_at,end_at:end_at,img_token:img_token},
-		                dataType: "text",
+		                dataType: "json",
 		                success: function (r) {
-		                    if(JSON.parse(r).result=="2000"){
+	                        $.messager.alert("提示", r.info, "alert");
+		                    if(r.result=="2000"){
 		                        $('#ad-dlg').dialog('close');
-		                        $.messager.alert("提示", "操作成功", "alert");
 		                        BindData();
 		                    }
 		                },
@@ -503,7 +504,8 @@
 	            <td class="leftTd">展示图片</td>
 	            <td class="rightTd">
 			        <img id="logoPic" src="" width="160" height="100" />
-                    <input type="file" id="imgUpload" name="imgUpload" draggable="true" single/>
+			        <div id="fileDiv">
+                    </div>
 	            </td>
 	        </tr>
 	        <tr>
