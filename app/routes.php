@@ -304,6 +304,7 @@ Route::put('office/user/profile/{id}/censor/bank', 'OfficeWebUserController@cens
 Route::put('office/user/profile/{id}/censor/base', 'OfficeWebUserController@censorUserProfileBase');
 Route::put('office/user/profile/{id}/censor/identity', 'OfficeWebUserController@censorUserProfileIdentity');
 Route::put('office/user/profile/{id}/censor/student', 'OfficeWebUserController@censorUserProfileStudent');
+Route::put('office/user/profile/{id}/censor/club', 'OfficeWebUserController@censorUserProfileClub');
 Route::put('office/user/{id}/enable', 'OfficeWebUserController@enable');
 /* WEB USER END*/
 

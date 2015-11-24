@@ -25,11 +25,39 @@ class Club extends \Eloquent
         }
     }
 
+    public function showInList()
+    {
+        $data = [];
+        $data['title'] = $this->c_title;
+        $data['brief'] = $this->c_brief;
+        $data['status'] = $this->c_status;
+        $data['official_url'] = $this->c_official_url;
+        return $data;
+    }
+
+    public function showDetail()
+    {
+        $data = [];
+        $data['title'] = $this->c_title;
+        $data['brief'] = $this->c_brief;
+        $data['official_url'] = $this->c_official_url;
+        $data['imgs'] = Img::toArray($this->c_imgs);
+        $data['status'] = $this->c_status;
+        $data['remark'] = $this->remark;
+        if (!empty($this->school)) {
+            $data['school'] = $this->school->showInList();
+        }
+        if (!empty($this->user)) {
+            $data['user'] = $this->user->showInList();
+        }
+        return $data;
+    }
+
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['组织名称' => $this->c_title, '用户' => $this->u_id],
-            ['组织名称' => 'required', '用户' => 'required']
+            ['社团名称' => $this->c_title, '用户' => $this->u_id],
+            ['社团名称' => 'required', '用户' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -48,13 +76,15 @@ class Club extends \Eloquent
 
     public function censor()
     {
-        $old_status = '审核之前的状态为: '.Organization::getStutu($this->getOriginal('u_status')).', 审核之后的状态为: '.Organization::getStutus($this->u_status).'.';
+        $original_status = $this->getOriginal('u_status');
+        $new_status = $this->u_status;
+        $old_status = '审核之前的状态为: '.Organization::getStutu($original_status).', 审核之后的状态为: '.Organization::getStutus($new_status).'.';
         if ($this->u_status == 2) {
-            $content = '组织信息审核未通过, '.$old_status.' 备注: '.$this->remark;
+            $content = '社团信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->u_status == 1) {
-            $content = '组织信息审核通过, '.$old_status;
+            $content = '社团信息审核通过, '.$old_status;
         } else {
-            $content = '审核组织信息记录, '.$old_status;
+            $content = '审核社团信息记录, '.$old_status;
         }
         $pushMsgObj = new PushMessage($this->u_id);
         $pushMsgObj->pushMessage($content);
@@ -67,9 +97,21 @@ class Club extends \Eloquent
     {
         $log = new LogUserProfileCensors();
         $log->u_id = $this->u_id;
-        $log->cate = 'organization';
+        $log->cate = 'club';
         $log->content = $content;
         $log->admin_id = Tools::getAdminId();
         $log->addLog();
+    }
+
+    // relation
+    //
+    public function user()
+    {
+        return $this->belongsTo('User', 'u_id', 'u_id');
+    }
+
+    public function school()
+    {
+        return $this->hasOne('DicSchool', 's_id', 't_id');
     }
 }

@@ -10,19 +10,21 @@ class OfficeWebUserController extends \BaseController
         $s_id = Input::get('s_id', 0);
         $s_name = Input::get('s_name', '');
         $name = Input::get('name', '');
-        $has_id_img = Input::get('has_id_img', 0);
-        $has_stu_img = Input::get('has_stu_img', 0);
+        $has_id_img = Input::get('has_id_img', -1);
+        $has_stu_img = Input::get('has_stu_img', -1);
 
 
         try {
             $query = DB::table('users')
-            ->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified')
+            ->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified', 'clubs.c_status AS club_status')
             ->leftJoin('tmp_user_profile_bases', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bases.u_id');
             })->leftJoin('tmp_user_profile_bankcards', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bankcards.u_id');
             })->leftJoin('dic_schools', function ($q) {
                 $q->on('dic_schools.t_id', '=', 'users.u_school_id');
+            })->leftJoin('clubs', function ($q) {
+                $q->on('clubs.u_id', '=', 'users.u_id');
             });
 
             if ($s_id) {
@@ -39,14 +41,18 @@ class OfficeWebUserController extends \BaseController
                 });
             }
 
-            if ($has_id_img) {
+            if ($has_id_img == 1) {
                 $query = $query->whereNotNull('tmp_user_profile_bases.u_id_imgs')->where('tmp_user_profile_bases.u_id_imgs', '<>', '');
+            } elseif ($has_id_img == 0) {
+                $query = $query->whereNull('tmp_user_profile_bases.u_id_imgs')->where('tmp_user_profile_bases.u_id_imgs', '=', '');
             }
 
-            if ($has_stu_img) {
+            if ($has_stu_img == 1) {
                 $query = $query->whereNotNull('tmp_user_profile_bases.u_student_imgs')->where('tmp_user_profile_bases.u_student_imgs', '<>', '');
+            } elseif ($has_stu_img == 0) {
+                $query = $query->whereNull('tmp_user_profile_bases.u_student_imgs')->where('tmp_user_profile_bases.u_student_imgs', '=', '');
             }
-            // var_dump($query->toSql());exit;
+
             $list = $query->paginate($per_page);
             $array = $list->toArray();
             $data['rows'] = [];
@@ -80,6 +86,7 @@ class OfficeWebUserController extends \BaseController
             $user = User::find($id);
             $bank = TmpUserProfileBankcard::find($id);
             $base = TmpUserProfileBase::find($id);
+            $club = Club::where('u_id', '=', $id)->first();
 
             if (empty($user)) {
                 throw new Exception("查找的用户的不存在", 10001);
@@ -100,13 +107,20 @@ class OfficeWebUserController extends \BaseController
                 $user_base = $base->showDetail();
             }
 
+            if (empty($club)) {
+                $club_info = [];
+            } else {
+                $club_info = $club->showDetail();
+            }
+
             $data = [];
             $data['bank'] = $user_bank;
             $data['base'] = $user_base;
+            $data['club'] = $club_info;
 
             $re = Tools::reTrue('获取用户信息成功', $data);
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '获取用户信息成功:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '获取用户信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
@@ -292,6 +306,30 @@ class OfficeWebUserController extends \BaseController
             $re = Tools::reTrue('审核用户身份证信息成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '审核用户身份证信息失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function censorUserProfileClub($id)
+    {
+        $check = Input::get('check');
+        $remark = Input::get('remark');
+
+        try {
+            $club = Club::where('u_id', '=', $id)->first();
+            if (empty($club)) {
+                throw new Exception("该用户没有可用的社团", 10001);
+            }
+            if ($check == 1) {
+                $club->c_status = 1;
+            } else {
+                $club->c_status = 2;
+            }
+            $club->remark = $remark;
+            $club->censor();
+            $re = Tools::reTrue('审核社团信息成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '审核社团信息失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
