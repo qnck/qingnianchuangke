@@ -15,9 +15,8 @@ class OfficeWebUserController extends \BaseController
 
 
         try {
-            $query = DB::table('users')->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name',
-                'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs',
-                'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified')
+            $query = DB::table('users')
+            ->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified')
             ->leftJoin('tmp_user_profile_bases', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bases.u_id');
             })->leftJoin('tmp_user_profile_bankcards', function ($q) {
@@ -36,7 +35,7 @@ class OfficeWebUserController extends \BaseController
 
             if ($name) {
                 $query = $query->where(function ($q) use ($name) {
-                    $q->where('users.u_name','LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%');
+                    $q->where('users.u_name', 'LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%');
                 });
             }
 
@@ -198,7 +197,6 @@ class OfficeWebUserController extends \BaseController
             if ($tmp_bank->b_status == 1) {
                 throw new Exception("审核已经通过了", 10002);
             }
-
             $bank = UserProfileBankcard::find($id);
             if (empty($bank)) {
                 $bank = new UserProfileBankcard();
@@ -233,17 +231,24 @@ class OfficeWebUserController extends \BaseController
         try {
             $tmp = TmpUserProfileBase::find($id);
             $base = UserProfileBase::find($id);
+            $log = new LogUserProfileCensors();
+            $log->u_id = $id;
+            $log->cate = 'base';
+            $log->admin_id = Tools::getAdminId();
             if ($check == 1) {
                 $tmp->u_is_id_verified = 1;
                 if (!empty($base)) {
                     $base->u_is_id_verified = 1;
                 }
+                $log->content = '认证用户身份证信息: 通过';
             } else {
                 $tmp->u_is_id_verified = 2;
                 if (!empty($base)) {
                     $base->u_is_id_verified = 2;
                 }
+                $log->content = '认证用户身份证信息: 不通过';
             }
+            $log->addLog();
             $tmp->save();
             if (!empty($base)) {
                 $base->save();
@@ -262,17 +267,24 @@ class OfficeWebUserController extends \BaseController
         try {
             $tmp = TmpUserProfileBase::find($id);
             $base = UserProfileBase::find($id);
+            $log = new LogUserProfileCensors();
+            $log->u_id = $id;
+            $log->cate = 'base';
+            $log->admin_id = Tools::getAdminId();
             if ($check == 1) {
                 $tmp->u_is_student_verified = 1;
                 if (!empty($base)) {
                     $base->u_is_student_verified = 1;
                 }
+                $log->content = '认证用户学生证信息: 通过';
             } else {
                 $tmp->u_is_student_verified = 2;
                 if (!empty($base)) {
                     $base->u_is_student_verified = 2;
                 }
+                $log->content = '认证用户学生证信息: 不通过';
             }
+            $log->addLog();
             $tmp->save();
             if (!empty($base)) {
                 $base->save();
@@ -294,11 +306,18 @@ class OfficeWebUserController extends \BaseController
             if (empty($user)) {
                 throw new Exception("没有找到请求的用户", 10001);
             }
+            $log = new LogUserProfileCensors();
+            $log->u_id = $user->u_id;
+            $log->cate = 'base';
+            $log->admin_id = Tools::getAdminId();
             if ($status == 1) {
                 $status = 1;
+                $log->content = '用户状态修改为: 启用';
             } else {
                 $status = -1;
+                $log->content = '用户状态修改为: 禁用';
             }
+            $log->addLog();
             $user->u_status = $status;
             $user->u_remark = $remark;
             $user->save();

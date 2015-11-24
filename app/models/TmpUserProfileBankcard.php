@@ -8,6 +8,24 @@ class TmpUserProfileBankcard extends Eloquent
     public $primaryKey = 'u_id';
     public $timestamps = false;
 
+    public static function getStutus($key = null, $all = false)
+    {
+        $status = [
+            '0' => '待审核',
+            '1' => '审核通过',
+            '2' => '审核不通过'
+        ];
+        if ($key !== null && array_key_exists($key, $status)) {
+            return $status[$key];
+        } else {
+            if ($all) {
+                return $status;
+            } else {
+                return '未知状态';
+            }
+        }
+    }
+
     private function baseValidate()
     {
         $validator = Validator::make(
@@ -86,7 +104,9 @@ class TmpUserProfileBankcard extends Eloquent
 
     public function censor()
     {
-        $old_status = '审核之前的状态为: '.$this->getOriginal('b_status').', 审核之后的状态为: '.$this->b_status.'.';
+        $original_status = $this->getOriginal('b_status');
+        $new_status = $this->b_status;
+        $old_status = '审核之前的状态为: '.TmpUserProfileBankcard::getStutus($original_status).', 审核之后的状态为: '.TmpUserProfileBankcard::getStutus($new_status).'.';
         if ($this->b_status == 2) {
             $content = '用户银行卡信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->b_status == 1) {
