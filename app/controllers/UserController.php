@@ -110,6 +110,7 @@ class UserController extends \BaseController
         $pass = Input::get('pass');
         $school_id = Input::get('school');
         $vCode = Input::get('vcode');
+        $invite_code = Input::get('invite_code');
         try {
             // AES crypt
             $pass = Tools::qnckDecrytp($pass);
@@ -132,6 +133,7 @@ class UserController extends \BaseController
             $wallet->w_balance = 0.00;
             $wallet->w_freez = 0.00;
             $wallet->save();
+            User::thanksForInvite($invite_code);
             $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];

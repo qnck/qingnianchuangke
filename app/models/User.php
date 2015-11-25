@@ -42,9 +42,18 @@ class User extends Eloquent
     {
         $token = Str::random(32);
         if (User::where('u_token', '=', $token)->count() > 0) {
-            $this->checkTokenUniqueness();
+            $token = $this->getUniqueToken();
         }
         return $token;
+    }
+
+    public function getInviteCode()
+    {
+        $code = Str::random(6);
+        if (User::where('invite_code', '=', $token)->count() > 0) {
+            $code = $this->getInviteCode();
+        }
+        return $code;
     }
 
     /**
@@ -55,8 +64,6 @@ class User extends Eloquent
     public function register()
     {
         $this->baseValidate();
-        // generate token
-        $this->u_token = $this->getUniqueToken();
         if (empty($this->u_school_id)) {
             throw new Exception("没有传入有效的学校", 1);
         }
@@ -64,6 +71,9 @@ class User extends Eloquent
         if (User::where('u_mobile', '=', $this->u_mobile)->count() > 0) {
             throw new Exception("手机号码已被使用", 1);
         }
+        // generate token
+        $this->u_token = $this->getUniqueToken();
+        $this->invite_code = $this->getInviteCode();
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
@@ -472,6 +482,20 @@ class User extends Eloquent
             $verify_tag = '';
         }
         return ['verify_tag' => $verify_tag, 'verify_type' => $verify_type];
+    }
+
+    public static function thanksForInvite($code)
+    {
+        if (!$code) {
+            return true;
+        }
+        $user = User::where('invite_code', '=', $code)->first();
+        if (empty($user)) {
+            throw new Exception("无法找到输入的邀请码", 2001);
+        }
+        $wallet = UsersWalletBalances::find($user->u_id);
+        $wallet->putIn(5);
+        return true;
     }
 
     public static function filterByDistance($lat, $lng, $distance)
