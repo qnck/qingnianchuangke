@@ -16,9 +16,9 @@ class MigratePatch20151121Ad extends Migration {
             $table->increments('e_id');
             $table->integer('o_id');        // 企业id
             $table->string('e_title', 63);      // 标题
-            $table->string('cover_img', 1023);  // 封面图
-            $table->string('e_brief', 511);     // 简述
-            $table->string('url', 511);         // url
+            $table->string('cover_img', 1023)->nullable();  // 封面图
+            $table->string('e_brief', 511)->nullable();     // 简述
+            $table->string('url', 511)->nullable();         // url
             $table->tinyInteger('e_range');     // 1-全国, 2-城市, 3-学校
             $table->timestamp('e_start_at');  // 开始时间
             $table->timestamp('e_end_at');    // 结束时间

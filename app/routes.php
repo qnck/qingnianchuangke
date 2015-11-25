@@ -48,6 +48,9 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
 
     /* ME START*/
     Route::get('v0/user/me', 'MeController@me');
+    Route::get('v0/user/me/notification', 'MeNotificationController@listNots');
+    Route::get('v0/user/me/notification/{id}', 'MeNotificationController@getNot')->where('id', '[0-9]+');
+    Route::get('v0/user/me/notification/count', 'MeNotificationController@countNots');
     Route::get('v0/user/me/posts', 'MeController@myPosts');
     Route::get('v0/user/me/reply', 'MeController@myReply');
     Route::get('v0/user/me/praise', 'MeController@myPraise');
