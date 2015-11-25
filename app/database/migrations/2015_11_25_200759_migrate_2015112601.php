@@ -20,7 +20,7 @@ class Migrate2015112601 extends Migration {
             WHERE t1.cf_id = t2.cf_id;');
 
         Schema::table('users', function ($table) {
-            $table->string('invite_code', 7);
+            $table->string('invite_code', 7)->default('')->nullable();
         });
     }
 

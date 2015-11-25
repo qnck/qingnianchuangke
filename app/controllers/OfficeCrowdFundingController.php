@@ -44,7 +44,6 @@ class OfficeCrowdFundingController extends \BaseController
         try {
             $funding = CrowdFunding::find($id);
             if ($check == 1) {
-                $funding->active_at = Tools::getNow();
                 $funding->c_status = 4;
             } else {
                 $funding->c_status = 2;

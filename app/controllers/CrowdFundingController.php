@@ -210,12 +210,20 @@ class CrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $funding = CrowdFunding::find($id);
-            $date_end = new DateTime($funding->active_at);
-            $date_end->modify('+ '.$funding->c_time.' days');
+            $date_end = new DateTime($funding->end_at);
+            $date_start = new DateTime($funding->active_at);
 
             $now = new DateTime();
             if ($now > $date_end) {
                 throw new Exception("抱歉, 众筹已经结束", 2001);
+            }
+
+            if ($now < $date_start) {
+                throw new Exception("抱歉, 众筹还未开始", 2001);
+            }
+
+            if ($funding->c_status != 4) {
+                throw new Exception("抱歉, 无效的众筹状态", 2001);
             }
 
             $validator = Validator::make(
