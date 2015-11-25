@@ -87,6 +87,7 @@ class PushMessage extends Eloquent
         $not->n_url = '';
         $not->n_type = 2;
         $not->n_cate = 0;
+        $not->n_cate_id = 0;
         $not->addNot();
         $receiver = new NotificationReceiver();
         $receiver->n_id = $not->n_id;

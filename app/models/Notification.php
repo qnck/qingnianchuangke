@@ -16,6 +16,8 @@ class Notification extends Eloquent
         $data['brief'] = $this->n_brief;
         $data['url'] = $this->n_url;
         $data['type'] = $this->n_type;
+        $data['cate'] = $this->n_cate;
+        $data['cate_id'] = $this->n_cate_id;
         $time = new DateTime($this->created_at);
         $data['created_at'] = $time->format('Y-m-d H:i:s');
         if (empty($this->is_read)) {

@@ -108,7 +108,7 @@ class OfficeWebUserController extends \BaseController
             }
 
             if (empty($club)) {
-                $club_info = [];
+                $club_info = null;
             } else {
                 $club_info = $club->showDetail();
             }

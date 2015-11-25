@@ -33,6 +33,8 @@ class EventItem extends Eloquent
                 $positions[] = $position->showInList();
             }
             $data['positions'] = $positions;
+        } else {
+            $data['positions'] = null;
         }
 
         if (count($this->ranges) > 0) {

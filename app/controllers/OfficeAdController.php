@@ -16,9 +16,9 @@ class OfficeAdController extends \BaseController
                 $data['rows'][] = $ad->showDetail();
             }
             $data['total'] = $list->getTotal();
-            $re = Tools::reTrue('获取广告成功', $data);
+            $re = Tools::reTrue('获取广告成功', $data, $list);
         } catch (Exception $e) {
-            $re = Tools::reTrue($e->getCode(), '获取广告失败:'.$e->getMessage());            
+            $re = Tools::reTrue($e->getCode(), '获取广告失败:'.$e->getMessage());
         }
         return Response::json($re);
     }
