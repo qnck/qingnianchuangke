@@ -42,6 +42,9 @@ class Club extends \Eloquent
         $data['brief'] = $this->c_brief;
         $data['official_url'] = $this->c_official_url;
         $data['imgs'] = Img::toArray($this->c_imgs);
+        if (empty($data['imgs']['club_proof_img'])) {
+            $data['imgs']['club_proof_img'] = null;
+        }
         $data['status'] = $this->c_status;
         $data['remark'] = $this->remark;
         if (!empty($this->school)) {
