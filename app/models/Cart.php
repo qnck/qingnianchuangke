@@ -173,14 +173,16 @@ class Cart extends Eloquent
 
         // push msg to seller
         $booth = Booth::find($this->b_id);
-        $msg = new PushMessage($booth->u_id);
-        $msg->pushMessage('您的众筹已有人认购');
 
         $product = CrowdFundingProduct::find($this->p_id);
         $product->confirmProduct($this->c_quantity);
         $funding = CrowdFunding::find($product->cf_id);
         $funding->c_amount += $this->c_amount;
         $funding->save();
+
+        $msg = new MessageDispatcher($booth->u_id);
+        $msg->fireCateToUser('您的众筹已有人认购', 1, $funding->cf_id);
+
         return true;
     }
 

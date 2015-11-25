@@ -184,8 +184,8 @@ class Booth extends Eloquent
         } else {
             $content = '审核店铺记录, '.$old_status;
         }
-        $pushMsgObj = new PushMessage($this->u_id);
-        $pushMsgObj->pushMessage($content);
+        $msg = new MessageDispatcher($this->u_id);
+        $msg->fireTextToUser($content);
         $this->addCensorLog($content);
         return $this->save();
     }

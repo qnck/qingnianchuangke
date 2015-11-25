@@ -20,7 +20,7 @@ class Migrate2015112502Notifications extends Migration {
             $table->text('n_content')->nullable();
             $table->string('n_url', 511)->nullable();
             $table->tinyInteger('n_type');      //1-带跳转连接的 2-纯消息 3-APP内模块
-            $table->tinyInteger('n_cate')->nullable();   //对应模块 1-众筹, 2-商品精选, 3-flea精品
+            $table->tinyInteger('n_cate')->nullable();   //对应模块 1-众筹, 2-商品精选, 3-flea精品, 4-购买订单, 5-销售订单
             $table->integer('n_cate_id')->nullable();
             $table->tinyInteger('n_status');    // 1-可用 2-不可用
             $table->timestamp('created_at');

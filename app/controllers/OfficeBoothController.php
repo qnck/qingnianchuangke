@@ -134,8 +134,8 @@ class OfficeBoothController extends \BaseController
                 $status = -1;
                 $msg = '您的店铺['.$booth->b_title.']已被禁用';
             }
-            $pushMessage = new PushMessage($booth->u_id);
-            $pushMessage->pushMessage($msg);
+            $obj = new MessageDispatcher($booth->u_id);
+            $obj->fireTextToUser($msg);
             $booth->b_status = $status;
             $booth->remark = $remark;
             $booth->save();

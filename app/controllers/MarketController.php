@@ -733,8 +733,8 @@ class MarketController extends \BaseController
             // push msg to seller
             $list = Booth::whereIn('b_id', $b_ids)->get();
             foreach ($list as $key => $booth) {
-                $msg = new PushMessage($booth->u_id);
-                $msg->pushMessage('您有新的订单, 请及时发货');
+                $obj = new MessageDispatcher($booth->u_id);
+                $obj->fireTextToUser('您有新的订单, 请及时发货');
             }
             $re = Tools::reTrue('提交订单成功', ['order_no' => $order_group_no]);
             DB::commit();
