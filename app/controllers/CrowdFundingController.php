@@ -23,6 +23,8 @@ class CrowdFundingController extends \BaseController
         $city = Input::get('city', 0);
         $school = Input::get('school', 0);
 
+        $filter_option = Input::get('filter_option', 0);    //1-about to start, 2-hot, 3-about to end
+
         $key = Input::get('key', '');
 
         try {
@@ -53,6 +55,31 @@ class CrowdFundingController extends \BaseController
             if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
+
+            if ($filter_option == 1) {
+                $date = Tools::getNow(false);
+                $now = $date->format('Y-m-d H:i:s');
+                $date->modify('+1 day');
+                $target = $date->format('Y-m-d H:i:s');
+                $query = $query->where('crowd_fundings.active_at', '>', $now)->where('crowd_fundings.active_at', '<', $target);
+            }
+
+            if ($filter_option == 2) {
+                $query = $query->leftJoin('crowd_funding_products', function ($q) {
+                    $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
+                })->orderBy('crowd_funding_products.p_sold_quantity', 'DESC')->groupBy('crowd_fundings.cf_id');
+            } else {
+                $query = $query->orderBy('crowd_fundings.end_at', 'DESC');
+            }
+
+            if ($filter_option == 3) {
+                $date = Tools::getNow(false);
+                $now = $date->format('Y-m-d H:i:s');
+                $date->modify('+1 day');
+                $target = $date->format('Y-m-d H:i:s');
+                $query = $query->where('crowd_fundings.end_at', '<', $target);
+            }
+
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
                     $q->where('crowd_fundings.c_title', 'LIKE', '%'.$key.'%')
@@ -61,7 +88,7 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->remember(5)->paginate($per_page);
+            $list = $query->remember(5)->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();

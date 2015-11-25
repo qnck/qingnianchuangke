@@ -14,7 +14,6 @@ class MarketController extends \BaseController
         $is_follow = Input::get('is_follow', 0);
         $cate = Input::get('cate', 0);
 
-        $page = Input::get('page', 1);
         $perPage = Input::get('per_page', 30);
 
         try {
@@ -110,7 +109,8 @@ class MarketController extends \BaseController
         $is_follow = Input::get('is_follow', 0);
         $cate = Input::get('cate', 0);
 
-        $page = Input::get('page', 1);
+        $filter_option = Input::get('filter_option', 0);        // 1-within 1 day, 2-within 3 days, 3-within 7 days
+
         $perPage = Input::get('per_page', 30);
 
         try {
@@ -170,7 +170,22 @@ class MarketController extends \BaseController
                     ->orWhere('products.p_desc', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->orderBy('products.created_at', 'DESC')->remember(5)->paginate($perPage);
+
+            if ($filter_option) {
+                if ($filter_option == 1) {
+                    $days = 1;
+                } elseif ($filter_option == 2) {
+                    $days = 3;
+                } else {
+                    $days = 7;
+                }
+                $now = Tools::getNow(false);
+                $now->modify('-'.$days.' days');
+                $date = $now->format('Y-m-d H:i:s');
+                $query = $query->where('products.active_at', '>', $date);
+            }
+
+            $list = $query->orderBy('products.active_at', 'DESC')->remember(5)->paginate($perPage);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
@@ -209,7 +224,6 @@ class MarketController extends \BaseController
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
 
-        $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
 
         try {
@@ -246,7 +260,6 @@ class MarketController extends \BaseController
         $cate = Input::get('cate', 0);
         $u_id = Input::get('u_id', 0);
 
-        $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
 
         try {
@@ -390,7 +403,6 @@ class MarketController extends \BaseController
         $b_id = Input::get('booth', 0);
         $key = Input::get('key', '');
 
-        $page = Input::get('page', 0);
         $perPage = Input::get('per_page', 30);
 
         try {
