@@ -14,11 +14,15 @@ class MeProductController extends \BaseController
         $prodBrief = Input::get('prod_brief', '');
         $price = Input::get('price', '');
         $publish = Input::get('publish', 1);
-        $product_cate = Input::get('cate');
+        $product_cate = Input::get('cate', 7);
+        $active_at = Input::get('active_at');
+        if (empty($active_at)) {
+            $active_at = Tools::getNow();
+        }
 
         $open_file = Input::get('open_file', 0);
         if (!$product_cate) {
-            $product_cate = 6;
+            $product_cate = 7;
         }
         $prodDesc = urldecode($prodDesc);
         $imgToken = Input::get('img_token', '');
@@ -53,6 +57,7 @@ class MeProductController extends \BaseController
             $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
             $product->p_cate = $product_cate;
+            $product->active_at = $active_at;
             $product->p_type = 2;
             $product->open_file = $open_file;
             $p_id = $product->addProduct();
@@ -84,19 +89,31 @@ class MeProductController extends \BaseController
         $u_id = Input::get('u_id', 0);
 
         $prodName = Input::get('prod_name', '');
+        $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
-        $prodDesc = Input::get('prod_desc', '');
+        $price = Input::get('price', '');
         $publish = Input::get('publish', 1);
         $product_cate = Input::get('cate', 7);
+        $active_at = Input::get('active_at');
+        if (empty($active_at)) {
+            $active_at = Tools::getNow();
+        }
 
         $imgToken = Input::get('img_token', '');
 
+        $prodDesc = urldecode($prodDesc);
+
+        $modified_img = Input::get('modified_img', '');
+        $modified_img_index = Input::get('modified_img_index', '');
+
+        if ($modified_img) {
+            $modified_img = explode(',', $modified_img);
+        }
+
         try {
             $user = User::chkUserByToken($token, $u_id);
-
             $product = Product::find($id);
-
-            if (!isset($product->p_id) || $product->u_id != $u_id) {
+            if (empty($product) || $product->u_id != $u_id) {
                 throw new Exception("没有找到请求的产品", 1);
             }
 
@@ -106,17 +123,80 @@ class MeProductController extends \BaseController
             $product->p_cate = $product_cate;
             $product->p_brief = $prodBrief;
             $product->p_status = $publish == 1 ? 1 : 2;
+            $product->p_price_origin = $price;
+            $product->p_price = $price;
+            $product->active_at = $active_at;
 
+            if (is_numeric($modified_img_index)) {
+                $imgObj = new Img('product', $img_token);
+                $new_paths = [];
+                if (!empty($modified_img)) {
+                    foreach ($modified_img as $old_path) {
+                        $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
+                        $new_paths[] = $new_path;
+                        $modified_img_index++;
+                    }
+                    $to_delete = Img::toArray($product->p_imgs);
+                    foreach ($to_delete as $obj) {
+                        if (!in_array($obj, $new_paths)) {
+                            $imgObj->remove($id, $obj);
+                        }
+                    }
+                    $new_paths = Img::attachHost($new_paths);
+                    
+                    $product->p_imgs = implode(',', $new_paths);
+                }
+            }
+
+            if ($img_token) {
+                $imgObj = new Img('crowd_funding', $img_token);
+                $imgs = $imgObj->getSavedImg($crowd_funding->cf_id, $crowd_funding->c_imgs, true);
+                $crowd_funding->c_imgs = implode(',', $imgs);
+            }
             if ($imgToken) {
                 $imgObj = new Img('product', $imgToken);
                 $imgs = $imgObj->getSavedImg($id, $product->p_imgs, true);
+                if (!empty($modified_img)) {
+                    foreach ($modified_img as $del) {
+                        if (array_key_exists($del, $imgs)) {
+                            unset($imgs[$del]);
+                        }
+                    }
+                }
                 $product->p_imgs = implode(',', $imgs);
-                $product->save();
             }
+            $product->save();
 
             $re = Tools::reTrue('更新产品成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '更新产品失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
+    public function delFlea($id)
+    {
+        $token = Input::get('token', '');
+        $u_id = Input::get('u_id', 0);
+
+        DB::beginTransaction();
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $product = Product::find($id);
+            if (empty($product) || $product->u_id != $u_id) {
+                throw new Exception("没有找到请求的产品", 2001);
+            }
+            $quantity = ProductQuantity::where('p_id', '=', $id)->first();
+            if (empty($quantity)) {
+                throw new Exception("获取库存信息失败", 2001);
+            }
+            $product->delete();
+            $quantity->delete();
+            $re = Tools::reTrue('删除成功');
+            DB::commit();
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '删除失败:'.$e->getMessage());
+            DB::rollback();
         }
         return Response::json($re);
     }

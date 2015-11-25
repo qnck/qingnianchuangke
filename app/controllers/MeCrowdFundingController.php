@@ -203,7 +203,6 @@ class MeCrowdFundingController extends \BaseController
                 $crowd_funding->c_cate = 8;
             }
 
-            // todo
             if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('crowd_funding', $img_token);
                 $new_paths = [];

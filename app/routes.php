@@ -110,6 +110,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/user/me/flea', 'MeProductController@postFlea');
     Route::put('v0/user/me/flea/{id}', 'MeProductController@putFlea');
     Route::get('v0/user/me/flea/{id}', 'MeProductController@getFlea');
+    Route::delete('v0/user/me/flea/{id}', 'MeProductController@delFlea');
     
     Route::get('v0/user/me/orders', 'MeController@listOrders');
     Route::get('v0/user/me/order/{id}', 'MeController@getOrder');

@@ -196,7 +196,6 @@ class Product extends Eloquent
         $this->sort = $sort;
         $this->p_reply_count = 0;
         $this->created_at = $now->format('Y-m-d H:i:s');
-        $this->active_at = $now->format('Y-m-d H:i:s');
         $this->save();
         return $this->p_id;
     }
