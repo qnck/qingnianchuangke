@@ -464,6 +464,26 @@
 		if(r!="") r = r.substring(0,r.length-1);
 		return r;
     }
+    function formatRange(value,row){
+		var r = "";
+    	if(value=="1"){
+    		r = "全国,";
+    	}
+		else if(value=="2")
+		{
+			$(row.ranges).each(function(){
+				r += this.school.school_name+",";
+			};
+		}
+		else if(value=="3")
+		{
+			$(row.ranges).each(function(){
+				r += this.city.name+",";
+			};
+		}
+		if(r!="") r = r.substring(0,r.length-1);
+		return r;
+    }
 </script>
 </head>
 
@@ -482,7 +502,7 @@
             <th data-options="field:'title',width:120,align:'left',halign:'center'">广告名称</th>
             <th data-options="field:'cover_img',width:200,align:'left',halign:'center',formatter:formatCoverImg">展示图片</th>
             <th data-options="field:'url',width:200,align:'left',halign:'center'">链接地址</th>
-            <th data-options="field:'range',width:200,align:'left',halign:'center'">发布范围</th>
+            <th data-options="field:'range',width:200,align:'left',halign:'center',formatter:formatRange">发布范围</th>
             <th data-options="field:'positions',width:200,align:'left',halign:'center',formatter:formatPositions">展示范围</th>
             <th data-options="field:'start_at',width:200,align:'left',halign:'center'">开始时间</th>
             <th data-options="field:'end_at',width:200,align:'left',halign:'center'">结束时间</th>
