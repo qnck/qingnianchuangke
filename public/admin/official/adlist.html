@@ -452,13 +452,13 @@
     function formatPositions(value,row,index){
     	var r = "";
     	if(value){
-	    	$(value.split(',')).each(function (){
+	    	$(value).each(function (){
 	    		if(this=="1")
-	    			r+"校园众筹,";
+	    			r+="校园众筹,";
 	    		else if(this=="2")
-	    			r+"店铺精选,";
-	    		else if(this=="")
-	    			r+"flea精品,";
+	    			r+="店铺精选,";
+	    		else if(this=="3")
+	    			r+="flea精品,";
 	    	});
     	}
 		if(r!="") r = r.substring(0,r.length-1);
@@ -472,13 +472,13 @@
 		else if(value=="2")
 		{
 			$(row.ranges).each(function(){
-				r += this.school.school_name+",";
+				r += this.city.name+",";
 			});
 		}
 		else if(value=="3")
 		{
 			$(row.ranges).each(function(){
-				r += this.city.name+",";
+				r += this.school.school_name+",";
 			});
 		}
 		if(r!="") r = r.substring(0,r.length-1);
@@ -494,6 +494,7 @@
             singleSelect:true,
             pagination:true,
             pageSize:20,
+            nowrap:false,
             idField:'id',
             toolbar:'#optionTollbar'">
     <thead>
@@ -503,9 +504,9 @@
             <th data-options="field:'cover_img',width:200,align:'left',halign:'center',formatter:formatCoverImg">展示图片</th>
             <th data-options="field:'url',width:200,align:'left',halign:'center'">链接地址</th>
             <th data-options="field:'range',width:200,align:'left',halign:'center',formatter:formatRange">发布范围</th>
-            <th data-options="field:'positions',width:200,align:'left',halign:'center',formatter:formatPositions">展示范围</th>
-            <th data-options="field:'start_at',width:200,align:'left',halign:'center'">开始时间</th>
-            <th data-options="field:'end_at',width:200,align:'left',halign:'center'">结束时间</th>
+            <th data-options="field:'positions',width:180,align:'left',halign:'center',formatter:formatPositions">展示范围</th>
+            <th data-options="field:'start_at',width:130,align:'left',halign:'center'">开始时间</th>
+            <th data-options="field:'end_at',width:130,align:'left',halign:'center'">结束时间</th>
             <!-- <th data-options="field:'options',width:180,align:'center',formatter:formatHandle">操作</th> -->
         </tr>
     </thead>
