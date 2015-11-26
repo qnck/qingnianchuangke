@@ -447,18 +447,20 @@
 		}
     }
     function formatCoverImg(value,row,index){
-    	return "<img src='"+vallue+"' style='width:160ox;height:100px;'/>";
+    	return "<img src='"+value+"' style='width:160ox;height:100px;'/>";
     }
     function formatPositions(value,row,index){
     	var r = "";
-    	$(value.split(',')).each(function (){
-    		if(this=="1")
-    			r+"校园众筹,";
-    		else if(this=="2")
-    			r+"店铺精选,";
-    		else if(this=="")
-    			r+"flea精品,";
-    	});
+    	if(value){
+	    	$(value.split(',')).each(function (){
+	    		if(this=="1")
+	    			r+"校园众筹,";
+	    		else if(this=="2")
+	    			r+"店铺精选,";
+	    		else if(this=="")
+	    			r+"flea精品,";
+	    	});
+    	}
 		if(r!="") r = r.substring(0,r.length-1);
 		return r;
     }

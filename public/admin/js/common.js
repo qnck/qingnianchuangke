@@ -69,3 +69,12 @@ function GetQueryString(name)
 	var r = window.location.search.substr(1).match(reg);
 	if(r!=null)return  unescape(r[2]); return null;
 }
+function loding(_msg) {
+    $.messager.progress({
+        title: '请稍后',
+        msg: _msg
+    });
+}
+function closeLoing() {
+    $.messager.progress('close');
+}
