@@ -13,7 +13,7 @@ class Migrate2015112602 extends Migration {
     public function up()
     {
         Schema::table('crowd_fundings', function ($table) {
-            $table->tinyInteger('c_local_only');    // 限制本校购买 0-否 1-是
+            $table->tinyInteger('c_local_only')->nullable();    // 限制本校购买 0-否 1-是
         });
 
         Schema::create('auctions', function ($table) {
