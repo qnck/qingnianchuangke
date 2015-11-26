@@ -127,7 +127,7 @@ class MeProductController extends \BaseController
             $product->p_price = $price;
             $product->active_at = $active_at;
 
-            if (is_numeric($modified_img_index) && $img_token) {
+            if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('product', $img_token);
                 $new_paths = [];
                 if (!empty($modified_img)) {
