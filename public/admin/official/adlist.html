@@ -473,13 +473,13 @@
 		{
 			$(row.ranges).each(function(){
 				r += this.school.school_name+",";
-			};
+			});
 		}
 		else if(value=="3")
 		{
 			$(row.ranges).each(function(){
 				r += this.city.name+",";
-			};
+			});
 		}
 		if(r!="") r = r.substring(0,r.length-1);
 		return r;
