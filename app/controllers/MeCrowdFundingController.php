@@ -271,7 +271,7 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception("无法获取到请求的众筹", 2001);
             }
 
-            if ($funding->c_status > 3) {
+            if ($crowd_funding->c_status > 3) {
                 throw new Exception("众筹状态已锁定", 2001);
             }
 
@@ -284,7 +284,7 @@ class MeCrowdFundingController extends \BaseController
             $re = Tools::reTrue('删除众筹成功');
             DB::commit();
         } catch (Exception $e) {
-            $re = Tools::reTrue($e->getCode(), '删除众筹失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '删除众筹失败:'.$e->getMessage());
             DB::rollback();
         }
         return Response::json($re);
