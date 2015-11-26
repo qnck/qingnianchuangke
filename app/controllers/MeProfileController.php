@@ -240,7 +240,7 @@ class MeProfileController extends \BaseController
             $profile->u_id_number = $id_number;
             $profile->u_student_number = $stu_num;
 
-            if (is_numeric($modified_img_index)) {
+            if (is_numeric($modified_img_index) && $img_token) {
                 $imgObj = new Img('user', $img_token);
                 $new_paths = [];
                 if (!empty($modified_img)) {
