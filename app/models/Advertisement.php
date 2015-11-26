@@ -24,12 +24,12 @@ class Advertisement extends Eloquent
         }
         if (empty($this->eventItem)) {
             $data['title'] = '';
-            $data['cover_img'] = '';
+            $data['cover_img'] = null;
             $data['url'] = '';
             $data['brief'] = '';
         } else {
             $data['title'] = $this->eventItem->e_title;
-            $data['cover_img'] = $this->eventItem->cover_img;
+            $data['cover_img'] = Img::toArray($this->eventItem->cover_img);
             $data['url'] = $this->eventItem->url;
             $data['brief'] = $this->eventItem->e_brief;
         }
