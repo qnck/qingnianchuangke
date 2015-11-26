@@ -25,7 +25,7 @@ class MeProductController extends \BaseController
             $product_cate = 7;
         }
         $prodDesc = urldecode($prodDesc);
-        $imgToken = Input::get('img_token', '');
+        $img_token = Input::get('img_token', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -69,8 +69,8 @@ class MeProductController extends \BaseController
 
             $quantity->addQuantity();
 
-            if ($imgToken) {
-                $imgObj = new Img('product', $imgToken);
+            if ($img_token) {
+                $imgObj = new Img('product', $img_token);
                 $imgs = $imgObj->getSavedImg($p_id, '', true);
                 $product->p_imgs = implode(',', $imgs);
                 $product->save();
@@ -99,7 +99,7 @@ class MeProductController extends \BaseController
             $active_at = Tools::getNow();
         }
 
-        $imgToken = Input::get('img_token', '');
+        $img_token = Input::get('img_token', '');
 
         $prodDesc = urldecode($prodDesc);
 
@@ -147,14 +147,8 @@ class MeProductController extends \BaseController
                     $product->p_imgs = implode(',', $new_paths);
                 }
             }
-
             if ($img_token) {
-                $imgObj = new Img('crowd_funding', $img_token);
-                $imgs = $imgObj->getSavedImg($crowd_funding->cf_id, $crowd_funding->c_imgs, true);
-                $crowd_funding->c_imgs = implode(',', $imgs);
-            }
-            if ($imgToken) {
-                $imgObj = new Img('product', $imgToken);
+                $imgObj = new Img('product', $img_token);
                 $imgs = $imgObj->getSavedImg($id, $product->p_imgs, true);
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $del) {
