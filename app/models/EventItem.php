@@ -24,7 +24,7 @@ class EventItem extends Eloquent
     {
         $data = [];
         $data['title'] = $this->e_title;
-        $data['cover_img'] = $this->cover_img;
+        $data['cover_img'] = Img::toArray($this->cover_img);
         $data['url'] = $this->url;
         $data['range'] = $this->e_range;
         if (count($this->positions) > 0) {

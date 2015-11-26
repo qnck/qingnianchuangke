@@ -21,6 +21,8 @@ class MeCrowdFundingController extends \BaseController
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
         $active_at = Input::get('active_at');
+        $local_only = Input::get('local_only', 0);
+
         if (empty($active_at)) {
             $active_at = Tools::getNow();
         }
@@ -76,6 +78,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
+            $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
             $date_obj = new DateTime($active_at);
             $date_obj->modify('+'.$time.' days');
@@ -141,6 +144,7 @@ class MeCrowdFundingController extends \BaseController
         $yield_desc = Input::get('yield_desc', '');
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
+        $local_only = Input::get('local_only', 0);
         $active_at = Input::get('active_at');
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -178,6 +182,7 @@ class MeCrowdFundingController extends \BaseController
             // put funding
             $crowd_funding->c_title = $title;
             $crowd_funding->c_brief = $brief;
+            $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;

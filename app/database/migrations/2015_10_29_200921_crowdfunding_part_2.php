@@ -51,7 +51,7 @@ class CrowdfundingPart2 extends Migration {
         });
 
         Schema::table('carts', function ($table) {
-            $table->tinyInteger('c_type');  // 购物车类型, 1-普通, 2-众筹, 3-二手
+            $table->tinyInteger('c_type');  // 购物车类型, 1-普通, 2-众筹, 3-二手, 4-拍卖
         });
     }
 

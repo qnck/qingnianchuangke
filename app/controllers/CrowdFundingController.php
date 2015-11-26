@@ -234,7 +234,12 @@ class CrowdFundingController extends \BaseController
                 $msg = $validator->messages();
                 throw new Exception($msg->first(), 7001);
             }
+
             $user = User::chkUserByToken($token, $u_id);
+            if ($funding->c_local_only && $funding->s_id != $user->u_school_id) {
+                throw new Exception("该众筹限制了只能在发布学校购买", 2001);
+            }
+
             $product = CrowdFundingProduct::find($p_id);
             if ($product->p_price == 0) {
                 if ($quantity != 1) {

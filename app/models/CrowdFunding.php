@@ -74,6 +74,7 @@ class CrowdFunding extends Eloquent
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
         $data['cate'] = $this->c_cate;
+        $data['local_only'] = $this->c_local_only;
         $data['cate_label'] = $this->getCateLabel();
         $data['amount'] = $this->c_amount;
         if ($this->product) {
@@ -124,6 +125,7 @@ class CrowdFunding extends Eloquent
         $data['cate'] = $this->c_cate;
         $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
+        $data['local_only'] = $this->c_local_only;
         $data['open_file'] = $this->c_open_file;
         $data['amount'] = $this->c_amount;
         if ($this->product) {
