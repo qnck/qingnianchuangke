@@ -33,6 +33,7 @@ class CrowdFundingController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
+            $now = Tools::getNow();
             $query = CrowdFunding::select('crowd_fundings.*')->with([
                 'city',
                 'school',
@@ -57,23 +58,23 @@ class CrowdFundingController extends \BaseController
             }
 
             if ($filter_option == 1) {
-                $date = Tools::getNow(false);
-                $now = $date->format('Y-m-d H:i:s');
-                $date->modify('+1 day');
-                $target = $date->format('Y-m-d H:i:s');
-                $query = $query->where('crowd_fundings.active_at', '>', $now)->where('crowd_fundings.active_at', '<', $target);
+                $query = $query->where('crowd_fundings.active_at', '>', $now);
             }
 
             if ($filter_option == 2) {
-
+                // time passed more than 20%, less than 50%, and gathered more than 60% quantity
+                $query = $query->whereRaw('(DATEDIFF(CURDATE(), t_crowd_fundings.active_at)) > (t_crowd_fundings.c_time * 0.2)')
+                ->whereRaw('(DATEDIFF(CURDATE(), t_crowd_fundings.active_at)) < (t_crowd_fundings.c_time * 0.5)')
+                ->join('crowd_funding_products', function ($q) {
+                    $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
+                })->whereRaw('t_crowd_funding_products.p_sold_quantity > (t_crowd_funding_products.p_target_quantity * 0.6)')
+                ->where('crowd_fundings.active_at', '<', $now);
             }
 
             if ($filter_option == 3) {
-                $date = Tools::getNow(false);
-                $now = $date->format('Y-m-d H:i:s');
-                $date->modify('+1 day');
-                $target = $date->format('Y-m-d H:i:s');
-                $query = $query->where('crowd_fundings.end_at', '<', $target);
+                // left time is less than 20%
+                $query = $query->whereRaw('(t_crowd_fundings.c_time - DATEDIFF(t_crowd_fundings.end_at, CURDATE())) < (t_crowd_fundings.c_time * 0.2)')
+                ->where('crowd_fundings.end_at', '>', $now);
             }
 
             if ($key) {

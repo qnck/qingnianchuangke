@@ -487,7 +487,7 @@ class User extends Eloquent
         return ['verify_tag' => $verify_tag, 'verify_type' => $verify_type];
     }
 
-    public static function thanksForInvite($code)
+    public static function thanksForInvite($code, $u_id)
     {
         if (!$code) {
             return true;
@@ -496,8 +496,13 @@ class User extends Eloquent
         if (empty($user)) {
             throw new Exception("无法找到输入的邀请码", 2001);
         }
+        $reward = '5.00';
+        $log = new LogUserInviteCode();
+        $log->u_id = $u_id;
+        $log->inviter_id = $user->u_id;
+        $log->amount = $reward;
         $wallet = UsersWalletBalances::find($user->u_id);
-        $wallet->putIn(5);
+        $wallet->putIn($reward);
         return true;
     }
 

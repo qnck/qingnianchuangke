@@ -133,7 +133,7 @@ class UserController extends \BaseController
             $wallet->w_balance = 0.00;
             $wallet->w_freez = 0.00;
             $wallet->save();
-            User::thanksForInvite($invite_code);
+            User::thanksForInvite($invite_code, $user->u_id);
             $re = ['data' => $data, 'result' => 2000, 'info' => '注册成功'];
         } catch (Exception $e) {
             $re = ['data' => [], 'info' => $e->getMessage(), 'result' => 2001];

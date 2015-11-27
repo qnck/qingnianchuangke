@@ -12,15 +12,18 @@ class Migrate2015112701 extends Migration {
      */
     public function up()
     {
-        $list = User::whereNull('u_invite_code')->orWhere('u_invite_code', '=', '')->get();
-        foreach ($list as $key => $user) {
-            $user->u_invite_code = $user->getInviteCode();
-            $user->save();
-        }
+        // $list = User::whereNull('u_invite_code')->orWhere('u_invite_code', '=', '')->get();
+        // foreach ($list as $key => $user) {
+        //     $user->u_invite_code = $user->getInviteCode();
+        //     $user->save();
+        // }
 
-        Schema::create('log_user_invite_code', function ($table) {
+        Schema::create('log_user_invite_codes', function ($table) {
             $table->increments('id');
-            $table->
+            $table->integer('inviter_id');
+            $table->integer('u_id');
+            $table->decimal('amount');
+            $table->timestamp('created_at');
         });
     }
 
