@@ -50,9 +50,10 @@ class User extends Eloquent
     public function getInviteCode()
     {
         $code = Str::random(6);
-        if (User::where('invite_code', '=', $token)->count() > 0) {
+        if (User::where('u_invite_code', '=', $code)->count() > 0) {
             $code = $this->getInviteCode();
         }
+        $code = strtoupper($code);
         return $code;
     }
 
@@ -73,7 +74,7 @@ class User extends Eloquent
         }
         // generate token
         $this->u_token = $this->getUniqueToken();
-        $this->invite_code = $this->getInviteCode();
+        $this->u_invite_code = $this->getInviteCode();
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
@@ -83,6 +84,7 @@ class User extends Eloquent
         $re['token'] = $this->u_token;
         $now = new Datetime();
         $now->modify('+ 30 days');
+        $re['invite_code'] = $this->u_invite_code;
         $re['expire'] = $now->format('Y-m-d H:i:s');
         $re['mobile'] = $this->u_mobile;
         $re['id'] = $this->u_id;
@@ -123,6 +125,7 @@ class User extends Eloquent
             $now = new Datetime();
             $now->modify('+ 30 days');
             $re['expire'] = $now->format('Y-m-d H:i:s');
+            $re['invite_code'] = $user->u_invite_code;
             $re['id'] = $user->u_id;
             $re['name'] = $user->u_name;
             $re['mobile'] = $user->u_mobile;
@@ -489,7 +492,7 @@ class User extends Eloquent
         if (!$code) {
             return true;
         }
-        $user = User::where('invite_code', '=', $code)->first();
+        $user = User::where('u_invite_code', '=', $code)->first();
         if (empty($user)) {
             throw new Exception("无法找到输入的邀请码", 2001);
         }

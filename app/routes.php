@@ -150,6 +150,12 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/friend/check', 'MeFriendController@check');
     /* ME FRIEND END*/
 
+    /* ME AUCTION START*/
+    Route::get('v0/user/me/auction', 'MeAuctionController@listAuctions');
+    Route::get('v0/user/me/auction/{id}/bid', 'MeAuctionController@listBids');
+    Route::post('v0/user/me/auction/{id}/order', 'MeAuctionController@postOrder');
+    /* ME AUCTION END*/
+
     /* USER START*/
     Route::get('v0/user/search', 'UserController@search');
     Route::get('v0/user/{id}/follow', 'UserController@follow');
@@ -255,6 +261,12 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::post('v0/product/{id}/praise', 'ProductController@postPraise');
     Route::post('v0/product/{id}/favorite', 'ProductController@postFavorite');
     /* PRODUCT END*/
+
+    /* AUCTION START*/
+    Route::get('v0/auction/show', 'AuctionController@show');
+    Route::get('v0/auction', 'AuctionController@listAuctions');
+    Route::post('v0/auction/{id}/bid', 'AuctionController@bid');
+    /* AUCTION END*/
 
     /* REPLY START*/
     Route::get('v0/reply/related', 'ReplyController@getRelatedRelpies');

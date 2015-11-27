@@ -49,7 +49,7 @@ class MigratePatch20151121Ad extends Migration {
         });
 
         Schema::table('users', function ($table) {
-            $table->string('u_invite_code', 31);    // 邀请码
+            $table->string('u_invite_code', 7)->default('')->nullable();    // 邀请码
         });
     }
 

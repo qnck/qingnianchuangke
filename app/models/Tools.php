@@ -97,6 +97,11 @@ class Tools
         }
     }
 
+    public static function getMakerBooth()
+    {
+        return 1;
+    }
+
     public static function checkNoImg($img)
     {
         $no_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/noimg.jpg';
