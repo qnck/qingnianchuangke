@@ -58,6 +58,15 @@ class MeAuctionController extends BaseController
                 throw new Exception("出价信息有误", 2001);
             }
 
+            $limit = new DateTime($auction->eventItem->e_end_at);
+            $limit->modify('+3 days');
+            $now = Tools::getNow(false);
+            if ($limit < $now) {
+                $auction->a_status = 4;
+                $auction->save();
+                throw new Exception("竞拍已超时, 无法购买", 2);  //when exception code is 2, commit anyway after catch
+            }
+
              // add cart
             $cart = new Cart();
             $cart->p_id = $p_id;
@@ -110,7 +119,11 @@ class MeAuctionController extends BaseController
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提交订单失败:'.$e->getMessage());
-            DB::rollback();
+            if ($e->getCode() == 2) {
+                DB::commit();
+            } else {
+                DB::rollback();
+            }
         }
         return Response::json($re);
     }

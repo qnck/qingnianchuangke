@@ -175,7 +175,7 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception("无法获取到请求的众筹", 2001);
             }
 
-            if ($funding->c_status > 3) {
+            if ($crowd_funding->c_status > 3) {
                 throw new Exception("众筹状态已锁定", 2001);
             }
 
