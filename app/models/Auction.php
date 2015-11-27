@@ -21,6 +21,7 @@ class Auction extends Eloquent
         $data['win_price'] = $this->a_win_price;
         $data['status'] = $this->a_status;
         $data['cost'] = $this->a_cost;
+        $data['current_time'] = Tools::getNow();
         if (empty($this->eventItem)) {
             $data['title'] = '';
             $data['start_at'] = '';
