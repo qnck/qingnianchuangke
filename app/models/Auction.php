@@ -60,7 +60,7 @@ class Auction extends Eloquent
         if (empty($list)) {
             throw new Exception("无人出价", 2001);
         }
-        $win = reset($list);
+        $win = $list->first();
         if ($win->is_win) {
             throw new Exception("中奖信息已处理", 2001);
         }
@@ -69,10 +69,9 @@ class Auction extends Eloquent
         $auction->a_win_id = $win->b_id;
         $auction->a_win_price = $win->b_price;
         $auction->a_status = 2;
-        $auction->save();
 
         foreach ($list as $key => $bid) {
-            if ($key == 0 || $bid->u_id == $win->u_id) {
+            if ($bid->u_id == $win->u_id) {
                 continue;
             } else {
                 $msg = new MessageDispatcher($bid->u_id);
@@ -81,10 +80,12 @@ class Auction extends Eloquent
         }
 
         $msg = new MessageDispatcher($win->u_id, 1, 1, 1);
+        $msg->setMessage(['phone' => $user->u_mobile]);
         $msg->fireTextToUser('恭喜你获得竞拍');
 
         $win->is_win = 1;
         $win->is_pay = 0;
+        $auction->save();
         $win->save();
         return true;
     }
