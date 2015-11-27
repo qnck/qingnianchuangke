@@ -14,7 +14,7 @@ class AuctionController extends \BaseController
             })->where('event_items.e_end_at', '>', $now)
             ->where('auctions.a_status', '=', 1)->first();
             if (empty($auction)) {
-                $data = null;
+                $data = [];
             } else {
                 $data = $auction->showDetail();
             }

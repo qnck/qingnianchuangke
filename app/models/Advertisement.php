@@ -69,8 +69,9 @@ class Advertisement extends Eloquent
         $this->delete();
     }
 
-    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0)
+    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0, $active_at = '')
     {
+        $active_at ?: $active_at = Tools::getNow();
         $query = Advertisement::select('advertisements.*')
         ->with(['eventItem'])
         ->join('event_positions', function ($q) use ($position) {
@@ -87,8 +88,11 @@ class Advertisement extends Eloquent
         })->orWhere(function ($q) use ($c_id, $p_id) {
             $q->where('event_ranges.c_id', '=', $c_id)
             ->where('event_ranges.p_id', '=', $p_id);
-        });
-        $ads = $query->paginate(1);
+        })->join('event_items', function ($q) {
+            $q->where('advertisements.e_id', '=', 'event_items.e_id');
+        })->where('event_items.e_start_at', '<', $active_at)
+        ->where('event_items.e_end_at', '>', $active_at);
+        $ads = $query->take(3)->get();
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
