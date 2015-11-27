@@ -82,8 +82,7 @@ class MeNotificationController extends \BaseController
             ->where('notification_receivers.to_type', '=', '2')
             ->where('notification_receivers.to_id', '=', 0)
             ->orWhere('notification_receivers.to_id', '=', $u_id)
-            ->having('notification_reads.is_read', '<>', 1)
-            ->having('notification_reads.is_del', '<>', 1)->get();
+            ->havingRaw('(`t_notification_reads`.`is_read` <> 1 AND `t_notification_reads`.`is_del` <> 1) OR (`t_notification_reads`.`is_read` IS NULL AND `t_notification_reads`.`is_del` IS NULL )')->get();
             $count = count($list);
             $data = ['count' => $count];
             $re = Tools::reTrue('获取消息成功', $data);

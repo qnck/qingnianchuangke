@@ -37,6 +37,15 @@ class AuctionController extends \BaseController
                 throw new Exception("请输入价格", 2001);
             }
 
+            $auction = Auction::find($id);
+            $auction->load(['eventItem']);
+            $now = Tools::getNow();
+            if ($auction->eventItem->e_start_at > $now) {
+                throw new Exception("还没开始", 2001);
+            }
+            if ($auction->eventItem->e_end_at < $now) {
+                throw new Exception("已经结束", 2001);
+            }
             if (!AuctionBid::checkBlacklist($u_id)) {
                 throw new Exception("现在还无法出价", 2001);
             }
