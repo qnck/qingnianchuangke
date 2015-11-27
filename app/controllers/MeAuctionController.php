@@ -46,6 +46,7 @@ class MeAuctionController extends BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            $now = Tools::getNow();
 
             $auction = Auction::find($id);
             if (empty($auction) || $auction->a_status != 2) {
@@ -62,6 +63,14 @@ class MeAuctionController extends BaseController
             $limit->modify('+3 days');
             $now = Tools::getNow(false);
             if ($limit < $now) {
+                $blacklist = new AuctionBlacklist();
+                $blacklist->u_id = $u_id;
+                $blacklist->a_id = $auction->a_id;
+                $blacklist->start_at = $now;
+                $now->modify('+7 days');
+                $blacklist->end_at = $now->format('Y-m-d H:i:s');
+                $blacklist->remart('超时未购买');
+                $blacklist->save();
                 $auction->a_status = 4;
                 $auction->save();
                 throw new Exception("竞拍已超时, 无法购买", 2);  //when exception code is 2, commit anyway after catch
@@ -69,7 +78,7 @@ class MeAuctionController extends BaseController
 
              // add cart
             $cart = new Cart();
-            $cart->p_id = $p_id;
+            $cart->p_id = $auction->a_id;
             $cart->p_name = $auction->eventItem->e_title;
             $cart->u_id = $u_id;
             $cart->b_id = Tools::getMakerBooth();

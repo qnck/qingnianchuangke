@@ -49,6 +49,7 @@ class User extends Eloquent
 
     public function getInviteCode()
     {
+        return $this->u_id;
         $code = Str::random(6);
         if (User::where('u_invite_code', '=', $code)->count() > 0) {
             $code = $this->getInviteCode();
@@ -492,7 +493,7 @@ class User extends Eloquent
         if (!$code) {
             return true;
         }
-        $user = User::where('u_invite_code', '=', $code)->first();
+        $user = User::find($code);
         if (empty($user)) {
             throw new Exception("无法找到输入的邀请码", 2001);
         }
