@@ -14,9 +14,10 @@ class AuctionController extends \BaseController
             })->where('event_items.e_end_at', '>', $now)
             ->where('auctions.a_status', '=', 1)->first();
             if (empty($auction)) {
-                throw new Exception("当前没有可用众筹", 2001);
+                $data = null;
+            } else {
+                $data = $auction->showDetail();
             }
-            $data = $auction->showDetail();
             $re = Tools::reTrue('获取竞拍成功', $data);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取竞拍失败:'.$e->getMessage());
