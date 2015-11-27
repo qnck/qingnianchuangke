@@ -2,6 +2,9 @@
 /**
 *
 */
+
+use Illuminate\Support\Collection;
+
 class CrowdFundingController extends \BaseController
 {
 
@@ -99,7 +102,10 @@ class CrowdFundingController extends \BaseController
             }
             $ad = Advertisement::fetchAd(1, $user->school->t_id, $user->school->t_city, $user->school->t_province);
             if ($ad) {
-                $data[] = $ad;
+                $data = array_merge($data, $ad);
+                $collection = new Collection($data);
+                $collection->sortByDesc('active_at');
+                $data = array_values($collection->toArray());
             }
             $re = Tools::reTrue('获取众筹成功', $data, $list);
         } catch (Exception $e) {

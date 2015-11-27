@@ -27,11 +27,13 @@ class Advertisement extends Eloquent
             $data['cover_img'] = null;
             $data['url'] = '';
             $data['brief'] = '';
+            $data['active_at'] = '';
         } else {
             $data['title'] = $this->eventItem->e_title;
             $data['cover_img'] = Img::filterKey('cover_img', Img::toArray($this->eventItem->cover_img));
             $data['url'] = $this->eventItem->url;
             $data['brief'] = $this->eventItem->e_brief;
+            $data['active_at'] = $this->eventItem->e_start_at;
         }
 
         return $data;
@@ -69,9 +71,9 @@ class Advertisement extends Eloquent
         $this->delete();
     }
 
-    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0, $active_at = '')
+    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0)
     {
-        $active_at ?: $active_at = Tools::getNow();
+        $now = Tools::getNow();
         $query = Advertisement::select('advertisements.*')
         ->with(['eventItem'])
         ->join('event_positions', function ($q) use ($position) {
@@ -89,15 +91,16 @@ class Advertisement extends Eloquent
             $q->where('event_ranges.c_id', '=', $c_id)
             ->where('event_ranges.p_id', '=', $p_id);
         })->join('event_items', function ($q) {
-            $q->where('advertisements.e_id', '=', 'event_items.e_id');
-        })->where('event_items.e_start_at', '<', $active_at)
-        ->where('event_items.e_end_at', '>', $active_at);
+            $q->on('event_items.e_id', '=', 'advertisements.e_id');
+        })->where('event_items.e_start_at', '<', $now)
+        ->where('event_items.e_end_at', '>', $now);
         $ads = $query->take(3)->get();
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
-                $data = $ad->showInList();
-                $data['item_type'] = 2;
+                $tmp = $ad->showInList();
+                $tmp['item_type'] = 2;
+                $data[] = $tmp;
             }
         } else {
             $data = null;

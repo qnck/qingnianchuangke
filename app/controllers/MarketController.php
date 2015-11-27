@@ -2,6 +2,9 @@
 /**
 *
 */
+
+use Illuminate\Support\Collection;
+
 class MarketController extends \BaseController
 {
     public function hot()
@@ -90,7 +93,10 @@ class MarketController extends \BaseController
             }
             $ad = Advertisement::fetchAd(2, $user->school->t_id, $user->school->t_city, $user->school->t_province);
             if ($ad) {
-                $data[] = $ad;
+                $data = array_merge($data, $ad);
+                $collection = new Collection($data);
+                $collection->sortByDesc('active_at');
+                $data = array_values($collection->toArray());
             }
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
@@ -210,7 +216,10 @@ class MarketController extends \BaseController
             }
             $ad = Advertisement::fetchAd(3, $user->school->t_id, $user->school->t_city, $user->school->t_province);
             if ($ad) {
-                $data[] = $ad;
+                $data = array_merge($data, $ad);
+                $collection = new Collection($data);
+                $collection->sortByDesc('active_at');
+                $data = array_values($collection->toArray());
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
         } catch (Exception $e) {
