@@ -115,7 +115,8 @@ class MeAuctionController extends BaseController
 
             Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
-            $re = Tools::reTrue('提交订单成功');
+            $data = ['order_no' => $order_group_no];
+            $re = Tools::reTrue('提交订单成功', $data);
             DB::commit();
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '提交订单失败:'.$e->getMessage());
