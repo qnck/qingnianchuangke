@@ -2,7 +2,7 @@
 /**
 *
 */
-class Auction extends Elquent
+class Auction extends Eloquent
 {
     public $primaryKey = 'a_id';
     public $timestamps = false;
@@ -15,23 +15,24 @@ class Auction extends Elquent
     public function showDetail()
     {
         $data = [];
+        $data['id'] = $this->a_id;
         $data['sub_title'] = $this->a_sub_title;
         $data['win_username'] = $this->a_win_username;
         $data['win_price'] = $this->a_win_price;
         $data['status'] = $this->a_status;
         $data['cost'] = $this->a_cost;
-        if (empty($this->eventItme)) {
+        if (empty($this->eventItem)) {
             $data['title'] = '';
             $data['start_at'] = '';
             $data['end_at'] = '';
             $data['url'] = '';
             $data['cover_img'] = [];
         } else {
-            $data['title'] = $this->eventItme->e_title;
-            $data['start_at'] = $this->eventItme->e_start_at;
-            $data['end_at'] = $this->eventItme->e_end_at;
-            $data['url'] = $this->eventItme->url;
-            $data['cover_img'] = Img::filterKey('cover_img', Img::toArray($this->eventItme->cover_img));
+            $data['title'] = $this->eventItem->e_title;
+            $data['start_at'] = $this->eventItem->e_start_at;
+            $data['end_at'] = $this->eventItem->e_end_at;
+            $data['url'] = $this->eventItem->url;
+            $data['cover_img'] = Img::filterKey('cover_img', Img::toArray($this->eventItem->cover_img));
         }
         return $data;
     }
@@ -80,8 +81,8 @@ class Auction extends Elquent
         return $this->hasOne('AuctionBid', 'a_win_id', 'b_id');
     }
 
-    public function eventItme()
+    public function eventItem()
     {
-        return $this->hasOne('eventItme', 'e_id', 'e_id');
+        return $this->hasOne('eventItem', 'e_id', 'e_id');
     }
 }
