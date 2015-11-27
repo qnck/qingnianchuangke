@@ -96,39 +96,54 @@
                 }
     </style>
     <script>
-        var uid="";
-        var token="";
-        var sid="";
+        var pageSize="10";
+        var pageNumber="0";
         $(document).ready(function () {
-            uid = GetQueryString("uid");
-            token = GetQueryString("token");
-            sid = GetQueryString("sid");
             BindData();
         });
+        function getCookie(name)//取cookies函数       
+        {
+            var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+             if(arr != null) return (arr[2]); return null;
+        }
         function BindData() {
+            pageNumber++;
             $.ajax({
                 type: "get",
-                url: _url + "wechat/market/flea?u_id="+uid,//+"&school="+sid+"&range=3",
-                data: {},
+                url: _url + "wechat/market/flea?u_id=1",//+"&school="+sid+"&range=3",
+                data: {page:pageNumber,per_page:pageSize},
                 dataType: "json",
                 success: function (r) {
                     if (r.result == "2000") {
-                        $(r.data).each(function (){
-                            var temp = $("#zcinfodom").html();
-                            temp = temp.replace("@id",this.id);
-                            if(this.cover_img.length>0)
-                                temp = temp.replace("@zst",this.cover_img[0]);
-                            temp = temp.replace("@user_headimg",this.user.head_img);
-                            temp = temp.replace("@title",this.title);
-                            if(this.brief && this.brief!=""){
-                                if(this.brief.length>21)
-                                    this.brief = this.brief.substring(0,21)+"...";
-                                temp = temp.replace("@remark",this.brief);
-                            }
-                            temp = temp.replace("@price",this.price);
-                            temp = temp.replace("@address",this.school.school_name);
-                            $("#content").append(temp);
-                        });
+                        if(r.data.length>0){
+                            $(r.data).each(function (){
+                                var temp = $("#zcinfodom").html();
+                                if(this.item_type=="1"){
+                                    temp = temp.replace("@id",this.id);
+                                    if(this.cover_img.length>0)
+                                        temp = temp.replace("@zst",this.cover_img[0]);
+                                    temp = temp.replace("@user_headimg",this.user.head_img);
+                                    temp = temp.replace("@title",this.title);
+                                    if(this.brief && this.brief!=""){
+                                        if(this.brief.length>21)
+                                            this.brief = this.brief.substring(0,21)+"...";
+                                        temp = temp.replace("@remark",this.brief);
+                                    }
+                                    temp = temp.replace("@price",this.price);
+                                    temp = temp.replace("@address",this.school.school_name);
+                                }else{
+                                    temp = $("#adinfodom").html();
+                                    temp = temp.replace("@url",this.url);
+                                    if(this.cover_img.length>0)
+                                        temp = temp.replace("@zst",this.cover_img[0]);
+                                }
+                                $("#content").append(temp);
+                            });
+                        }else{
+                            $("#viewmore").html("没有更多的数据了");
+                        }
+                        $("#viewmore").show();
+                        $("#viewmore").appendTo($("#content"));
                     }
                 },
                 error: function () {
@@ -137,11 +152,16 @@
             });
         }
         function viewDetail(id){
-            window.location.href="fleadetail.html?id="+id+"&token="+token+"&uid="+uid;
+            window.location.href="fleadetail.html?id="+id;
+        }
+        function viewAdDetail(url)
+        {
+            window.location.href=url;
         }
     </script>
 </head>
 <body>
+    <div id="viewmore" style="text-align:center;padding:10px;display:none;" onclick="BindData();">点击加载更多...</div>
     <div id="content">
         
     </div>
@@ -168,6 +188,13 @@
                         <div class="address">@address</div>
                         <div style="clear: both"></div>
                     </div>
+                </div>
+            </div>
+    </script>
+    <script type="text/javascript" id="adinfodom">
+            <div class="zcmain" onclick="viewAdDetail('@url')">
+                <div class="zst">
+                    <img src="@zst" />
                 </div>
             </div>
     </script>

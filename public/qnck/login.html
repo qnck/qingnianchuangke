@@ -43,7 +43,10 @@ function autologin(tel,pass){
         dataType: "json",
         success: function (r) {
             if (r.result == "2000") {
-                window.location.href=rurl+"?token="+r.data.token+"&uid="+r.data.id+"&sid="+r.data.school.id;
+                SetCookie("token",r.data.token);
+                SetCookie("uid",r.data.id);
+                SetCookie("sid",r.data.school.id);
+                window.location.href=rurl;
             }else{
                 alert("登录失败");
             }
@@ -70,7 +73,10 @@ function login(){
             if (r.result == "2000") {
                 SetCookie("tel",tel);
                 SetCookie("pass",pass);
-                window.location.href=rurl+"?token="+r.data.token+"&uid="+r.data.id+"&sid="+r.data.school.id;
+                SetCookie("token",r.data.token);
+                SetCookie("uid",r.data.id);
+                SetCookie("sid",r.data.school.id);
+                window.location.href=rurl;
             }else{
                 alert("登录失败");
             }

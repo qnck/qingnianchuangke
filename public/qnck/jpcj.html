@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,target-densitydpi=high-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>竞拍须知</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <style type="text/css">
+        body {
+            background-color: #EFF0F4;
+            color: #959796;
+        }
+	
+	.popup-input {
+	    width: 53%;
+		border: 0px;
+		border-bottom: 1px solid #C9C9C9;
+		text-align: right;
+		margin-left: 10px;
+		margin-top: 13px;
+		padding-bottom: 5px;
+		margin-right: 5px; 
+	}
+
+	.popup-hinter {
+		float: right;
+		padding-top: 10px;
+	}
+
+	.popup-title {
+		color: white;
+		background-color: #6FB6E2;
+		font-size: 10px;
+		border-radius: 10px;
+		padding: 5px 15px;
+		float: left;
+		min-width: 22%;
+	    text-align: center;
+	}
+
+	.theme-popover-mask {
+		z-index: 9998;
+		position:fixed;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background:#000;
+		opacity:0.4;
+		filter:alpha(opacity=40);
+		display:none
+	}
+	.theme-popover {
+		z-index:9999;
+		border-radius:10px;
+		border:solid 2px #666;
+		background-color:#fff;
+		display:none;
+		box-shadow: 0 0 10px #666;
+		width:300px;
+		height:360px;
+		position:fixed;
+		left:50%;
+		top:50%;
+		margin-left:-150px;
+		margin-top:-150px;
+	}
+    </style>
+    <script>
+        function wycj(){
+        	$('.theme-popover-mask').fadeIn(100);
+			$('.theme-popover').slideDown(200);
+        }
+        function closeBuyInfo(){
+        	$('.theme-popover-mask').fadeOut(100);
+			$('.theme-popover').slideUp(200);
+        }
+        function qrcj(){
+
+        }
+    </script>
+</head>
+<body>
+	<div style="width:100%;background-color:#5CB1E3;margin-top:-8px;margin-left:-8px;padding-right:16px;text-align:center;color:white;">
+		<img style="padding:10px;" src="images/gonggong_gantanhao_bai.png" />
+		<div style="padding-left:10px;padding-bottom:10px;">竞拍中标者，需在72小时内付款，超时未付款者在三天内禁止参与其他竞拍项目。最高出价位多人相同时，据系统录入信息的先后顺序，最早出价者获拍。</div>
+	</div>
+	<div style="text-align:center;">
+		<img style="width:90%;padding-top:10px;" src="images/liucheng.png" />
+	</div>
+     <div onclick="wycj()" style="margin-top:6px;color:white;background-color:#6FB6E2;border-radius: 20px;width:100%;font-size:30px;text-align:center;padding:10px 0px;">
+        我要出价
+    </div>
+    <div class="theme-popover">
+     <div style="background-color:#EBECEE;width:100%;border-radius:7px 7px 0px 0px;height:40px;border-bottom:1px solid #9A9A9C">
+     	<div style="color:#818181;margin-left:12px;padding-top:7px;font-weight:bold;font-size:16px;float:left;">出价</div>
+     	<div style="float:right;padding-top:7px;padding-right:7px;" onclick="closeBuyInfo()"><img style="height:20px;width:20px;" src="images/gonggong_guanbi.png"/></div>
+     	<div style="clear:both"></div>
+     </div>
+     <p>
+     	<label class="popup-title">购买份数</label>
+     	<input class="popup-input" type="text" id="gmfs" placeholder="未填写"/>
+     	<label class="popup-hinter">></label>
+     </p>
+     <p>
+     	<label class="popup-title">收件人姓名</label>
+     	<input class="popup-input" type="text" id="sjrxm" placeholder="未填写"/>
+     	<label class="popup-hinter">></label>
+     </p>
+     <p>
+     	<label class="popup-title">收件人电话</label>
+     	<input class="popup-input" type="text" id="sjrdh" placeholder="未填写"/>
+     	<label class="popup-hinter">></label>
+     </p>
+     <p>
+     	<label class="popup-title">收件人地址</label>
+     	<input class="popup-input" type="text" id="sjrdz" placeholder="未填写"/>
+     	<label class="popup-hinter">></label>
+     </p>
+     <p>
+     	<label class="popup-title">备注信息</label>
+     	<input class="popup-input" type="text" id="bzxx" placeholder="未填写"/>
+     	<label class="popup-hinter">></label>
+     </p>
+     <p style="color:white;background-color:#6FB6E2;font-size:10px;border-radius: 10px; padding:5px 20px;text-align:center;" onclick="qrcj()">确认出价</p>
+</div>
+<div class="theme-popover-mask"></div>
+</body>
+</html>
