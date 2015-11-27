@@ -60,4 +60,9 @@ class EmergencyController extends \BaseController
         $re = $phone->sendText($str);
         var_dump($re);
     }
+
+    public function winTheBid()
+    {
+        Auction::runTheWheel();
+    }
 }
