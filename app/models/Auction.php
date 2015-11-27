@@ -55,23 +55,37 @@ class Auction extends Eloquent
             return true;
         }
 
-        $bid = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->frist();
-        if (empty($bid)) {
+        $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
+
+        if (empty($list)) {
             throw new Exception("无人出价", 2001);
         }
-        if ($bid->is_win) {
+        $win = reset($list);
+        if ($win->is_win) {
             throw new Exception("中奖信息已处理", 2001);
         }
-        $user = User::find($bid->u_id);
-        $auction->a_win_usernam = $user->u_nickname;
-        $auction->a_win_id = $bid->b_id;
-        $auction->a_win_price = $bid->b_price;
+        $user = User::find($win->u_id);
+        $auction->a_win_username = $user->u_nickname;
+        $auction->a_win_id = $win->b_id;
+        $auction->a_win_price = $win->b_price;
         $auction->a_status = 2;
         $auction->save();
 
-        $bid->is_win = 1;
-        $bid->is_pay = 0;
-        $bid->save();
+        foreach ($list as $key => $bid) {
+            if ($key == 0 || $bid->u_id == $win->u_id) {
+                continue;
+            } else {
+                $msg = new MessageDispatcher($bid->u_id);
+                $msg->fireTextToUser('哦 真是抱歉呢 你没有拍到');
+            }
+        }
+
+        $msg = new MessageDispatcher($win->u_id, 1, 1, 1);
+        $msg->fireTextToUser('恭喜你获得竞拍');
+
+        $win->is_win = 1;
+        $win->is_pay = 0;
+        $win->save();
         return true;
     }
 

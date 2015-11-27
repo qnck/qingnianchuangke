@@ -18,11 +18,14 @@ class MessageDispatcher
     public $icon = '';
     public $type = 2;
 
-    public function __construct($u_id, $add_pm = 1, $add_not = 1)
+    public $phone;
+
+    public function __construct($u_id, $add_pm = 1, $add_not = 1, $add_sms = 0)
     {
         $this->_u_id = $u_id;
         $this->_add_notification = $add_not;
         $this->_add_push_message = $add_pm;
+        $this->_add_sms = $add_sms;
     }
 
     public function setMessage($params)
@@ -35,6 +38,8 @@ class MessageDispatcher
         empty($params['cate_id']) ?: $this->cate_id = $params['cate_id'];
         empty($params['icon']) ?: $this->icon = $params['icon'];
         empty($params['type']) ?: $this->type = $params['type'];
+
+        empty($params['phone']) ?: $this->phone = $params['phone'];
     }
 
     public function pushMessage()
@@ -73,6 +78,15 @@ class MessageDispatcher
         $receiver->save();
     }
 
+    public function sendSMS()
+    {
+        if (!$this->phone) {
+            throw new Exception("无法获取手机号码", 2002);
+        }
+        $phone = new Phone($this->phone);
+        $phone->sendText($this->content);
+    }
+
     public function fire()
     {
         if ($this->_add_push_message) {
@@ -80,6 +94,9 @@ class MessageDispatcher
         }
         if ($this->_add_notification) {
             $this->addNotification();
+        }
+        if ($this->_add_sms) {
+            $this->sendSMS();
         }
     }
 
