@@ -73,7 +73,7 @@ class CrowdFundingController extends \BaseController
 
             if ($filter_option == 3) {
                 // left time is less than 20%
-                $query = $query->whereRaw('(t_crowd_fundings.c_time - DATEDIFF(t_crowd_fundings.end_at, CURDATE())) < (t_crowd_fundings.c_time * 0.2)')
+                $query = $query->whereRaw('DATEDIFF(t_crowd_fundings.end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
                 ->where('crowd_fundings.end_at', '>', $now);
             }
 
