@@ -74,6 +74,7 @@ class CrowdFunding extends Eloquent
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
         $data['cate'] = $this->c_cate;
+        $data['current_time'] = Tools::getNow();
         $data['local_only'] = $this->c_local_only;
         $data['cate_label'] = $this->getCateLabel();
         $data['amount'] = $this->c_amount;
