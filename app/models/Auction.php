@@ -83,6 +83,6 @@ class Auction extends Eloquent
 
     public function eventItem()
     {
-        return $this->hasOne('eventItem', 'e_id', 'e_id');
+        return $this->hasOne('EventItem', 'e_id', 'e_id');
     }
 }
