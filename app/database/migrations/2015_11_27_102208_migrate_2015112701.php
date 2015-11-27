@@ -17,6 +17,11 @@ class Migrate2015112701 extends Migration {
             $user->u_invite_code = $user->getInviteCode();
             $user->save();
         }
+
+        Schema::create('log_user_invite_code', function ($table) {
+            $table->increments('id');
+            $table->
+        });
     }
 
     /**
@@ -28,5 +33,4 @@ class Migrate2015112701 extends Migration {
     {
         //
     }
-
 }

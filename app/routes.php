@@ -393,6 +393,9 @@ Route::post('wechat/user', 'UserController@postUserFromWechat');
 Route::get('wechat/verify/code', 'VerificationController@getVCode');
 Route::post('wechat/user/me/resetpass', 'MeController@resetPassForWechat');
 Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
+Route::get('wechat/auction/show', 'AuctionController@show');
+Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
+Route::get('wechat/auction', 'AuctionController@listAuctions');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/

@@ -26,5 +26,4 @@ class MigratePatch2015110802 extends Migration {
     {
         //
     }
-
 }

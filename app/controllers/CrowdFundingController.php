@@ -65,11 +65,7 @@ class CrowdFundingController extends \BaseController
             }
 
             if ($filter_option == 2) {
-                $query = $query->leftJoin('crowd_funding_products', function ($q) {
-                    $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
-                })->orderBy('crowd_funding_products.p_sold_quantity', 'DESC')->groupBy('crowd_fundings.cf_id');
-            } else {
-                $query = $query->orderBy('crowd_fundings.end_at', 'DESC');
+
             }
 
             if ($filter_option == 3) {
@@ -88,6 +84,7 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
+            $query = $query->orderBy('crowd_fundings.end_at', 'DESC');
             $list = $query->remember(5)->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
@@ -103,7 +100,7 @@ class CrowdFundingController extends \BaseController
             if ($ad) {
                 $data[] = $ad;
             }
-            $re = Tools::reTrue('获取众筹成功', $data);
+            $re = Tools::reTrue('获取众筹成功', $data, $list);
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
         }
