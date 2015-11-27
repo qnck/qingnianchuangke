@@ -26,6 +26,7 @@
                 dataType: "json",
                 success: function (r) {
                     if (r.result == "2000") {
+                    	$("#zst").attr("jid",r.data.id);
                     	$("#zst").attr("url",r.data.url);
 		                $("#title").text(r.data.title);
 		                $("#subtitle").text(r.data.sub_title);
@@ -94,7 +95,8 @@
 			}else if(temp=="00时00分00秒00"){
 				alert("此竞拍已经结束，不能出价！");
 			}else{
-            	window.location.href="jpcj.html";
+        		var id = $("#zst").attr("jid");
+            	window.location.href="jpcj.html?id="+id;
 			}
 		}
     </script>
