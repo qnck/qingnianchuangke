@@ -46,6 +46,7 @@ class Auction extends Eloquent
 
     public static function runTheWheel()
     {
+        $now = Tools::getNow();
         $auction = Auction::join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'auctions.e_id');
         })->where('event_items.e_end_at', '>', $now)
