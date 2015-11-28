@@ -41,14 +41,14 @@
 		                var end_at = r.data.end_at;
 		                if(current_time<start_at){
 		                	$("#rtitle").text("距开始还剩");
-		                	d1 = start_at;
-		                	d2 = new Date(current_time)-new Date();
+		                	d1 = start_at.replace(/-/g,'/'); ;
+		                	d2 = new Date(current_time.replace(/-/g,'/'))-new Date();
 		                	show_date_time();
 	                	}
 		                else if(current_time<end_at){
 		                	$("#rtitle").text("距结束还剩");
-		                	d1 = end_at;
-		                	d2 = new Date(current_time)-new Date();
+		                	d1 = end_at.replace(/-/g,'/'); ;
+		                	d2 = new Date(current_time.replace(/-/g,'/'))-new Date();
 		                	show_date_time();
 	                	}
                     }
@@ -103,7 +103,7 @@
     </script>
 </head>
 <body>
-    <div id="content" onclick="viewDetail()" style="margin-top:20px;border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
+    <div id="content" onclick="viewDetail()" style="border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
         <img id="zst" src="" style="width:100%;border-radius: 20px 20px 0px 0px;"/>
         <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:30px">
         	<div><span style="color:#82C3EB;font-weight:bold;">今日拍品|</span><span id="title">今日拍品名称</span></div>
