@@ -36,6 +36,12 @@ class CrowdFundingController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
+
+            $school_obj = DicSchool::find($school);
+            if (empty($school_obj)) {
+                $school_obj = $user->school;
+            }
+
             $now = Tools::getNow();
             $query = CrowdFunding::select('crowd_fundings.*')->with([
                 'city',
@@ -100,7 +106,7 @@ class CrowdFundingController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(1, $user->school->t_id, $user->school->t_city, $user->school->t_province);
+            $ad = Advertisement::fetchAd(1, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);

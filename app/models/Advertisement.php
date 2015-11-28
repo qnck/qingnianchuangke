@@ -71,7 +71,7 @@ class Advertisement extends Eloquent
         $this->delete();
     }
 
-    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0)
+    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
     {
         $now = Tools::getNow();
         $query = Advertisement::select('advertisements.*')
@@ -85,12 +85,19 @@ class Advertisement extends Eloquent
             $q->where('event_ranges.s_id', '=', 0)
             ->where('event_ranges.c_id', '=', 0)
             ->where('event_ranges.p_id', '=', 0);
-        })->orWhere(function ($q) use ($s_id) {
-            $q->where('event_ranges.s_id', '=', $s_id);
-        })->orWhere(function ($q) use ($c_id, $p_id) {
-            $q->where('event_ranges.c_id', '=', $c_id)
-            ->where('event_ranges.p_id', '=', $p_id);
-        })->join('event_items', function ($q) {
+        });
+        if ($range == 2) {
+            $query = $query->orWhere(function ($q) use ($s_id) {
+                $q->where('event_ranges.s_id', '=', $s_id);
+            });
+        }
+        if ($range == 3) {
+            $query = $query->orWhere(function ($q) use ($c_id, $p_id) {
+                $q->where('event_ranges.c_id', '=', $c_id)
+                ->where('event_ranges.p_id', '=', $p_id);
+            });
+        }
+        $query = $query->join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
         })->where('event_items.e_start_at', '<', $now)
         ->where('event_items.e_end_at', '>', $now);

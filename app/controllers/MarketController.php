@@ -25,6 +25,12 @@ class MarketController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
+
+            $school_obj = DicSchool::find($school);
+            if (empty($school_obj)) {
+                $school_obj = $user->school;
+            }
+
             $query = PromotionInfo::with([
                 'city',
                 'school',
@@ -56,7 +62,7 @@ class MarketController extends \BaseController
                 });
                 $school = 0;
                 $site = 0;
-                $range = 3;
+                $range = 1;
             }
             $query = $query->where('promotion_infos.p_range', '<=', $range);
             if ($school && $range == 3) {
@@ -91,7 +97,7 @@ class MarketController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(2, $user->school->t_id, $user->school->t_city, $user->school->t_province);
+            $ad = Advertisement::fetchAd(2, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
@@ -128,6 +134,12 @@ class MarketController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
+
+            $school_obj = DicSchool::find($school);
+            if (empty($school_obj)) {
+                $school_obj = $user->school;
+            }
+
             $query = Product::with([
                 'user',
                 'booth' => function ($q) {
@@ -214,7 +226,7 @@ class MarketController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(3, $user->school->t_id, $user->school->t_city, $user->school->t_province);
+            $ad = Advertisement::fetchAd(3, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);

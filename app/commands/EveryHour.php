@@ -38,11 +38,7 @@ class EveryHour extends Command
      */
     public function fire()
     {
-        $log = new LogUserProfileCensors();
-        $log->cate = 'test';
-        $log->admin_id = 1;
-        $log->content = 'Cron Job every hour';
-        $log->save();
+        // nothing for now
     }
 
     /**
