@@ -79,6 +79,7 @@ class User extends Eloquent
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
+        $this->u_birthday = Tools::getNow('Y-m-d');
         $this->save();
         $re = [];
         $this->u_nickname = $this->u_name = $this->u_id;

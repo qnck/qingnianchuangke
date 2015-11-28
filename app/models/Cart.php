@@ -186,6 +186,21 @@ class Cart extends Eloquent
         return true;
     }
 
+    public function checkoutAuction()
+    {
+        if ($this->c_type != 4) {
+            return true;
+        }
+        $auction = Auction::find($this->p_id);
+        $auction->a_status = 3;
+        $bid = AuctionBid::find($auction->a_win_id);
+        $bid->is_pay = 1;
+        $auction->save();
+        $bid->save();
+
+        return true;
+    }
+
     public static function sumIncome($from = null, $to = null, $b_id = null, $u_id = null, $owner_id = null)
     {
         $query = Cart::where('c_status', '=', 3);

@@ -69,7 +69,7 @@ class MeAuctionController extends BaseController
                 $blacklist->start_at = $now;
                 $now->modify('+7 days');
                 $blacklist->end_at = $now->format('Y-m-d H:i:s');
-                $blacklist->remart('超时未购买');
+                $blacklist->remark = '超时未购买';
                 $blacklist->save();
                 $auction->a_status = 4;
                 $auction->save();

@@ -7,7 +7,9 @@ class AuctionController extends \BaseController
     public function show()
     {
         try {
-            $now = Tools::getNow();
+            $date = Tools::getNow(false);
+            $date->modify('-10 minutes');
+            $now = $date->format('Y-m-d H:i:s');
             $auction = Auction::with('eventItem')
             ->join('event_items', function ($q) {
                 $q->on('event_items.e_id', '=', 'auctions.e_id');

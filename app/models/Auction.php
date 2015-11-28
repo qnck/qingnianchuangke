@@ -80,17 +80,21 @@ class Auction extends Eloquent
             }
         }
 
-        // $price = 
-
+        $price = number_format($auction->a_win_price);
         $msg = new MessageDispatcher($win->u_id, 1, 1, 1);
         $msg->setMessage(['phone' => $user->u_mobile]);
-        $msg->fireTextToUser('恭喜您以'.$auction->a_win_price.'元成功拍得 '.$auction->eventItem->e_title.' 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
+        $msg->fireTextToUser('恭喜您以'.$price.'元成功拍得 '.$auction->eventItem->e_title.' 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
 
         $win->is_win = 1;
         $win->is_pay = 0;
         $auction->save();
         $win->save();
         return true;
+    }
+
+    public static function youCheater()
+    {
+        
     }
 
     // relation

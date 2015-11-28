@@ -26,6 +26,7 @@ class UserImport extends Eloquent
         $user->u_nickname = $nickname;
         $user->u_name = $nickname;
         $user->u_sex = $gender;
+        $this->u_birthday = Tools::getNow('Y-m-d');
         $user->u_token = $user->getUniqueToken();
         $user->u_invite_code = $user->getInviteCode();
         $user->created_at = Tools::getNow();

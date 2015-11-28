@@ -1,5 +1,6 @@
 <?php
 // play ground
+
 //
 Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
