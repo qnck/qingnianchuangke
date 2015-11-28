@@ -112,6 +112,8 @@ class CrowdFundingController extends \BaseController
                 $collection = new Collection($data);
                 $collection->sortByDesc('active_at');
                 $data = array_values($collection->toArray());
+            } elseif ($ad && !$data && $page < 2) {
+                $data = $ad;
             }
             $re = Tools::reTrue('获取众筹成功', $data, $list);
         } catch (Exception $e) {

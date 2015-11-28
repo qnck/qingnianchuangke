@@ -101,7 +101,7 @@ class Advertisement extends Eloquent
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
         })->where('event_items.e_start_at', '<', $now)
         ->where('event_items.e_end_at', '>', $now);
-        $ads = $query->take(3)->get();
+        $ads = $query->paginate(3);
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
