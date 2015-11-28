@@ -39,6 +39,7 @@ class MeProductController extends \BaseController
                 $booth->b_type = 7;
                 $booth->c_id = $school->t_city;
                 $booth->s_id = $school->t_id;
+                $booth->pv_id = $school->t_province;
                 $booth->b_with_fund = 0;
                 $booth->latitude = $user->latitude;
                 $booth->longitude = $user->longitude;

@@ -67,6 +67,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->b_id = $booth->b_id;
             $crowd_funding->s_id = $user->school->t_id;
             $crowd_funding->c_id = $user->school->t_city;
+            $crowd_funding->pv_id = $user->school->t_province;
             $crowd_funding->c_title = $title;
             $crowd_funding->c_brief = $brief;
             $crowd_funding->c_yield_desc = $yield_desc;

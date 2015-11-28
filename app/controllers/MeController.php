@@ -245,8 +245,6 @@ class MeController extends \BaseController
         // base infos
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', '');
-        // s_id 在 数据里面存为c_id 用来标识所在城市, 而数据库中的 s_id 实际意义为 学校id
-        $s_id = Input::get('s_id', '');
 
         // booth type
         $boothType = Input::get('type');
@@ -277,6 +275,7 @@ class MeController extends \BaseController
         DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
+            $user->load(['school']);
 
             $booth = Booth::where('u_id', '=', $u_id)->first();
             if (empty($booth)) {
@@ -286,9 +285,11 @@ class MeController extends \BaseController
                     throw new Exception("您已经申请过店铺了", 7001);
                 }
             }
+            $school = $user->school;
 
-            $booth->c_id = $s_id;
-            $booth->s_id = $user->u_school_id;
+            $booth->s_id = $school->t_id;
+            $booth->c_id = $school->t_city;
+            $booth->pv_id = $school->t_province;
             $booth->u_id = $u_id;
             $booth->b_title = $boothTitle;
             $booth->b_desc = '';
@@ -922,6 +923,7 @@ class MeController extends \BaseController
                     $promo->p_content = $promoDesc;
                     $promo->c_id = $user->school->t_city;
                     $promo->s_id = $user->school->t_id;
+                    $promo->pv_id = $user->school->t_province;
                     $promo->b_id = $product->b_id;
                     $promo->p_range = $promoRange;
                     $promo->addPromo();
