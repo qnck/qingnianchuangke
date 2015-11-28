@@ -89,7 +89,7 @@ class CrowdFundingController extends \BaseController
                 });
             }
             $query = $query->orderBy('crowd_fundings.end_at', 'DESC');
-            $list = $query->remember(5)->paginate($per_page);
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();

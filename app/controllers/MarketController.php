@@ -191,7 +191,7 @@ class MarketController extends \BaseController
                 $query = $query->where('products.active_at', '>', $date);
             }
 
-            $list = $query->orderBy('products.active_at', 'DESC')->remember(5)->paginate($perPage);
+            $list = $query->orderBy('products.active_at', 'DESC')->paginate($perPage);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
