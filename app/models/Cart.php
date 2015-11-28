@@ -181,7 +181,7 @@ class Cart extends Eloquent
         $funding->save();
 
         $msg = new MessageDispatcher($booth->u_id);
-        $msg->fireCateToUser('您的众筹已有人认购', 1, $funding->cf_id);
+        $msg->fireCateToUser('您的众筹'.$funding->c_title.'已有人认购', 1, $funding->cf_id);
 
         return true;
     }
