@@ -53,9 +53,9 @@ class UserImport extends Eloquent
         $now->modify('+ 30 days');
         $re['expire'] = $now->format('Y-m-d H:i:s');
         $re['id'] = $user->u_id;
-        $re['name'] = $user->u_name;
-        $re['nickname'] = $user->u_nickname;
-        $re['head_img'] = $user->getHeadImg();
+        $re['name'] = $user->u_name = $this->u_nickname;
+        $re['nickname'] = $user->u_nickname = $this->u_nickname;
+        $re['head_img'] = $user->u_head_img = $this->u_head_img;
         $re['biograph'] = $user->u_biograph;
         $school = DicSchool::find($user->u_school_id);
         if (empty($school)) {
@@ -65,6 +65,7 @@ class UserImport extends Eloquent
             $re['city'] = DicCity::where('c_id', '=', $school->t_city)->where('c_province_id', '=', $school->t_province)->first()->showInList();
             $re['school'] = $school->showInList();
         }
+        $user->save();
         $re['gender'] = $user->u_sex;
         $user->load('booths');
         $booths = null;
