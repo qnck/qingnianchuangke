@@ -55,10 +55,10 @@ class EmergencyController extends \BaseController
 
     public function test()
     {
-        $str = '恭喜“双11不怕剁手”众筹活动已成功，您被众筹发起者选中，请于12日18时前凭此信息到零栋铺子领取众筹回报。4006680550';
-        $phone = new Phone('18508237273');
-        $re = $phone->sendText($str);
-        var_dump($re);
+        $user = User::find(4);
+        $msg = new MessageDispatcher($user->u_id, 1, 1, 1);
+        $msg->setMessage(['phone' => $user->u_mobile]);
+        $msg->fireTextToUser('恭喜您以500.00元成功拍得 竞拍测试 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
     }
 
     public function winTheBid()

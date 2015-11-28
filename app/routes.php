@@ -399,7 +399,8 @@ Route::get('wechat/auction', 'AuctionController@listAuctions');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/
-Route::get('so/called/emergency/test', 'EmergencyController@winTheBid');
+Route::get('so/called/emergency/test', 'EmergencyController@test');
+Route::get('so/called/emergency/winBid', 'EmergencyController@winTheBid');
 Route::get('so/called/emergency/countUser', 'EmergencyController@countUsers');
 Route::get('v0/crowd/{id}/participates', 'CrowdFundingController@listParticipates');
 /* SO CALLED EMERGENCY END*/

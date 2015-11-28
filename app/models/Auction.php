@@ -55,7 +55,7 @@ class Auction extends Eloquent
         if (empty($auction)) {
             return true;
         }
-
+        $auction->load(['eventItem']);
         $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
 
         if (empty($list)) {
@@ -80,9 +80,11 @@ class Auction extends Eloquent
             }
         }
 
+        // $price = 
+
         $msg = new MessageDispatcher($win->u_id, 1, 1, 1);
         $msg->setMessage(['phone' => $user->u_mobile]);
-        $msg->fireTextToUser('恭喜你获得竞拍');
+        $msg->fireTextToUser('恭喜您以'.$auction->a_win_price.'元成功拍得 '.$auction->eventItem->e_title.' 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
 
         $win->is_win = 1;
         $win->is_pay = 0;

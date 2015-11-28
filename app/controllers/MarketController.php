@@ -92,7 +92,7 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             $ad = Advertisement::fetchAd(2, $user->school->t_id, $user->school->t_city, $user->school->t_province);
-            if ($ad) {
+            if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
                 $collection->sortByDesc('active_at');
@@ -215,7 +215,7 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             $ad = Advertisement::fetchAd(3, $user->school->t_id, $user->school->t_city, $user->school->t_province);
-            if ($ad) {
+            if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
                 $collection->sortByDesc('active_at');
