@@ -29,7 +29,7 @@
                     	$("#zst").attr("jid",r.data.id);
                     	$("#zst").attr("url",r.data.url);
 		                $("#title").text(r.data.title);
-		                $("#subtitle").text(r.data.sub_title);
+		                // $("#subtitle").text(r.data.sub_title);
 		                $("#price").attr("src",r.data.cost);
 		                if(r.data.win_username)
 		                	$("#win_username").text(r.data.win_username);
@@ -106,8 +106,7 @@
     <div id="content" onclick="viewDetail()" style="border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
         <img id="zst" src="" style="width:100%;border-radius: 20px 20px 0px 0px;"/>
         <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:30px;font-weight:bold;">
-        	<div><span style="color:#82C3EB;">今日拍品|</span><span id="title">今日拍品名称</span></div>
-        	<div style="margin-bottom:5px;"><span style="margin-left:76px;" id="subtitle">副标题</span></div>
+        	<div style="padding-bottom:10px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;">sdaasd大叔大婶大钱的地方awful饿我人防大厦第</div></div>
     		<div style="border-top:1px solid white;padding-top:10px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price">5555.00</span></div>
     		<div><span style="color:#82C3EB;">获得竞拍者|</span><span id="win_username">获得竞拍者</span></div>
         </div>
