@@ -48,7 +48,12 @@ class MessageDispatcher
             throw new Exception("信息不能为空", 2002);
         }
         $msgObj = new PushMessage($this->_u_id);
-        $msgObj->pushMessage($this->content);
+        if ($this->cate) {
+            $is_jump = 1;
+        } else {
+            $is_jump = 0;
+        }
+        $msgObj->pushMessage($this->content, $is_jump);
     }
 
     public function addNotification()

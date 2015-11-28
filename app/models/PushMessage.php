@@ -19,11 +19,11 @@ class PushMessage extends Eloquent
     }
 
 
-    public function pushMessage($content)
+    public function pushMessage($content, $is_jump = 0)
     {
         // $this->baseValidate();
         $this->initCurl();
-        $data = ["fun" => 0, "action" => "makerck.PUSH", "alert" => $content];
+        $data = ["fun" => 0, "action" => "makerck.PUSH", "alert" => $content, "is_jump" => $is_jump];
         $send = ['where' => ['userId' => (string)$this->_u_id], 'data' => $data];
         $send = json_encode($send);
         $this->setPostData($send);
