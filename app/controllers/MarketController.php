@@ -18,6 +18,7 @@ class MarketController extends \BaseController
         $cate = Input::get('cate', 0);
 
         $perPage = Input::get('per_page', 30);
+        $page = Input::get('page', 1);
 
         try {
             if (!$u_id) {
@@ -126,6 +127,7 @@ class MarketController extends \BaseController
         $filter_option = Input::get('filter_option', 0);        // 1-within 1 day, 2-within 3 days, 3-within 7 days
 
         $perPage = Input::get('per_page', 30);
+        $page = Input::get('page', 1);
 
         try {
             if (!$school) {
