@@ -25,6 +25,7 @@ class CrowdFundingController extends \BaseController
 
         $range = Input::get('range', 1);
         $city = Input::get('city', 0);
+        $province = Input::get('province', 0);
         $school = Input::get('school', 0);
 
         $filter_option = Input::get('filter_option', 0);    //1-about to start, 2-hot, 3-about to end
@@ -56,12 +57,8 @@ class CrowdFundingController extends \BaseController
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
-            if ($city && $range == 2) {
-                $query = $query->join('dic_schools', function ($q) {
-                    $q->on('crowd_fundings.s_id', '=', 'dic_schools.t_id');
-                })->join('dic_cities', function ($q) use ($city) {
-                    $q->on('dic_cities.c_id', '=', 'crowd_fundings.c_id')->on('dic_cities.c_province_id', '=', 'dic_schools.t_province')->where('dic_cities.c_id', '=', $city);
-                });
+            if ($city && $province && $range == 2) {
+                $query = $query->where('c_id', '=', $city)->where('pv_id', '=', $province);
             }
             if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);

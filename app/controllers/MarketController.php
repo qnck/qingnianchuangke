@@ -9,7 +9,8 @@ class MarketController extends \BaseController
 {
     public function hot()
     {
-        $site = Input::get('city', 0);
+        $city = Input::get('city', 0);
+        $province = Input::get('province', 0);
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
         $range = Input::get('range', 3);
@@ -62,15 +63,15 @@ class MarketController extends \BaseController
                     ->where('booth_follows.u_id', '=', $u_id);
                 });
                 $school = 0;
-                $site = 0;
+                $city = 0;
                 $range = 1;
             }
             $query = $query->where('promotion_infos.p_range', '<=', $range);
             if ($school && $range == 3) {
                 $query = $query->where('promotion_infos.s_id', '=', $school);
             }
-            if ($site && $range == 2) {
-                $query = $query->where('promotion_infos.c_id', '=', $site);
+            if ($city && $province && $range == 2) {
+                $query = $query->where('promotion_infos.c_id', '=', $city)->where('promotion_infos.pv_id', '=', $province);
             }
             if ($cate) {
                 $query = $query->where('products.p_cate', '=', $cate);
@@ -116,7 +117,8 @@ class MarketController extends \BaseController
 
     public function flea()
     {
-        $site = Input::get('city', 0);
+        $city = Input::get('city', 0);
+        $province = Input::get('province', 0);
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
         $range = Input::get('range', 0);
@@ -165,19 +167,14 @@ class MarketController extends \BaseController
                     ->where('booth_follows.u_id', '=', $u_id);
                 });
                 $school = 0;
-                $site = 0;
-                $range = 3;
+                $city = 0;
+                $range = 1;
             }
             if ($school && $range == 3) {
                 $query = $query->where('booths.s_id', '=', $school);
             }
-            if ($site && $range == 2) {
-                $query = $query->join('dic_schools', function ($q) {
-                    $q->on('booths.s_id', '=', 'dic_schools.t_id');
-                })->join('dic_cities', function ($q) use ($site) {
-                    $q->on('dic_cities.c_id', '=', 'booths.c_id')->on('dic_cities.c_province_id', '=', 'dic_schools.t_province')->where('dic_cities.c_id', '=', $site);
-                });
-                $query = $query->where('booths.c_id', '=', $site);
+            if ($city && $province && $range == 2) {
+                $query = $query->where('booths.c_id', '=', $city)->where('booths.pv_id', '=', $province);
             }
             if ($cate) {
                 $query = $query->where('products.p_cate', '=', $cate);
@@ -281,7 +278,8 @@ class MarketController extends \BaseController
     public function maker()
     {
         $school = Input::get('school', 0);
-        $site = Input::get('city', 0);
+        $province = Input::get('province', 0);
+        $city = Input::get('city', 0);
         $range = Input::get('range', 3);
         $key = Input::get('key', '');
         $cate = Input::get('cate', 0);
@@ -316,8 +314,8 @@ class MarketController extends \BaseController
             if ($school && $range == 3) {
                 $query = $query->where('s_id', '=', $school);
             }
-            if ($site && $range == 2) {
-                $query = $query->where('c_id', '=', $site);
+            if ($city && $province && $range == 2) {
+                $query = $query->where('c_id', '=', $city)->where('pv_id', '=', $province);
             }
             if ($cate) {
                 $query = $query->where('b_cate', '=', $cate);
