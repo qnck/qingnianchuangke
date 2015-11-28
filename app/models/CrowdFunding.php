@@ -68,6 +68,8 @@ class CrowdFunding extends Eloquent
         $data['brief'] = $this->c_brief;
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
+        $date = new DateTime($this->created_at);
+        $data['created_at'] = $date->format('Y-m-d');
         $data['time'] = $this->c_time;
         $data['time_left'] = $this->calculateTimeLeft();
         $data['target_amount'] = $this->c_target_amount;
@@ -116,6 +118,8 @@ class CrowdFunding extends Eloquent
         $data['title'] = $this->c_title;
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->active_at;
+        $date = new DateTime($this->created_at);
+        $data['created_at'] = $date->format('Y-m-d');
         $data['time'] = $this->c_time;
         $data['time_left'] = $this->calculateTimeLeft();
         $data['yield_time'] = $this->c_yield_time;

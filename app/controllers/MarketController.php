@@ -102,7 +102,7 @@ class MarketController extends \BaseController
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
-                $collection->sortByDesc('active_at');
+                $collection->sortByDesc('created_at');
                 $data = array_values($collection->toArray());
             } elseif ($ad && !$data && $page < 2) {
                 $data = $ad;
@@ -207,7 +207,7 @@ class MarketController extends \BaseController
                 $query = $query->where('products.active_at', '>', $date);
             }
 
-            $list = $query->orderBy('products.active_at', 'DESC')->paginate($perPage);
+            $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
@@ -234,7 +234,7 @@ class MarketController extends \BaseController
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
-                $collection->sortByDesc('active_at');
+                $collection->sortByDesc('created_at');
                 $data = array_values($collection->toArray());
             } elseif ($ad && !$data && $page < 2) {
                 $data = $ad;

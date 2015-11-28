@@ -95,7 +95,7 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
-            $query = $query->orderBy('crowd_fundings.end_at', 'DESC');
+            $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
@@ -111,7 +111,7 @@ class CrowdFundingController extends \BaseController
             if ($ad && $data) {
                 $data = array_merge($data, $ad);
                 $collection = new Collection($data);
-                $collection->sortByDesc('active_at');
+                $collection->sortByDesc('created_at');
                 $data = array_values($collection->toArray());
             } elseif ($ad && !$data && $page < 2) {
                 $data = $ad;

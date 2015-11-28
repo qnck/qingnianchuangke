@@ -19,6 +19,9 @@ class Advertisement extends Eloquent
         $data = [];
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
+        $date = new DateTime($this->created_at);
+        $data['created_at'] = $date->format('Y-m-d');
+
         if (empty($this->eventItem)) {
             $this->load('eventItem');
         }
@@ -44,6 +47,8 @@ class Advertisement extends Eloquent
         $data = [];
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
+        $date = new DateTime($this->created_at);
+        $data['created_at'] = $date->format('Y-m-d');
         $data['o_id'] = $this->o_id;
         if (empty($this->eventItem)) {
             $this->load('eventItem');
