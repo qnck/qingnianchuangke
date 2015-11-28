@@ -18,6 +18,7 @@ class CrowdFundingController extends \BaseController
     public function listCrowdFunding()
     {
         $per_page = Input::get('per_page', 30);
+        $page = Input::get('page', 1);
 
         $cate = Input::get('cate', 0);
         $u_id = Input::get('u_id', 0);
