@@ -103,6 +103,8 @@ class MarketController extends \BaseController
                 $collection = new Collection($data);
                 $collection->sortByDesc('active_at');
                 $data = array_values($collection->toArray());
+            } elseif ($ad && !$data && $page < 2) {
+                $data = $ad;
             }
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
@@ -232,6 +234,8 @@ class MarketController extends \BaseController
                 $collection = new Collection($data);
                 $collection->sortByDesc('active_at');
                 $data = array_values($collection->toArray());
+            } elseif ($ad && !$data && $page < 2) {
+                $data = $ad;
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
         } catch (Exception $e) {
