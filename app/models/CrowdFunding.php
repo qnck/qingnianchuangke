@@ -187,9 +187,9 @@ class CrowdFunding extends Eloquent
             $q->on('orders.o_id', '=', 'carts.o_id');
         });
         if ($count) {
-            return $query->remember(5)->count();
+            return $query->count();
         }
-        $list = $query->remember(5)->paginate($per_page);
+        $list = $query->paginate($per_page);
         return $list;
     }
 

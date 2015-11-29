@@ -59,6 +59,7 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
+            $crowd_funding->active_at = $active_at;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
             $date_obj = new DateTime($active_at);
