@@ -53,7 +53,7 @@ class Auction extends Eloquent
         })->where('event_items.e_end_at', '>', $now)
         ->where('auctions.a_status', '=', 1)->first();
         if (empty($auction)) {
-            return true;
+            throw new Exception("没有需要处理的竞拍", 2001);
         }
         $auction->load(['eventItem']);
         $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
@@ -76,7 +76,7 @@ class Auction extends Eloquent
                 continue;
             } else {
                 $msg = new MessageDispatcher($bid->u_id);
-                $msg->fireTextToUser('哦 真是抱歉呢 你没有拍到');
+                $msg->fireTextToUser('非常抱歉您参与的'.$auction->eventItem->e_title.'没有拍到');
             }
         }
 
@@ -94,7 +94,40 @@ class Auction extends Eloquent
 
     public static function youCheater()
     {
-        
+        $date = Tools::getNow(false);
+        $now = $date->format('Y-m-d H:i:s');
+        $date->modify('-3 days');
+        $end = $date->format('Y-m-dH:i:s');
+        $auction = Auction::join('event_items', function ($q) {
+            $q->on('event_items.e_id', '=', 'auctions.e_id');
+        })->where('event_items.e_end_at', '<', $end)
+        ->where(function ($q) {
+            $q->where('auctions.a_status', '=', 2)
+            ->orWhere('auctions.a_status', '=', 1);
+        })->first();
+
+        if (empty($auction)) {
+            throw new Exception("没有需要处理的竞拍", 1);
+        }
+
+        if ($auction->a_status == 2 && $auction->a_win_id) {
+            $win = AuctionBid::find($auction->a_win_id);
+            if (!empty($win)) {
+                $date->modify('+10 days');
+                $end = $date->format('Y-m-d H:i:s');
+                $blacklist = new AuctionBlacklist();
+                $blacklist->u_id = $win->u_id;
+                $blacklist->a_id = $auction->a_id;
+                $blacklist->start_at = $now;
+                $blacklist->end_at = $end;
+                $blacklist->remart = '超时未购买';
+                $blacklist->save();
+            }
+        }
+
+        $auction->a_status = 4;
+        $auction->save();
+        return true;
     }
 
     // relation

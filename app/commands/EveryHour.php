@@ -19,7 +19,7 @@ class EveryHour extends Command
      *
      * @var string
      */
-    protected $description = 'Run hourly cron job.';
+    protected $description = 'Run hourly cron job. DO NOT run this manually.';
 
     /**
      * Create a new command instance.
@@ -38,7 +38,12 @@ class EveryHour extends Command
      */
     public function fire()
     {
-        // nothing for now
+        try {
+            // to cacualte the unpaied auction
+            Auction::youCheater();
+        } catch (Exception $e) {
+            echo "cronjob:artisan:EveryHour:".$e->getMessage();
+        }
     }
 
     /**
