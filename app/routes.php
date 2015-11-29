@@ -360,6 +360,7 @@ Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
 /* DRAW END*/
 
 /* CROWDFUNDING START*/
+Route::post('office/crowd', 'OfficeCrowdFundingController@postFunding');
 Route::get('office/crowd', 'OfficeCrowdFundingController@listFunding');
 Route::get('office/crowd/{id}', 'OfficeCrowdFundingController@getFunding');
 Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFunding');
@@ -388,7 +389,6 @@ Route::get('wechat/market/flea', 'MarketController@flea');
 Route::get('wechat/product/{id}', 'ProductController@getProduct');
 Route::get('wechat/market/hot', 'MarketController@hot');
 Route::get('wechat/crowd', 'CrowdFundingController@listCrowdFunding');
-Route::post('wechat/crowd', 'MeCrowdFundingController@postCrowdFunding');
 Route::get('wechat/crowd/{id}', 'CrowdFundingController@getCrowdFunding');
 Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
 Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');

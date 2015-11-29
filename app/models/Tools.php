@@ -48,6 +48,16 @@ class Tools
         return 1;
     }
 
+    public static function getOfficialUserId()
+    {
+        return 37;
+    }
+
+    public static function getOfficialBoothId()
+    {
+        return 1;
+    }
+
     public static function generateDateUserRandomNo($u_id)
     {
         $now = new DateTime();
