@@ -50,7 +50,7 @@ class Auction extends Eloquent
         $now = Tools::getNow();
         $auction = Auction::join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'auctions.e_id');
-        })->where('event_items.e_end_at', '>', $now)
+        })->where('event_items.e_end_at', '<', $now)
         ->where('auctions.a_status', '=', 1)->first();
         if (empty($auction)) {
             throw new Exception("没有需要处理的竞拍", 2000);

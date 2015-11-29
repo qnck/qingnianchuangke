@@ -50,12 +50,12 @@ class Tools
 
     public static function getOfficialUserId()
     {
-        return 37;
+        return 5;
     }
 
     public static function getOfficialBoothId()
     {
-        return 1;
+        return 6;
     }
 
     public static function generateDateUserRandomNo($u_id)
