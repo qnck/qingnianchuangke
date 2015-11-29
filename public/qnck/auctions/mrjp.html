@@ -21,6 +21,7 @@
 
         $(document).ready(function () {
         	BindData();
+        	$("#zzdiv").height($("#tpdiv").height());
         });
         function BindData() {
             $.ajax({
@@ -136,9 +137,11 @@
 <body>
     <div id="content" onclick="viewDetail()" style="border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
         <img id="zst" src="" style="width:100%;border-radius: 20px 20px 0px 0px;"/>
-        <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:25px;font-weight:bold;">
-        	<div style="padding-bottom:3px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;word-break:break-all;">拍品名称</div></div>
-    		<div style="border-top:1px solid white;padding-top:3px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price">00.00</span></div>
+        <div id="zzdiv" style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:25px;font-weight:bold;color:white;">
+        </div>
+        <div id="tpdiv" style="border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:25px;font-weight:bold;color:white;">
+        	<div style="padding-bottom:3px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;word-break:break-all;">&nbsp;</div></div>
+    		<div style="border-top:1px solid white;padding-top:3px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price"> </span></div>
     		<div><span style="color:#82C3EB;">获得竞拍者|</span><span id="win_username"> </span></div>
         </div>
     </div>
