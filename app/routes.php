@@ -4,7 +4,11 @@
 //
 Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
-Route::get('/', 'HomeController@index');
+Route::get('/', function () {
+    $url = Config::get('app.url');
+    $url = $url.'qnck/login.html';
+    return Redirect::to($url);
+});
 Route::get('/banner/1', 'HomeController@banner1');
 Route::get('/banner/2', 'HomeController@banner2');
 Route::get('about', 'HomeController@about');
