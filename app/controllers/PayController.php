@@ -10,6 +10,8 @@ class PayController extends \BaseController
         $ali_trade_no = Input::get('trade_no', '');
         $ali_trade_status = Input::get('trade_status', '');
         $amount = Input::get('total_fee', 0);
+        $via_id = Input::get('buyer_id', '');
+        $refund_account = Input::get('buyer_email', '');
 
         DB::beginTransaction();
         try {
@@ -43,6 +45,7 @@ class PayController extends \BaseController
                 $log->to_type = LogTransaction::$OPERATOR_QNCK;
                 $log->to_id = 1;
                 $log->via_type = LogTransaction::$PAYMENT_ALIPAY;
+                $log->via_id = $via_id;
                 $log->transaction_id = $transaction_id;
                 $log->addLog();
                 if (empty($log->l_id)) {
@@ -51,6 +54,7 @@ class PayController extends \BaseController
                 $log_order = new LogTransactionOrders();
                 $log_order->l_id = $log->l_id;
                 $log_order->o_group_number = $order_no;
+                $log_order->refund_account = $refund_account;
                 $log_order->save();
             }
             DB::commit();

@@ -363,7 +363,7 @@ Route::put('office/draw/{id}/confirm', 'OfficeDrawContoller@confirmDraw');
 Route::post('office/crowd', 'OfficeCrowdFundingController@postFunding');
 Route::get('office/crowd', 'OfficeCrowdFundingController@listFunding');
 Route::get('office/crowd/{id}', 'OfficeCrowdFundingController@getFunding');
-Route::delete('office/crowd/{id}', 'OfficeCrowdFundingController@delCrowdFunding');
+Route::delete('office/crowd/{id}', 'OfficeCrowdFundingController@delFunding');
 Route::put('office/crowd/{id}/censor', 'OfficeCrowdFundingController@censorFunding');
 /* CROWDFUNDING END*/
 
