@@ -13,8 +13,12 @@
         }
     </style>
     <script>
-	    var d1;
-	    var d2;
+	    var starttime;
+	    var endtime;
+	    var zstime;
+	    var current_time_cz;
+	    var type="";//0：未开始 1：进行中 2：结束展示中
+
         $(document).ready(function () {
         	BindData();
         });
@@ -26,30 +30,47 @@
                 dataType: "json",
                 success: function (r) {
                     if (r.result == "2000") {
-                    	$("#zst").attr("jid",r.data.id);
-                    	$("#zst").attr("url",r.data.url);
-		                $("#title").text(r.data.title);
-		                // $("#subtitle").text(r.data.sub_title);
-		                $("#price").attr("src",r.data.cost);
-		                if(r.data.win_username)
-		                	$("#win_username").text(r.data.win_username);
-		                else
-		                	$("#win_username").text("暂无");
-		                $("#zst").attr("src",r.data.cover_img[0]);
-		                var current_time = r.data.current_time;
-		                var start_at = r.data.start_at;
-		                var end_at = r.data.end_at;
-		                if(current_time<start_at){
-		                	$("#rtitle").text("距开始还剩");
-		                	d1 = start_at.replace(/-/g,'/'); ;
-		                	d2 = new Date(current_time.replace(/-/g,'/'))-new Date();
+                    	if(r.data){
+	                    	$("#zst").attr("jid",r.data.id);
+	                    	$("#zst").attr("url",r.data.url);
+			                $("#title").text(r.data.title);
+			                // $("#subtitle").text(r.data.sub_title);
+			                $("#price").text(r.data.cost);
+			                if(r.data.win_username)
+			                	$("#win_username").text(r.data.win_username);
+			                else
+			                	$("#win_username").text("暂无");
+			                $("#zst").attr("src",r.data.cover_img[0]);
+			                var current_time = r.data.current_time;
+			                current_time_cz = new Date(current_time.replace(/-/g,'/'))-new Date();
+			                var start_at = r.data.start_at;
+			                var end_at = r.data.end_at;
+			                starttime = start_at.replace(/-/g,'/');
+			                endtime = end_at.replace(/-/g,'/');
+			                zstime = new Date(end_at.replace("-","/"));
+	    					zstime.setMinutes(zstime.getMinutes() + 11, zstime.getSeconds(), 0);
+		                	$("#rtitle").css("font-size","22px");	
+		                	$("#timestr").css("font-size","30px");	
+			                if(current_time<start_at){
+			                	$("#rtitle").text("距开始还剩");
+			                	type = "0";
+		                	}
+			                else if(current_time<end_at){
+			                	$("#rtitle").text("距结束还剩");
+			                	type = "1";
+		                	}
+			                else if(current_time>end_at){
+			                	$("#rtitle").css("font-size","18px");	
+			                	$("#rtitle").text("此竞拍已结束,距下个拍品开始还剩");
+			                	// $("#timestr").css("font-size","18px");	
+			                	// $("#timestr").text("获得此竞拍者为："+r.data.win_username);
+			                	type = "2";
+		                	}
 		                	show_date_time();
-	                	}
-		                else if(current_time<end_at){
-		                	$("#rtitle").text("距结束还剩");
-		                	d1 = end_at.replace(/-/g,'/'); ;
-		                	d2 = new Date(current_time.replace(/-/g,'/'))-new Date();
-		                	show_date_time();
+	                	}else{
+			                $("#title").text("当前无竞拍产品");
+		                	$("#rtitle").text("当前无竞拍产品");
+		                	type = "";
 	                	}
                     }
                 },
@@ -59,25 +80,39 @@
             });
         }
         function show_date_time(){ 
+        	if(type=="")return;
 			window.setTimeout("show_date_time()", 80); 
-			endtime=new Date(d1);//设置日期 
-			today=new Date(new Date().getTime()+d2); 
-			timeold=(endtime.getTime()-today.getTime());
+			var jsendtime;//设置倒计时结束时间
+			switch(type){
+				case "0":
+					jsendtime=new Date(starttime);
+					break;
+				case "1":
+					jsendtime=new Date(endtime);
+					break;
+				case "2":
+					jsendtime=new Date(zstime);
+					break;
+			}
+			var nowtime = new Date(new Date().getTime()+current_time_cz); 
+			var timeold=(jsendtime.getTime()-nowtime.getTime());
 			if(timeold<=0){
-				$("#timestr").html("00时00分00秒00");
+				if(type=="0") type="1";
+				else if(type=="1") type="2";
+				else if(type=="2") BindData();
 			}else{
-				sectimeold=timeold/1000 
-				secondsold=Math.floor(sectimeold); 
-				msPerDay=24*60*60*1000 
-				e_daysold=timeold/msPerDay 
-				daysold=Math.floor(e_daysold); 
-				e_hrsold=(e_daysold-daysold)*24; 
-				hrsold=Math.floor(e_hrsold); 
-				e_minsold=(e_hrsold-hrsold)*60;
-				minsold=Math.floor((e_hrsold-hrsold)*60); 
-				e_seconds = (e_minsold-minsold)*60;
-				seconds=Math.floor((e_minsold-minsold)*60); 
-				ms = e_seconds-seconds;
+				var sectimeold=timeold/1000 
+				var secondsold=Math.floor(sectimeold); 
+				var msPerDay=24*60*60*1000 
+				var e_daysold=timeold/msPerDay 
+				var daysold=Math.floor(e_daysold); 
+				var e_hrsold=(e_daysold-daysold)*24; 
+				var hrsold=Math.floor(e_hrsold); 
+				var e_minsold=(e_hrsold-hrsold)*60;
+				var minsold=Math.floor((e_hrsold-hrsold)*60); 
+				var e_seconds = (e_minsold-minsold)*60;
+				var seconds=Math.floor((e_minsold-minsold)*60); 
+				var ms = e_seconds-seconds;
 				ms = new String(ms)
 				ms = ms.substr(2,2);
 				hrsold = hrsold+daysold*24;
@@ -89,15 +124,13 @@
             window.location.href=url;
 		}
 		function cyjp(){
-			var temp = $("#timestr").html();
-			var temptitle = $("#rtitle").text();
-			if(temptitle == "距开始还剩"){
+			if(type == "0"){
 				alert("此竞拍还没开始，暂不能出价！");
-			}else if(temp=="00时00分00秒00"){
-				alert("此竞拍已经结束，不能出价！");
-			}else{
+			}else if(type=="1"){
         		var id = $("#zst").attr("jid");
             	window.location.href="jpcj.html?id="+id;
+			}else if(type=="2"){
+				alert("此竞拍已经结束，不能出价！");
 			}
 		}
     </script>
@@ -105,10 +138,10 @@
 <body>
     <div id="content" onclick="viewDetail()" style="border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
         <img id="zst" src="" style="width:100%;border-radius: 20px 20px 0px 0px;"/>
-        <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:30px;font-weight:bold;">
-        	<div style="padding-bottom:10px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;">sdaasd大叔大婶大钱的地方awful饿我人防大厦第</div></div>
-    		<div style="border-top:1px solid white;padding-top:10px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price">5555.00</span></div>
-    		<div><span style="color:#82C3EB;">获得竞拍者|</span><span id="win_username">获得竞拍者</span></div>
+        <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:25px;font-weight:bold;">
+        	<div style="padding-bottom:3px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;">拍品名称</div></div>
+    		<div style="border-top:1px solid white;padding-top:3px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price">00.00</span></div>
+    		<div><span style="color:#82C3EB;">获得竞拍者|</span><span id="win_username"> </span></div>
         </div>
     </div>
     <div id="remark" style="margin-top:1px;border:1px solid #DCDCDD;border-radius: 0px 0px 20px 20px;background-color:white;text-align:center;">
