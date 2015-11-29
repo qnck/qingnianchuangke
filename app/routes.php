@@ -401,6 +401,7 @@ Route::post('wechat/user/login', 'UserController@loginFromWechat');
 Route::post('wechat/user', 'UserController@postUserFromWechat');
 Route::get('wechat/verify/code', 'VerificationController@getVCode');
 Route::post('wechat/user/me/resetpass', 'MeController@resetPassForWechat');
+Route::get('wechat/user/me/profile/base', 'MeProfileController@getUserBase');
 Route::get('wechat/auction/show', 'AuctionController@show');
 Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
 Route::get('wechat/auction', 'AuctionController@listAuctions');
