@@ -212,7 +212,7 @@ class Cart extends Eloquent
         if (!$type) {
             throw new Exception("请传入有效的cart类型", 1);
         }
-        $count = Cart::where('c_type', '=', $type)->count();
+        $count = Cart::where('c_type', '=', $type)->where('p_id', '=', $type_id)->count();
         if (!$count) {
             $count = 0;
         }
