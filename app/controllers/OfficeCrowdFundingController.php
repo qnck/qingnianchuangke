@@ -210,9 +210,6 @@ class OfficeCrowdFundingController extends \BaseController
         try {
             $user = User::find($u_id);
             $crowd_funding = CrowdFunding::find($id);
-            if (empty($crowd_funding) || $crowd_funding->u_id != $u_id) {
-                throw new Exception("无法获取到请求的众筹", 2001);
-            }
             $crowd_funding->delCrowdFunding();
             $re = Tools::reTrue('删除众筹成功');
             DB::commit();

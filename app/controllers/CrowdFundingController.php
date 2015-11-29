@@ -249,7 +249,7 @@ class CrowdFundingController extends \BaseController
             }
 
             if ($now < $date_start) {
-                throw new Exception("抱歉, 众筹还未开始", 2001);
+                throw new Exception("抱歉, 众筹还未开始, 请耐心等待", 2001);
             }
 
             if ($funding->c_status != 4) {

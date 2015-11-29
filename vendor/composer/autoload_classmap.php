@@ -495,6 +495,7 @@ return array(
     'Migrate2015112901' => $baseDir . '/app/database/migrations/2015_11_29_180707_migrate_2015112901.php',
     'Migrate2015113001' => $baseDir . '/app/database/migrations/2015_11_30_000134_migrate_2015113001.php',
     'Migrate2015113002' => $baseDir . '/app/database/migrations/2015_11_30_020507_migrate_2015113002.php',
+    'Migrate2015113003' => $baseDir . '/app/database/migrations/2015_11_30_073550_migrate_2015113003.php',
     'MigratePatch20151105' => $baseDir . '/app/database/migrations/2015_11_05_205736_migrate_patch_20151105.php',
     'MigratePatch20151107' => $baseDir . '/app/database/migrations/2015_11_07_213050_migrate_patch_20151107.php',
     'MigratePatch20151108' => $baseDir . '/app/database/migrations/2015_11_08_022451_migrate_patch_20151108.php',
