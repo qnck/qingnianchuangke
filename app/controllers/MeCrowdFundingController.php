@@ -115,13 +115,13 @@ class MeCrowdFundingController extends \BaseController
             }
             $crowd_funding->addCrowdFunding();
 
-            if ($img_token) {
-                $imgObj = new Img('crowd_funding', $img_token);
+            if ($img_token_2) {
+                $imgObj = new Img('crowd_funding', $img_token_2);
                 $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
                 $crowd_funding->save();
             }
-            if ($img_token_2) {
-                $imgObj = new Img('event', $img_token_2);
+            if ($img_token) {
+                $imgObj = new Img('event', $img_token);
                 $event->cover_img = $imgObj->getSavedImg($event->e_id);
                 $event->save();
             }
