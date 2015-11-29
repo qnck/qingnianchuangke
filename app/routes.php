@@ -6,7 +6,7 @@ Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
 Route::get('/', function () {
     $url = Config::get('app.url');
-    $url = $url.'qnck/login.html';
+    $url = $url.'www/index.html';
     return Redirect::to($url);
 });
 Route::get('/banner/1', 'HomeController@banner1');
