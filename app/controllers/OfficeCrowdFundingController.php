@@ -57,28 +57,6 @@ class OfficeCrowdFundingController extends \BaseController
             $event->addEvent();
             $e_id = $event->e_id;
 
-            if ($range == 1) {
-                $range = new EventRange(['c_id' => 0, 'p_id' => 0, 's_id' => 0]);
-                $event->ranges()->save($range);
-            }
-
-            if ($cities && $range == 2) {
-                $city_sets = explode(',', $cities);
-                foreach ($city_sets as $set) {
-                    $array = explode('|', $set);
-                    $range = new EventRange(['c_id' => $array[0], 'p_id' => $array[1]]);
-                    $event->ranges()->save($range);
-                }
-            }
-
-            if ($schools && $range == 3) {
-                $schools = explode(',', $schools);
-                foreach ($schools as $school) {
-                    $range = new EventRange(['s_id' => $school]);
-                    $event->ranges()->save($range);
-                }
-            }
-
             // add funding
             $crowd_funding = new CrowdFunding();
             $crowd_funding->u_id = $u_id;
@@ -92,9 +70,12 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_local_only = $local_only;
+            $crowd_funding->c_praise_count = 0;
+            $crowd_funding->c_remark = '';
             $crowd_funding->c_open_file = $open_file;
             $crowd_funding->c_status = 4;
             $crowd_funding->c_cate = 8;
+            $crowd_funding->e_id = $e_id;
 
             $crowd_funding->addCrowdFunding();
 
@@ -125,6 +106,39 @@ class OfficeCrowdFundingController extends \BaseController
             }
 
             $funding_product->addProduct();
+
+            if ($range == 1) {
+                $event_range = new EventRange(['c_id' => 0, 'p_id' => 0, 's_id' => 0]);
+                $event->ranges()->save($event_range);
+            }
+
+            if ($cities && $range == 2) {
+                $city_sets = explode(',', $cities);
+                foreach ($city_sets as $key => $set) {
+                    $array = explode('|', $set);
+                    $event_range = new EventRange(['c_id' => $array[0], 'p_id' => $array[1]]);
+                    if ($key) {
+                        $new_event = $crowd_funding->cloneCrowdFunding();
+                    } else {
+                        $new_event = $event;
+                    }
+                    $new_event->ranges()->save($event_range);
+                }
+            }
+
+            if ($schools && $range == 3) {
+                $schools = explode(',', $schools);
+                foreach ($schools as $key => $school) {
+                    $event_range = new EventRange(['s_id' => $school]);
+                    if ($key) {
+                        $new_event = $crowd_funding->cloneCrowdFunding();
+                    } else {
+                        $new_event = $event;
+                    }
+                    $new_event->ranges()->save($event_range);
+                }
+            }
+
             $re = Tools::reTrue('添加众筹成功');
             DB::commit();
         } catch (Exception $e) {

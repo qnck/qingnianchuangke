@@ -296,6 +296,66 @@ class CrowdFunding extends Eloquent
         return true;
     }
 
+    public function cloneCrowdFunding()
+    {
+        $this->load(['eventItem', 'product']);
+
+        $event = new EventItem();
+        $event->o_id = $this->eventItem->o_id;
+        $event->e_title = $this->eventItem->e_title;
+        $event->cover_img = $this->eventItem->cover_img;
+        $event->e_brief = $this->eventItem->e_brief;
+        $event->url = $this->eventItem->url;
+        $event->e_range = $this->eventItem->e_range;
+        $event->e_start_at = $this->eventItem->e_start_at;
+        $event->e_end_at = $this->eventItem->e_end_at;
+        $event->created_at = $this->eventItem->created_at;
+        $event->e_status = $this->eventItem->e_status;
+        $event->save();
+
+        $funding = new CrowdFunding();
+        $funding->u_id = $this->u_id;
+        $funding->b_id = $this->b_id;
+        $funding->c_status = $this->c_status;
+        $funding->c_yield_desc = $this->c_yield_desc;
+        $funding->c_content = $this->c_content;
+        $funding->c_imgs = $this->c_imgs;
+        $funding->c_yield_time = $this->c_yield_time;
+        $funding->c_time = $this->c_time;
+        $funding->c_shipping = $this->c_shipping;
+        $funding->c_shipping_fee = $this->c_shipping_fee;
+        $funding->c_target_amount = $this->c_target_amount;
+        $funding->c_cate = $this->c_cate;
+        $funding->created_at = $this->created_at;
+        $funding->c_open_file = $this->c_open_file;
+        $funding->c_praise_count = $this->c_praise_count;
+        $funding->c_remark = $this->c_remark;
+        $funding->c_amount = $this->c_amount;
+        $funding->u_mobile = $this->u_mobile;
+        $funding->c_local_only = $this->c_local_only;
+        $funding->e_id = $event->e_id;
+        $funding->save();
+
+        $product = new CrowdFundingProduct();
+        $product->cf_id = $funding->cf_id;
+        $product->u_id = $this->product->u_id;
+        $product->b_id = $this->product->b_id;
+        $product->p_imgs = $this->product->p_imgs;
+        $product->p_title = $this->product->p_title;
+        $product->p_desc = $this->product->p_desc;
+        $product->p_price = $this->product->p_price;
+        $product->p_status = $this->product->p_status;
+        $product->p_max_quantity = $this->product->p_max_quantity;
+        $product->p_target_quantity = $this->product->p_target_quantity;
+        $product->p_sort = $this->product->p_sort;
+        $product->created_at = $this->product->created_at;
+        $product->p_sold_quantity = $this->product->p_sold_quantity;
+        $product->p_cart_quantity = $this->product->p_cart_quantity;
+        $product->save();
+
+        return $event;
+    }
+
     // relations
     public function city()
     {
