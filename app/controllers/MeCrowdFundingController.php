@@ -34,6 +34,7 @@ class MeCrowdFundingController extends \BaseController
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
@@ -118,8 +119,9 @@ class MeCrowdFundingController extends \BaseController
                 $imgObj = new Img('crowd_funding', $img_token);
                 $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
                 $crowd_funding->save();
-
-                $imgObj = new Img('event', $img_token);
+            }
+            if ($img_token_2) {
+                $imgObj = new Img('event', $img_token_2);
                 $event->cover_img = $imgObj->getSavedImg($event->e_id);
                 $event->save();
             }
