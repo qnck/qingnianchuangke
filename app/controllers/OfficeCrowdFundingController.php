@@ -50,7 +50,6 @@ class OfficeCrowdFundingController extends \BaseController
             $event->e_title = $title;
             $event->e_brief = $brief;
             $event->e_range = $range;
-            $event->e_end_at = $end_at;
             $event->e_start_at = $active_at;
             $date_obj = new DateTime($active_at);
             $date_obj->modify('+'.$time.' days');
@@ -84,12 +83,6 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding = new CrowdFunding();
             $crowd_funding->u_id = $u_id;
             $crowd_funding->b_id = $booth->b_id;
-            $crowd_funding->s_id = $s_id;
-            $crowd_funding->c_id = $c_id;
-            $crowd_funding->pv_id = $pv_id;
-
-            $crowd_funding->c_title = $title;
-            $crowd_funding->c_brief = $brief;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
@@ -109,6 +102,10 @@ class OfficeCrowdFundingController extends \BaseController
                 $imgObj = new Img('crowd_funding', $img_token);
                 $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
                 $crowd_funding->save();
+
+                $imgObj = new Img('event', $img_token);
+                $event->cover_img = $imgObj->getSavedImg($event->e_id);
+                $event->save();
             }
 
             // add funding product
@@ -142,7 +139,7 @@ class OfficeCrowdFundingController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         try {
-            $list = CrowdFunding::with('product')->where('c_cate', '=', 8)->paginate($per_page);
+            $list = CrowdFunding::with('product', 'eventItem')->where('c_cate', '=', 8)->paginate($per_page);
             $data['rows'] = [];
             foreach ($list as $key => $funding) {
                 $data['rows'][] = $funding->showInList();
@@ -162,6 +159,7 @@ class OfficeCrowdFundingController extends \BaseController
             if (empty($funding)) {
                 throw new Exception("没有找到请求的数据", 10001);
             }
+            $funding->load(['eventItem']);
             $data = $funding->showDetail();
             $re = Tools::reTrue('获取众筹信息成功', $data);
         } catch (Exception $e) {

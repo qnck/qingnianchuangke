@@ -63,11 +63,15 @@ class CrowdFunding extends Eloquent
         $this->loadImg();
         $data = [];
         $data['id'] = $this->cf_id;
-        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
-        $data['title'] = $this->c_title;
-        $data['brief'] = $this->c_brief;
+        if (empty($this->eventItem)) {
+            $this->load(['eventItem']);
+        }
+
+        $data['cover_img'] = ['cover_img' => $this->eventItem->cover_img];
+        $data['title'] = $this->eventItem->e_title;
+        $data['brief'] = $this->eventItem->e_brief;
         $data['status'] = $this->c_status;
-        $data['active_at'] = $this->active_at;
+        $data['active_at'] = $this->eventItem->e_start_at;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d');
         $data['time'] = $this->c_time;
@@ -111,13 +115,16 @@ class CrowdFunding extends Eloquent
     {
         $this->loadImg();
         $data = [];
+        if (empty($this->eventItem)) {
+            $this->load(['eventItem']);
+        }
         $data['id'] = $this->cf_id;
-        $data['cover_img'] = Img::filterKey('cover_img', $this->_imgs);
+        $data['cover_img'] = ['cover_img' => $this->eventItem->cover_img];
         $data['content'] = $this->getContent();
-        $data['brief'] = $this->c_brief;
-        $data['title'] = $this->c_title;
+        $data['title'] = $this->eventItem->e_title;
+        $data['brief'] = $this->eventItem->e_brief;
         $data['status'] = $this->c_status;
-        $data['active_at'] = $this->active_at;
+        $data['active_at'] = $this->eventItem->e_start_at;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d');
         $data['time'] = $this->c_time;
@@ -218,11 +225,11 @@ class CrowdFunding extends Eloquent
 
     public function calculateTimeLeft()
     {
-        if (!$this->active_at) {
+        if (!$this->eventItem->e_start_at) {
             return -1;
         }
         $now = new DateTime();
-        $active_at = new DateTime($this->active_at);
+        $active_at = new DateTime($this->eventItem->e_start_at);
         if ($active_at > $now) {
             $gap = -1;
         } else {
