@@ -51,14 +51,14 @@ class Auction extends Eloquent
         $auction = Auction::join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'auctions.e_id');
         })->where('event_items.e_end_at', '<', $now)
-        ->where('auctions.a_status', '=', 1)->first();
+        ->where('auctions.a_status', '=', 1)->orderBy('auctions.created_at', 'DESC')->first();
         if (empty($auction)) {
             throw new Exception("没有需要处理的竞拍", 2000);
         }
         $auction->load(['eventItem']);
         $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
 
-        if (count($list) <= 0) {
+        if ($list->count() <= 0) {
             throw new Exception("无人出价", 2000);
         }
         $win = $list->first();
