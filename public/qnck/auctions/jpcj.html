@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,target-densitydpi=high-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>竞拍须知</title>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
     <style type="text/css">
         body {
             background-color: #EFF0F4;
@@ -85,7 +85,7 @@
             var uid = getCookie("uid");
             if(token==null || token=="null" || token==""){
             	alert("请先登录");
-            	window.location.href="login.html?rurl=jpcj.html?id="+id;
+            	window.location.href="../login.html?rurl=jpcj.html?id="+id;
             }else{
             	$.ajax({
 			        type: "post",
@@ -128,7 +128,7 @@
     <div class="theme-popover">
      <div style="background-color:#EBECEE;width:100%;border-radius:7px 7px 0px 0px;height:40px;border-bottom:1px solid #9A9A9C">
      	<div style="color:#818181;margin-left:12px;padding-top:7px;font-weight:bold;font-size:16px;float:left;">出价</div>
-     	<div style="float:right;padding-top:7px;padding-right:7px;" onclick="closeBuyInfo()"><img style="height:20px;width:20px;" src="images/gonggong_guanbi.png"/></div>
+     	<div style="float:right;padding-top:7px;padding-right:7px;" onclick="closeBuyInfo()"><img style="height:20px;width:20px;" src="../images/gonggong_guanbi.png"/></div>
      	<div style="clear:both"></div>
      </div>
      <p>

@@ -4,8 +4,8 @@
     <meta name="viewport" content="width=device-width,target-densitydpi=high-dpi,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>每日竞拍</title>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
     <style type="text/css">
         body {
             background-color: #EFF0F4;
@@ -97,23 +97,21 @@
 			var nowtime = new Date(new Date().getTime()+current_time_cz); 
 			var timeold=(jsendtime.getTime()-nowtime.getTime());
 			if(timeold<=0){
-				if(type=="0") type="1";
-				else if(type=="1") type="2";
-				else if(type=="2") BindData();
+				BindData();
 			}else{
-				var sectimeold=timeold/1000 
-				var secondsold=Math.floor(sectimeold); 
-				var msPerDay=24*60*60*1000 
-				var e_daysold=timeold/msPerDay 
-				var daysold=Math.floor(e_daysold); 
-				var e_hrsold=(e_daysold-daysold)*24; 
-				var hrsold=Math.floor(e_hrsold); 
+				var sectimeold=timeold/1000;
+				var secondsold=Math.floor(sectimeold);
+				var msPerDay=24*60*60*1000;
+				var e_daysold=timeold/msPerDay;
+				var daysold=Math.floor(e_daysold);
+				var e_hrsold=(e_daysold-daysold)*24;
+				var hrsold=Math.floor(e_hrsold);
 				var e_minsold=(e_hrsold-hrsold)*60;
-				var minsold=Math.floor((e_hrsold-hrsold)*60); 
+				var minsold=Math.floor((e_hrsold-hrsold)*60);
 				var e_seconds = (e_minsold-minsold)*60;
-				var seconds=Math.floor((e_minsold-minsold)*60); 
+				var seconds=Math.floor((e_minsold-minsold)*60);
 				var ms = e_seconds-seconds;
-				ms = new String(ms)
+				ms = new String(ms);
 				ms = ms.substr(2,2);
 				hrsold = hrsold+daysold*24;
 				$("#timestr").html((hrsold<10?'0'+hrsold:hrsold)+"时"+(minsold<10?'0'+minsold:minsold)+"分"+(seconds<10?'0'+seconds:seconds)+"秒"+ms);
@@ -139,17 +137,17 @@
     <div id="content" onclick="viewDetail()" style="border:1px solid #DCDCDD;border-radius: 20px 20px 0px 0px;position:relative;">
         <img id="zst" src="" style="width:100%;border-radius: 20px 20px 0px 0px;"/>
         <div style="opacity: 0.4;filter:alpha(opacity=40);background-color:black;border-radius: 20px 20px 0px 0px;padding:10px 20px;position:absolute;top:0px;left:0px;right:0px;font-size:18px;line-height:25px;font-weight:bold;">
-        	<div style="padding-bottom:3px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;">拍品名称</div></div>
+        	<div style="padding-bottom:3px;"><div style="color:#82C3EB;float:left;">今日拍品|</div><div id="title" style="padding-left:75px;word-break:break-all;">拍品名称</div></div>
     		<div style="border-top:1px solid white;padding-top:3px;"><span style="color:#82C3EB;">市场价|</span>￥<span id="price">00.00</span></div>
     		<div><span style="color:#82C3EB;">获得竞拍者|</span><span id="win_username"> </span></div>
         </div>
     </div>
     <div id="remark" style="margin-top:1px;border:1px solid #DCDCDD;border-radius: 0px 0px 20px 20px;background-color:white;text-align:center;">
-    	<div id="rtitle" style="padding-top:20px;padding-bottom:8px;font-size:22px;">距开始还剩</div>
-    	<div id="timestr" style="padding-bottom:20px;font-size:30px;"></div>
+    	<div id="rtitle" style="padding-top:15px;padding-bottom:8px;font-size:22px;">距开始还剩</div>
+    	<div id="timestr" style="padding-bottom:15px;font-size:30px;"></div>
     </div>
     <div style="margin-top:10px;text-align:center;">温馨提示：以上商品为正品拍卖，请放心竞拍</div>
-     <div onclick="cyjp()" style="margin-top:20px;color:white;background-color:#6FB6E2;border-radius: 20px;width:100%;font-size:30px;text-align:center;padding:10px 0px;">
+     <div onclick="cyjp()" style="margin-top:15px;color:white;background-color:#6FB6E2;border-radius: 20px;width:100%;font-size:30px;text-align:center;padding:10px 0px;">
         参与竞拍
     </div>
 </body>
