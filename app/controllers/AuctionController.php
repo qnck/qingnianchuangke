@@ -77,7 +77,7 @@ class AuctionController extends \BaseController
             $list = Auction::with('eventItem')
             ->join('event_items', function ($q) {
                 $q->on('event_items.e_id', '=', 'auctions.e_id');
-            })->where('event_items.e_end_at', '<', $now)->paginate($per_page);
+            })->where('event_items.e_end_at', '<', $now)->orderBy('auctions.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $auction) {
                 $data[] = $auction->showDetail();

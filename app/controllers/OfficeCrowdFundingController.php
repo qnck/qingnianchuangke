@@ -106,7 +106,7 @@ class OfficeCrowdFundingController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         try {
-            $list = CrowdFunding::with('product')->paginate($per_page);
+            $list = CrowdFunding::with('product')->where('c_cate', '=', 8)->paginate($per_page);
             $data['rows'] = [];
             foreach ($list as $key => $funding) {
                 $data['rows'][] = $funding->showInList();
@@ -154,7 +154,7 @@ class OfficeCrowdFundingController extends \BaseController
         return Response::json($re);
     }
 
-    public function delCrowdFunding($id)
+    public function delFunding($id)
     {
         $u_id = Tools::getOfficialUserId();
 
