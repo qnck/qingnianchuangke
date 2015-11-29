@@ -58,7 +58,7 @@ class Auction extends Eloquent
         $auction->load(['eventItem']);
         $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
 
-        if (count($list <= 0)) {
+        if (count($list) <= 0) {
             throw new Exception("无人出价", 2001);
         }
         $win = $list->first();
