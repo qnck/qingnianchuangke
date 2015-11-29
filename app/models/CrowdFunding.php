@@ -67,7 +67,7 @@ class CrowdFunding extends Eloquent
             $this->load(['eventItem']);
         }
 
-        $data['cover_img'] = ['cover_img' => $this->eventItem->cover_img];
+        $data['cover_img'] = [$this->eventItem->cover_img];
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
         $data['status'] = $this->c_status;
@@ -96,20 +96,12 @@ class CrowdFunding extends Eloquent
                 $data['is_limit'] = 0;
             }
         }
-        if ($this->user) {
+        if (!empty($this->user)) {
             $data['user'] = $this->user->showInList();
-            if ($this->user->school) {
-                
+            if (!empty($this->user->school)) {
+                $data['school'] = $this->user->school->showInList();
+                $data['city'] = DicCity::where('c_id', '=', $this->user->school->t_city)->where('c_province_id', '=', $this->user->school->t_province)->first()->showInList();
             }
-        }
-        if ($this->school) {
-            $data['school'] = $this->school->showInList();
-        }
-        if ($this->city) {
-            if (empty($this->school)) {
-                $this->load('school');
-            }
-            $data['city'] = $this->city()->where('c_province_id', '=', $this->school->t_province)->first()->showInList();
         }
         return $data;
     }
@@ -122,7 +114,7 @@ class CrowdFunding extends Eloquent
             $this->load(['eventItem']);
         }
         $data['id'] = $this->cf_id;
-        $data['cover_img'] = ['cover_img' => $this->eventItem->cover_img];
+        $data['cover_img'] = [$this->eventItem->cover_img];
         $data['content'] = $this->getContent();
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
@@ -156,17 +148,12 @@ class CrowdFunding extends Eloquent
                 $data['is_limit'] = 0;
             }
         }
-        if ($this->user) {
+        if (!empty($this->user)) {
             $data['user'] = $this->user->showInList();
-        }
-        if ($this->school) {
-            $data['school'] = $this->school->showInList();
-        }
-        if ($this->city) {
-            if (empty($this->school)) {
-                $this-load('school');
+            if (!empty($this->user->school)) {
+                $data['school'] = $this->user->school->showInList();
+                $data['city'] = DicCity::where('c_id', '=', $this->user->school->t_city)->where('c_province_id', '=', $this->user->school->t_province)->first()->showInList();
             }
-            $data['city'] = $this->city()->where('t_province_id', '=', $this->school->t_province);
         }
         if ($this->replies) {
             $tmp = [];

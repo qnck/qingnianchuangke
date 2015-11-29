@@ -50,6 +50,7 @@ class CrowdFundingController extends \BaseController
                 'city',
                 'school',
                 'user',
+                'user.school',
                 'product',
                 'eventItem',
                 'praises' => function ($q) {
@@ -145,6 +146,7 @@ class CrowdFundingController extends \BaseController
             $crowdfunding->load([
                 'eventItem',
                 'user',
+                'user.school',
                 'replies' => function ($q) {
                     $q->with(['user'])->take(3)->orderBy('created_at', 'DESC');
                 },
