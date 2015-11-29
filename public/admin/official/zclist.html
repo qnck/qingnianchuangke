@@ -479,36 +479,46 @@
 		    var img_token=Guid.NewGuid().ToString();
 
 		    var f = document.createElement("form");
-		    f.action = _url+"img?img_token="+img_token+"&cate="+cate;
+		    f.action = _url+"img?img_token="+img_token+"&cate=event";
 		    f.method = "post";
 		    f.enctype="multipart/form-data";
     		$($("#imgUpload")).appendTo(f);
-    		$($("#contentDiv").children()).each(function (){
-				var filedom = $(this).children().eq(1).children().eq(0);
-				if(filedom.val()!=""){
-					filedom.appendTo(f);
-				}
-			});
+    		
 
     		$(f).ajaxSubmit(function(s){
 		        if(s.result=="2000");
 		        {
-		            $.ajax({
-		                type: "post",
-		                url: _url+"office/crowd",
-		                data: {range:range,cities:cities,schools:schools,title:title,amount:amount,time:time,yield_time:yield_time,shipping:shipping,shipping_fee:shipping_fee,brief:brief,yield_desc:yield_desc,content:content,open_file:open_file,price:price,quantity:quantity,is_limit:is_limit,active_at:active_at,local_only:local_only,img_token:img_token},
-		                dataType: "json",
-		                success: function (r) {
-	                        $.messager.alert("提示", r.info, "alert");
-		                    if(r.result=="2000"){
-		                        $('#ad-dlg').dialog('close');
-		                        BindData();
-		                    }
-		                },
-		                error: function () {
-	                        $.messager.alert("提示", "调用添加众筹接口失败", "alert");
-		                }
-		            });
+		        	var f2 = document.createElement("form");
+				    f2.action = _url+"img?img_token="+img_token+"&cate="+cate;
+				    f2.method = "post";
+				    f2.enctype="multipart/form-data";
+		        	$($("#contentDiv").children()).each(function (){
+						var filedom = $(this).children().eq(1).children().eq(0);
+						if(filedom.val()!=""){
+							filedom.appendTo(f2);
+						}
+					});
+					$(f2).ajaxSubmit(function(s2){
+				        if(s2.result=="2000");
+				        {
+				            $.ajax({
+				                type: "post",
+				                url: _url+"office/crowd",
+				                data: {range:range,cities:cities,schools:schools,title:title,amount:amount,time:time,yield_time:yield_time,shipping:shipping,shipping_fee:shipping_fee,brief:brief,yield_desc:yield_desc,content:content,open_file:open_file,price:price,quantity:quantity,is_limit:is_limit,active_at:active_at,local_only:local_only,img_token:img_token},
+				                dataType: "json",
+				                success: function (r) {
+			                        $.messager.alert("提示", r.info, "alert");
+				                    if(r.result=="2000"){
+				                        $('#ad-dlg').dialog('close');
+				                        BindData();
+				                    }
+				                },
+				                error: function () {
+			                        $.messager.alert("提示", "调用添加众筹接口失败", "alert");
+				                }
+				            });
+				        }
+				    });
 		        }
 		    });
 		}
