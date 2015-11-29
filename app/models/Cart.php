@@ -13,6 +13,11 @@ class Cart extends Eloquent
     public static $STATUS_PENDDING_PAY = 2;
     public static $STATUS_PAIED = 3;
 
+    public static $TYPE_REGULAR_PRODUCT = 1;
+    public static $TYPE_CROWD_FUNDING = 2;
+    public static $TYPE_FLEA_PRODUCT = 3;
+    public static $TYPE_AUCTION = 4;
+
     private $_quntityOri = 0;
 
     private function baseValidate()
@@ -200,6 +205,18 @@ class Cart extends Eloquent
         $bid->save();
 
         return true;
+    }
+
+    public static function getCartTypeCount($type, $type_id)
+    {
+        if (!$type) {
+            throw new Exception("请传入有效的cart类型", 1);
+        }
+        $count = Cart::where('c_type', '=', $type)->count();
+        if (!$count) {
+            $count = 0;
+        }
+        return $count;
     }
 
     public static function sumIncome($from = null, $to = null, $b_id = null, $u_id = null, $owner_id = null)

@@ -41,6 +41,13 @@ class MeCrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
+
+            $base = new DateTime();
+            $base->modify('+90 days');
+            $target = new DateTime($active_at);
+            if ($base < $target) {
+                throw new Exception("最大预发布时间不能超过3个月", 2001);
+            }
             $user->load('booth', 'profileBase', 'school');
             if ($apartment_no) {
                 $tmp_base = TmpUserProfileBase::find($user->u_id);
@@ -276,17 +283,8 @@ class MeCrowdFundingController extends \BaseController
             if (empty($crowd_funding) || $crowd_funding->u_id != $u_id) {
                 throw new Exception("无法获取到请求的众筹", 2001);
             }
-
-            if ($crowd_funding->c_status > 3) {
-                throw new Exception("众筹状态已锁定", 2001);
-            }
-
-            $funding_product = CrowdFundingProduct::where('cf_id', '=', $crowd_funding->cf_id)->first();
-            if (empty($funding_product)) {
-                throw new Exception("库存信息丢失", 2001);
-            }
-            $crowd_funding->delete();
-            $funding_product->delete();
+            
+            $crowd_funding->delCrowdFunding();
             $re = Tools::reTrue('删除众筹成功');
             DB::commit();
         } catch (Exception $e) {
