@@ -114,7 +114,6 @@
         return str;
     }
     function fbfwClick (obj) {
-    	if($(obj).attr("fbfw")!="qg") return;
     	$(obj).siblings().css("background-color","#fff").attr("ck","0");
     	$(obj).css("background-color","#76C5F0").attr("ck","1");
     	if($(obj).attr("fbfw")=="cs"){
@@ -436,7 +435,9 @@
 			if(filedom.val()!=""){
 				count++;
 				var key = filedom.attr("id");
-				var value = filecontent.val();
+				var value = filecontent.val().replace(/\n/g,"\n");
+			    // var s = value.replace(/\n/g,"<br/>");
+
 				content+='"'+key+'":"'+value+'",';
 			}
 		});
@@ -446,6 +447,33 @@
 			$.messager.alert("提示", "请至少上传一个图文内容！", "alert");
 			return;
 		}
+		var range = "";
+		var cities = "";
+		var schools = "";
+		//发布范围
+		$("span[name='fbfw']").each(function (){
+			if($(this).attr("ck")=="1"){
+				switch($(this).attr("fbfw")){
+					case "qg":
+						range="1";
+						break;
+					case "cs":
+						range="2";
+						$($("#choosedcityDiv").children()).each(function(){
+							cities += $(this).attr("cid")+"|"+$(this).attr("pid")+",";
+						});
+						break;
+					case "xx":
+						range="3";
+						$($("#choosedschoolDiv").children()).each(function(){
+							schools += $(this).attr("id")+",";
+						});
+						break;
+				}
+			}
+		});
+		if(cities!="") cities = cities.substring(0,cities.length-1);
+		if(schools!="") schools = schools.substring(0,schools.length-1);
 		var fnty = $("#displayinfo").attr("fnty");//读取操作类型
 		if (fnty == "add") {
 		    var img_token=Guid.NewGuid().ToString();
@@ -468,7 +496,7 @@
 		            $.ajax({
 		                type: "post",
 		                url: _url+"office/crowd",
-		                data: {title:title,amount:amount,time:time,yield_time:yield_time,shipping:shipping,shipping_fee:shipping_fee,brief:brief,yield_desc:yield_desc,content:content,open_file:open_file,price:price,quantity:quantity,is_limit:is_limit,active_at:active_at,local_only:local_only,img_token:img_token},
+		                data: {range:range,cities:cities,schools:schools,title:title,amount:amount,time:time,yield_time:yield_time,shipping:shipping,shipping_fee:shipping_fee,brief:brief,yield_desc:yield_desc,content:content,open_file:open_file,price:price,quantity:quantity,is_limit:is_limit,active_at:active_at,local_only:local_only,img_token:img_token},
 		                dataType: "json",
 		                success: function (r) {
 	                        $.messager.alert("提示", r.info, "alert");
@@ -642,7 +670,7 @@
 	            <td class="rightTd">
 			        <div class="form-group">
 			          <div class="field field-icon-right">
-			          		<textarea id="brief" placeholder="众筹介绍" data-validate="required:请填写众筹介绍" onblur="ckeckValue(this);" rows="6" cols="60"></textarea>
+			          		<input type="text" id="brief" placeholder="众筹介绍" style="width:600px" data-validate="required:请填写众筹介绍" onblur="ckeckValue(this);"></input>
 			          </div>
 			        </div>
 	            </td>
@@ -652,7 +680,7 @@
 	            <td class="rightTd">
 			        <div class="form-group">
 			          <div class="field field-icon-right">
-			          		<textarea id="yield_desc" placeholder="回报内容" data-validate="required:请填写回报内容" onblur="ckeckValue(this);" rows="6" cols="60"></textarea>
+			          		<input type="text" id="yield_desc" placeholder="回报内容" style="width:600px" data-validate="required:请填写回报内容" onblur="ckeckValue(this);"></input>
 			          </div>
 			        </div>
 	            </td>
