@@ -44,11 +44,11 @@
 			                zstime = new Date(end_at.replace("-","/"));
 	    					zstime.setMinutes(zstime.getMinutes() + 11, zstime.getSeconds(), 0);
 			                if(current_time<start_at){
-			                	$("#rtitle").text("距开始还剩");
+			                	$("#rtitle").text("距开始时间");
 			                	type = "0";
 		                	}
 			                else if(current_time<end_at){
-			                	$("#rtitle").text("距结束还剩");
+			                	$("#rtitle").text("距结束时间");
 			                	type = "1";
 		                	}
 			                else if(current_time>end_at){
@@ -82,8 +82,8 @@
 			var nowtime = new Date(new Date().getTime()+current_time_cz); 
 			var timeold=(jsendtime.getTime()-nowtime.getTime());
 			if(timeold<=0){
-				if(type=="0") {type="1";$("#rtitle").text("距开始还剩");}
-				else if(type=="1") {type="2";$("#rtitle").text("距结束还剩");}
+				if(type=="0") {type="1";$("#rtitle").text("距开始时间");}
+				else if(type=="1") {type="2";$("#rtitle").text("距结束时间");}
 				else if(type=="2") {type="";$("#rtitle").text("此竞拍已结束");}
 			}else{
 				var sectimeold=timeold/1000;
