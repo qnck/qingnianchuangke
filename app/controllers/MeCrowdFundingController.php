@@ -201,8 +201,12 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception("无法获取到请求的众筹", 2001);
             }
 
-            if ($crowd_funding->c_status > 3) {
-                throw new Exception("众筹状态已锁定", 2001);
+            $funding_product = CrowdFundingProduct::where('cf_id', '=', $crowd_funding->cf_id)->first();
+            if (empty($funding_product)) {
+                throw new Exception("库存信息丢失", 2001);
+            }
+            if (Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
+                throw new Exception("已有人购买", 2001);
             }
 
             $event = EventItem::find($crowd_funding->e_id);

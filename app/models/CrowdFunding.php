@@ -270,27 +270,18 @@ class CrowdFunding extends Eloquent
         if ($this->c_status > 4) {
             throw new Exception("众筹状态已完成", 2001);
         }
-        $this->load(['replies', 'praises', 'favorites']);
-        // check replies
-        if (count($this->replies) > 0) {
-            throw new Exception("已关联评论信息", 2001);
-        }
-        // check praises
-        if (count($this->praises) > 0) {
-            throw new Exception("已关联点赞信息", 2001);
-        }
-        // check favorites
-        if (count($this->favorites) > 0) {
-            throw new Exception("已关联收藏信息", 2001);
-        }
 
         $funding_product = CrowdFundingProduct::where('cf_id', '=', $this->cf_id)->first();
         if (empty($funding_product)) {
             throw new Exception("库存信息丢失", 2001);
         }
-        if (!Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
+        if (Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
             throw new Exception("已有人购买", 2001);
         }
+        
+        $this->load(['eventItem']);
+
+        $this->eventItem->delete();
         $this->delete();
         $funding_product->delete();
         return true;
