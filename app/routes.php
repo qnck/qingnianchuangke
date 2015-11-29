@@ -266,6 +266,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     /* AUCTION START*/
     Route::get('v0/auction/show', 'AuctionController@show');
     Route::get('v0/auction', 'AuctionController@listAuctions');
+    Route::get('v0/auction/{id}', 'AuctionController@getAuction');
     Route::post('v0/auction/{id}/bid', 'AuctionController@bid');
     /* AUCTION END*/
 
@@ -397,6 +398,7 @@ Route::post('wechat/crowd/{id}/order', 'CrowdFundingController@postOrder');
 Route::get('wechat/auction/show', 'AuctionController@show');
 Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
 Route::get('wechat/auction', 'AuctionController@listAuctions');
+Route::get('wechat/auction/{id}', 'AuctionController@getAuction');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/

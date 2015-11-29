@@ -85,4 +85,20 @@ class AuctionController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function getAuction($id)
+    {
+        try {
+            $auction = Auction::find($id);
+            if (empty($auction)) {
+                throw new Exception("没有找到请求的数据", 2001);
+            }
+            $auction->load('eventItem');
+            $data = $auction->showDetail();
+            $re = Tools::reTrue('获取竞拍成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取竞拍失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 }

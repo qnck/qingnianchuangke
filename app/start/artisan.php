@@ -12,3 +12,4 @@
 */
 
 Artisan::add(new EveryHour);
+Artisan::add(new EveryFiveMinutes);
