@@ -127,6 +127,6 @@ class MessageDispatcher
         ];
         $this->setMessage($params);
         $this->fire();
-        $this->addNotificationReceiver($this->_n_id, NotificationReceiver::$RECEIVER_USER);
+        $this->addNotificationReceiver($this->_u_id, NotificationReceiver::$RECEIVER_USER);
     }
 }
