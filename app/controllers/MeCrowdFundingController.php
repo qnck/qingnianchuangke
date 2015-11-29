@@ -68,15 +68,29 @@ class MeCrowdFundingController extends \BaseController
                 $booth = $user->booth;
             }
 
+            // add event
+            $event = new EventItem();
+            $event->e_title = $title;
+            $event->e_range = 0;
+            $event->e_brief = $brief;
+            $event->e_start_at = $active_at;
+            $date_obj = new DateTime($active_at);
+            $date_obj->modify('+'.$time.' days');
+            $event->e_end_at = $date_obj->format('Y-m-d H:i:s');
+            $event->addEvent();
+
+            $range = new EventRange();
+            $range->e_id = $event->e_id;
+            $range->s_id = $user->school->t_id;
+            $range->c_id = $user->school->t_city;
+            $range->p_id = $user->school->t_province;
+            $range->save();
+            
             // add funding
             $crowd_funding = new CrowdFunding();
             $crowd_funding->u_id = $u_id;
             $crowd_funding->b_id = $booth->b_id;
-            $crowd_funding->s_id = $user->school->t_id;
-            $crowd_funding->c_id = $user->school->t_city;
-            $crowd_funding->pv_id = $user->school->t_province;
-            $crowd_funding->c_title = $title;
-            $crowd_funding->c_brief = $brief;
+            $crowd_funding->e_id = $event->e_id;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
@@ -88,12 +102,8 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
-            $date_obj = new DateTime($active_at);
-            $date_obj->modify('+'.$time.' days');
-            $crowd_funding->end_at = $date_obj->format('Y-m-d H:i:s');
             if ($amount <= 2000) {
                 $crowd_funding->c_status = 4;
-                $crowd_funding->active_at = $active_at;
             } else {
                 $crowd_funding->c_status = 1;
             }
@@ -108,6 +118,10 @@ class MeCrowdFundingController extends \BaseController
                 $imgObj = new Img('crowd_funding', $img_token);
                 $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
                 $crowd_funding->save();
+
+                $imgObj = new Img('event', $img_token);
+                $event->cover_img = $imgObj->getSavedImg($event->e_id);
+                $event->save();
             }
 
             // add funding product
@@ -187,9 +201,16 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception("众筹状态已锁定", 2001);
             }
 
+            $event = EventItem::find($crowd_funding->e_id);
+
             // put funding
-            $crowd_funding->c_title = $title;
-            $crowd_funding->c_brief = $brief;
+            $event->e_title = $title;
+            $event->e_brief = $brief;
+            $event->e_start_at = $active_at;
+            $date_obj = new DateTime($active_at);
+            $date_obj->modify('+'.$time.' days');
+            $event->e_end_at = $date_obj->format('Y-m-d H:i:s');
+
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
@@ -201,12 +222,8 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_open_file = $open_file;
-            $date_obj = new DateTime($active_at);
-            $date_obj->modify('+'.$time.' days');
-            $crowd_funding->end_at = $date_obj->format('Y-m-d H:i:s');
             if ($amount <= 2000) {
                 $crowd_funding->c_status = 4;
-                $crowd_funding->active_at = $active_at;
             } else {
                 $crowd_funding->c_status = 1;
             }
@@ -250,6 +267,7 @@ class MeCrowdFundingController extends \BaseController
                 $crowd_funding->c_imgs = implode(',', $imgs);
             }
             $crowd_funding->save();
+            $event->save();
 
             // put funding product
             $funding_product = CrowdFundingProduct::where('cf_id', '=', $crowd_funding->cf_id)->first();
@@ -306,6 +324,7 @@ class MeCrowdFundingController extends \BaseController
                 'school',
                 'user',
                 'product',
+                'eventItem',
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
@@ -339,6 +358,7 @@ class MeCrowdFundingController extends \BaseController
                 'school',
                 'user',
                 'product',
+                'eventItem',
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }

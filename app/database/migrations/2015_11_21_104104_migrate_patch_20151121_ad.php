@@ -14,8 +14,7 @@ class MigratePatch20151121Ad extends Migration {
     {
         Schema::create('event_items', function ($table) {
             $table->increments('e_id');
-            $table->integer('o_id');        // 企业id
-            $table->string('e_title', 63);      // 标题
+            $table->string('e_title', 63)->nullable();      // 标题
             $table->string('cover_img', 1023)->nullable();  // 封面图
             $table->string('e_brief', 511)->nullable();     // 简述
             $table->string('url', 511)->nullable();         // url

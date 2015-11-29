@@ -45,43 +45,57 @@ class CrowdFundingController extends \BaseController
             }
 
             $now = Tools::getNow();
-            $query = CrowdFunding::select('crowd_fundings.*')->with([
+            $query = CrowdFunding::select('crowd_fundings.*')
+            ->with([
                 'city',
                 'school',
                 'user',
                 'product',
+                'eventItem',
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
-                ])->where('c_status', '>', 2);
+                ])
+            ->where('c_status', '>', 2)
+            ->join('event_ranges', function ($q) {
+                $q->on('event_ranges.e_id', '=', 'crowd_fundings.e_id');
+            })
+            ->join('event_items', function ($q) {
+                $q->on('event_items.e_id', '=', 'crowd_fundings.e_id');
+            });
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
+            if ($range == 1) {
+                $query = $query->orWhere(function ($q) {
+                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                });
+            }
             if ($city && $province && $range == 2) {
-                $query = $query->where('c_id', '=', $city)->where('pv_id', '=', $province);
+                $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
             }
             if ($school && $range == 3) {
-                $query = $query->where('s_id', '=', $school);
+                $query = $query->where('event_ranges.s_id', '=', $school);
             }
 
             if ($filter_option == 1) {
-                $query = $query->where('crowd_fundings.active_at', '>', $now);
+                $query = $query->where('event_items.e_start_at', '>', $now);
             }
 
             if ($filter_option == 2) {
                 // time passed more than 20%, less than 50%, and gathered more than 60% quantity
-                $query = $query->whereRaw('(DATEDIFF(CURDATE(), t_crowd_fundings.active_at)) > (t_crowd_fundings.c_time * 0.2)')
-                ->whereRaw('(DATEDIFF(CURDATE(), t_crowd_fundings.active_at)) < (t_crowd_fundings.c_time * 0.5)')
+                $query = $query->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
+                ->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) < (t_crowd_fundings.c_time * 0.5)')
                 ->join('crowd_funding_products', function ($q) {
                     $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
                 })->whereRaw('t_crowd_funding_products.p_sold_quantity > (t_crowd_funding_products.p_target_quantity * 0.6)')
-                ->where('crowd_fundings.active_at', '<', $now);
+                ->where('event_items.e_start_at', '<', $now);
             }
 
             if ($filter_option == 3) {
                 // left time is less than 20%
-                $query = $query->whereRaw('DATEDIFF(t_crowd_fundings.end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
-                ->where('crowd_fundings.end_at', '>', $now);
+                $query = $query->whereRaw('DATEDIFF(event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
+                ->where('event_items.e_end_at', '>', $now);
             }
 
             if ($key) {
@@ -129,6 +143,7 @@ class CrowdFundingController extends \BaseController
         try {
             $crowdfunding = CrowdFunding::find($id);
             $crowdfunding->load([
+                'eventItem',
                 'user',
                 'replies' => function ($q) {
                     $q->with(['user'])->take(3)->orderBy('created_at', 'DESC');
@@ -222,8 +237,9 @@ class CrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $funding = CrowdFunding::find($id);
-            $date_end = new DateTime($funding->end_at);
-            $date_start = new DateTime($funding->active_at);
+            $funding->load(['eventItem']);
+            $date_end = new DateTime($funding->eventItem->e_end_at);
+            $date_start = new DateTime($funding->eventItem->e_start_at);
 
             $now = new DateTime();
             if ($now > $date_end) {
@@ -238,6 +254,10 @@ class CrowdFundingController extends \BaseController
                 throw new Exception("抱歉, 无效的众筹状态", 2001);
             }
 
+            if ($funding->u_id == $u_id) {
+                throw new Exception("您不能认筹自己发起的众筹", 2001);
+            }
+
             $validator = Validator::make(
                 ['收货人电话' => (string)$shipping_phone, '收货人姓名' => $shipping_name, '收获地址' => $shipping_address, '产品' => $p_id, '数量' => $quantity],
                 ['收货人电话' => 'required|numeric|digits:11', '收货人姓名' => 'required', '收获地址' => 'required', '产品' => 'required|numeric', '数量' => 'required|numeric']
@@ -248,8 +268,11 @@ class CrowdFundingController extends \BaseController
             }
 
             $user = User::chkUserByToken($token, $u_id);
-            if ($funding->c_local_only && $funding->s_id != $user->u_school_id) {
-                throw new Exception("该众筹限制了只能在发布学校购买", 2001);
+            if ($funding->c_local_only) {
+                $funding_owner = User::find($funding->u_id);
+                if ($funding_owner->u_school_id != $user->u_school_id) {
+                    throw new Exception("该众筹仅限于同校参与", 2001);
+                }
             }
 
             $product = CrowdFundingProduct::find($p_id);
@@ -262,10 +285,6 @@ class CrowdFundingController extends \BaseController
                 if (!empty($chk)) {
                     throw new Exception("此类众筹每人限认筹一次", 7001);
                 }
-            }
-
-            if ($funding->u_id == $u_id) {
-                throw new Exception("您不能认筹自己发起的众筹", 2001);
             }
 
             // sku need to be calulated before cart generated
@@ -295,7 +314,7 @@ class CrowdFundingController extends \BaseController
             $shipping_name = $shipping_name ? $shipping_name : $user->u_name;
             $shipping_phone = $shipping_phone ? $shipping_phone : $user->u_mobile;
 
-            $date_obj = new DateTime($funding->active_at);
+            $date_obj = new DateTime($funding->eventItem->e_start_at);
             $delivery_time_obj = $date_obj->modify('+'.($funding->c_time+$funding->c_yield_time).'days');
 
             // add order

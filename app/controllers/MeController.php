@@ -1905,6 +1905,7 @@ class MeController extends \BaseController
                 'user',
                 'city',
                 'school',
+                'eventItem',
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }

@@ -47,8 +47,8 @@ class CrowdFunding extends Eloquent
     private function baseValidate()
     {
         $validator = Validator::make(
-            ['user' => $this->u_id, 'school' => $this->s_id, 'city' => $this->c_id, 'booth' => $this->b_id],
-            ['user' => 'required', 'school' => 'required', 'city' => 'required', 'booth' => 'required']
+            ['user' => $this->u_id],
+            ['user' => 'required']
         );
         if ($validator->fails()) {
             $msg = $validator->messages();
@@ -303,6 +303,11 @@ class CrowdFunding extends Eloquent
     public function city()
     {
         return $this->hasMany('DicCity', 'c_id', 'c_id');
+    }
+
+    public function eventItem()
+    {
+        return $this->hasOne('EventItem', 'e_id', 'e_id');
     }
 
     public function school()

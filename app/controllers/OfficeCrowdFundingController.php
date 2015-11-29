@@ -21,6 +21,9 @@ class OfficeCrowdFundingController extends \BaseController
         $open_file = Input::get('open_file', 0);
         $active_at = Input::get('active_at');
         $local_only = Input::get('local_only', 0);
+        $range = Input::get('range', 1);
+        $cities = Input::get('cities', 0);
+        $schools = Input::get('schools', 0);
 
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -42,13 +45,49 @@ class OfficeCrowdFundingController extends \BaseController
             $user->load('profileBase', 'school');
             $booth = Booth::find($b_id);
 
+            // add event
+            $event = new EventItem();
+            $event->e_title = $title;
+            $event->e_brief = $brief;
+            $event->e_range = $range;
+            $event->e_end_at = $end_at;
+            $event->e_start_at = $active_at;
+            $date_obj = new DateTime($active_at);
+            $date_obj->modify('+'.$time.' days');
+            $event->e_end_at = $date_obj->format('Y-m-d H:i:s');
+            $event->addEvent();
+            $e_id = $event->e_id;
+
+            if ($range == 1) {
+                $range = new EventRange(['c_id' => 0, 'p_id' => 0, 's_id' => 0]);
+                $event->ranges()->save($range);
+            }
+
+            if ($cities && $range == 2) {
+                $city_sets = explode(',', $cities);
+                foreach ($city_sets as $set) {
+                    $array = explode('|', $set);
+                    $range = new EventRange(['c_id' => $array[0], 'p_id' => $array[1]]);
+                    $event->ranges()->save($range);
+                }
+            }
+
+            if ($schools && $range == 3) {
+                $schools = explode(',', $schools);
+                foreach ($schools as $school) {
+                    $range = new EventRange(['s_id' => $school]);
+                    $event->ranges()->save($range);
+                }
+            }
+
             // add funding
             $crowd_funding = new CrowdFunding();
             $crowd_funding->u_id = $u_id;
             $crowd_funding->b_id = $booth->b_id;
-            $crowd_funding->s_id = $user->school->t_id;
-            $crowd_funding->c_id = $user->school->t_city;
-            $crowd_funding->pv_id = $user->school->t_province;
+            $crowd_funding->s_id = $s_id;
+            $crowd_funding->c_id = $c_id;
+            $crowd_funding->pv_id = $pv_id;
+
             $crowd_funding->c_title = $title;
             $crowd_funding->c_brief = $brief;
             $crowd_funding->c_yield_desc = $yield_desc;
@@ -59,12 +98,8 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
-            $crowd_funding->active_at = $active_at;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
-            $date_obj = new DateTime($active_at);
-            $date_obj->modify('+'.$time.' days');
-            $crowd_funding->end_at = $date_obj->format('Y-m-d H:i:s');
             $crowd_funding->c_status = 4;
             $crowd_funding->c_cate = 8;
 

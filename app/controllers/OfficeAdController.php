@@ -38,9 +38,7 @@ class OfficeAdController extends \BaseController
         $img_token = Input::get('img_token', '');
 
         try {
-            $o_id = Tools::getOfficialOrgnizationId();
             $ad_event = new EventItem();
-            $ad_event->o_id = $o_id;
             $ad_event->e_title = $title;
             $ad_event->e_brief = $brief;
             $ad_event->url = $url;
@@ -55,7 +53,7 @@ class OfficeAdController extends \BaseController
                 $ad_event->ranges()->save($event_range);
             }
 
-            if ($cities  && $range == 2) {
+            if ($cities && $range == 2) {
                 $city_sets = explode(',', $cities);
                 foreach ($city_sets as $set) {
                     $array = explode('|', $set);
