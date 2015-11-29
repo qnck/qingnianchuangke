@@ -158,6 +158,7 @@ class Cart extends Eloquent
         $now = new DateTime();
         $this->checkout_at = $now->format('Y-m-d H:i:s');
         $this->checkoutCrowdFunding();
+        $this->checkoutAuction();
         $this->c_status = 3;
         if (!$this->save()) {
             throw new Exception("结算购物车失败", 9005);
