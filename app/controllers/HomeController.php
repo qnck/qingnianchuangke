@@ -10,9 +10,6 @@ class HomeController extends BaseController {
 
     public function index()
     {
-        $phone = new Phone(18508237273);
-        var_dump($phone->sendText('您的验证码是559462，该验证码5分钟内有效。校园创业、购物、交友、找工作就上'));
-        exit;
         return View::make('blade.index.index');
     }
 

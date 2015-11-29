@@ -40,9 +40,11 @@ class EveryHour extends Command
     {
         try {
             // to cacualte the unpaied auction
-            Auction::youCheater();
+            Auction::cronYouCheater();
         } catch (Exception $e) {
-            echo "cronjob:artisan:EveryHour:".$e->getMessage();
+            if ($e->getCode() > 2000) {
+                LogCronjob::addLog($this->name, $e->getMessage());
+            }
         }
     }
 

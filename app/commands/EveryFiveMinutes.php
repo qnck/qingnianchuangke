@@ -39,9 +39,11 @@ class EveryFiveMinutes extends Command {
     {
         try {
             // to caculate auciton winner
-            Auction::runTheWheel();
+            Auction::cronRunTheWheel();
         } catch (Exception $e) {
-            echo "cronjob:artisan:EveryFiveMinutes:".$e->getMessage();
+            if ($e->getCode() > 2000) {
+                LogCronjob::addLog($this->name, $e->getMessage());
+            }
         }
     }
 

@@ -45,7 +45,7 @@ class Auction extends Eloquent
         return $this->save();
     }
 
-    public static function runTheWheel()
+    public static function cronRunTheWheel()
     {
         $now = Tools::getNow();
         $auction = Auction::join('event_items', function ($q) {
@@ -53,17 +53,17 @@ class Auction extends Eloquent
         })->where('event_items.e_end_at', '>', $now)
         ->where('auctions.a_status', '=', 1)->first();
         if (empty($auction)) {
-            throw new Exception("没有需要处理的竞拍", 2001);
+            throw new Exception("没有需要处理的竞拍", 2000);
         }
         $auction->load(['eventItem']);
         $list = AuctionBid::where('a_id', '=', $auction->a_id)->orderBy('b_price', 'DESC')->get();
 
         if (count($list) <= 0) {
-            throw new Exception("无人出价", 2001);
+            throw new Exception("无人出价", 2000);
         }
         $win = $list->first();
         if ($win->is_win) {
-            throw new Exception("中奖信息已处理", 2001);
+            throw new Exception("中奖信息已处理", 2000);
         }
         $user = User::find($win->u_id);
         $auction->a_win_username = $user->u_nickname;
@@ -92,7 +92,7 @@ class Auction extends Eloquent
         return true;
     }
 
-    public static function youCheater()
+    public static function cronYouCheater()
     {
         $date = Tools::getNow(false);
         $now = $date->format('Y-m-d H:i:s');
@@ -107,7 +107,7 @@ class Auction extends Eloquent
         })->first();
 
         if (empty($auction)) {
-            throw new Exception("没有需要处理的竞拍", 1);
+            throw new Exception("没有需要处理的竞拍", 2000);
         }
 
         if ($auction->a_status == 2 && $auction->a_win_id) {
