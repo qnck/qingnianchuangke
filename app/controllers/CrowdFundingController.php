@@ -104,14 +104,16 @@ class CrowdFundingController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(1, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
-            if ($ad && $data) {
-                $data = array_merge($data, $ad);
-                $collection = new Collection($data);
-                $collection->sortByDesc('created_at');
-                $data = array_values($collection->toArray());
-            } elseif ($ad && !$data && $page < 2) {
-                $data = $ad;
+            if (!$key) {
+                $ad = Advertisement::fetchAd(1, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                if ($ad && $data) {
+                    $data = array_merge($data, $ad);
+                    $collection = new Collection($data);
+                    $collection->sortByDesc('created_at');
+                    $data = array_values($collection->toArray());
+                } elseif ($ad && !$data && $page < 2) {
+                    $data = $ad;
+                }
             }
             $re = Tools::reTrue('获取众筹成功', $data, $list);
         } catch (Exception $e) {

@@ -99,14 +99,16 @@ class MarketController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(2, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
-            if ($ad && $data) {
-                $data = array_merge($data, $ad);
-                $collection = new Collection($data);
-                $collection->sortByDesc('created_at');
-                $data = array_values($collection->toArray());
-            } elseif ($ad && !$data && $page < 2) {
-                $data = $ad;
+            if (!$key) {
+                $ad = Advertisement::fetchAd(2, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                if ($ad && $data) {
+                    $data = array_merge($data, $ad);
+                    $collection = new Collection($data);
+                    $collection->sortByDesc('created_at');
+                    $data = array_values($collection->toArray());
+                } elseif ($ad && !$data && $page < 2) {
+                    $data = $ad;
+                }
             }
             $re = Tools::reTrue('获取首页商品成功', $data, $list);
         } catch (Exception $e) {
@@ -227,14 +229,16 @@ class MarketController extends \BaseController
                 $tmp['item_type'] = 1;
                 $data[] = $tmp;
             }
-            $ad = Advertisement::fetchAd(3, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
-            if ($ad && $data) {
-                $data = array_merge($data, $ad);
-                $collection = new Collection($data);
-                $collection->sortByDesc('created_at');
-                $data = array_values($collection->toArray());
-            } elseif ($ad && !$data && $page < 2) {
-                $data = $ad;
+            if (!$key) {
+                $ad = Advertisement::fetchAd(3, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                if ($ad && $data) {
+                    $data = array_merge($data, $ad);
+                    $collection = new Collection($data);
+                    $collection->sortByDesc('created_at');
+                    $data = array_values($collection->toArray());
+                } elseif ($ad && !$data && $page < 2) {
+                    $data = $ad;
+                }
             }
             $re = Tools::reTrue('获取跳蚤市场商品成功', $data, $list);
         } catch (Exception $e) {
