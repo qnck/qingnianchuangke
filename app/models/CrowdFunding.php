@@ -98,6 +98,9 @@ class CrowdFunding extends Eloquent
         }
         if ($this->user) {
             $data['user'] = $this->user->showInList();
+            if ($this->user->school) {
+                
+            }
         }
         if ($this->school) {
             $data['school'] = $this->school->showInList();
