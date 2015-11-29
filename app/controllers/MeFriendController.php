@@ -18,19 +18,21 @@ class MeFriendController extends \BaseController {
             $user = User::chkUserByToken($token, $u_id);
 
             // check changes
-            $sum1 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
-                $j->on('users_friends.u_id_1', '=', 'users.u_id')->where('users_friends.u_id_2', '=', $u_id);
-            })->sum('users.u_change');
+            // $sum1 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
+            //     $j->on('users_friends.u_id_1', '=', 'users.u_id')->where('users_friends.u_id_2', '=', $u_id);
+            // })->sum('users.u_change');
 
-            $sum2 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
-                $j->on('users_friends.u_id_2', '=', 'users.u_id')->where('users_friends.u_id_1', '=', $u_id);
-            })->sum('users.u_change');
+            // $sum2 = DB::table('users_friends')->join('users', function ($j) use ($u_id) {
+            //     $j->on('users_friends.u_id_2', '=', 'users.u_id')->where('users_friends.u_id_1', '=', $u_id);
+            // })->sum('users.u_change');
 
-            $sum = $sum1 + $sum2;
+            // $sum = $sum1 + $sum2;
 
-            if ($ver == $sum) {
-                return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
-            }
+            // if ($ver == $sum) {
+            //     return Response::json(['result' => 2000, 'data' => [], 'info' => '获取我的好友列表成功', 'ver' => $ver]);
+            // }
+            
+            $sum = 0;
             
             $data = $this->getUserList($u_id, 2, $gender);
 
