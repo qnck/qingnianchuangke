@@ -103,10 +103,12 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
-            if ($amount <= 2000) {
+            if ($amount <= 50000) {
                 $crowd_funding->c_status = 4;
             } else {
                 $crowd_funding->c_status = 1;
+                $msg = new MessageDispatcher($u_id);
+                $msg->fireTextToUser('你此次众筹总金额已超过50000元，我们将在24小时以内进行审核，请耐心等待。');
             }
 
             // if the user is an official user, set funding type to offical
@@ -318,8 +320,10 @@ class MeCrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $filter_option = Input::get('filter_option', 0);
 
         try {
+            $now = Tools::getNow();
             $user = User::chkUserByToken($token, $u_id);
             $query = CrowdFunding::with([
                 'city',
@@ -330,8 +334,35 @@ class MeCrowdFundingController extends \BaseController
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
-                ])->where('u_id', '=', $u_id);
-            $list = $query->orderBy('created_at', 'DESC')->get();
+            ])->join('event_items', function ($q) {
+                $q->on('event_items.e_id', '=', 'crowd_fundings.e_id');
+            })->where('crowd_fundings.u_id', '=', $u_id);
+
+            switch ($filter_option) {
+                case 1:
+                    $query = $query->where('crowd_fundings.c_status', '=', 1);
+                    break;
+                case 2:
+                    $query = $query->where('crowd_fundings.c_status', '=', 2);
+                    break;
+                case 3:
+                    $query = $query->where('event_items.e_start_at', '>', $now);
+                    break;
+                case 4:
+                    $query = $query->where('crowd_fundings.c_status', '=', 4);
+                    break;
+                case 5:
+                    $query = $query->where('crowd_fundings.c_status', '=', 5);
+                    break;
+                case 6:
+                    $query = $query->where('crowd_fundings.c_status', '=', 3);
+                    break;
+
+                default:
+                    break;
+            }
+
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->get();
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();

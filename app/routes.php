@@ -400,8 +400,13 @@ Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');
 Route::post('wechat/user/login', 'UserController@loginFromWechat');
 Route::post('wechat/user', 'UserController@postUserFromWechat');
 Route::get('wechat/verify/code', 'VerificationController@getVCode');
+
 Route::post('wechat/user/me/resetpass', 'MeController@resetPassForWechat');
 Route::get('wechat/user/me/profile/base', 'MeProfileController@getUserBase');
+Route::get('wechat/user/me/crowd', 'MeCrowdFundingController@listSellCrowdFunding');
+Route::post('wechat/user/me/crowd', 'MeCrowdFundingController@postCrowdFunding');
+Route::delete('wechat/user/me/crowd/{id}', 'MeCrowdFundingController@delCrowdFunding');
+
 Route::get('wechat/auction/show', 'AuctionController@show');
 Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
 Route::get('wechat/auction', 'AuctionController@listAuctions');
