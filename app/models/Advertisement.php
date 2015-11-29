@@ -92,14 +92,14 @@ class Advertisement extends Eloquent
             ->where('event_ranges.p_id', '=', 0);
         });
         if ($range == 2) {
-            $query = $query->orWhere(function ($q) use ($s_id) {
-                $q->where('event_ranges.s_id', '=', $s_id);
-            });
-        }
-        if ($range == 3) {
             $query = $query->orWhere(function ($q) use ($c_id, $p_id) {
                 $q->where('event_ranges.c_id', '=', $c_id)
                 ->where('event_ranges.p_id', '=', $p_id);
+            });
+        }
+        if ($range == 3) {
+            $query = $query->orWhere(function ($q) use ($s_id) {
+                $q->where('event_ranges.s_id', '=', $s_id);
             });
         }
         $query = $query->join('event_items', function ($q) {
