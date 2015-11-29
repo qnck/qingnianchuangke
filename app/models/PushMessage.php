@@ -28,7 +28,6 @@ class PushMessage extends Eloquent
         $send = json_encode($send);
         $this->setPostData($send);
         $re = $this->execCurl();
-        $this->addNotification($content);
         if (!empty($re->objectId)) {
             return true;
         } else {
@@ -75,24 +74,5 @@ class PushMessage extends Eloquent
     private function setPostData($data)
     {
         curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
-    }
-
-    private function addNotification($content)
-    {
-        $not = new Notification();
-        $not->n_icon = '';
-        $not->n_title = '推送消息';
-        $not->n_brief = $content;
-        $not->n_content = $content;
-        $not->n_url = '';
-        $not->n_type = 2;
-        $not->n_cate = 0;
-        $not->n_cate_id = 0;
-        $not->addNot();
-        $receiver = new NotificationReceiver();
-        $receiver->n_id = $not->n_id;
-        $receiver->to_id = $this->_u_id;
-        $receiver->to_type = 1;
-        $receiver->save();
     }
 }
