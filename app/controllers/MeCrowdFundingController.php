@@ -188,8 +188,7 @@ class MeCrowdFundingController extends \BaseController
         $content = urldecode($content);
 
         $modified_img = Input::get('modified_img', '');
-        // $modified_img_index = Input::get('modified_img_index', '');
-        $modified_img_index = 1;
+        $modified_img_index = Input::get('modified_img_index', '');
 
         if ($modified_img) {
             $modified_img = explode(',', $modified_img);
