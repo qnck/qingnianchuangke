@@ -385,7 +385,7 @@ function login(){
                 SetCookie("uid",r.data.id);
                 SetCookie("sid",r.data.school.id);
                 alert(r.info);
-                window.location.href="admin/backstage/manageIndex.html";
+                window.location.href="admin/backstage/main.html";
             }else{
                 alert("Login Faid:"+r.info);
             }
