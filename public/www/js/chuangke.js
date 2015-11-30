@@ -337,37 +337,63 @@ $(document).delegate('#formBtn', 'click', function(ev){
 });
 
 function login(){
-    var user = "";
-    var input_2 = $('.input_2').val();
-    var login_can=true;
-    user = $('.input_1').val();
-    if(user==null || user==""){
-        $(".no_1").css("visibility","visible");
-        login_can=false;
-    }else if(user.length != 11 || !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
-        $(".no_1").css("visibility","visible");
-            login_can=false;
-        }
-    if(input_2==null || input_2==""){
-            $(".no_2").css("visibility","visible");
-            login_can=false;
-    }
-if(!login_can){
-    return false;
-}else{
-        $.ajax({
-            url: "${base}/common/public_key.jhtml",
-            type: "GET",
-            dataType: "json",
-            cache: false,
-            beforeSend: function() {
-                $submit.prop("disabled", true);
-            },
-            success: function(data) {
+//     var user = "";
+//     var input_2 = $('.input_2').val();
+//     var login_can=true;
+//     user = $('.input_1').val();
+//     if(user==null || user==""){
+//         $(".no_1").css("visibility","visible");
+//         login_can=false;
+//     }else if(user.length != 11 || !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
+//         $(".no_1").css("visibility","visible");
+//             login_can=false;
+//         }
+//     if(input_2==null || input_2==""){
+//             $(".no_2").css("visibility","visible");
+//             login_can=false;
+//     }
+// if(!login_can){
+//     return false;
+// }else{
+//         $.ajax({
+//             url: "${base}/common/public_key.jhtml",
+//             type: "GET",
+//             dataType: "json",
+//             cache: false,
+//             beforeSend: function() {
+//                 $submit.prop("disabled", true);
+//             },
+//             success: function(data) {
 
-            }
-        });
+//             }
+//         });
+//     }
+    var mobile = $(".input_1").val();
+    var pass = $(".input_2").val();
+    if(!mobile.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
+        $(".no_1").css("visibility","visible");
+        return;
     }
+    $.ajax({
+        type: "post",
+        url: _url + "wechat/user/login",
+        data: {mobile:mobile,pass:pass},
+        dataType: "json",
+        success: function (r) {
+            if (r.result == "2000") {
+                SetCookie("token",r.data.token);
+                SetCookie("uid",r.data.id);
+                SetCookie("sid",r.data.school.id);
+                alert(r.info);
+                window.location.href="admin/backstage/manageIndex.html";
+            }else{
+                alert("Login Faid:"+r.info);
+            }
+        },
+        error: function () {
+            alert("Communication error!");
+        }
+    });
 }
 
 $(document).delegate('.input_1','click', function(ev){
