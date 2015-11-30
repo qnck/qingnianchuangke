@@ -7,7 +7,7 @@ class Organization extends \Eloquent
     public $primaryKey = 'o_id';
     public $timestamps = false;
 
-    public static function getStutus($key = null, $all = false)
+    public static function getStatus($key = null, $all = false)
     {
         $status = [
             1 => '待审核',
@@ -48,7 +48,7 @@ class Organization extends \Eloquent
 
     public function censor()
     {
-        $old_status = '审核之前的状态为: '.Organization::getStutu($this->getOriginal('u_status')).', 审核之后的状态为: '.Organization::getStutus($this->u_status).'.';
+        $old_status = '审核之前的状态为: '.Organization::getStatus($this->getOriginal('u_status')).', 审核之后的状态为: '.Organization::getStatus($this->u_status).'.';
         if ($this->u_status == 2) {
             $content = '组织信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->u_status == 1) {

@@ -8,7 +8,7 @@ class TmpUserProfileBase extends Eloquent
     public $primaryKey = 'u_id';
     public $timestamps = false;
 
-    public static function getStutus($key = null, $all = false)
+    public static function getStatus($key = null, $all = false)
     {
         $status = [
             '0' => '待审核',
@@ -115,7 +115,7 @@ class TmpUserProfileBase extends Eloquent
     {
         $original_statue = $this->getOriginal('u_status');
         $new_status = $this->u_status;
-        $old_status = '审核之前的状态为: '.TmpUserProfileBase::getStutus($original_statue).', 审核之后的状态为: '.TmpUserProfileBase::getStutus($new_status).'.';
+        $old_status = '审核之前的状态为: '.TmpUserProfileBase::getStatus($original_statue).', 审核之后的状态为: '.TmpUserProfileBase::getStatus($new_status).'.';
         if ($this->u_status == 2) {
             $content = '用户信息审核未通过, '.$old_status.' 备注: '.$this->remark;
         } elseif ($this->u_status == 1) {
