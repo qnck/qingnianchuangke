@@ -66,6 +66,7 @@ function menuClick(){
                         $(r.data).each(function (){
                             var temp = $("#zcinfodom").html();
                             temp = temp.replace("@id",this.id);
+                            temp = temp.replace("@id2",this.id);
                             if(this.cover_img.length>0)
                                 temp = temp.replace("@zst",this.cover_img[0]);
                             temp = temp.replace("@title",this.title);
@@ -180,6 +181,9 @@ function clearAllInputValue(){
     $("span[name='is_limit']").eq(0).css("background-color","#76C5F0").attr("ck","1");//是否限购
     $("#mobile").val("");//电话
     $("#apartment").val("");//宿舍地址
+}
+function viewDetail(){
+    alert("官网暂不支持查看明细页面，请打开APP查看");
 }
 function saveZcData(){
     var title=$("#title").val();//众筹名称
@@ -472,7 +476,7 @@ function saveZcData(){
                 <div style="padding-top:7px;"><span>￥：@price</span><span style="padding-left:20px;">已筹：@yc</span><span style="padding-left:20px;">完成度：@wcd%</span></div>
                 <div style="padding-top:5px;">
                     <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="javascript:alert('暂不支持编辑功能');">编辑</span>
-                    <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="deleteZc('@id')">删除</span>
+                    <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="deleteZc('@id2')">删除</span>
                 </div>
             </div>
             <div style="clear:both;"></div>
