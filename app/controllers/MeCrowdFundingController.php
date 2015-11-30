@@ -278,7 +278,7 @@ class MeCrowdFundingController extends \BaseController
             }
             if ($img_token) {
                 $img_obj = new Img('event', $img_token);
-                $cover_img = $img->replace($event->e_id, 'cover_img');
+                $cover_img = $img_obj->replace($event->e_id, 'cover_img');
                 $event->cover_img = $cover_img;
             }
             $crowd_funding->save();
