@@ -435,12 +435,13 @@
 			if(filedom.val()!=""){
 				count++;
 				var key = filedom.attr("id");
-				var value = filecontent.val().replace(/\n/g,"\n");
+				var value = filecontent.val().replace(/\n/g,"\\n");
 			    // var s = value.replace(/\n/g,"<br/>");
 
 				content+='"'+key+'":"'+value+'",';
 			}
 		});
+		return;
 		if(content!="{") content = content.substring(0,content.length-1);
 		content += "}";
 		if(count==0){

@@ -240,7 +240,7 @@ function saveZcData(){
         if(filedom.val()!=""){
             count++;
             var key = filedom.attr("id");
-            var value = filecontent.val().replace(/\n/g,"\n");
+            var value = filecontent.val().replace(/\n/g,"\\n");
             content+='"'+key+'":"'+value+'",';
         }
     });
