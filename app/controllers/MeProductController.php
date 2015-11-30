@@ -128,21 +128,24 @@ class MeProductController extends \BaseController
             $product->p_price = $price;
             $product->active_at = $active_at;
 
+            $old_imgs = Img::toArray($product->p_imgs);
+            if (empty($old_imgs['cover_img'])) {
+                $cover_img = '';
+            } else {
+                $cover_img = $old_imgs['cover_img'];
+                unset($old_imgs['cover_img']);
+            }
+
             if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('product', $img_token);
                 $new_paths = [];
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $old_path) {
-                        if (strpos($old_path, 'cover_img') !== false) {
-                            $new_paths[] = $old_path;
-                        } else {
-                            $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
-                            $new_paths[] = $new_path;
-                            $modified_img_index++;
-                        }
+                        $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
+                        $new_paths[] = $new_path;
+                        $modified_img_index++;
                     }
-                    $to_delete = Img::toArray($product->p_imgs);
-                    foreach ($to_delete as $obj) {
+                    foreach ($old_imgs as $obj) {
                         if (!in_array($obj, $new_paths)) {
                             $imgObj->remove($id, $obj);
                         }
@@ -150,6 +153,13 @@ class MeProductController extends \BaseController
                     $new_paths = Img::attachHost($new_paths);
                     
                     $product->p_imgs = implode(',', $new_paths);
+                }
+            }
+            if ($cover_img) {
+                if ($product->p_imgs) {
+                    $product->p_imgs .= ','.$cover_img;
+                } else {
+                    $product->p_imgs = $cover_img;
                 }
             }
             if ($img_token) {
