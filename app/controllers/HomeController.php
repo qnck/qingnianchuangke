@@ -32,17 +32,7 @@ class HomeController extends BaseController {
 
     public function test()
     {
-        $img_token = Input::get('img_token', '');
-        try {
-            $funding = CrowdFunding::with(['eventItem'])->find(41);
-            if ($img_token) {
-                $img = new Img('event', $img_token);
-                $cover_img = $img->replace(41, 'cover_img');
-                var_dump($cover_img);
-            }
-
-        } catch (Exception $e) {
-            var_dump($e);
-        }
+        $oss = new AliyunOss('event', '', 41);
+        $re = $oss->exsits('event/41/er_img.873041.jpg');
     }
 }

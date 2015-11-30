@@ -198,6 +198,16 @@ class AliyunOss
         return $re = XML2Array::createArray($response->body);
     }
 
+    public function exsits($obj)
+    {
+        $re = $this->_oss->is_object_exist($this->_bucket, $obj);
+        if (!$re->isOK()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public function getExt($file)
     {
         if (strpos($file['name'], '.') !== false) {

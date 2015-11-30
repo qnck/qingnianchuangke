@@ -25,8 +25,12 @@ class Img
     public function move($id, $from, $target)
     {
         $oss = new AliyunOss($this->category, '', $id);
-        $oss->move($from, $target);
-        $oss->remove($from);
+        if ($oss->exsits($from)) {
+            while ($this->clearFolder($target)) {
+            }
+            $oss->move($from, $target);
+            $oss->remove($from);
+        }
         return true;
     }
 
@@ -41,7 +45,9 @@ class Img
     public function remove($id, $obj)
     {
         $oss = new AliyunOss($this->category, '', $id);
-        $oss->remove($obj);
+        if ($oss->exsits($obj)) {
+            $oss->remove($obj);
+        }
         return true;
     }
 
@@ -93,6 +99,20 @@ class Img
         $new_path = substr_replace($origin, $new_key, $pos, $length);
         $this->move($id, $origin, $new_path);
         return $new_path;
+    }
+
+    public function clearFolder($obj)
+    {
+        $file_name = Img::getFileName($obj);
+        $key = Img::getKey($file_name);
+        $imgs = $this->getList();
+        if (empty($imgs[$key])) {
+            return true;
+        } else {
+            $obj = Img::trimImgHost($imgs[$key]);
+            $this->remove($obj);
+        }
+        return false;
     }
 
     public static function getKey($filename)
