@@ -412,6 +412,8 @@ Route::get('wechat/auction/show', 'AuctionController@show');
 Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
 Route::get('wechat/auction', 'AuctionController@listAuctions');
 Route::get('wechat/auction/{id}', 'AuctionController@getAuction');
+
+Route::get('wechat/sign', 'WechatController@getSign');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/
