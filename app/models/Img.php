@@ -26,9 +26,7 @@ class Img
     {
         $oss = new AliyunOss($this->category, '', $id);
         if ($oss->exsits($from)) {
-            $imgs = $oss->getList();
             $oss->move($from, $target);
-            $oss->remove($from);
         }
         return true;
     }

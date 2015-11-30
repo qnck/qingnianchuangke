@@ -133,9 +133,13 @@ class MeProductController extends \BaseController
                 $new_paths = [];
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $old_path) {
-                        $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
-                        $new_paths[] = $new_path;
-                        $modified_img_index++;
+                        if (strpos($old_path, 'cover_img') !== false) {
+                            $new_paths[] = $old_path;
+                        } else {
+                            $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
+                            $new_paths[] = $new_path;
+                            $modified_img_index++;
+                        }
                     }
                     $to_delete = Img::toArray($product->p_imgs);
                     foreach ($to_delete as $obj) {
