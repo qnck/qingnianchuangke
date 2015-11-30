@@ -89,7 +89,7 @@ class MarketController extends \BaseController
             }
             $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($perPage);
             $data = [];
-            foreach ($list as $key => $product) {
+            foreach ($list as $k => $product) {
                 $tmp = $product->showInListWithProduct();
                 if (!empty($product->product->praises)) {
                     $tmp['is_praised'] = 1;

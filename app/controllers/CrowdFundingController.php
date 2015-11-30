@@ -109,7 +109,7 @@ class CrowdFundingController extends \BaseController
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
-            foreach ($list as $key => $funding) {
+            foreach ($list as $k => $funding) {
                 $tmp = $funding->showInList();
                 $tmp['is_praised'] = 0;
                 if (count($funding->praises) > 0) {
