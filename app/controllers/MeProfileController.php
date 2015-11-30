@@ -210,6 +210,7 @@ class MeProfileController extends \BaseController
         $modified_img_index = Input::get('modified_img_index', '');
 
         if ($modified_img) {
+            $modified_img = urldecode($modified_img);
             $modified_img = explode(',', $modified_img);
         }
 
