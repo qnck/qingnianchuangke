@@ -67,9 +67,11 @@ class CrowdFundingController extends \BaseController
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
-            $query = $query->orWhere(function ($q) {
-                $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-            });
+            if ($range == 1) {
+                $query = $query->orWhere(function ($q) {
+                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                });
+            }
 
             if ($city && $province && $range == 2) {
                 $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
