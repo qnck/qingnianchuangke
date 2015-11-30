@@ -67,14 +67,12 @@ class CrowdFundingController extends \BaseController
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
-            if ($range == 1) {
-                $query = $query->orWhere(function ($q) {
-                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-                });
-            }
 
             if ($city && $province && $range == 2) {
                 $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
+                $query = $query->orWhere(function ($q) {
+                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                });
             }
             if ($school && $range == 3) {
                 $query = $query->where('event_ranges.s_id', '=', $school);
@@ -108,6 +106,7 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
+            var_dump($query->toSql());exit;
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
