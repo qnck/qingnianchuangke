@@ -183,7 +183,7 @@ class AliyunOss
         }
         // move
         if (array_key_exists($name, $tmp_imgs)) {
-            $obj = Img::trimImgHost($tmp_imgs[$name]);
+            $obj = Img::getFileName($tmp_imgs[$name]);
             $dir = $this->_cate.'/'.$this->_id.'/';
             $obj = $dir.$obj;
             $this->move($tmp_imgs[$name], $obj);

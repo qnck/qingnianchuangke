@@ -33,6 +33,7 @@ class Img
     {
         $oss = new AliyunOss($this->category, $this->id, $id);
         $img = $oss->replace($key);
+        $img = Img::attachHost($img);
         return $img;
     }
 
@@ -183,11 +184,14 @@ class Img
             return [];
         }
         $host = Config::get('app.imghost');
-        $array = [];
-        foreach ($crud as $key => $img) {
-            $array[$key] = $host.$img;
+        if (is_array($crud)) {
+            $array = [];
+            foreach ($crud as $key => $img) {
+                $array[$key] = $host.$img;
+            }
+            return $array;
+        } else {
+            return $host.$img;
         }
-
-        return $array;
     }
 }
