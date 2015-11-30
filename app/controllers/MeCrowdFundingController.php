@@ -258,14 +258,7 @@ class MeCrowdFundingController extends \BaseController
                         $new_paths[] = $new_path;
                         $modified_img_index++;
                     }
-                    $to_delete = Img::toArray($crowd_funding->c_imgs);
-                    foreach ($to_delete as $obj) {
-                        if (!in_array($obj, $new_paths)) {
-                            $imgObj->remove($id, $obj);
-                        }
-                    }
                     $new_paths = Img::attachHost($new_paths);
-                    
                     $crowd_funding->c_imgs = implode(',', $new_paths);
                 }
             }
@@ -282,6 +275,16 @@ class MeCrowdFundingController extends \BaseController
                 }
                 $crowd_funding->c_imgs = implode(',', $imgs);
             }
+
+            $img_obj = new Img('crowd_funding', '');
+            $files = $img_obj->getList($id);
+            $imgs = Img::toArray($product->c_imgs);
+            $imgs = array_values($imgs);
+            $to_delete = array_diff($files, $imgs);
+            foreach ($to_delete as $key => $obj) {
+                $img_obj->remove($id, Img::trimImgHost($obj));
+            }
+
             if ($img_token) {
                 $img_obj = new Img('event', $img_token);
                 $cover_img = $img_obj->replace($event->e_id, 'cover_img');
