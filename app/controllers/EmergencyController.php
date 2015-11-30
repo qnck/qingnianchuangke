@@ -72,7 +72,7 @@ class EmergencyController extends \BaseController
         echo "batch number is ".$batch."</br>";
         set_time_limit(0);
         $file = new Filesystem();
-        $re = $file->files('/tmp/qnck_fackuser');
+        $re = $file->files('/tmp/qnck_fackuser/head_img');
         foreach ($re as $key => $path) {
             $user = new User;
             $user->u_mobile = $mobile++;
