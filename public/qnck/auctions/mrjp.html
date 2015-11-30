@@ -147,7 +147,8 @@
 		} 
 		function viewDetail(){
         	var url = $("#zst").attr("url");
-            window.location.href=url;
+    		var id = $("#zst").attr("jid");
+            window.location.href=url+"?id="+id;
 		}
 		function cyjp(){
 			if(type == "0"){
