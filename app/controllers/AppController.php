@@ -11,7 +11,7 @@ class AppController extends \BaseController
         $init['api_ver'] = 'v0';
         $init['force_upgrade'] = 1;
         $init['init_img'] = '';
-        $init['share_link'] = $base_url.'banner/1';
+        $init['share_link'] = $base_url.'www/updateinfo.html';
         $init['app_download_link'] = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/app/android/'.Config::get('app.app.android.file_name');
         $init['desc'] = '检测到新版本';
 
