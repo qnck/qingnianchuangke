@@ -211,6 +211,12 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception("已有人购买", 2001);
             }
 
+            if ($apartment_no) {
+                $tmp_base = TmpUserProfileBase::find($user->u_id);
+                $tmp_base->u_apartment_no = $apartment_no;
+                $tmp_base->save();
+            }
+
             $event = EventItem::find($crowd_funding->e_id);
 
             // put funding
