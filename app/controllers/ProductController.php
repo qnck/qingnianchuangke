@@ -146,6 +146,13 @@ class ProductController extends \BaseController
                 $to_u_name = '';
             } else {
                 $to_u_name = $to_user->u_nickname;
+                if ($product->p_type == 2) {
+                    $cate = Notification::$CATE_FLEA;
+                } else {
+                    $cate = Notification::$CATE_PRODUCT_PROMO;
+                }
+                $msg = new MessageDispatcher();
+                $msg->fireCateToUser('您有新的用户回复', $cate, $id);
             }
             $data = [
                 'to_id' => $to,

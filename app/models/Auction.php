@@ -83,7 +83,7 @@ class Auction extends Eloquent
         $price = number_format($auction->a_win_price);
         $msg = new MessageDispatcher($win->u_id, 1, 1, 1);
         $msg->setMessage(['phone' => $user->u_mobile]);
-        $msg->fireTextToUser('恭喜您以'.$price.'元成功拍得 '.$auction->eventItem->e_title.' 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
+        $msg->fireTextToUser('恭喜您以'.$price.'元成功拍得 '.$auction->eventItem->e_title.' 产品。请于48小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
 
         $win->is_win = 1;
         $win->is_pay = 0;
@@ -96,7 +96,7 @@ class Auction extends Eloquent
     {
         $date = Tools::getNow(false);
         $now = $date->format('Y-m-d H:i:s');
-        $date->modify('-3 days');
+        $date->modify('-2 days');
         $end = $date->format('Y-m-dH:i:s');
         $auction = Auction::join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'auctions.e_id');

@@ -202,6 +202,8 @@ class CrowdFundingController extends \BaseController
                 $to_u_name = '';
             } else {
                 $to_u_name = $to_user->u_nickname;
+                $msg = new MessageDispatcher($to_u_id);
+                $msg->fireCateToUser('您有新的用户回复', Notification::$CATE_CROWD_FUNDING, $id);
             }
             $cf = CrowdFunding::find($id);
             $reply = [
