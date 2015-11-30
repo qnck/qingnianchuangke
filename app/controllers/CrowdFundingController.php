@@ -67,11 +67,10 @@ class CrowdFundingController extends \BaseController
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
-            if ($range == 1) {
-                $query = $query->orWhere(function ($q) {
-                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-                });
-            }
+            $query = $query->orWhere(function ($q) {
+                $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+            });
+
             if ($city && $province && $range == 2) {
                 $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
             }
@@ -120,7 +119,7 @@ class CrowdFundingController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(1, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $ad = Advertisement::fetchAd(1, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);
