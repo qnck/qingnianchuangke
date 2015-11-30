@@ -191,7 +191,7 @@ class Img
             }
             return $array;
         } else {
-            return $host.$img;
+            return $host.$crud;
         }
     }
 }
