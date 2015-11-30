@@ -513,6 +513,7 @@
     color: white !important;
 }
 p.faq-p-1 {
+    text-indent: 1em !important;
     margin: 10px 0 10px 0 !important;
     color: #3366ff !important;
 }
