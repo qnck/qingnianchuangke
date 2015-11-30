@@ -183,6 +183,8 @@ class MeCrowdFundingController extends \BaseController
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
+
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
@@ -262,8 +264,8 @@ class MeCrowdFundingController extends \BaseController
                 }
             }
 
-            if ($img_token) {
-                $imgObj = new Img('crowd_funding', $img_token);
+            if ($img_token_2) {
+                $imgObj = new Img('crowd_funding', $img_token_2);
                 $imgs = $imgObj->getSavedImg($crowd_funding->cf_id, $crowd_funding->c_imgs, true);
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $del) {
@@ -273,6 +275,11 @@ class MeCrowdFundingController extends \BaseController
                     }
                 }
                 $crowd_funding->c_imgs = implode(',', $imgs);
+            }
+            if ($img_token) {
+                $img_obj = new Img('event', $img_token);
+                $cover_img = $img->replace($event->e_id, 'cover_img');
+                $event->cover_img = $cover_img;
             }
             $crowd_funding->save();
             $event->save();
