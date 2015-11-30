@@ -26,7 +26,7 @@ class Img
     {
         $oss = new AliyunOss($this->category, '', $id);
         if ($oss->exsits($from)) {
-            while ($this->clearFolder($target)) {
+            while ($this->clearFolder($target, $id)) {
             }
             $oss->move($from, $target);
             $oss->remove($from);
@@ -79,9 +79,9 @@ class Img
         }
     }
 
-    public function getList()
+    public function getList($id)
     {
-        $oss = new AliyunOss($this->category, '', $this->id);
+        $oss = new AliyunOss($this->category, '', $id);
         $re = $oss->getList();
         $imgs = Img::attachHost($re);
         return $imgs;
@@ -101,11 +101,11 @@ class Img
         return $new_path;
     }
 
-    public function clearFolder($obj)
+    public function clearFolder($obj, $id)
     {
         $file_name = Img::getFileName($obj);
         $key = Img::getKey($file_name);
-        $imgs = $this->getList();
+        $imgs = $this->getList($id);
         if (empty($imgs[$key])) {
             return true;
         } else {
