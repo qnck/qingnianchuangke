@@ -12,6 +12,7 @@ Route::get('/', function () {
 Route::get('/banner/1', 'HomeController@banner1');
 Route::get('/banner/2', 'HomeController@banner2');
 Route::get('about', 'HomeController@about');
+Route::get('/test', 'HomeController@test');
 
 /* handling files */
 Route::pattern('any', '(.*)');
