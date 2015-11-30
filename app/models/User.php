@@ -123,7 +123,7 @@ class User extends Eloquent
             throw new Exception("密码错误", 1);
         } else {
             $re = [];
-            // $re['token'] = $user->u_token = $this->getUniqueToken();
+            $re['token'] = $user->u_token;
             $now = new Datetime();
             $now->modify('+ 30 days');
             $re['expire'] = $now->format('Y-m-d H:i:s');
