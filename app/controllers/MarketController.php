@@ -198,7 +198,7 @@ class MarketController extends \BaseController
 
             $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
             $data = [];
-            foreach ($list as $key => $product) {
+            foreach ($list as $k => $product) {
                 $tmp = $product->showInList();
                 if (empty($tmp['booth']['school'])) {
                     $tmp['school'] = [];
