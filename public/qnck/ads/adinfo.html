@@ -17,11 +17,21 @@
         var imgid = GetQueryString("imgid");
         $("#adimg").attr("src","images/"+imgid+".jpg");
     });
+    function share(){
+        try 
+        { 
+            appObject.shareOnAndroid(1);
+        } 
+        catch (e) 
+        {
+        } 
+    }
     </script>
 </head>
 <body>
     <div id="content">
         <img id="adimg" src="" style="width: 100%;" />
     </div>
+    <div style="font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px;text-align:center;padding:10px 0px;position:fixed;bottom:0px;left:0px;right:0px;width:100%;" id="btnDown" onclick="share()">分享</div>
 </body>
 </html>
