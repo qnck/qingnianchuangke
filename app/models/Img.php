@@ -26,6 +26,7 @@ class Img
     {
         $oss = new AliyunOss($this->category, '', $id);
         $oss->move($from, $target);
+        $oss->remove($from);
         return true;
     }
 
