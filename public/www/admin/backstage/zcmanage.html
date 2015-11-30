@@ -33,6 +33,7 @@ a,a:hover{ text-decoration:none; color:#333}
 <script>
 var token;
 var uid;
+var currentEventObj;
 $(document).ready(function () {
     token = getCookie("token");
     uid = getCookie("uid");
@@ -42,7 +43,7 @@ $(document).ready(function () {
     $("#active_at").datetimepicker();
 });
 function menuClick(){
-
+    currentEventObj = this;
     $(this).siblings().removeClass("choosed");
     $(this).addClass("choosed");
 
@@ -53,8 +54,54 @@ function menuClick(){
         $("#addZcDiv").show();
         $("#showZcDiv").hide();
     }else{
+        $.ajax({
+            type: "get",
+            url: _url + "wechat/user/me/crowd",
+            data: {filter_option:type,token:token,u_id:uid},
+            dataType: "json",
+            success: function (r) {
+                if (r.result == "2000") {
+                    if(r.data.length>0){
+                        $(r.data).each(function (){
+                            var temp = $("#zcinfodom").html();
+                            temp = temp.replace("@id",this.id);
+                            if(this.cover_img.length>0)
+                                temp = temp.replace("@zst",this.cover_img[0]);
+                            temp = temp.replace("@title",this.title);
+                            temp = temp.replace("@brief",this.brief);
+                            temp = temp.replace("@price",this.price);
+                            temp = temp.replace("@yc",this.sold_quantity);
+                            temp = temp.replace("@wcd",this.percentage);
+                            $("#showZcDiv").append(temp);
+                        });
+                    }
+                }
+            },
+            error: function () {
+                alert("加载失败!");
+            }
+        });
         $("#addZcDiv").hide();
         $("#showZcDiv").show();
+    }
+}
+function deleteZc(id){
+    if(confirm("确定要删除数据吗？")){
+        $.ajax({
+            type: "delete",
+            url: _url+'wechat/user/me/crowd/'+id,
+            data: {u_id:uid,token:token},
+            dataType: "json",
+            success: function (result) {
+                alert(result.info);
+                if(result.result=="2000"){
+                    $(currentEventObj).click();
+                }
+            },
+            error: function () {
+                $.messager.alert('提示', "调用删除众筹接口失败！", 'info');
+            }
+        });
     }
 }
 var contentindex = 1;
@@ -255,22 +302,22 @@ function saveZcData(){
             <img src="../images/add.jpg"/>
             <span style="position:relative;top:-13px;left:5px;">发布新的众筹</span>
         </div>
-        <div type="0" style="margin-top:40px;float:right;margin-right:30px;">
+        <div type="6" style="margin-top:40px;float:right;margin-right:30px;">
             已失败的众筹
         </div>
-        <div type="1" style="margin-top:40px;float:right;margin-right:10px;">
+        <div type="5" style="margin-top:40px;float:right;margin-right:10px;">
             已成功的众筹
         </div>
-        <div type="2" style="margin-top:40px;float:right;margin-right:10px;">
+        <div type="4" style="margin-top:40px;float:right;margin-right:10px;">
             进行中的众筹
         </div>
         <div type="3" style="margin-top:40px;float:right;margin-right:10px;">
             预发布的众筹
         </div>
-        <div type="4" style="margin-top:40px;float:right;margin-right:10px;">
+        <div type="2" style="margin-top:40px;float:right;margin-right:10px;">
             审核失败的众筹
         </div>
-        <div type="5" style="margin-top:40px;float:right;margin-right:10px;" class="choosed">
+        <div type="1" style="margin-top:40px;float:right;margin-right:10px;" class="choosed">
             审核中的众筹
         </div>
         <div style="clear:both;"></div>
@@ -415,8 +462,21 @@ function saveZcData(){
             </tr></table>
         </div>
     </div>
-    <div id="showZcDiv">
+    <div id="showZcDiv" style="border-bottom:15px solid #E7E8EC;">
         
     </div>
+    <script type="text/javascript" id="zcinfodom">
+        <div style="float:left;"><img src="@zst" onclick="viewDetail('@id')" style="width:240px;height:150px" /></div>
+        <div style="margin:10px 20px 10px 260px;">
+            <div style="font-weight:bold;font-size:1.8em;">@title</div>
+            <div style="border-bottom:1px solid #DDDDDD;padding-bottom:7px;">@brief</div>
+            <div style="padding-top:7px;"><span>￥：@price</span><span style="padding-left:20px;">已筹：@yc</span><span style="padding-left:20px;">完成度：@wcd%</span></div>
+            <div style="padding-top:5px;">
+                <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="javascript:alert('暂不支持编辑功能');">编辑</span>
+                <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="deleteZc('@id')">删除</span>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </script>
 </body>
 </html>
