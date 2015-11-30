@@ -106,7 +106,6 @@ class CrowdFundingController extends \BaseController
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
             }
-            var_dump($query->toSql());exit;
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
