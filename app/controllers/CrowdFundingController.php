@@ -85,8 +85,8 @@ class CrowdFundingController extends \BaseController
 
             if ($filter_option == 2) {
                 // time passed more than 20%, less than 50%, and gathered more than 60% quantity
-                $query = $query->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
-                ->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) < (t_crowd_fundings.c_time * 0.5)')
+                $query = $query->whereRaw('(DATEDIFF(CURDATE(), t_event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
+                ->whereRaw('(DATEDIFF(CURDATE(), t_event_items.e_start_at)) < (t_crowd_fundings.c_time * 0.5)')
                 ->join('crowd_funding_products', function ($q) {
                     $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
                 })->whereRaw('t_crowd_funding_products.p_sold_quantity > (t_crowd_funding_products.p_target_quantity * 0.6)')
@@ -95,7 +95,7 @@ class CrowdFundingController extends \BaseController
 
             if ($filter_option == 3) {
                 // left time is less than 20%
-                $query = $query->whereRaw('DATEDIFF(event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
+                $query = $query->whereRaw('DATEDIFF(t_event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
                 ->where('event_items.e_end_at', '>', $now);
             }
 
