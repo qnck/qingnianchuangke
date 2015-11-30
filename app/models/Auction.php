@@ -29,7 +29,7 @@ class Auction extends Eloquent
             $data['url'] = '';
             $data['cover_img'] = [];
             $data['detail_content_img'] = [];
-            $data['detail_cover_img'] = [];
+            $data['detail_header_img'] = [];
         } else {
             $data['title'] = $this->eventItem->e_title;
             $data['start_at'] = $this->eventItem->e_start_at;
@@ -37,7 +37,7 @@ class Auction extends Eloquent
             $data['url'] = $this->eventItem->url;
             $data['cover_img'] = Img::filterKey('cover_img', Img::toArray($this->eventItem->cover_img));
             $data['detail_content_img'] = Img::filterKey('detail_content_img', Img::toArray($this->eventItem->cover_img));
-            $data['detail_cover_img'] = Img::filterKey('detail_cover_img', Img::toArray($this->eventItem->cover_img));
+            $data['detail_header_img'] = Img::filterKey('detail_header_img', Img::toArray($this->eventItem->cover_img));
         }
         return $data;
     }
