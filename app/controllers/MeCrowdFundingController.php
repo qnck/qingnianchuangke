@@ -278,11 +278,16 @@ class MeCrowdFundingController extends \BaseController
 
             $img_obj = new Img('crowd_funding', '');
             $files = $img_obj->getList($id);
-            $imgs = Img::toArray($product->c_imgs);
+            $imgs = Img::toArray($crowd_funding->c_imgs);
             $imgs = array_values($imgs);
             $to_delete = array_diff($files, $imgs);
             foreach ($to_delete as $key => $obj) {
                 $img_obj->remove($id, Img::trimImgHost($obj));
+            }
+            $to_delete = array_diff($imgs, $files);
+            if ($to_delete) {
+                $to_save = array_diff($imgs, $to_delete);
+                $crowd_funding->c_imgs = implode(',', $to_save);
             }
 
             if ($img_token) {
