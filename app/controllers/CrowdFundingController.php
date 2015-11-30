@@ -101,8 +101,8 @@ class CrowdFundingController extends \BaseController
 
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
-                    $q->where('crowd_fundings.c_title', 'LIKE', '%'.$key.'%')
-                    ->orWhere('crowd_fundings.c_brief', 'LIKE', '%'.$key.'%')
+                    $q->where('event_items.e_title', 'LIKE', '%'.$key.'%')
+                    ->orWhere('event_items.e_brief', 'LIKE', '%'.$key.'%')
                     ->orWhere('crowd_fundings.c_yield_desc', 'LIKE', '%'.$key.'%')
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
