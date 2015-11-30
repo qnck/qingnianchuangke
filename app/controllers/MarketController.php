@@ -28,11 +28,6 @@ class MarketController extends \BaseController
             $user = User::find($u_id);
             $user->load('school');
 
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
-
             $query = PromotionInfo::with([
                 'city',
                 'school',
@@ -100,7 +95,7 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(2, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $ad = Advertisement::fetchAd(2, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);
@@ -142,11 +137,6 @@ class MarketController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
-
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
 
             $query = Product::with([
                 'user',
@@ -230,7 +220,7 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(3, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $ad = Advertisement::fetchAd(3, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);

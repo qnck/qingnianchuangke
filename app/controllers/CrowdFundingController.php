@@ -39,11 +39,6 @@ class CrowdFundingController extends \BaseController
             $user = User::find($u_id);
             $user->load('school');
 
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
-
             $now = Tools::getNow();
             $query = CrowdFunding::select('crowd_fundings.*')
             ->with([
