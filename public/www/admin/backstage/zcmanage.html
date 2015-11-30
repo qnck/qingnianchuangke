@@ -37,9 +37,8 @@ var currentEventObj;
 $(document).ready(function () {
     token = getCookie("token");
     uid = getCookie("uid");
-
     $("#menuDiv").children().click(menuClick);
-
+    $("#menuDiv").children().eq(6).click();
     $("#active_at").datetimepicker();
 });
 function menuClick(){
@@ -54,6 +53,7 @@ function menuClick(){
         $("#addZcDiv").show();
         $("#showZcDiv").hide();
     }else{
+        $("#showZcDiv").html();
         $.ajax({
             type: "get",
             url: _url + "wechat/user/me/crowd",
@@ -462,21 +462,22 @@ function saveZcData(){
             </tr></table>
         </div>
     </div>
-    <div id="showZcDiv" style="border-bottom:15px solid #E7E8EC;">
-        
+    <div id="showZcDiv">
     </div>
     <script type="text/javascript" id="zcinfodom">
-        <div style="float:left;"><img src="@zst" onclick="viewDetail('@id')" style="width:240px;height:150px" /></div>
-        <div style="margin:10px 20px 10px 260px;">
-            <div style="font-weight:bold;font-size:1.8em;">@title</div>
-            <div style="border-bottom:1px solid #DDDDDD;padding-bottom:7px;">@brief</div>
-            <div style="padding-top:7px;"><span>￥：@price</span><span style="padding-left:20px;">已筹：@yc</span><span style="padding-left:20px;">完成度：@wcd%</span></div>
-            <div style="padding-top:5px;">
-                <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="javascript:alert('暂不支持编辑功能');">编辑</span>
-                <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="deleteZc('@id')">删除</span>
+        <div style="border-bottom:15px solid #E7E8EC;">
+            <div style="float:left;"><img src="@zst" onclick="viewDetail('@id')" style="width:240px;height:150px" /></div>
+            <div style="margin:10px 20px 10px 260px;">
+                <div style="font-weight:bold;font-size:1.8em;">@title</div>
+                <div style="border-bottom:1px solid #DDDDDD;padding-bottom:7px;">@brief</div>
+                <div style="padding-top:7px;"><span>￥：@price</span><span style="padding-left:20px;">已筹：@yc</span><span style="padding-left:20px;">完成度：@wcd%</span></div>
+                <div style="padding-top:5px;">
+                    <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="javascript:alert('暂不支持编辑功能');">编辑</span>
+                    <span style="cursor:pointer;border-radius: 5px;background-color:#76C5F0;padding:1px 10px;" onclick="deleteZc('@id')">删除</span>
+                </div>
             </div>
+            <div style="clear:both;"></div>
         </div>
-        <div style="clear:both;"></div>
     </script>
 </body>
 </html>
