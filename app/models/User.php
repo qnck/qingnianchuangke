@@ -75,12 +75,12 @@ class User extends Eloquent
         }
         // generate token
         $this->u_token = $this->getUniqueToken();
-        $this->u_invite_code = $this->getInviteCode();
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
         $this->u_birthday = Tools::getNow('Y-m-d');
         $this->save();
+        $this->u_invite_code = $this->getInviteCode();
         $re = [];
         $this->u_nickname = $this->u_name = $this->u_id;
         $re['token'] = $this->u_token;
