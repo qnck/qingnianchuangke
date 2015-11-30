@@ -53,7 +53,7 @@ function menuClick(){
         $("#addZcDiv").show();
         $("#showZcDiv").hide();
     }else{
-        $("#showZcDiv").html();
+        $("#showZcDiv").html("");
         $.ajax({
             type: "get",
             url: _url + "wechat/user/me/crowd",
