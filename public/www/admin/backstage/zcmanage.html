@@ -213,8 +213,6 @@ function saveZcData(){
             is_limit = $(this).attr("value");
     });
     var active_at=$('#active_at').val();//众筹开始时间
-    alert(active_at);
-    return;
     var local_only="0";//是否限制本校
     $("span[name='local_only']").each(function (){
         if($(this).attr("ck")=="1")
