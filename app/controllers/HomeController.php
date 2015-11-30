@@ -1,6 +1,7 @@
 <?php
 
 use \Illuminate\Support\Collection;
+use \Illuminate\Filesystem\Filesystem;
 
 class HomeController extends BaseController {
     
@@ -32,7 +33,5 @@ class HomeController extends BaseController {
 
     public function test()
     {
-        $oss = new AliyunOss('event', '', 41);
-        $re = $oss->exsits('event/41/er_img.873041.jpg');
     }
 }

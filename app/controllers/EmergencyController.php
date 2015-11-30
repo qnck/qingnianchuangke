@@ -2,6 +2,8 @@
 /**
 * 
 */
+use \Illuminate\Filesystem\Filesystem;
+
 class EmergencyController extends \BaseController
 {
     public function sendOrders()
@@ -53,12 +55,33 @@ class EmergencyController extends \BaseController
         exit();
     }
 
-    public function test()
+    public function fakeUser()
     {
-        $user = User::find(4);
-        $msg = new MessageDispatcher($user->u_id, 1, 1, 1);
-        $msg->setMessage(['phone' => $user->u_mobile]);
-        $msg->fireTextToUser('恭喜您以500.00元成功拍得 竞拍测试 产品。请于72小时之内在我的竞拍里完成付款，逾期视为放弃，感谢您的参与');
+        $batch = Input::get('batch', 0);
+        if (!$batch) {
+            echo "need batch number";
+            die();
+        }
+        $mobile = DB::table('users')->select('u_mobile')->where('u_mobile', '<', '12000000000')->orderBy('u_mobile', 'DESC')->first();
+        if (!$mobile) {
+            $mobile = 10000000000;
+        } else {
+            $mobile = $mobile->u_mobile;
+        }
+        echo "mobile start at ".$mobile."</br>";
+        echo "batch number is ".$batch."</br>";
+        set_time_limit(0);
+        $file = new Filesystem();
+        $re = $file->files('/tmp/qnck_fackuser');
+        foreach ($re as $key => $path) {
+            $user = new User;
+            $user->u_mobile = $mobile++;
+            $user->u_name = $user->u_nickname = $file->name($path);
+            echo "add:".$user->u_name."</br>";
+            $user->u_head_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/user_head/'.$batch.'/'.($key+1).'.jpg';
+            $user->fakeUser();
+        }
+        echo 'done';
     }
 
     public function winTheBid()

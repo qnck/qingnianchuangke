@@ -489,6 +489,22 @@ class User extends Eloquent
         return ['verify_tag' => $verify_tag, 'verify_type' => $verify_type];
     }
 
+    public function fakeUser()
+    {
+        $this->u_school_id = rand(1, 2569);
+        $this->u_password = 111111;
+        $this->u_token = $this->getUniqueToken();
+        $this->u_password = Hash::make($this->u_password);
+        $this->u_status = 1;
+        $this->u_change = 1;
+        $this->u_type = 1;
+        $this->u_sex = 3;
+        $this->u_birthday = Tools::getNow('Y-m-d');
+        $this->save();
+        $this->u_invite_code = $this->getInviteCode();
+        $this->save();
+    }
+
     public static function thanksForInvite($code, $u_id)
     {
         if (!$code) {
