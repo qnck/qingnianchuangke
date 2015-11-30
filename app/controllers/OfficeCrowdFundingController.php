@@ -69,6 +69,7 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
+            $crowd_funding->c_amount = 0.00;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_praise_count = 0;
             $crowd_funding->c_remark = '';

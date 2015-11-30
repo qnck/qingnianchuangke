@@ -11,7 +11,7 @@ class Img
     public function __construct($cate, $id)
     {
         $this->category = $cate;
-        $this->id = $id;
+        $this->id = $id;        // token infact
     }
 
     public function save($id)
@@ -27,6 +27,13 @@ class Img
         $oss = new AliyunOss($this->category, '', $id);
         $oss->move($from, $target);
         return true;
+    }
+
+    public function replace($id, $key)
+    {
+        $oss = new AliyunOss($this->category, $this->id, $id);
+        $img = $oss->replace($key);
+        return $img;
     }
 
     public function remove($id, $obj)

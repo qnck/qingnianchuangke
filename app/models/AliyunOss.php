@@ -100,6 +100,14 @@ class AliyunOss
         return $imgs;
     }
 
+    public function getTmpList()
+    {
+        $dir = '_tmp/'.$this->_cate.'/'.$this->_token.'/';
+        $re = $this->scan($dir);
+        $imgs = Img::attachKey($re);
+        return $imgs;
+    }
+
     public function scan($path)
     {
         $options = [
@@ -162,6 +170,27 @@ class AliyunOss
             }
         }
         return true;
+    }
+
+    public function replace($name)
+    {
+        $tmp_imgs = $this->getTmpList();
+        $imgs = $this->getList();
+
+        // delete
+        if (array_key_exists($name, $imgs)) {
+            $this->remove($imgs[$name]);
+        }
+        // move
+        if (array_key_exists($name, $tmp_imgs)) {
+            $obj = Img::trimImgHost($tmp_imgs[$name]);
+            $dir = $this->_cate.'/'.$this->_id.'/';
+            $obj = $dir.$obj;
+            $this->move($tmp_imgs[$name], $obj);
+        } else {
+            throw new Exception("没有找到目标文件", 20001);
+        }
+        return $obj;
     }
 
     public function getResponseBodyArray($response)

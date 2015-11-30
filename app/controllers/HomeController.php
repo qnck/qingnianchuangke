@@ -29,4 +29,20 @@ class HomeController extends BaseController {
     {
         echo "ABOUT US";
     }
+
+    public function test()
+    {
+        $img_token = Input::get('img_token', '');
+        try {
+            $funding = CrowdFunding::with(['eventItem'])->find(41);
+            if ($img_token) {
+                $img = new Img('event', $img_token);
+                $cover_img = $img->replace(41, 'cover_img');
+                var_dump($cover_img);
+            }
+
+        } catch (Exception $e) {
+            var_dump($e);
+        }
+    }
 }
