@@ -151,14 +151,14 @@
             window.location.href=url+"?id="+id;
 		}
 		function cyjp(){
-			if(type == "0"){
-				alert("此竞拍还没开始，暂不能出价！");
-			}else if(type=="1"){
+			// if(type == "0"){
+			// 	alert("此竞拍还没开始，暂不能出价！");
+			// }else if(type=="1"){
         		var id = $("#zst").attr("jid");
-            	window.location.href="jpcj.html?id="+id;
-			}else if(type=="2"){
-				alert("此竞拍已经结束，不能出价！");
-			}
+            	window.location.href="jpcj.html?id="+id+"&type="+type;
+			// }else if(type=="2"){
+			// 	alert("此竞拍已经结束，不能出价！");
+			// }
 		}
     </script>
 </head>
