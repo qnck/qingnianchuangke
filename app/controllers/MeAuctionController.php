@@ -159,7 +159,7 @@ class MeAuctionController extends BaseController
             if ($won) {
                 $query = $query->where('auction_bids.is_win', '=', 1);
             }
-            $query = $query->orderBy('auctions.created_at', 'DESC');
+            $query = $query->groupBy('auctions.a_id')->orderBy('auctions.created_at', 'DESC');
             $list = $query->paginate($per_page);
 
             $data = [];
