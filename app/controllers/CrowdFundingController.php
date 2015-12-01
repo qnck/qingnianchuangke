@@ -117,9 +117,9 @@ class CrowdFundingController extends \BaseController
             if (!$key) {
                 $ad = Advertisement::fetchAd(1, $school, $city, $province, $range);
                 if ($ad && $data) {
-                    $data = array_merge($data, $ad);
-                    $collection = new Collection($data);
-                    $data = array_values($collection->toArray());
+                    $data = array_merge($ad, $data);
+                    // $collection = new Collection($data);
+                    // $data = array_values($collection->toArray());
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
                 }
