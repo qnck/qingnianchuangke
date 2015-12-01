@@ -72,8 +72,8 @@ class EmergencyController extends \BaseController
             echo "need batch number";
             die();
         }
-        $mobile = DB::table('users')->select('u_mobile')->where('u_mobile', '<', '12000000000')->orderBy('u_mobile', 'DESC')->first();
-        if (!$mobile) {
+        $mobile = DB::table('users')->select('u_mobile')->where('u_mobile', '<', '11000000000')->orderBy('u_mobile', 'DESC')->first();
+        if (empty($mobile->u_mobile)) {
             $mobile = 10000000000;
         } else {
             $mobile = $mobile->u_mobile;
@@ -85,7 +85,7 @@ class EmergencyController extends \BaseController
         $re = $file->files('/var/www/qingnianchuangke/head_img');
         foreach ($re as $key => $path) {
             $user = new User;
-            $user->u_mobile = $mobile++;
+            $user->u_mobile = ++$mobile;
             $user->u_name = $user->u_nickname = $file->name($path);
             echo "add:".$user->u_name."</br>";
             $user->u_head_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/user_head/'.$batch.'/'.($key+1).'.jpg';
@@ -98,11 +98,12 @@ class EmergencyController extends \BaseController
     {
         set_time_limit(0);
         $this->login();
-        $users = Input::get('users', '');
+        $bottom = Input::get('bottom', '');
+        $top = Input::get('top', '');
         $p_id = Input::get('p_id', '');
 
         try {
-            if (!$users || !$p_id) {
+            if (!$users || !$p_id || !$top || !$bottom) {
                 throw new Exception("需要关键数据", 1);
             }
             $funding = CrowdFunding::find($id);
@@ -111,9 +112,9 @@ class EmergencyController extends \BaseController
             $product = CrowdFundingProduct::find($p_id);
             $quantity = 1;
 
-            $users = explode(',', $users);
-            foreach ($users as $key => $u_id) {
-                $user = User::find($u_id);
+            $users = User::where('u_mobile', '>=', $bottom)->where('u_mobile', '<=', $top)->get();
+            foreach ($users as $key => $user) {
+                $u_id = $user->u_id;
                 // sku need to be calulated before cart generated
                 $product->loadProduct($quantity);
                 // add cart
