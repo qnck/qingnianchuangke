@@ -119,9 +119,6 @@ class MeAuctionController extends BaseController
             $order->o_group_number = $order_group_no;
             $o_id = $order->addOrder();
 
-            $auction->a_status = 3;
-            $auction->save();
-
             Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
             $data = ['order_no' => $order_group_no];
