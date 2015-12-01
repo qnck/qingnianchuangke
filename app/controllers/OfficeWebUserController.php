@@ -254,6 +254,11 @@ class OfficeWebUserController extends \BaseController
                 if (!empty($base)) {
                     $base->u_is_id_verified = 1;
                 }
+                if ($tmp->u_is_student_verified) {
+                    $user = User::find($id);
+                    $uesr->u_is_verified = 1;
+                    $user->save();
+                }
                 $log->content = '认证用户身份证信息: 通过';
             } else {
                 $tmp->u_is_id_verified = 2;
@@ -262,6 +267,8 @@ class OfficeWebUserController extends \BaseController
                 }
                 $log->content = '认证用户身份证信息: 不通过';
             }
+            $msg = new MessageDispatcher($id);
+            $msg->fireTextToUser($log->content);
             $log->addLog();
             $tmp->save();
             if (!empty($base)) {
@@ -290,6 +297,11 @@ class OfficeWebUserController extends \BaseController
                 if (!empty($base)) {
                     $base->u_is_student_verified = 1;
                 }
+                if ($tmp->u_is_id_verified) {
+                    $user = User::find($id);
+                    $uesr->u_is_verified = 1;
+                    $user->save();
+                }
                 $log->content = '认证用户学生证信息: 通过';
             } else {
                 $tmp->u_is_student_verified = 2;
@@ -298,6 +310,8 @@ class OfficeWebUserController extends \BaseController
                 }
                 $log->content = '认证用户学生证信息: 不通过';
             }
+            $msg = new MessageDispatcher($id);
+            $msg->fireTextToUser($log->content);
             $log->addLog();
             $tmp->save();
             if (!empty($base)) {
