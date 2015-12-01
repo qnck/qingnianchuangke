@@ -154,6 +154,9 @@ class UserController extends \BaseController
                 throw new Exception("该手机号码已被使用", 1);
             }
             $user = User::chkUserByToken($token, $u_id);
+            if ($user->u_mobile) {
+                throw new Exception("手机号码已存在", 2001);
+            }
             $phone = new Phone($mobile);
             $phone->authVCode($vcode);
             $user->u_mobile = $mobile;

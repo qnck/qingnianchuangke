@@ -418,8 +418,9 @@ Route::get('wechat/sign', 'WechatController@getSign');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/
-Route::get('so/called/emergency/fakeUser', 'EmergencyController@fakeUser');
-Route::get('so/called/emergency/winBid', 'EmergencyController@winTheBid');
 Route::get('so/called/emergency/countUser', 'EmergencyController@countUsers');
-Route::get('v0/crowd/{id}/participates', 'CrowdFundingController@listParticipates');
+
+// facker
+Route::get('so/called/emergency/fake/user', 'EmergencyController@fakeUser');
+Route::get('so/called/emergency/fake/fundingPurches/{id}', 'EmergencyController@fakeCrowdFundingPurches');
 /* SO CALLED EMERGENCY END*/
