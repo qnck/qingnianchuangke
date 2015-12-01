@@ -22,6 +22,7 @@ class MeCrowdFundingController extends \BaseController
         $open_file = Input::get('open_file', 0);
         $active_at = Input::get('active_at');
         $local_only = Input::get('local_only', 0);
+        $is_schedule = Input::get('is_schedule', 0);
 
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -92,6 +93,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->u_id = $u_id;
             $crowd_funding->b_id = $booth->b_id;
             $crowd_funding->e_id = $event->e_id;
+            $crowd_funding->c_is_schedule = $is_schedule;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
@@ -171,6 +173,7 @@ class MeCrowdFundingController extends \BaseController
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
         $local_only = Input::get('local_only', 0);
+        $is_schedule = Input::get('is_schedule', 0);
         $active_at = Input::get('active_at');
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -232,6 +235,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
             $crowd_funding->u_mobile = $mobile;
+            $crowd_funding->c_is_schedule = $is_schedule;
             $crowd_funding->c_time = $time;
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
