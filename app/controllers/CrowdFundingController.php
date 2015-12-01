@@ -63,12 +63,6 @@ class CrowdFundingController extends \BaseController
                 $query = $query->where('c_cate', '=', $cate);
             }
 
-            if ($city && $province && $range == 2) {
-                $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
-                $query = $query->orWhere(function ($q) {
-                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-                });
-            }
             if ($school && $range == 3) {
                 $query = $query->where('event_ranges.s_id', '=', $school);
             }
@@ -91,6 +85,13 @@ class CrowdFundingController extends \BaseController
                 // left time is less than 20%
                 $query = $query->whereRaw('DATEDIFF(t_event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
                 ->where('event_items.e_end_at', '>', $now);
+            }
+
+            if ($city && $province && $range == 2) {
+                $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
+                $query = $query->orWhere(function ($q) {
+                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                });
             }
 
             if ($key) {

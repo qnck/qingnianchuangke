@@ -37,7 +37,7 @@ class OfficeWebUserController extends \BaseController
 
             if ($name) {
                 $query = $query->where(function ($q) use ($name) {
-                    $q->where('users.u_name', 'LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%');
+                    $q->where('users.u_name', 'LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%')->orWhere('users.u_mobile', 'LIKE', '%'.$name.'%');
                 });
             }
 
