@@ -311,7 +311,7 @@ table.altrowstable td {
 			success: function (result) {
 				if(JSON.parse(result).result=="2000"){
 					var roleHtml = "";
-	                var __data = JSON.parse(result).data;
+	                var __data = JSON.parse(result).data.rows;
 	                $.each(__data, function (i, v) {
 	                    var roletemp = '<div id="role_'+v.id+'" class="choseButtonDiv" onclick="choseButtonClick(this);" ck="0">'+v.name+'</div>';
 	                    roleHtml += roletemp;
