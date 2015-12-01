@@ -105,7 +105,14 @@ class CrowdFundingController extends \BaseController
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
+            $start = null;
+            $end = null;
             foreach ($list as $k => $funding) {
+                if ($k == 0) {
+                    $end = Tools::getTime($funding->created_at);
+                } else {
+                    $start = Tools::getTime($funding->created_at);
+                }
                 $tmp = $funding->showInList();
                 $tmp['is_praised'] = 0;
                 if (count($funding->praises) > 0) {
@@ -115,11 +122,9 @@ class CrowdFundingController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(1, $school, $city, $province, $range);
+                $ad = Advertisement::fetchAd(1, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
-                    $data = array_merge($ad, $data);
-                    // $collection = new Collection($data);
-                    // $data = array_values($collection->toArray());
+                    $data = Advertisement::mergeArray($data, $ad);
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
                 }

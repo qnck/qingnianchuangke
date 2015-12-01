@@ -73,7 +73,8 @@ class CrowdFunding extends Eloquent
         $data['status'] = $this->c_status;
         $data['active_at'] = $this->eventItem->e_start_at;
         $date = new DateTime($this->created_at);
-        $data['created_at'] = $date->format('Y-m-d');
+        $data['created_at'] = $date->format('Y-m-d H:i:s');
+        $data['created_at_timestamps'] = strtotime($data['created_at']);
         $data['time'] = $this->c_time;
         $data['time_left'] = $this->calculateTimeLeft();
         $data['target_amount'] = $this->c_target_amount;

@@ -20,8 +20,8 @@ class Advertisement extends Eloquent
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
         $date = new DateTime($this->created_at);
-        $data['created_at'] = $date->format('Y-m-d');
-
+        $data['created_at'] = $date->format('Y-m-d H:i:s');
+        $data['created_at_timestamps'] = strtotime($data['created_at']);
         if (empty($this->eventItem)) {
             $this->load('eventItem');
         }
@@ -76,9 +76,8 @@ class Advertisement extends Eloquent
         $this->delete();
     }
 
-    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
+    public static function fetchAd($position, $start_at, $end_at, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
     {
-        $now = Tools::getNow();
         $query = Advertisement::select('advertisements.*')
         ->with(['eventItem'])
         ->join('event_positions', function ($q) use ($position) {
@@ -104,10 +103,15 @@ class Advertisement extends Eloquent
         }
         $query = $query->join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
-        })->where('event_items.e_start_at', '<', $now)
-        ->where('event_items.e_end_at', '>', $now)
-        ->orderBy('advertisements.created_at', 'DESC');
-        $ads = $query->paginate(1);
+        });
+        if ($start_at) {
+            $query = $query->where('event_items.e_start_at', '>', $start_at);
+        }
+        if ($end_at) {
+            $query = $query->where('event_items.e_end_at', '<', $end_at);
+        }
+        $query->orderBy('advertisements.created_at', 'DESC');
+        $ads = $query->get();
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
@@ -119,6 +123,25 @@ class Advertisement extends Eloquent
             $data = null;
         }
         return $data;
+    }
+
+    public static function mergeArray($data, $ads)
+    {
+        $result = [];
+        foreach ($data as $row) {
+            if (empty($ads)) {
+                $result[] = $row;
+            } else {
+                foreach ($ads as $key => $ad) {
+                    if ($ad['created_at_timestamps'] > $row['created_at_timestamps']) {
+                        $result[] = $ad;
+                        unset($ads[$key]);
+                    }
+                    $result[] = $row;
+                }
+            }
+        }
+        return $result;
     }
 
     // relation

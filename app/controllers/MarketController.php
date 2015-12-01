@@ -197,7 +197,14 @@ class MarketController extends \BaseController
 
             $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
             $data = [];
+            $start = null;
+            $end = null;
             foreach ($list as $k => $product) {
+                if ($k == 0) {
+                    $end = Tools::getTime($product->created_at);
+                } else {
+                    $start = Tools::getTime($product->created_at);
+                }
                 $tmp = $product->showInList();
                 if (empty($tmp['booth']['school'])) {
                     $tmp['school'] = [];
@@ -219,11 +226,9 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(3, $school, $city, $province, $range);
+                $ad = Advertisement::fetchAd(3, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
-                    $data = array_merge($data, $ad);
-                    $collection = new Collection($data);
-                    $data = array_values($collection->toArray());
+                    $data = Advertisement::mergeArray($data, $ad);
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
                 }

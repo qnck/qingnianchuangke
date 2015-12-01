@@ -107,6 +107,12 @@ class Tools
         }
     }
 
+    public static function getTime($date = null)
+    {
+        $data = new DateTime($date);
+        return $date->format('Y-m-d H:i:s');
+    }
+
     public static function getMakerBooth()
     {
         return 1;
