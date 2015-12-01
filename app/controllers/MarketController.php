@@ -99,7 +99,6 @@ class MarketController extends \BaseController
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);
-                    $collection->sortByDesc('created_at');
                     $data = array_values($collection->toArray());
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
@@ -224,7 +223,6 @@ class MarketController extends \BaseController
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);
-                    $collection->sortByDesc('created_at');
                     $data = array_values($collection->toArray());
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
