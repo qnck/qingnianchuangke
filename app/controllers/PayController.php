@@ -159,4 +159,29 @@ class PayController extends \BaseController
         }
         return Response::json($re);
     }
+
+    public function payFailed()
+    {
+        $order_no = Input::get('order_no', '');
+        $u_id = Input::get('u_id', '');
+        $token = Input::get('token', '');
+
+        DB::beginTransaction();
+        try {
+            $orders = Order::getGroupOrdersByNo($order_no);
+            foreach ($orders as $key => $order) {
+                $carts = Cart::where('o_id', '=', $order->o_id)->get();
+                foreach ($carts as $cart) {
+                    $cart->delete();
+                }
+                $order->delete();
+            }
+            $re = Tools::reTrue('取消成功');
+            DB::commit();
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '取消失败:'.$e->getMessage());
+            DB::rollback();
+        }
+        return Response::json($re);
+    }
 }

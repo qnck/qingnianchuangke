@@ -213,6 +213,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::delete('v0/market/cart/{id}', 'MarketController@delCart');
     Route::post('v0/market/order', 'MarketController@postOrder');
     Route::post('v0/market/pay/wechat', 'PayController@wechatPayPreOrder');
+    Route::post('v0/market/pay/cancel', 'PayController@payFailed');
     /* MAKER END*/
 
     /* ACTIVITIES START*/

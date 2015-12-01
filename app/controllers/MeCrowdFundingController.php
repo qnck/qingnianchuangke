@@ -411,7 +411,7 @@ class MeCrowdFundingController extends \BaseController
                 $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
             })
             ->join('carts', function ($q) {
-                $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id);
+                $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id)->where('carts.c_status', '=', 3);
             });
             $list = $query->orderBy('created_at', 'DESC')->get();
             $data = [];
