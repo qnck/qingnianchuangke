@@ -137,8 +137,8 @@ class Advertisement extends Eloquent
                         $result[] = $ad;
                         unset($ads[$key]);
                     }
-                    $result[] = $row;
                 }
+                $result[] = $row;
             }
         }
         return $result;
