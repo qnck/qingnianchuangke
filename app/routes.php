@@ -65,6 +65,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/followings', 'MeController@myFollowings');
     Route::delete('v0/user/me/homeimg', 'MeController@delHomeImg');
     Route::put('v0/user/me/headimg', 'MeController@putHeadImg');
+    Route::post('v0/user/me/import/bind/mobie', 'UserController@bindMobile');
     /* ME END*/
 
     /* ME PROFILE START*/

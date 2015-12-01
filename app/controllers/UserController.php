@@ -140,6 +140,30 @@ class UserController extends \BaseController
         }
         return Response::json($re);
     }
+    
+    public function bindMobile()
+    {
+        $u_id = Input::get('u_id', '');
+        $token = Input::get('token', '');
+        $mobile = Input::get('mobile', '');
+        $vcode = Input::get('vcode', '');
+
+        try {
+            $user = User::where('u_mobile', '=', $mobile)->first();
+            if (!empty($user)) {
+                throw new Exception("该手机号码已被使用", 1);
+            }
+            $user->chkUserByToken($token, $u_id);
+            $phone = new Phone($mobile);
+            $phone->authVCode($vcode);
+            $user->u_mobile = $mobile;
+            $user->save();
+            $re = Tools::reTrue('绑定成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '绑定失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
 
     public function postUserFromWechat()
     {
