@@ -103,7 +103,7 @@ class EmergencyController extends \BaseController
         $p_id = Input::get('p_id', '');
 
         try {
-            if (!$users || !$p_id || !$top || !$bottom) {
+            if (!$p_id || !$top || !$bottom) {
                 throw new Exception("需要关键数据", 1);
             }
             $funding = CrowdFunding::find($id);
