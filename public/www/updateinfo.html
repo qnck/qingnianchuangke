@@ -12,7 +12,7 @@
         } else if (navigator.userAgent.match(/android/i)) {
             var state = null;
             try {
-              // state = window.open("maker_ck://home.index/", '_blank');
+              $("#applink").click();
             } catch(e) {
             }
         }else{
@@ -25,6 +25,7 @@
     </script>
 </head>
 <body>
+    <a id="applink" style="display:none;" href="makerck://home.index">open</a>
     <img style="width:100%" src="images/ad.jpg" />
     <div style="font-size:24px;color:white;background-color:#6FB6E2;border-radius: 15px;text-align:center;padding:10px 0px;position:fixed;bottom:0px;left:0px;right:0px;width:100%;" id="btnDown" onclick="download()">下载青年创APP</div>
 </body>
