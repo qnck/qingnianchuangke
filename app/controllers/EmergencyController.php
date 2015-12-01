@@ -50,7 +50,7 @@ class EmergencyController extends \BaseController
 
     public function countUsers()
     {
-        $count = DB::table('users')->count();
+        $count = DB::table('users')->where('u_mobile', '>', 12000000000)->count();
         echo "当前注册人数:".$count.'人';
         exit();
     }
