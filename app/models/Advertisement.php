@@ -85,15 +85,17 @@ class Advertisement extends Eloquent
             ->where('event_positions.position', '=', $position);
         })->join('event_ranges', function ($q) use ($s_id, $c_id, $p_id) {
             $q->on('event_ranges.e_id', '=', 'advertisements.e_id');
-        })->where(function ($q) {
-            $q->where('event_ranges.s_id', '=', 0)
-            ->where('event_ranges.c_id', '=', 0)
-            ->where('event_ranges.p_id', '=', 0);
         });
         if ($range == 2) {
-            $query = $query->orWhere(function ($q) use ($c_id, $p_id) {
-                $q->where('event_ranges.c_id', '=', $c_id)
-                ->where('event_ranges.p_id', '=', $p_id);
+            $query = $query->where(function ($q) use ($c_id, $p_id) {
+                $q->where(function ($qq) use ($c_id, $p_id) {
+                    $qq->where('event_ranges.c_id', '=', $c_id)
+                    ->where('event_ranges.p_id', '=', $p_id);
+                })->orWhere(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', 0)
+                    ->where('event_ranges.c_id', '=', 0)
+                    ->where('event_ranges.p_id', '=', 0);
+                });
             });
         }
         if ($range == 3) {
@@ -105,13 +107,13 @@ class Advertisement extends Eloquent
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
         });
         if ($start_at) {
-            $query = $query->where('event_items.e_start_at', '>', $start_at);
-        } elseif ($end_at) {
-            $query = $query->where('event_items.e_end_at', '<', $end_at);
-        } else {
-            $now = Tools::getNow();
-            $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
+            $query = $query->where('advertisements.created_at', '>', $start_at);
         }
+        if ($end_at) {
+            $query = $query->where('advertisements.created_at', '<', $end_at);
+        }
+        $now = Tools::getNow();
+        $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
 
         $query->orderBy('advertisements.created_at', 'DESC');
         $ads = $query->get();

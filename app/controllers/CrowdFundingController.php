@@ -108,15 +108,16 @@ class CrowdFundingController extends \BaseController
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
-            $start = null;
-            $end = null;
+            $start = 0;
+            $end = 0;
             foreach ($list as $k => $funding) {
-                if ($k == 0) {
-                    $end = Tools::getTime($funding->created_at);
-                } else {
-                    $start = Tools::getTime($funding->created_at);
-                }
                 $tmp = $funding->showInList();
+                if ($k == 0) {
+                    $start = $end = $tmp['created_at_timestamps'];
+                } else {
+                    $start = min($start, $tmp['created_at_timestamps']);
+                    $end = max($end, $tmp['created_at_timestamps']);
+                }
                 $tmp['is_praised'] = 0;
                 if (count($funding->praises) > 0) {
                     $tmp['is_praised'] = 1;
@@ -125,6 +126,8 @@ class CrowdFundingController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
+                $start = date('Y-m-d H:i:s', $start);
+                $end = date('Y-m-d H:i:s', $end);
                 $ad = Advertisement::fetchAd(1, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = Advertisement::mergeArray($data, $ad);
