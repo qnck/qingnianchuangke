@@ -28,10 +28,12 @@ class PayController extends \BaseController
                     $order->checkoutCarts();
                 }
                 $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
-                if ($cart->c_type == 1) {
+                if ($cart->c_type == Cart::$TYPE_REGULAR_PRODUCT || $cart->c_type == Cart::$TYPE_FLEA_PRODUCT) {
                     $log_cate = LogTransaction::$CATE_PRODUCT;
-                } elseif ($cart->c_type == 2) {
+                } elseif ($cart->c_type == Cart::$TYPE_CROWD_FUNDING) {
                     $log_cate = LogTransaction::$CATE_CROWDFUNDING;
+                } elseif ($cart->c_type == Cart::$TYPE_AUCTION) {
+                    $log_cate = LogTransaction::$CATE_AUCTION;
                 } else {
                     $log_cate = 0;
                 }
@@ -91,10 +93,12 @@ class PayController extends \BaseController
             $wechat->_notify->SetReturn_msg('OK');
 
             $cart = Cart::where('o_id', '=', $o_id)->where('c_status', '<>', 0)->first();
-            if ($cart->c_type == 1) {
+            if ($cart->c_type == Cart::$TYPE_REGULAR_PRODUCT || $cart->c_type == Cart::$TYPE_FLEA_PRODUCT) {
                 $log_cate = LogTransaction::$CATE_PRODUCT;
-            } elseif ($cart->c_type == 2) {
+            } elseif ($cart->c_type == Cart::$TYPE_CROWD_FUNDING) {
                 $log_cate = LogTransaction::$CATE_CROWDFUNDING;
+            } elseif ($cart->c_type == Cart::$TYPE_AUCTION) {
+                $log_cate = LogTransaction::$CATE_AUCTION;
             } else {
                 $log_cate = 0;
             }
