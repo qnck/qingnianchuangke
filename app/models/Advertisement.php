@@ -106,10 +106,13 @@ class Advertisement extends Eloquent
         });
         if ($start_at) {
             $query = $query->where('event_items.e_start_at', '>', $start_at);
-        }
-        if ($end_at) {
+        } elseif ($end_at) {
             $query = $query->where('event_items.e_end_at', '<', $end_at);
+        } else {
+            $now = Tools::getNow();
+            $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
         }
+
         $query->orderBy('advertisements.created_at', 'DESC');
         $ads = $query->get();
         if (count($ads) > 0) {
