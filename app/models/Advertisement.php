@@ -105,7 +105,8 @@ class Advertisement extends Eloquent
         $query = $query->join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
         })->where('event_items.e_start_at', '<', $now)
-        ->where('event_items.e_end_at', '>', $now);
+        ->where('event_items.e_end_at', '>', $now)
+        ->orderBy('advertisements.created_at', 'DESC');
         $ads = $query->paginate(3);
         if (count($ads) > 0) {
             $data = [];
