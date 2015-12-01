@@ -181,13 +181,14 @@ class CrowdFunding extends Eloquent
         }
         $label = '';
         $cates = CrowdFunding::getCrowdFundingCate();
-        foreach ($cates as $cate) {
-            if ($this->c_cate == $cate['id']) {
-                $label = $cate['label'];
-                break;
-            }
-        }
-        return $label;
+        // foreach ($cates as $cate) {
+        //     if ($this->c_cate == $cate['id']) {
+        //         $label = $cate['label'];
+        //         break;
+        //     }
+        // }
+        // return $label;
+        return $cates[$this->c_cate];
     }
 
     public function getParticipates($per_page, $count = false)
