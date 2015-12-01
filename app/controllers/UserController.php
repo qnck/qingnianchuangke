@@ -153,7 +153,7 @@ class UserController extends \BaseController
             if (!empty($user)) {
                 throw new Exception("该手机号码已被使用", 1);
             }
-            $user->chkUserByToken($token, $u_id);
+            $user = User::chkUserByToken($token, $u_id);
             $phone = new Phone($mobile);
             $phone->authVCode($vcode);
             $user->u_mobile = $mobile;
