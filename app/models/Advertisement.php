@@ -107,7 +107,7 @@ class Advertisement extends Eloquent
         })->where('event_items.e_start_at', '<', $now)
         ->where('event_items.e_end_at', '>', $now)
         ->orderBy('advertisements.created_at', 'DESC');
-        $ads = $query->paginate(3);
+        $ads = $query->paginate(1);
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
