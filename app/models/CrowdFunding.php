@@ -32,24 +32,15 @@ class CrowdFunding extends Eloquent
     public static function getCrowdFundingCate()
     {
         return [
-            // 0 => ['id' => 8, 'label' => '官方发布'],
-            // 1 => ['id' => 3 ,'label' => '股权众筹'],
-            // 2 => ['id' => 4, 'label' => '产品预售'],
-            // 3 => ['id' => 1, 'label' => '娱乐活动'],
-            // 4 => ['id' => 7, 'label' => '爱心公益'],
-            // 5 => ['id' => 5, 'label' => '创意发明'],
-            // 6 => ['id' => 2, 'label' => '个人生活'],
-            // 7 => ['id' => 6, 'label' => '调查学习'],
-            // 8 => ['id' => 9, 'label' => '下课约']
-            8 => '官方发布',
-            3 => '股权众筹',
-            4 => '产品预售',
-            1 => '娱乐活动',
-            7 => '爱心公益',
-            5 => '创意发明',
-            2 => '个人生活',
-            6 => '调查学习',
-            9 => '下课约',
+            0 => ['id' => 8, 'label' => '官方发布'],
+            1 => ['id' => 3 ,'label' => '股权众筹'],
+            2 => ['id' => 4, 'label' => '产品预售'],
+            3 => ['id' => 1, 'label' => '娱乐活动'],
+            4 => ['id' => 7, 'label' => '爱心公益'],
+            5 => ['id' => 5, 'label' => '创意发明'],
+            6 => ['id' => 2, 'label' => '个人生活'],
+            7 => ['id' => 6, 'label' => '调查学习'],
+            8 => ['id' => 9, 'label' => '下课约']
         ];
     }
 
@@ -181,14 +172,13 @@ class CrowdFunding extends Eloquent
         }
         $label = '';
         $cates = CrowdFunding::getCrowdFundingCate();
-        // foreach ($cates as $cate) {
-        //     if ($this->c_cate == $cate['id']) {
-        //         $label = $cate['label'];
-        //         break;
-        //     }
-        // }
-        // return $label;
-        return $cates[$this->c_cate];
+        foreach ($cates as $cate) {
+            if ($this->c_cate == $cate['id']) {
+                $label = $cate['label'];
+                break;
+            }
+        }
+        return $label;
     }
 
     public function getParticipates($per_page, $count = false)
