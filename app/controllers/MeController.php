@@ -1529,7 +1529,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $card = UserProfileBankcard::where('b_card_num', '=', $card_num)->first();
+            $card = UserProfileBankcard::where('b_card_number', '=', $card_num)->first();
             if (!empty($card) && $card->u_id != $u_id) {
                 throw new Exception("该卡号不可用", 9007);
             }
