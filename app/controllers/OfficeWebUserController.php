@@ -336,8 +336,10 @@ class OfficeWebUserController extends \BaseController
             }
             if ($check == 1) {
                 $club->c_status = 1;
+                $club->u_is_club_verified = 1;
             } else {
                 $club->c_status = 2;
+                $club->u_is_club_verified = 0;
             }
             $club->remark = $remark;
             $club->censor();
