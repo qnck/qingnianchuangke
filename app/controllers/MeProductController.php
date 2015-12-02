@@ -92,6 +92,9 @@ class MeProductController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
+
+        $mobile = Input::get('mobile', '');
+
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
@@ -99,6 +102,8 @@ class MeProductController extends \BaseController
         $publish = Input::get('publish', 1);
         $product_cate = Input::get('cate', 7);
         $active_at = Input::get('active_at');
+        $open_file = Input::get('open_file', 0);
+        
         if (empty($active_at)) {
             $active_at = Tools::getNow();
         }
@@ -130,6 +135,8 @@ class MeProductController extends \BaseController
             $product->p_price_origin = $price;
             $product->p_price = $price;
             $product->active_at = $active_at;
+            $product->p_mobile = $mobile;
+            $product->open_file = $open_file;
 
             $old_imgs = Img::toArray($product->p_imgs);
             if (empty($old_imgs['cover_img'])) {
