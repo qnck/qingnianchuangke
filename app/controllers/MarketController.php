@@ -228,7 +228,7 @@ class MarketController extends \BaseController
             }
             if (!$key) {
                 $start = $start > 0 ? date('Y-m-d H:i:s', $start) : null;
-                $end = $end > 0 ? date('Y-m-d H:i:s', $end) : null;
+                $end = ($end > 0 && $page != 1) ? date('Y-m-d H:i:s', $end) : null;
                 $ad = Advertisement::fetchAd(3, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = Advertisement::mergeArray($data, $ad);
