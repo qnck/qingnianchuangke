@@ -9,6 +9,8 @@ class MeProductController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         
+        $mobile = Input::get('mobile', '');
+        
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
@@ -61,6 +63,7 @@ class MeProductController extends \BaseController
             $product->active_at = $active_at;
             $product->p_type = 2;
             $product->open_file = $open_file;
+            $product->p_mobile = $mobile;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;

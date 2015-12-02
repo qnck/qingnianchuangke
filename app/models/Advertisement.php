@@ -99,8 +99,14 @@ class Advertisement extends Eloquent
             });
         }
         if ($range == 3) {
-            $query = $query->orWhere(function ($q) use ($s_id) {
-                $q->where('event_ranges.s_id', '=', $s_id);
+            $query = $query->where(function ($q) use ($s_id) {
+                $q->where(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', $s_id);
+                })->orWhere(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', 0)
+                    ->where('event_ranges.c_id', '=', 0)
+                    ->where('event_ranges.p_id', '=', 0);
+                });
             });
         }
         $query = $query->join('event_items', function ($q) {
