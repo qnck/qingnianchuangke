@@ -48,7 +48,7 @@ class AuctionController extends \BaseController
             if ($auction->eventItem->e_end_at < $now) {
                 throw new Exception("已经结束", 2001);
             }
-            if ($auction->a_cost < $price) {
+            if ($auction->a_cost > $price) {
                 throw new Exception("竞拍价格不能超过市场价", 2001);
             }
             if (!AuctionBid::checkBlacklist($u_id)) {
