@@ -39,7 +39,6 @@ class EveryFiveMinutes extends Command {
     {
         try {
             // to caculate auciton winner
-            throw new Exception("test", 2001);
             Auction::cronRunTheWheel();
         } catch (Exception $e) {
             if ($e->getCode() > 2000) {
