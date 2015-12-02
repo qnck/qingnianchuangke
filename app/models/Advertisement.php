@@ -100,7 +100,7 @@ class Advertisement extends Eloquent
         }
         if ($range == 3) {
             $query = $query->where(function ($q) use ($s_id) {
-                $q->where(function ($qq) {
+                $q->where(function ($qq) use ($s_id) {
                     $qq->where('event_ranges.s_id', '=', $s_id);
                 })->orWhere(function ($qq) {
                     $qq->where('event_ranges.s_id', '=', 0)
