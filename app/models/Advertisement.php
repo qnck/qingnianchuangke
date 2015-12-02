@@ -129,11 +129,11 @@ class Advertisement extends Eloquent
         $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
 
         $query->orderBy('advertisements.created_at', 'DESC');
-        var_dump($start_at, $end_at, $s_id, $c_id, $p_id, $range);
-        var_dump($query->toSql());
+        // var_dump($start_at, $end_at, $s_id, $c_id, $p_id, $range);
+        // var_dump($query->toSql());
         $ads = $query->get();
 
-        var_dump($ads->count());exit;
+        // var_dump($ads->count());exit;
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
