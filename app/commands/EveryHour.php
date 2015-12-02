@@ -39,6 +39,7 @@ class EveryHour extends Command
     public function fire()
     {
         try {
+            LogCronjob::addLog($this->name, 'START-CRONJOB');
             // to cacualte the unpaied auction
             Auction::cronYouCheater();
         } catch (Exception $e) {
