@@ -126,8 +126,8 @@ class CrowdFundingController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $start = date('Y-m-d H:i:s', $start);
-                $end = date('Y-m-d H:i:s', $end);
+                $start = $start > 0 ? date('Y-m-d H:i:s', $start) : null;
+                $end = ($end > 0 && $page != 1) ? date('Y-m-d H:i:s', $end) : null;
                 $ad = Advertisement::fetchAd(1, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = Advertisement::mergeArray($data, $ad);

@@ -83,9 +83,15 @@ class Advertisement extends Eloquent
         ->join('event_positions', function ($q) use ($position) {
             $q->on('event_positions.e_id', '=', 'advertisements.e_id')
             ->where('event_positions.position', '=', $position);
-        })->join('event_ranges', function ($q) use ($s_id, $c_id, $p_id) {
+        })->join('event_ranges', function ($q) {
             $q->on('event_ranges.e_id', '=', 'advertisements.e_id');
         });
+
+        if ($range == 1) {
+            $query = $query->where('event_ranges.s_id', '=', 0)
+                ->where('event_ranges.c_id', '=', 0)
+                ->where('event_ranges.p_id', '=', 0);
+        }
         if ($range == 2) {
             $query = $query->where(function ($q) use ($c_id, $p_id) {
                 $q->where(function ($qq) use ($c_id, $p_id) {
@@ -99,8 +105,14 @@ class Advertisement extends Eloquent
             });
         }
         if ($range == 3) {
-            $query = $query->orWhere(function ($q) use ($s_id) {
-                $q->where('event_ranges.s_id', '=', $s_id);
+            $query = $query->where(function ($q) use ($s_id) {
+                $q->where(function ($qq) use ($s_id) {
+                    $qq->where('event_ranges.s_id', '=', $s_id);
+                })->orWhere(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', 0)
+                    ->where('event_ranges.c_id', '=', 0)
+                    ->where('event_ranges.p_id', '=', 0);
+                });
             });
         }
         $query = $query->join('event_items', function ($q) {
@@ -112,11 +124,13 @@ class Advertisement extends Eloquent
         if ($end_at) {
             $query = $query->where('advertisements.created_at', '<', $end_at);
         }
+
         $now = Tools::getNow();
         $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
 
         $query->orderBy('advertisements.created_at', 'DESC');
         $ads = $query->get();
+
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {

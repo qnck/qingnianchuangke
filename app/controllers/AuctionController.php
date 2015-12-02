@@ -14,7 +14,7 @@ class AuctionController extends \BaseController
             ->join('event_items', function ($q) {
                 $q->on('event_items.e_id', '=', 'auctions.e_id');
             })->where('event_items.e_end_at', '>', $now)
-            ->where('auctions.a_status', '=', 1)->first();
+            ->first();
             if (empty($auction)) {
                 $data = null;
             } else {
