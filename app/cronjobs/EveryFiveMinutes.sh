@@ -1,2 +1,2 @@
 #!/bin/bash
-php /var/www/qingnianchuangkedev/artisan command:EveryFiveMinutes
+php /var/www/qingnianchuangke/artisan command:EveryFiveMinutes
