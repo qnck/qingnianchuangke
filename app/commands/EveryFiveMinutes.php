@@ -38,7 +38,6 @@ class EveryFiveMinutes extends Command {
     public function fire()
     {
         try {
-            LogCronjob::addLog($this->name, 'START-CRONJOB');
             // to caculate auciton winner
             Auction::cronRunTheWheel();
         } catch (Exception $e) {
