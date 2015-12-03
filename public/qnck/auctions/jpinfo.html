@@ -65,7 +65,7 @@
             });
         }
         function show_date_time(){ 
-        	if(type=="")return;
+        	if(type=="" || type=="2"){$("#timestr").hide();return;}
 			window.setTimeout("show_date_time()", 80); 
 			var jsendtime;//设置倒计时结束时间
 			switch(type){
@@ -82,9 +82,9 @@
 			var nowtime = new Date(new Date().getTime()+current_time_cz); 
 			var timeold=(jsendtime.getTime()-nowtime.getTime());
 			if(timeold<=0){
-				if(type=="0") {type="1";$("#rtitle").text("距开始时间");}
-				else if(type=="1") {type="2";$("#rtitle").text("距结束时间");}
-				else if(type=="2") {type="";$("#rtitle").text("此竞拍已结束");}
+				if(type=="0") {$("#rtitle").text("距结束时间");type="1";}
+				else if(type=="1") {$("#rtitle").text("此竞拍已结束");type="2";}
+				else if(type=="2") {$("#rtitle").text("此竞拍已结束");type="0";}
 			}else{
 				var sectimeold=timeold/1000;
 				var secondsold=Math.floor(sectimeold);
