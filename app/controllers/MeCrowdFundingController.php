@@ -43,6 +43,9 @@ class MeCrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
+            if ($cate == 8 && $user->u_type != 2) {
+                throw new Exception("错误的发布类型", 2001);
+            }
 
             $base = new DateTime();
             $base->modify('+90 days');
@@ -201,6 +204,10 @@ class MeCrowdFundingController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            if ($cate == 8 && $user->u_type != 2) {
+                throw new Exception("错误的发布类型", 2001);
+            }
+
             $crowd_funding = CrowdFunding::find($id);
             if (empty($crowd_funding) || $crowd_funding->u_id != $u_id) {
                 throw new Exception("无法获取到请求的众筹", 2001);
