@@ -154,7 +154,12 @@ class OfficeCrowdFundingController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         try {
-            $list = CrowdFunding::with('product', 'eventItem')->where('c_cate', '=', 8)->paginate($per_page);
+            $query = CrowdFunding::with('product', 'eventItem');
+            if ($filter_option == 1) {
+                $query = $query->where('c_cate', '=', 8);
+            }
+
+            $list = $query->paginate($per_page);
             $data['rows'] = [];
             foreach ($list as $key => $funding) {
                 $data['rows'][] = $funding->showInList();
