@@ -152,6 +152,7 @@ class OfficeCrowdFundingController extends \BaseController
     public function listFunding()
     {
         $per_page = Input::get('per_page', 30);
+        $filter_option = Input::get('filter_option', 0);
 
         try {
             $query = CrowdFunding::with('product', 'eventItem');
@@ -167,7 +168,7 @@ class OfficeCrowdFundingController extends \BaseController
             $data['total'] = $list->getTotal();
             $re = Tools::reTrue('获取众筹列表成功', $data, $list);
         } catch (Exception $e) {
-            $re = Tools::reFalse('获取众筹列表失败');
+            $re = Tools::reFalse($e->getCode(), '获取众筹列表失败:'.$e->getMessage());
         }
         return Response::json($re);
     }

@@ -78,6 +78,7 @@ class User extends Eloquent
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
+        $this->u_sex = 3;
         $this->u_birthday = Tools::getNow('Y-m-d');
         $this->save();
         $this->u_invite_code = $this->getInviteCode();
@@ -168,15 +169,11 @@ class User extends Eloquent
         $validator = Validator::make(
             [
                 'nickname' => $this->u_nickname,
-                'age' => $this->u_age,
-                'sex' => $this->u_sex,
                 'school_id' => $this->u_school_id,
                 'pass' => $this->u_password,
             ],
             [
                 'nickname' => 'sometimes|max:32',
-                'age' => 'sometimes|digits_between:1,3',
-                'sex' => 'sometimes|digits:1',
                 'school_id' => 'sometimes',
                 'pass' => 'sometimes',
             ]

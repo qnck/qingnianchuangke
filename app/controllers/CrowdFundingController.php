@@ -351,8 +351,8 @@ class CrowdFundingController extends \BaseController
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
                 $cart->checkout();
-                $order->o_status = 2;
-                $order->o_shipping_status = 10;
+                $order->o_status = Order::$STATUS_FINISHED;
+                $order->o_shipping_status = Order::$SHIPPING_STATUS_FINISHED;
                 $order->paied_at = Tools::getNow();
                 $order->save();
             }
