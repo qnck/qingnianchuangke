@@ -61,6 +61,7 @@ class MeProfileController extends \BaseController
             $data['id_verified'] = $profile->u_is_id_verified;
             $data['stu_verified'] = $profile->u_is_student_verified;
             $data['school'] = empty($user->school) ? null : $user->school->showInList();
+            $data['invite_code'] = $user->u_invite_code;
 
             $data['id_number'] = $profile->u_id_number;
             $data['stu_number'] = $profile->u_student_number;

@@ -57,6 +57,7 @@ class UserImport extends Eloquent
         $re['id'] = $user->u_id;
         $re['name'] = $user->u_name = $this->u_nickname;
         $re['nickname'] = $user->u_nickname = $this->u_nickname;
+        $re['invite_code'] = $user->u_invite_code;
         $re['head_img'] = $user->u_head_img = $this->u_head_img;
         $re['biograph'] = $user->u_biograph;
         $school = DicSchool::find($user->u_school_id);

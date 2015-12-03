@@ -420,6 +420,7 @@ Route::get('wechat/sign', 'WechatController@getSign');
 
 /* SO CALLED EMERGENCY START*/
 Route::get('so/called/emergency/countUser', 'EmergencyController@countUsers');
+Route::get('so/called/emergency/rename', 'EmergencyController@rename');
 
 // facker
 Route::get('so/called/emergency/fake/user', 'EmergencyController@fakeUser');

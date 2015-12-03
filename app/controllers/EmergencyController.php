@@ -87,11 +87,31 @@ class EmergencyController extends \BaseController
             $user = new User;
             $user->u_mobile = ++$mobile;
             $user->u_name = $user->u_nickname = $file->name($path);
+            $ext = $file->extension($path);
             echo "add:".$user->u_name."</br>";
-            $user->u_head_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/user_head/'.$batch.'/'.($key+1).'.jpg';
+            $user->u_head_img = 'http://qnck001.oss-cn-hangzhou.aliyuncs.com/user_head/'.$batch.'/'.($key+1).'.'.$ext;
             $user->fakeUser();
         }
         echo 'done';
+    }
+
+    public function rename()
+    {
+        $this->login();
+        set_time_limit(0);
+        $file = new Filesystem();
+        $re = $file->files('/Users/tingliu/Downloads/head_img');
+        $count = 1;
+        foreach ($re as $key => $path) {
+            $new_name = $count.'.'.$file->extension($path);
+            $path_seg = explode('/', $path);
+            array_pop($path_seg);
+            $new_path = implode('/', $path_seg);
+            $new_path = '/'.$new_path.'/'.$new_name;
+            $file->move($path, $new_path);
+            $count++;
+        }
+        echo "DONE";
     }
 
     public function fakeCrowdFundingPurches($id)
