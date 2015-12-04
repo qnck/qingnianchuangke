@@ -103,6 +103,10 @@
 		                $("#cover_img").attr("src",r.data.cover_img[0]);
 		                $("#brief").text(r.data.prod_brief);
 		                $(".target_amount").text(r.data.prod_price);
+		                if(r.data.open_file=="1")
+		                	$("#fbzmobile").text(r.data.user.mobile);
+		                else
+		                	$("#fbzmobile").text("发布者未公开");
 		                $(r.data.content).each(function (){
 		                	var temp = '<img class="content_img" src="'+this.img+'"><p class="content_text">'+this.text+'</p>';
 		                	$(".content").append(temp);
@@ -128,7 +132,7 @@
 		</p>
 		<p class="brief" style="padding-bottom:10px;" id="brief"></p>
 		<p class="target blue_font" style="font-size:20px;margin:-10px 10px;">¥ <span class="target_amount">0.00</span> 元</p>
-		<p class="info blue_font"></p>
+		<p class="info blue_font"><span style="">发布者联系电话:</span><span id="fbzmobile"></span></p>
 	</div>
 	<div class="middle" style="padding-top:10px;">
 		<div class="switch"></div>
