@@ -5,11 +5,18 @@
 <script src="../js/jquery.min.js"></script>
 <script src="../../js/common.js"></script>
 <style type="text/css">
+    /*body,html{*/
+        /*font-size: 125%;*/
+        /*font-size: 20px;*/
+    /*}*/
 body{
     background-color:#E7E8EC;
     margin:0; padding:0;
     font-family: "Microsoft yahei";
 }
+    html{
+        font-family: "Microsoft yahei";
+    }
 #leftmenu div p a{
     padding-left: 10px;
     padding-right: 10px;
@@ -26,6 +33,7 @@ $(document).ready(function () {
     uid = getCookie("uid");
     BindUserInfo();
     setWH();
+    openPage('zcmanage.html');
     $(window).resize(function () {
         setWH();
     });
@@ -33,7 +41,9 @@ $(document).ready(function () {
 function setWH(){
     $("#mainDiv").height($(window).height()-100-10-2-20);
     $("#leftmenu").height($("#mainDiv").height());
-    $("#myifrm").width($("#mainDiv").width()-$("#leftmenu").width()-8);
+    // $("#myifrm").width($("#mainDiv").width()-$("#leftmenu").width()-8);
+    $("#myifrm").width($("#mainDiv").width());
+//    $("#myifrm").width($("#mainDiv").width());
     $("#myifrm").height($("#mainDiv").height());
 }
 function BindUserInfo(){
@@ -64,10 +74,14 @@ function BindUserInfo(){
     });
 }
 function loginOut(){
-
+    delCookie("token");
+    delCookie("uid");
+    delCookie("sid");
+    window.location.href="../../index.html";
 }
 function openPage(url){
     $("#myifrm").attr("src",url);
+    $(this).css("color", "#76C5EE");
 }
 </script>
 </head>
@@ -76,25 +90,25 @@ function openPage(url){
     <div style="width:100%;height:100px;background-color:#F3F7F8;border-top:10px solid #76C5EE;border-bottom:2px solid #C8CBD0">
         <table style="width:100%;height:100%;vertical-align:middle;">
             <tr>
-                <td style="width:30%;float:right;padding-top:15px;">
-                    <img src="../images/manageLogo.png" alt=""/>
+                <td style="width:51%;float:right;padding-top:15px;">
+                    <img style="width:105px;height:54px;" src="../images/manageLogo.png" alt=""/>
                 </td>
-                <td style="width:40%">&nbsp;</td>
-                <td style="width:30%">
+                <td style="width:33.3%">&nbsp;</td>
+                <td style="width:26%">
                     <div style="float:left;">
                         <img id="headimg" src="../images/head_portrait.jpg" style="width:60px;border-radius:38px;" alt=""/>
                     </div>
                     <div style="padding-left:80px;padding-top:10px;">
                         <span id="usernickname"></span>
-                        <span id="rzremark" style="border-radius:25px;text-align:center;background-color:#f1977e;color:#ffffff;padding:0px 10px;"></span>
+                        <span id="rzremark" style="border-radius:25px;text-align:center;background-color:#76C5EE;color:#ffffff;padding:0px 10px;"></span>
                         <div><a onclick="loginOut()" style="cursor:pointer;">退出</a></div>
                     </div>
                 </td>
             </tr>
         </table>
     </div>
-    <div id="mainDiv" style="background-color:#fff;width:70%;margin:0 auto;margin-top:20px;">
-        <div id="leftmenu" style="float:left;border-right:1px solid #C8CBD0;width:200px;overflow:auto;">
+    <div id="mainDiv" style="background-color:#fff;width:65%;margin:0 auto;margin-top:20px;">
+        <div id="leftmenu"  style="float:left;border-right:1px solid #C8CBD0;width:200px;overflow:auto;display: none">
             <div style="padding:30px;border-bottom:1px solid #C8CBD0;">
                 <img src="../images/kernel_module.png"/>
                 <span style="color:#76c5ee;position:relative;top:-13px;left:5px;">核心模块</span>
