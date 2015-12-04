@@ -105,6 +105,9 @@ class ProductController extends \BaseController
                 throw new Exception("无法找到请求的产品", 7001);
             }
             $data = $product->showDetail();
+            if (!empty($data['user']['mobile'])) {
+                $data['user']['mobile'] = $data['mobile'];
+            }
             if (empty($data['booth']['school'])) {
                 $data['school'] = [];
             } else {
