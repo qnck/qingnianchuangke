@@ -58,7 +58,7 @@ class CrowdFunding extends Eloquent
         }
     }
 
-    public function showInList()
+    public function showBaseData()
     {
         $this->loadImg();
         $data = [];
@@ -66,12 +66,18 @@ class CrowdFunding extends Eloquent
         if (empty($this->eventItem)) {
             $this->load(['eventItem']);
         }
-
         $data['cover_img'] = [$this->eventItem->cover_img];
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
-        $data['status'] = $this->c_status;
         $data['active_at'] = $this->eventItem->e_start_at;
+
+    }
+
+    public function showInList()
+    {
+        $data = [];
+
+        $data['status'] = $this->c_status;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d H:i:s');
         $data['created_at_timestamps'] = strtotime($data['created_at']);
@@ -81,6 +87,7 @@ class CrowdFunding extends Eloquent
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
         $data['cate'] = $this->c_cate;
+        $data['remark'] = $this->c_remark;
         $data['current_time'] = Tools::getNow();
         $data['local_only'] = $this->c_local_only;
         $data['cate_label'] = $this->getCateLabel();
@@ -109,18 +116,10 @@ class CrowdFunding extends Eloquent
 
     public function showDetail()
     {
-        $this->loadImg();
         $data = [];
-        if (empty($this->eventItem)) {
-            $this->load(['eventItem']);
-        }
-        $data['id'] = $this->cf_id;
-        $data['cover_img'] = [$this->eventItem->cover_img];
+
         $data['content'] = $this->getContent();
-        $data['title'] = $this->eventItem->e_title;
-        $data['brief'] = $this->eventItem->e_brief;
         $data['status'] = $this->c_status;
-        $data['active_at'] = $this->eventItem->e_start_at;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d');
         $data['time'] = $this->c_time;

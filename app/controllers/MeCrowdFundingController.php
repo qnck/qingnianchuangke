@@ -340,6 +340,7 @@ class MeCrowdFundingController extends \BaseController
 
     public function listSellCrowdFunding()
     {
+        $per_page = Input::get('per_page', 30);
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         $filter_option = Input::get('filter_option', 0);
@@ -384,7 +385,7 @@ class MeCrowdFundingController extends \BaseController
                     break;
             }
 
-            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->get();
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
@@ -405,6 +406,7 @@ class MeCrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $per_page = Input::get('per_page', 30);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -424,7 +426,7 @@ class MeCrowdFundingController extends \BaseController
             ->join('carts', function ($q) {
                 $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id)->where('carts.c_status', '=', 3);
             });
-            $list = $query->orderBy('created_at', 'DESC')->get();
+            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
