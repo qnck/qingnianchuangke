@@ -79,6 +79,7 @@ class CrowdFunding extends Eloquent
         $data['local_only'] = $this->c_local_only;
         $data['amount'] = $this->c_amount;
 
+        return $data;
     }
 
     public function showInList()
