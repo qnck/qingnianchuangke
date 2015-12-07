@@ -70,28 +70,28 @@ class CrowdFunding extends Eloquent
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
         $data['active_at'] = $this->eventItem->e_start_at;
+        $data['status'] = $this->c_status;
+        $data['time_left'] = $this->calculateTimeLeft();
+        $data['time'] = $this->c_time;
+        $data['target_amount'] = $this->c_target_amount;
+        $data['cate'] = $this->c_cate;
+        $data['cate_label'] = $this->getCateLabel();
+        $data['local_only'] = $this->c_local_only;
+        $data['amount'] = $this->c_amount;
 
     }
 
     public function showInList()
     {
-        $data = [];
+        $data = $this->showBaseData();
 
-        $data['status'] = $this->c_status;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d H:i:s');
         $data['created_at_timestamps'] = strtotime($data['created_at']);
-        $data['time'] = $this->c_time;
-        $data['time_left'] = $this->calculateTimeLeft();
-        $data['target_amount'] = $this->c_target_amount;
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
-        $data['cate'] = $this->c_cate;
         $data['remark'] = $this->c_remark;
         $data['current_time'] = Tools::getNow();
-        $data['local_only'] = $this->c_local_only;
-        $data['cate_label'] = $this->getCateLabel();
-        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
@@ -116,27 +116,19 @@ class CrowdFunding extends Eloquent
 
     public function showDetail()
     {
-        $data = [];
+        $data = $this->showBaseData();
 
         $data['content'] = $this->getContent();
-        $data['status'] = $this->c_status;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d');
-        $data['time'] = $this->c_time;
-        $data['time_left'] = $this->calculateTimeLeft();
         $data['yield_time'] = $this->c_yield_time;
-        $data['target_amount'] = $this->c_target_amount;
         $data['shipping'] = $this->c_shipping;
         $data['shipping_fee'] = $this->c_shipping_fee;
         $data['mobile'] = $this->u_mobile;
-        $data['cate'] = $this->c_cate;
-        $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
-        $data['local_only'] = $this->c_local_only;
         $data['current_time'] = Tools::getNow();
         $data['is_schedule'] = $this->c_is_schedule;
         $data['open_file'] = $this->c_open_file;
-        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
