@@ -67,11 +67,11 @@ class User extends Eloquent
     {
         $this->baseValidate();
         if (empty($this->u_school_id)) {
-            throw new Exception("没有传入有效的学校", 1);
+            throw new Exception("没有传入有效的学校", 3002);
         }
         // chcek if mobile exsits
         if (User::where('u_mobile', '=', $this->u_mobile)->count() > 0) {
-            throw new Exception("手机号码已被使用", 1);
+            throw new Exception("手机号码已被使用", 3002);
         }
         // generate token
         $this->u_token = $this->getUniqueToken();
@@ -118,10 +118,10 @@ class User extends Eloquent
         $this->baseValidate();
         $user = User::where('u_mobile', '=', $this->u_mobile)->where('u_status', '=', 1)->first();
         if (!isset($user->u_id)) {
-            throw new Exception("请求的用户不可用", 1);
+            throw new Exception("请求的用户不可用", 3002);
         }
         if (!Hash::check($this->u_password, $user->u_password)) {
-            throw new Exception("密码错误", 1);
+            throw new Exception("密码错误", 3002);
         } else {
             $re = [];
             $re['token'] = $user->u_token;

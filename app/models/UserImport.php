@@ -49,6 +49,9 @@ class UserImport extends Eloquent
         if (empty($user)) {
             throw new Exception("没有找到用户", 3005);
         }
+        if ($user->u_status != 1) {
+            throw new Exception("您的账号不可用, 请联系客服", 3005);
+        }
         $re = [];
         $re['token'] = $user->u_token;
         $now = new Datetime();
