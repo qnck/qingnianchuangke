@@ -39,11 +39,6 @@ class CrowdFundingController extends \BaseController
             $user = User::find($u_id);
             $user->load('school');
 
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
-
             $now = Tools::getNow();
             $query = CrowdFunding::select('crowd_fundings.*')
             ->with([
@@ -67,14 +62,7 @@ class CrowdFundingController extends \BaseController
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
             }
-            if ($range == 1) {
-                $query = $query->orWhere(function ($q) {
-                    $q->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-                });
-            }
-            if ($city && $province && $range == 2) {
-                $query = $query->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
-            }
+
             if ($school && $range == 3) {
                 $query = $query->where('event_ranges.s_id', '=', $school);
             }
@@ -84,9 +72,8 @@ class CrowdFundingController extends \BaseController
             }
 
             if ($filter_option == 2) {
-                // time passed more than 20%, less than 50%, and gathered more than 60% quantity
-                $query = $query->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
-                ->whereRaw('(DATEDIFF(CURDATE(), event_items.e_start_at)) < (t_crowd_fundings.c_time * 0.5)')
+                // time passed more than 20%, and gathered more than 60% quantity
+                $query = $query->whereRaw('(DATEDIFF(CURDATE(), t_event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
                 ->join('crowd_funding_products', function ($q) {
                     $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
                 })->whereRaw('t_crowd_funding_products.p_sold_quantity > (t_crowd_funding_products.p_target_quantity * 0.6)')
@@ -95,14 +82,24 @@ class CrowdFundingController extends \BaseController
 
             if ($filter_option == 3) {
                 // left time is less than 20%
-                $query = $query->whereRaw('DATEDIFF(event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
+                $query = $query->whereRaw('DATEDIFF(t_event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
                 ->where('event_items.e_end_at', '>', $now);
+            }
+
+            if ($city && $province && $range == 2) {
+                $query = $query->where(function ($q) use ($city, $province) {
+                    $q->where(function ($qq) use ($city, $province) {
+                        $qq->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
+                    })->orWhere(function ($qq) {
+                        $qq->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                    });
+                });
             }
 
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
-                    $q->where('crowd_fundings.c_title', 'LIKE', '%'.$key.'%')
-                    ->orWhere('crowd_fundings.c_brief', 'LIKE', '%'.$key.'%')
+                    $q->where('event_items.e_title', 'LIKE', '%'.$key.'%')
+                    ->orWhere('event_items.e_brief', 'LIKE', '%'.$key.'%')
                     ->orWhere('crowd_fundings.c_yield_desc', 'LIKE', '%'.$key.'%')
                     ->orWhere('crowd_fundings.c_content', 'LIKE', '%'.$key.'%');
                 });
@@ -110,8 +107,16 @@ class CrowdFundingController extends \BaseController
             $query = $query->orderBy('crowd_fundings.created_at', 'DESC');
             $list = $query->paginate($per_page);
             $data = [];
-            foreach ($list as $key => $funding) {
+            $start = 0;
+            $end = 0;
+            foreach ($list as $k => $funding) {
                 $tmp = $funding->showInList();
+                if ($k == 0) {
+                    $start = $end = $tmp['created_at_timestamps'];
+                } else {
+                    $start = min($start, $tmp['created_at_timestamps']);
+                    $end = max($end, $tmp['created_at_timestamps']);
+                }
                 $tmp['is_praised'] = 0;
                 if (count($funding->praises) > 0) {
                     $tmp['is_praised'] = 1;
@@ -120,12 +125,11 @@ class CrowdFundingController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(1, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $start = $start > 0 ? date('Y-m-d H:i:s', $start) : null;
+                $end = ($end > 0 && $page != 1) ? date('Y-m-d H:i:s', $end) : null;
+                $ad = Advertisement::fetchAd(1, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
-                    $data = array_merge($data, $ad);
-                    $collection = new Collection($data);
-                    $collection->sortByDesc('created_at');
-                    $data = array_values($collection->toArray());
+                    $data = Advertisement::mergeArray($data, $ad);
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
                 }
@@ -202,6 +206,8 @@ class CrowdFundingController extends \BaseController
                 $to_u_name = '';
             } else {
                 $to_u_name = $to_user->u_nickname;
+                $msg = new MessageDispatcher($to_u_id);
+                $msg->fireCateToUser('您有新的用户回复', Notification::$CATE_CROWD_FUNDING, $id);
             }
             $cf = CrowdFunding::find($id);
             $reply = [
@@ -249,7 +255,7 @@ class CrowdFundingController extends \BaseController
             }
 
             if ($now < $date_start) {
-                throw new Exception("抱歉, 众筹还未开始", 2001);
+                throw new Exception("抱歉, 众筹还未开始, 请耐心等待", 2001);
             }
 
             if ($funding->c_status != 4) {
@@ -270,6 +276,9 @@ class CrowdFundingController extends \BaseController
             }
 
             $user = User::chkUserByToken($token, $u_id);
+            if (!$user->u_mobile) {
+                throw new Exception("此众筹需要绑定联系电话，请到[我的-编辑资料]里绑定后进行支持", 2001);
+            }
             if ($funding->c_local_only) {
                 $funding_owner = User::find($funding->u_id);
                 if ($funding_owner->u_school_id != $user->u_school_id) {
@@ -344,8 +353,8 @@ class CrowdFundingController extends \BaseController
             // change order to finish if price = 0
             if ($order->o_amount == 0) {
                 $cart->checkout();
-                $order->o_status = 2;
-                $order->o_shipping_status = 10;
+                $order->o_status = Order::$STATUS_FINISHED;
+                $order->o_shipping_status = Order::$SHIPPING_STATUS_FINISHED;
                 $order->paied_at = Tools::getNow();
                 $order->save();
             }

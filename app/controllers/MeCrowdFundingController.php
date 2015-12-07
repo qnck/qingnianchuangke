@@ -41,6 +41,12 @@ class MeCrowdFundingController extends \BaseController
         DB::beginTransaction();
         try {
             $user = User::chkUserByToken($token, $u_id);
+            if (!$user->u_mobile) {
+                throw new Exception("发布筹需要绑定联系电话，请到[我的-编辑资料]里绑定", 2001);
+            }
+            if ($cate == 8 && $user->u_type != 2) {
+                throw new Exception("错误的发布类型", 2001);
+            }
 
             $base = new DateTime();
             $base->modify('+90 days');
@@ -91,6 +97,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->u_id = $u_id;
             $crowd_funding->b_id = $booth->b_id;
             $crowd_funding->e_id = $event->e_id;
+            $crowd_funding->c_is_schedule = $is_schedule;
             $crowd_funding->c_yield_desc = $yield_desc;
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
@@ -102,10 +109,12 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
-            if ($amount <= 2000) {
+            if ($amount <= 50000) {
                 $crowd_funding->c_status = 4;
             } else {
                 $crowd_funding->c_status = 1;
+                $msg = new MessageDispatcher($u_id);
+                $msg->fireTextToUser('你此次众筹总金额已超过50000元，我们将在24小时以内进行审核，请耐心等待。');
             }
 
             // if the user is an official user, set funding type to offical
@@ -115,13 +124,14 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->addCrowdFunding();
 
             if ($img_token) {
-                $imgObj = new Img('crowd_funding', $img_token);
-                $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
-                $crowd_funding->save();
-
                 $imgObj = new Img('event', $img_token);
                 $event->cover_img = $imgObj->getSavedImg($event->e_id);
                 $event->save();
+            }
+            if ($img_token_2) {
+                $imgObj = new Img('crowd_funding', $img_token_2);
+                $crowd_funding->c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id);
+                $crowd_funding->save();
             }
 
             // add funding product
@@ -167,6 +177,7 @@ class MeCrowdFundingController extends \BaseController
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
         $local_only = Input::get('local_only', 0);
+        $is_schedule = Input::get('is_schedule', 0);
         $active_at = Input::get('active_at');
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -179,6 +190,8 @@ class MeCrowdFundingController extends \BaseController
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
+
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
@@ -192,13 +205,27 @@ class MeCrowdFundingController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
+            if ($cate == 8 && $user->u_type != 2) {
+                throw new Exception("错误的发布类型", 2001);
+            }
+
             $crowd_funding = CrowdFunding::find($id);
             if (empty($crowd_funding) || $crowd_funding->u_id != $u_id) {
                 throw new Exception("无法获取到请求的众筹", 2001);
             }
 
-            if ($crowd_funding->c_status > 3) {
-                throw new Exception("众筹状态已锁定", 2001);
+            $funding_product = CrowdFundingProduct::where('cf_id', '=', $crowd_funding->cf_id)->first();
+            if (empty($funding_product)) {
+                throw new Exception("库存信息丢失", 2001);
+            }
+            if (Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
+                throw new Exception("已有人购买", 2001);
+            }
+
+            if ($apartment_no) {
+                $tmp_base = TmpUserProfileBase::find($user->u_id);
+                $tmp_base->u_apartment_no = $apartment_no;
+                $tmp_base->save();
             }
 
             $event = EventItem::find($crowd_funding->e_id);
@@ -216,6 +243,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_content = $content;
             $crowd_funding->c_yield_time = $yield_time;
             $crowd_funding->u_mobile = $mobile;
+            $crowd_funding->c_is_schedule = $is_schedule;
             $crowd_funding->c_time = $time;
             $crowd_funding->c_shipping = $shipping;
             $crowd_funding->c_shipping_fee = $shipping_fee;
@@ -234,7 +262,7 @@ class MeCrowdFundingController extends \BaseController
             }
 
             if (is_numeric($modified_img_index)) {
-                $imgObj = new Img('crowd_funding', $img_token);
+                $imgObj = new Img('crowd_funding', $img_token_2);
                 $new_paths = [];
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $old_path) {
@@ -242,20 +270,13 @@ class MeCrowdFundingController extends \BaseController
                         $new_paths[] = $new_path;
                         $modified_img_index++;
                     }
-                    $to_delete = Img::toArray($crowd_funding->c_imgs);
-                    foreach ($to_delete as $obj) {
-                        if (!in_array($obj, $new_paths)) {
-                            $imgObj->remove($id, $obj);
-                        }
-                    }
                     $new_paths = Img::attachHost($new_paths);
-                    
                     $crowd_funding->c_imgs = implode(',', $new_paths);
                 }
             }
 
-            if ($img_token) {
-                $imgObj = new Img('crowd_funding', $img_token);
+            if ($img_token_2) {
+                $imgObj = new Img('crowd_funding', $img_token_2);
                 $imgs = $imgObj->getSavedImg($crowd_funding->cf_id, $crowd_funding->c_imgs, true);
                 if (!empty($modified_img)) {
                     foreach ($modified_img as $del) {
@@ -265,6 +286,12 @@ class MeCrowdFundingController extends \BaseController
                     }
                 }
                 $crowd_funding->c_imgs = implode(',', $imgs);
+            }
+
+            if ($img_token) {
+                $img_obj = new Img('event', $img_token);
+                $cover_img = $img_obj->replace($event->e_id, 'cover_img');
+                $event->cover_img = $cover_img;
             }
             $crowd_funding->save();
             $event->save();
@@ -314,10 +341,13 @@ class MeCrowdFundingController extends \BaseController
 
     public function listSellCrowdFunding()
     {
+        $per_page = Input::get('per_page', 30);
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $filter_option = Input::get('filter_option', 0);
 
         try {
+            $now = Tools::getNow();
             $user = User::chkUserByToken($token, $u_id);
             $query = CrowdFunding::with([
                 'city',
@@ -328,8 +358,35 @@ class MeCrowdFundingController extends \BaseController
                 'praises' => function ($q) {
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
-                ])->where('u_id', '=', $u_id);
-            $list = $query->orderBy('created_at', 'DESC')->get();
+            ])->join('event_items', function ($q) {
+                $q->on('event_items.e_id', '=', 'crowd_fundings.e_id');
+            })->where('crowd_fundings.u_id', '=', $u_id);
+
+            switch ($filter_option) {
+                case 1:
+                    $query = $query->where('crowd_fundings.c_status', '=', 1);
+                    break;
+                case 2:
+                    $query = $query->where('crowd_fundings.c_status', '=', 2);
+                    break;
+                case 3:
+                    $query = $query->where('event_items.e_start_at', '>', $now);
+                    break;
+                case 4:
+                    $query = $query->where('crowd_fundings.c_status', '=', 4);
+                    break;
+                case 5:
+                    $query = $query->where('crowd_fundings.c_status', '=', 5);
+                    break;
+                case 6:
+                    $query = $query->where('crowd_fundings.c_status', '=', 3);
+                    break;
+
+                default:
+                    break;
+            }
+
+            $list = $query->orderBy('crowd_fundings.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();
@@ -350,6 +407,7 @@ class MeCrowdFundingController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
+        $per_page = Input::get('per_page', 30);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -367,9 +425,9 @@ class MeCrowdFundingController extends \BaseController
                 $q->on('crowd_fundings.cf_id', '=', 'crowd_funding_products.cf_id');
             })
             ->join('carts', function ($q) {
-                $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id);
+                $q->on('carts.p_id', '=', 'crowd_funding_products.p_id')->where('carts.c_type', '=', 2)->where('carts.u_id', '=', $this->u_id)->where('carts.c_status', '=', 3);
             });
-            $list = $query->orderBy('created_at', 'DESC')->get();
+            $list = $query->orderBy('created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();

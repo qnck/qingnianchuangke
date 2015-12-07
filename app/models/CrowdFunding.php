@@ -32,15 +32,15 @@ class CrowdFunding extends Eloquent
     public static function getCrowdFundingCate()
     {
         return [
-            8 => '官方发布',
-            1 => '娱乐活动',
-            2 => '个人生活',
-            3 => '创业募集',
-            4 => '艺术创作',
-            5 => '创意发明',
-            6 => '调查学习',
-            7 => '公益事业',
-            9 => '下课约',
+            // 0 => ['id' => 8, 'label' => '官方发布'],
+            0 => ['id' => 3 ,'label' => '股权众筹'],
+            1 => ['id' => 4, 'label' => '产品预售'],
+            2 => ['id' => 1, 'label' => '娱乐活动'],
+            3 => ['id' => 7, 'label' => '爱心公益'],
+            4 => ['id' => 5, 'label' => '创意发明'],
+            5 => ['id' => 2, 'label' => '个人生活'],
+            6 => ['id' => 6, 'label' => '调查学习'],
+            7 => ['id' => 9, 'label' => '下课约']
         ];
     }
 
@@ -58,7 +58,7 @@ class CrowdFunding extends Eloquent
         }
     }
 
-    public function showInList()
+    public function showBaseData()
     {
         $this->loadImg();
         $data = [];
@@ -66,24 +66,33 @@ class CrowdFunding extends Eloquent
         if (empty($this->eventItem)) {
             $this->load(['eventItem']);
         }
-
         $data['cover_img'] = [$this->eventItem->cover_img];
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
-        $data['status'] = $this->c_status;
         $data['active_at'] = $this->eventItem->e_start_at;
-        $date = new DateTime($this->created_at);
-        $data['created_at'] = $date->format('Y-m-d');
-        $data['time'] = $this->c_time;
+        $data['status'] = $this->c_status;
         $data['time_left'] = $this->calculateTimeLeft();
+        $data['time'] = $this->c_time;
         $data['target_amount'] = $this->c_target_amount;
+        $data['cate'] = $this->c_cate;
+        $data['cate_label'] = $this->getCateLabel();
+        $data['local_only'] = $this->c_local_only;
+        $data['amount'] = $this->c_amount;
+
+        return $data;
+    }
+
+    public function showInList()
+    {
+        $data = $this->showBaseData();
+
+        $date = new DateTime($this->created_at);
+        $data['created_at'] = $date->format('Y-m-d H:i:s');
+        $data['created_at_timestamps'] = strtotime($data['created_at']);
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
-        $data['cate'] = $this->c_cate;
+        $data['remark'] = $this->c_remark;
         $data['current_time'] = Tools::getNow();
-        $data['local_only'] = $this->c_local_only;
-        $data['cate_label'] = $this->getCateLabel();
-        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
@@ -108,34 +117,19 @@ class CrowdFunding extends Eloquent
 
     public function showDetail()
     {
-        $this->loadImg();
-        $data = [];
-        if (empty($this->eventItem)) {
-            $this->load(['eventItem']);
-        }
-        $data['id'] = $this->cf_id;
-        $data['cover_img'] = [$this->eventItem->cover_img];
+        $data = $this->showBaseData();
+
         $data['content'] = $this->getContent();
-        $data['title'] = $this->eventItem->e_title;
-        $data['brief'] = $this->eventItem->e_brief;
-        $data['status'] = $this->c_status;
-        $data['active_at'] = $this->eventItem->e_start_at;
         $date = new DateTime($this->created_at);
         $data['created_at'] = $date->format('Y-m-d');
-        $data['time'] = $this->c_time;
-        $data['time_left'] = $this->calculateTimeLeft();
         $data['yield_time'] = $this->c_yield_time;
-        $data['target_amount'] = $this->c_target_amount;
         $data['shipping'] = $this->c_shipping;
         $data['shipping_fee'] = $this->c_shipping_fee;
         $data['mobile'] = $this->u_mobile;
-        $data['cate'] = $this->c_cate;
-        $data['cate_label'] = $this->getCateLabel();
         $data['yield_desc'] = $this->c_yield_desc;
-        $data['local_only'] = $this->c_local_only;
         $data['current_time'] = Tools::getNow();
+        $data['is_schedule'] = $this->c_is_schedule;
         $data['open_file'] = $this->c_open_file;
-        $data['amount'] = $this->c_amount;
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
@@ -170,13 +164,21 @@ class CrowdFunding extends Eloquent
         if (!$this->c_cate) {
             return '';
         }
+        $label = '';
         $cates = CrowdFunding::getCrowdFundingCate();
-        return $cates[$this->c_cate];
+        foreach ($cates as $cate) {
+            if ($this->c_cate == $cate['id']) {
+                $label = $cate['label'];
+                break;
+            }
+        }
+        return $label;
     }
 
     public function getParticipates($per_page, $count = false)
     {
-        $query = User::select('users.*', 'carts.c_quantity', 'orders.o_id', 'orders.o_comment', 'orders.o_shipping_address', 'orders.o_comment', 'orders.o_shipping_phone')->join('carts', function ($q) {
+        $query = User::select('users.*', 'carts.c_quantity', 'orders.o_id', 'orders.o_comment', 'orders.o_shipping_address', 'orders.o_comment', 'orders.o_shipping_phone')
+        ->rightJoin('carts', function ($q) {
             $q->on('users.u_id', '=', 'carts.u_id')->where('carts.c_type', '=', 2);
         })->join('crowd_funding_products', function ($q) {
             $q->on('crowd_funding_products.p_id', '=', 'carts.p_id')->where('crowd_funding_products.cf_id', '=', $this->cf_id);
@@ -270,30 +272,81 @@ class CrowdFunding extends Eloquent
         if ($this->c_status > 4) {
             throw new Exception("众筹状态已完成", 2001);
         }
-        $this->load(['replies', 'praises', 'favorites']);
-        // check replies
-        if (count($this->replies) > 0) {
-            throw new Exception("已关联评论信息", 2001);
-        }
-        // check praises
-        if (count($this->praises) > 0) {
-            throw new Exception("已关联点赞信息", 2001);
-        }
-        // check favorites
-        if (count($this->favorites) > 0) {
-            throw new Exception("已关联收藏信息", 2001);
-        }
 
         $funding_product = CrowdFundingProduct::where('cf_id', '=', $this->cf_id)->first();
         if (empty($funding_product)) {
             throw new Exception("库存信息丢失", 2001);
         }
-        if (!Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
+        if (Cart::getCartTypeCount(Cart::$TYPE_CROWD_FUNDING, $funding_product->p_id)) {
             throw new Exception("已有人购买", 2001);
         }
+        
+        $this->load(['eventItem']);
+
+        $this->eventItem->delete();
         $this->delete();
         $funding_product->delete();
         return true;
+    }
+
+    public function cloneCrowdFunding()
+    {
+        $this->load(['eventItem', 'product']);
+
+        $event = new EventItem();
+        $event->o_id = $this->eventItem->o_id;
+        $event->e_title = $this->eventItem->e_title;
+        $event->cover_img = $this->eventItem->cover_img;
+        $event->e_brief = $this->eventItem->e_brief;
+        $event->url = $this->eventItem->url;
+        $event->e_range = $this->eventItem->e_range;
+        $event->e_start_at = $this->eventItem->e_start_at;
+        $event->e_end_at = $this->eventItem->e_end_at;
+        $event->created_at = $this->eventItem->created_at;
+        $event->e_status = $this->eventItem->e_status;
+        $event->save();
+
+        $funding = new CrowdFunding();
+        $funding->u_id = $this->u_id;
+        $funding->b_id = $this->b_id;
+        $funding->c_status = $this->c_status;
+        $funding->c_yield_desc = $this->c_yield_desc;
+        $funding->c_content = $this->c_content;
+        $funding->c_imgs = $this->c_imgs;
+        $funding->c_yield_time = $this->c_yield_time;
+        $funding->c_time = $this->c_time;
+        $funding->c_shipping = $this->c_shipping;
+        $funding->c_shipping_fee = $this->c_shipping_fee;
+        $funding->c_target_amount = $this->c_target_amount;
+        $funding->c_cate = $this->c_cate;
+        $funding->created_at = $this->created_at;
+        $funding->c_open_file = $this->c_open_file;
+        $funding->c_praise_count = $this->c_praise_count;
+        $funding->c_remark = $this->c_remark;
+        $funding->c_amount = $this->c_amount;
+        $funding->u_mobile = $this->u_mobile;
+        $funding->c_local_only = $this->c_local_only;
+        $funding->e_id = $event->e_id;
+        $funding->save();
+
+        $product = new CrowdFundingProduct();
+        $product->cf_id = $funding->cf_id;
+        $product->u_id = $this->product->u_id;
+        $product->b_id = $this->product->b_id;
+        $product->p_imgs = $this->product->p_imgs;
+        $product->p_title = $this->product->p_title;
+        $product->p_desc = $this->product->p_desc;
+        $product->p_price = $this->product->p_price;
+        $product->p_status = $this->product->p_status;
+        $product->p_max_quantity = $this->product->p_max_quantity;
+        $product->p_target_quantity = $this->product->p_target_quantity;
+        $product->p_sort = $this->product->p_sort;
+        $product->created_at = $this->product->created_at;
+        $product->p_sold_quantity = $this->product->p_sold_quantity;
+        $product->p_cart_quantity = $this->product->p_cart_quantity;
+        $product->save();
+
+        return $event;
     }
 
     // relations
