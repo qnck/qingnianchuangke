@@ -16,7 +16,7 @@ class OfficeWebUserController extends \BaseController
 
         try {
             $query = DB::table('users')
-            ->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified', 'clubs.c_status AS club_status')
+            ->select('users.u_id AS id', 'users.u_mobile', 'users.u_name', 'users.u_nickname', 'users.u_status', 'users.u_remark', 'users.u_is_verified as is_verified', 'users.u_head_img', 'dic_schools.t_name', 'tmp_user_profile_bases.u_status AS base_status', 'tmp_user_profile_bases.u_id_imgs', 'tmp_user_profile_bases.u_student_imgs', 'tmp_user_profile_bankcards.b_status AS bank_status', 'tmp_user_profile_bases.u_is_id_verified AS id_verified', 'tmp_user_profile_bases.u_is_student_verified AS stu_verified', 'clubs.c_status AS club_status')
             ->leftJoin('tmp_user_profile_bases', function ($q) {
                 $q->on('users.u_id', '=', 'tmp_user_profile_bases.u_id');
             })->leftJoin('tmp_user_profile_bankcards', function ($q) {
@@ -37,7 +37,7 @@ class OfficeWebUserController extends \BaseController
 
             if ($name) {
                 $query = $query->where(function ($q) use ($name) {
-                    $q->where('users.u_name', 'LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%');
+                    $q->where('users.u_name', 'LIKE', '%'.$name.'%')->orWhere('users.u_nickname', 'LIKE', '%'.$name.'%')->orWhere('users.u_mobile', 'LIKE', '%'.$name.'%');
                 });
             }
 
@@ -254,6 +254,11 @@ class OfficeWebUserController extends \BaseController
                 if (!empty($base)) {
                     $base->u_is_id_verified = 1;
                 }
+                if ($tmp->u_is_student_verified) {
+                    $user = User::find($id);
+                    $uesr->u_is_verified = 1;
+                    $user->save();
+                }
                 $log->content = '认证用户身份证信息: 通过';
             } else {
                 $tmp->u_is_id_verified = 2;
@@ -262,6 +267,8 @@ class OfficeWebUserController extends \BaseController
                 }
                 $log->content = '认证用户身份证信息: 不通过';
             }
+            $msg = new MessageDispatcher($id);
+            $msg->fireTextToUser($log->content);
             $log->addLog();
             $tmp->save();
             if (!empty($base)) {
@@ -290,6 +297,11 @@ class OfficeWebUserController extends \BaseController
                 if (!empty($base)) {
                     $base->u_is_student_verified = 1;
                 }
+                if ($tmp->u_is_id_verified) {
+                    $user = User::find($id);
+                    $uesr->u_is_verified = 1;
+                    $user->save();
+                }
                 $log->content = '认证用户学生证信息: 通过';
             } else {
                 $tmp->u_is_student_verified = 2;
@@ -298,6 +310,8 @@ class OfficeWebUserController extends \BaseController
                 }
                 $log->content = '认证用户学生证信息: 不通过';
             }
+            $msg = new MessageDispatcher($id);
+            $msg->fireTextToUser($log->content);
             $log->addLog();
             $tmp->save();
             if (!empty($base)) {
@@ -322,8 +336,10 @@ class OfficeWebUserController extends \BaseController
             }
             if ($check == 1) {
                 $club->c_status = 1;
+                $club->u_is_club_verified = 1;
             } else {
                 $club->c_status = 2;
+                $club->u_is_club_verified = 0;
             }
             $club->remark = $remark;
             $club->censor();

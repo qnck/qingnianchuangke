@@ -276,7 +276,6 @@ class CrowdFundingController extends \BaseController
             }
 
             $user = User::chkUserByToken($token, $u_id);
-            if (!$user->u_mobile) {
                 throw new Exception("此众筹需要绑定联系电话，请到[我的-编辑资料]里绑定后进行支持", 2001);
             }
             if ($funding->c_local_only) {

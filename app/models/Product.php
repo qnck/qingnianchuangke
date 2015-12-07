@@ -85,7 +85,8 @@ class Product extends Eloquent
         $data['cate'] = $this->p_cate;
         $data['active_at'] = $this->active_at;
         $date = new DateTime($this->created_at);
-        $data['created_at'] = $date->format('Y-m-d');
+        $data['created_at'] = $date->format('Y-m-d H:i:s');
+        $data['created_at_timestamps'] = strtotime($data['created_at']);
         $data['cate_label'] = $this->getCateLabel();
 
         if (!empty($this->quantity)) {
@@ -132,6 +133,7 @@ class Product extends Eloquent
         $data['praise_count'] = $this->p_praise_count;
         $data['cate'] = $this->p_cate;
         $data['open_file'] = $this->open_file;
+        $data['mobile'] = $this->p_mobile;
         $data['cate_label'] = $this->getCateLabel();
 
         $quantity = null;

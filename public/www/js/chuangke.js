@@ -142,6 +142,14 @@ function secondShow(this_id) {
         $("#secondTitel").hide();
         $("#secondContent").html(password);
     }
+    else if (this_id == "08") {
+        $("#secondTitel").hide();
+        $("#secondFont").show();
+//        $("#secondFont").css('background','none');
+//        $("#secondFont").css('border','none');
+//        $("#secondContent").html(download);
+//        $("#secondContent").css('margin-top','-67px');
+    }
 
     var _id = "./images/bg" + this_id +this_id+ ".jpg";
     $("#secondPhoto").attr("src", _id);
@@ -150,15 +158,17 @@ function secondShow(this_id) {
     var fontHeight = $("#secondFont").height();
     $(".link").css("top", 570 + fontHeight + "px");
     $(".footer").css("top", 570 + fontHeight + 180 + "px");
-};
+}
 $("#about,#one,#aboutUs").click(function () {
     moveMask();
     secondShow("01");
+    $('#secondFont').show();
     $('.nav-right li div').removeClass('active');
 });
 $("#recruit,#two,#recruit2").click(function () {
     moveMask();
     secondShow("02");
+    $('#secondFont').show();
     $('.nav-right li div').removeClass('active');
 });
 $("#three").click(function () {
@@ -184,6 +194,12 @@ $(document).delegate('#login_p', 'click', function(ev){
         moveMask();
         secondShow("07");
     });
+$('#eight').click(function(){
+    moveMask();
+    secondShow("08");
+    $('.link').css('top',10182+'px');
+    $('.footer').css('top',10315+'px');
+});
 //---------"首页"、"功能"、"联盟"点击事件----------------
 $(document).delegate('#syLink2', 'click', function(ev){
     $('.nav-right li div').removeClass('active');
@@ -216,6 +232,7 @@ $("#backLogin").click(function () {
     $(".link").css("top", 650+ "px");
    $(".second-content").css("top", 69+ "px");
     $(".footer").css("top", 829+ "px");
+
 });
 $(document).delegate('#login_p', 'click', function(ev){
         $(".js-flickity,.fun,.union,.develop").css("display", "none");
@@ -337,37 +354,62 @@ $(document).delegate('#formBtn', 'click', function(ev){
 });
 
 function login(){
-    var user = "";
-    var input_2 = $('.input_2').val();
-    var login_can=true;
-    user = $('.input_1').val();
-    if(user==null || user==""){
-        $(".no_1").css("visibility","visible");
-        login_can=false;
-    }else if(user.length != 11 || !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
-        $(".no_1").css("visibility","visible");
-            login_can=false;
-        }
-    if(input_2==null || input_2==""){
-            $(".no_2").css("visibility","visible");
-            login_can=false;
-    }
-if(!login_can){
-    return false;
-}else{
-        $.ajax({
-            url: "${base}/common/public_key.jhtml",
-            type: "GET",
-            dataType: "json",
-            cache: false,
-            beforeSend: function() {
-                $submit.prop("disabled", true);
-            },
-            success: function(data) {
+//     var user = "";
+//     var input_2 = $('.input_2').val();
+//     var login_can=true;
+//     user = $('.input_1').val();
+//     if(user==null || user==""){
+//         $(".no_1").css("visibility","visible");
+//         login_can=false;
+//     }else if(user.length != 11 || !!tel.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
+//         $(".no_1").css("visibility","visible");
+//             login_can=false;
+//         }
+//     if(input_2==null || input_2==""){
+//             $(".no_2").css("visibility","visible");
+//             login_can=false;
+//     }
+// if(!login_can){
+//     return false;
+// }else{
+//         $.ajax({
+//             url: "${base}/common/public_key.jhtml",
+//             type: "GET",
+//             dataType: "json",
+//             cache: false,
+//             beforeSend: function() {
+//                 $submit.prop("disabled", true);
+//             },
+//             success: function(data) {
 
-            }
-        });
+//             }
+//         });
+//     }
+    var mobile = $(".input_1").val();
+    var pass = $(".input_2").val();
+    if(!mobile.match(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/)){
+        $(".no_1").css("visibility","visible");
+        return;
     }
+    $.ajax({
+        type: "post",
+        url: _url + "wechat/user/login",
+        data: {mobile:mobile,pass:pass},
+        dataType: "json",
+        success: function (r) {
+            if (r.result == "2000") {
+                SetCookie("token",r.data.token);
+                SetCookie("uid",r.data.id);
+                SetCookie("sid",r.data.school.id);
+                window.location.href="admin/backstage/main.html";
+            }else{
+                alert("Login Faid:"+r.info);
+            }
+        },
+        error: function () {
+            alert("Communication error!");
+        }
+    });
 }
 
 $(document).delegate('.input_1','click', function(ev){

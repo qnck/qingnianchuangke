@@ -28,11 +28,6 @@ class MarketController extends \BaseController
             $user = User::find($u_id);
             $user->load('school');
 
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
-
             $query = PromotionInfo::with([
                 'city',
                 'school',
@@ -89,7 +84,7 @@ class MarketController extends \BaseController
             }
             $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($perPage);
             $data = [];
-            foreach ($list as $key => $product) {
+            foreach ($list as $k => $product) {
                 $tmp = $product->showInListWithProduct();
                 if (!empty($product->product->praises)) {
                     $tmp['is_praised'] = 1;
@@ -100,11 +95,10 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(2, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $ad = Advertisement::fetchAd(2, $school, $city, $province, $range);
                 if ($ad && $data) {
                     $data = array_merge($data, $ad);
                     $collection = new Collection($data);
-                    $collection->sortByDesc('created_at');
                     $data = array_values($collection->toArray());
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
@@ -142,11 +136,6 @@ class MarketController extends \BaseController
             }
             $user = User::find($u_id);
             $user->load('school');
-
-            $school_obj = DicSchool::find($school);
-            if (empty($school_obj)) {
-                $school_obj = $user->school;
-            }
 
             $query = Product::with([
                 'user',
@@ -208,8 +197,16 @@ class MarketController extends \BaseController
 
             $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
             $data = [];
-            foreach ($list as $key => $product) {
+            $start = 0;
+            $end = 0;
+            foreach ($list as $k => $product) {
                 $tmp = $product->showInList();
+                if ($k == 0) {
+                    $start = $end = $tmp['created_at_timestamps'];
+                } else {
+                    $start = min($start, $tmp['created_at_timestamps']);
+                    $end = max($end, $tmp['created_at_timestamps']);
+                }
                 if (empty($tmp['booth']['school'])) {
                     $tmp['school'] = [];
                 } else {
@@ -230,12 +227,11 @@ class MarketController extends \BaseController
                 $data[] = $tmp;
             }
             if (!$key) {
-                $ad = Advertisement::fetchAd(3, $school_obj->t_id, $school_obj->t_city, $school_obj->t_province, $range);
+                $start = $start > 0 ? date('Y-m-d H:i:s', $start) : null;
+                $end = ($end > 0 && $page != 1) ? date('Y-m-d H:i:s', $end) : null;
+                $ad = Advertisement::fetchAd(3, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {
-                    $data = array_merge($data, $ad);
-                    $collection = new Collection($data);
-                    $collection->sortByDesc('created_at');
-                    $data = array_values($collection->toArray());
+                    $data = Advertisement::mergeArray($data, $ad);
                 } elseif ($ad && !$data && $page < 2) {
                     $data = $ad;
                 }

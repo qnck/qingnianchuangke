@@ -119,9 +119,6 @@ class MeAuctionController extends BaseController
             $order->o_group_number = $order_group_no;
             $o_id = $order->addOrder();
 
-            $auction->a_status = 3;
-            $auction->save();
-
             Cart::bindOrder([$order->o_id => [$cart->c_id]]);
 
             $data = ['order_no' => $order_group_no];
@@ -159,6 +156,7 @@ class MeAuctionController extends BaseController
             if ($won) {
                 $query = $query->where('auction_bids.is_win', '=', 1);
             }
+            $query = $query->groupBy('auctions.a_id')->orderBy('auctions.created_at', 'DESC');
             $list = $query->paginate($per_page);
 
             $data = [];

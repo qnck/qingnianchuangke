@@ -514,3 +514,56 @@ var password ="<div class=\"login_2\">" +
         "</div>"+
              "</from>"+
 "</div>";
+
+
+//var download = "<div class=\"download_B\" style='position: relative;top: -146px;left: -11%;'>" +
+//                    "<a href='http://www.pgyer.com/qnck2'>"+
+//                        "<img src ='./images/download_butt.png'>"+
+//                     "</a>"+
+//                    "<div class=\"download_r\" style='position: relative;top: -159px;left: 131%;'>" +
+//                        "<a href='http://www.pgyer.com/qnck2'>"+
+//                        "<img src ='./images/share.png'>"+
+//                        "</a>"+
+//                    "</div>"+
+//                "</div>";
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -67,20 +67,21 @@ class User extends Eloquent
     {
         $this->baseValidate();
         if (empty($this->u_school_id)) {
-            throw new Exception("没有传入有效的学校", 1);
+            throw new Exception("没有传入有效的学校", 3002);
         }
         // chcek if mobile exsits
         if (User::where('u_mobile', '=', $this->u_mobile)->count() > 0) {
-            throw new Exception("手机号码已被使用", 1);
+            throw new Exception("手机号码已被使用", 3002);
         }
         // generate token
         $this->u_token = $this->getUniqueToken();
-        $this->u_invite_code = $this->getInviteCode();
         $this->u_password = Hash::make($this->u_password);
         $this->u_status = 1;
         $this->u_change = 1;
+        $this->u_sex = 3;
         $this->u_birthday = Tools::getNow('Y-m-d');
         $this->save();
+        $this->u_invite_code = $this->getInviteCode();
         $re = [];
         $this->u_nickname = $this->u_name = $this->u_id;
         $re['token'] = $this->u_token;
@@ -117,13 +118,13 @@ class User extends Eloquent
         $this->baseValidate();
         $user = User::where('u_mobile', '=', $this->u_mobile)->where('u_status', '=', 1)->first();
         if (!isset($user->u_id)) {
-            throw new Exception("请求的用户不可用", 1);
+            throw new Exception("请求的用户不可用", 3002);
         }
         if (!Hash::check($this->u_password, $user->u_password)) {
-            throw new Exception("密码错误", 1);
+            throw new Exception("密码错误", 3002);
         } else {
             $re = [];
-            $re['token'] = $user->u_token = $this->getUniqueToken();
+            $re['token'] = $user->u_token;
             $now = new Datetime();
             $now->modify('+ 30 days');
             $re['expire'] = $now->format('Y-m-d H:i:s');
@@ -168,15 +169,11 @@ class User extends Eloquent
         $validator = Validator::make(
             [
                 'nickname' => $this->u_nickname,
-                'age' => $this->u_age,
-                'sex' => $this->u_sex,
                 'school_id' => $this->u_school_id,
                 'pass' => $this->u_password,
             ],
             [
                 'nickname' => 'sometimes|max:32',
-                'age' => 'sometimes|digits_between:1,3',
-                'sex' => 'sometimes|digits:1',
                 'school_id' => 'sometimes',
                 'pass' => 'sometimes',
             ]
@@ -487,6 +484,22 @@ class User extends Eloquent
             $verify_tag = '';
         }
         return ['verify_tag' => $verify_tag, 'verify_type' => $verify_type];
+    }
+
+    public function fakeUser()
+    {
+        $this->u_school_id = rand(1, 2569);
+        $this->u_password = 111111;
+        $this->u_token = $this->getUniqueToken();
+        $this->u_password = Hash::make($this->u_password);
+        $this->u_status = 1;
+        $this->u_change = 1;
+        $this->u_type = 1;
+        $this->u_sex = 3;
+        $this->u_birthday = Tools::getNow('Y-m-d');
+        $this->save();
+        $this->u_invite_code = $this->getInviteCode();
+        $this->save();
     }
 
     public static function thanksForInvite($code, $u_id)

@@ -7,6 +7,12 @@ class Notification extends Eloquent
     public $primaryKey = 'n_id';
     public $timestamps = false;
 
+    public static $CATE_CROWD_FUNDING = 1;
+    public static $CATE_PRODUCT_PROMO = 2;
+    public static $CATE_FLEA = 3;
+    public static $CATE_BUY_ORDER = 4;
+    public static $CATE_SELL_ORDER = 5;
+
     public function showInList()
     {
         $data = [];

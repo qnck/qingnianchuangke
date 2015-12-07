@@ -22,6 +22,7 @@ class MeCrowdFundingController extends \BaseController
         $open_file = Input::get('open_file', 0);
         $active_at = Input::get('active_at');
         $local_only = Input::get('local_only', 0);
+        $is_schedule = Input::get('is_schedule', 0);
 
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -34,6 +35,7 @@ class MeCrowdFundingController extends \BaseController
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);

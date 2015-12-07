@@ -20,8 +20,8 @@ class Advertisement extends Eloquent
         $data['id'] = $this->ad_id;
         $data['status'] = $this->ad_status;
         $date = new DateTime($this->created_at);
-        $data['created_at'] = $date->format('Y-m-d');
-
+        $data['created_at'] = $date->format('Y-m-d H:i:s');
+        $data['created_at_timestamps'] = strtotime($data['created_at']);
         if (empty($this->eventItem)) {
             $this->load('eventItem');
         }
@@ -76,37 +76,61 @@ class Advertisement extends Eloquent
         $this->delete();
     }
 
-    public static function fetchAd($position, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
+    public static function fetchAd($position, $start_at, $end_at, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
     {
-        $now = Tools::getNow();
         $query = Advertisement::select('advertisements.*')
         ->with(['eventItem'])
         ->join('event_positions', function ($q) use ($position) {
             $q->on('event_positions.e_id', '=', 'advertisements.e_id')
             ->where('event_positions.position', '=', $position);
-        })->join('event_ranges', function ($q) use ($s_id, $c_id, $p_id) {
+        })->join('event_ranges', function ($q) {
             $q->on('event_ranges.e_id', '=', 'advertisements.e_id');
-        })->where(function ($q) {
-            $q->where('event_ranges.s_id', '=', 0)
-            ->where('event_ranges.c_id', '=', 0)
-            ->where('event_ranges.p_id', '=', 0);
         });
+
+        if ($range == 1) {
+            $query = $query->where('event_ranges.s_id', '=', 0)
+                ->where('event_ranges.c_id', '=', 0)
+                ->where('event_ranges.p_id', '=', 0);
+        }
         if ($range == 2) {
-            $query = $query->orWhere(function ($q) use ($c_id, $p_id) {
-                $q->where('event_ranges.c_id', '=', $c_id)
-                ->where('event_ranges.p_id', '=', $p_id);
+            $query = $query->where(function ($q) use ($c_id, $p_id) {
+                $q->where(function ($qq) use ($c_id, $p_id) {
+                    $qq->where('event_ranges.c_id', '=', $c_id)
+                    ->where('event_ranges.p_id', '=', $p_id);
+                })->orWhere(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', 0)
+                    ->where('event_ranges.c_id', '=', 0)
+                    ->where('event_ranges.p_id', '=', 0);
+                });
             });
         }
         if ($range == 3) {
-            $query = $query->orWhere(function ($q) use ($s_id) {
-                $q->where('event_ranges.s_id', '=', $s_id);
+            $query = $query->where(function ($q) use ($s_id) {
+                $q->where(function ($qq) use ($s_id) {
+                    $qq->where('event_ranges.s_id', '=', $s_id);
+                })->orWhere(function ($qq) {
+                    $qq->where('event_ranges.s_id', '=', 0)
+                    ->where('event_ranges.c_id', '=', 0)
+                    ->where('event_ranges.p_id', '=', 0);
+                });
             });
         }
         $query = $query->join('event_items', function ($q) {
             $q->on('event_items.e_id', '=', 'advertisements.e_id');
-        })->where('event_items.e_start_at', '<', $now)
-        ->where('event_items.e_end_at', '>', $now);
-        $ads = $query->paginate(3);
+        });
+        if ($start_at) {
+            $query = $query->where('advertisements.created_at', '>', $start_at);
+        }
+        if ($end_at) {
+            $query = $query->where('advertisements.created_at', '<', $end_at);
+        }
+
+        $now = Tools::getNow();
+        $query = $query->where('event_items.e_start_at', '<', $now)->where('event_items.e_end_at', '>', $now);
+
+        $query->orderBy('advertisements.created_at', 'DESC');
+        $ads = $query->get();
+
         if (count($ads) > 0) {
             $data = [];
             foreach ($ads as $key => $ad) {
@@ -118,6 +142,25 @@ class Advertisement extends Eloquent
             $data = null;
         }
         return $data;
+    }
+
+    public static function mergeArray($data, $ads)
+    {
+        $result = [];
+        foreach ($data as $row) {
+            if (empty($ads)) {
+                $result[] = $row;
+            } else {
+                foreach ($ads as $key => $ad) {
+                    if ($ad['created_at_timestamps'] > $row['created_at_timestamps']) {
+                        $result[] = $ad;
+                        unset($ads[$key]);
+                    }
+                }
+                $result[] = $row;
+            }
+        }
+        return $result;
     }
 
     // relation

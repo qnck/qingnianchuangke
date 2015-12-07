@@ -9,6 +9,8 @@ class MeProductController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
         
+        $mobile = Input::get('mobile', '');
+        
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
@@ -61,6 +63,7 @@ class MeProductController extends \BaseController
             $product->active_at = $active_at;
             $product->p_type = 2;
             $product->open_file = $open_file;
+            $product->p_mobile = $mobile;
             $p_id = $product->addProduct();
             $quantity = new ProductQuantity();
             $quantity->p_id = $p_id;
@@ -89,6 +92,9 @@ class MeProductController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id', 0);
 
+
+        $mobile = Input::get('mobile', '');
+
         $prodName = Input::get('prod_name', '');
         $prodDesc = Input::get('content', '');
         $prodBrief = Input::get('prod_brief', '');
@@ -96,6 +102,8 @@ class MeProductController extends \BaseController
         $publish = Input::get('publish', 1);
         $product_cate = Input::get('cate', 7);
         $active_at = Input::get('active_at');
+        $open_file = Input::get('open_file', 0);
+        
         if (empty($active_at)) {
             $active_at = Tools::getNow();
         }
@@ -127,6 +135,16 @@ class MeProductController extends \BaseController
             $product->p_price_origin = $price;
             $product->p_price = $price;
             $product->active_at = $active_at;
+            $product->p_mobile = $mobile;
+            $product->open_file = $open_file;
+
+            $old_imgs = Img::toArray($product->p_imgs);
+            if (empty($old_imgs['cover_img'])) {
+                $cover_img = '';
+            } else {
+                $cover_img = $old_imgs['cover_img'];
+                unset($old_imgs['cover_img']);
+            }
 
             if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('product', $img_token);
@@ -137,8 +155,7 @@ class MeProductController extends \BaseController
                         $new_paths[] = $new_path;
                         $modified_img_index++;
                     }
-                    $to_delete = Img::toArray($product->p_imgs);
-                    foreach ($to_delete as $obj) {
+                    foreach ($old_imgs as $obj) {
                         if (!in_array($obj, $new_paths)) {
                             $imgObj->remove($id, $obj);
                         }
@@ -146,6 +163,13 @@ class MeProductController extends \BaseController
                     $new_paths = Img::attachHost($new_paths);
                     
                     $product->p_imgs = implode(',', $new_paths);
+                }
+            }
+            if ($cover_img) {
+                if ($product->p_imgs) {
+                    $product->p_imgs .= ','.$cover_img;
+                } else {
+                    $product->p_imgs = $cover_img;
                 }
             }
             if ($img_token) {

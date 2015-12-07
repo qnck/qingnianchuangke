@@ -15,7 +15,7 @@ class LogTransaction extends Eloquent
 
     public static $CATE_CROWDFUNDING = 1;
     public static $CATE_PRODUCT = 2;
-    public static $CATE_FUND = 3;
+    public static $CATE_AUCTION = 3;
 
     public static $OPERATOR_QNCK = 1;
     public static $OPERATOR_USER = 2;

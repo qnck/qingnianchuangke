@@ -1529,7 +1529,7 @@ class MeController extends \BaseController
 
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $card = UserProfileBankcard::where('b_card_num', '=', $card_num)->first();
+            $card = UserProfileBankcard::where('b_card_number', '=', $card_num)->first();
             if (!empty($card) && $card->u_id != $u_id) {
                 throw new Exception("该卡号不可用", 9007);
             }
@@ -1791,6 +1791,7 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
+        $per_page = Input::get('per_page', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -1806,7 +1807,7 @@ class MeController extends \BaseController
                 $q->on('booths.b_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Booth');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
-            })->orderBy('favorites.created_at', 'DESC')->get();
+            })->orderBy('favorites.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
                 $tmp = $booth->showInList();
@@ -1827,6 +1828,7 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
+        $per_page = Input::get('per_page', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -1840,7 +1842,7 @@ class MeController extends \BaseController
                 $q->on('users.u_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'User');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
-            })->orderBy('favorites.created_at', 'DESC')->get();
+            })->orderBy('favorites.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $user) {
                 $tmp = $user->showInList();
@@ -1861,6 +1863,7 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
+        $per_page = Input::get('per_page', 0);
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -1877,7 +1880,7 @@ class MeController extends \BaseController
                 $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Product');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
-            })->orderBy('favorites.created_at', 'DESC')->get();
+            })->orderBy('favorites.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
@@ -1899,6 +1902,8 @@ class MeController extends \BaseController
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
 
+        $per_page = Input::get('per_page', 0);
+
         try {
             $user = User::chkUserByToken($token, $u_id);
             $list = CrowdFunding::select('crowd_fundings.*', 'favorites.created_at')->with([
@@ -1914,7 +1919,7 @@ class MeController extends \BaseController
                 $q->on('crowd_fundings.cf_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'CrowdFunding');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
-            })->orderBy('favorites.created_at', 'DESC')->get();
+            })->orderBy('favorites.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $key => $funding) {
                 $tmp = $funding->showInList();

@@ -12,6 +12,7 @@ Route::get('/', function () {
 Route::get('/banner/1', 'HomeController@banner1');
 Route::get('/banner/2', 'HomeController@banner2');
 Route::get('about', 'HomeController@about');
+Route::get('/test', 'HomeController@test');
 
 /* handling files */
 Route::pattern('any', '(.*)');
@@ -64,6 +65,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::get('v0/user/me/followings', 'MeController@myFollowings');
     Route::delete('v0/user/me/homeimg', 'MeController@delHomeImg');
     Route::put('v0/user/me/headimg', 'MeController@putHeadImg');
+    Route::post('v0/user/me/import/bind/mobie', 'UserController@bindMobile');
     /* ME END*/
 
     /* ME PROFILE START*/
@@ -211,6 +213,7 @@ Route::group(['domain' => Config::get('app.subdomain.api')], function () {
     Route::delete('v0/market/cart/{id}', 'MarketController@delCart');
     Route::post('v0/market/order', 'MarketController@postOrder');
     Route::post('v0/market/pay/wechat', 'PayController@wechatPayPreOrder');
+    Route::post('v0/market/pay/cancel', 'PayController@payFailed');
     /* MAKER END*/
 
     /* ACTIVITIES START*/
@@ -400,17 +403,26 @@ Route::get('wechat/dic/school', 'Api\DicController@getSchoolWthCity');
 Route::post('wechat/user/login', 'UserController@loginFromWechat');
 Route::post('wechat/user', 'UserController@postUserFromWechat');
 Route::get('wechat/verify/code', 'VerificationController@getVCode');
+
 Route::post('wechat/user/me/resetpass', 'MeController@resetPassForWechat');
 Route::get('wechat/user/me/profile/base', 'MeProfileController@getUserBase');
+Route::get('wechat/user/me/crowd', 'MeCrowdFundingController@listSellCrowdFunding');
+Route::post('wechat/user/me/crowd', 'MeCrowdFundingController@postCrowdFunding');
+Route::delete('wechat/user/me/crowd/{id}', 'MeCrowdFundingController@delCrowdFunding');
+
 Route::get('wechat/auction/show', 'AuctionController@show');
 Route::post('wechat/auction/{id}/bid', 'AuctionController@bid');
 Route::get('wechat/auction', 'AuctionController@listAuctions');
 Route::get('wechat/auction/{id}', 'AuctionController@getAuction');
+
+Route::get('wechat/sign', 'WechatController@getSign');
 /* WECHAT END*/
 
 /* SO CALLED EMERGENCY START*/
-Route::get('so/called/emergency/test', 'EmergencyController@test');
-Route::get('so/called/emergency/winBid', 'EmergencyController@winTheBid');
 Route::get('so/called/emergency/countUser', 'EmergencyController@countUsers');
-Route::get('v0/crowd/{id}/participates', 'CrowdFundingController@listParticipates');
+Route::get('so/called/emergency/rename', 'EmergencyController@rename');
+
+// facker
+Route::get('so/called/emergency/fake/user', 'EmergencyController@fakeUser');
+Route::get('so/called/emergency/fake/fundingPurches/{id}', 'EmergencyController@fakeCrowdFundingPurches');
 /* SO CALLED EMERGENCY END*/

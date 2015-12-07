@@ -68,13 +68,41 @@
 	}
     </style>
     <script>
+    	var type="";
     	var id = "";
         $(document).ready(function () {
         	id = GetQueryString("id");
+        	type = GetQueryString("type");
         });
         function wycj(){
-        	$('.theme-popover-mask').fadeIn(100);
-			$('.theme-popover').slideDown(200);
+			$.ajax({
+                type: "get",
+        		url: _url + "wechat/auction/"+id,
+                data: {},
+                dataType: "json",
+                success: function (r) {
+                    if (r.result == "2000") {
+                    	if(r.data){
+			                var current_time = r.data.current_time;
+			                var start_at = r.data.start_at;
+			                var end_at = r.data.end_at;
+			                if(current_time<start_at){
+								alert("亲，请耐心等待至"+start_at+"点");
+		                	}
+			                else if(current_time<end_at && current_time>start_at){
+					        	$('.theme-popover-mask').fadeIn(100);
+								$('.theme-popover').slideDown(200);
+		                	}
+			                else if(current_time>end_at){
+								alert("此竞拍已结束！");
+		                	}
+	                	}
+                    }
+                },
+                error: function () {
+                    alert("加载失败!");
+                }
+            });
         }
         function closeBuyInfo(){
         	$('.theme-popover-mask').fadeOut(100);
@@ -85,7 +113,7 @@
             var uid = getCookie("uid");
             if(token==null || token=="null" || token==""){
             	alert("请先登录");
-            	window.location.href="../login.html?rurl=jpcj.html?id="+id;
+            	window.location.href="../login.html?rurl=auctions/jpcj.html?id="+id;
             }else{
             	$.ajax({
 			        type: "post",
@@ -117,7 +145,7 @@
 <body>
 	<div style="width:100%;background-color:#5CB1E3;margin-top:-8px;margin-left:-8px;padding-right:16px;text-align:center;color:white;">
 		<img style="padding:10px;" src="images/gonggong_gantanhao_bai.png" />
-		<div style="padding-left:10px;padding-bottom:10px;">竞拍中标者，需在24小时内付款，超时未付款者在三天之内不能参与其它商品竞拍。如出现最高价多人出现时，根据系统竞拍先后顺序，最早出价者获拍。</div>
+		<div style="padding-left:10px;padding-bottom:10px;">竞拍中标者，需在48小时内付款，超时未付款者在三天之内不能参与其它商品竞拍。如出现最高价多人出现时，根据系统竞拍先后顺序，最早出价者获拍。</div>
 	</div>
 	<div style="text-align:center;">
 		<img style="width:90%;padding-top:10px;" src="images/liucheng.png" />

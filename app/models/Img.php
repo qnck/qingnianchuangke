@@ -11,7 +11,7 @@ class Img
     public function __construct($cate, $id)
     {
         $this->category = $cate;
-        $this->id = $id;
+        $this->id = $id;        // token infact
     }
 
     public function save($id)
@@ -25,14 +25,26 @@ class Img
     public function move($id, $from, $target)
     {
         $oss = new AliyunOss($this->category, '', $id);
-        $oss->move($from, $target);
+        if ($oss->exsits($from)) {
+            $oss->move($from, $target);
+        }
         return true;
+    }
+
+    public function replace($id, $key)
+    {
+        $oss = new AliyunOss($this->category, $this->id, $id);
+        $img = $oss->replace($key);
+        $img = Img::attachHost($img);
+        return $img;
     }
 
     public function remove($id, $obj)
     {
         $oss = new AliyunOss($this->category, '', $id);
-        $oss->remove($obj);
+        if ($oss->exsits($obj)) {
+            $oss->remove($obj);
+        }
         return true;
     }
 
@@ -64,9 +76,9 @@ class Img
         }
     }
 
-    public function getList()
+    public function getList($id)
     {
-        $oss = new AliyunOss($this->category, '', $this->id);
+        $oss = new AliyunOss($this->category, '', $id);
         $re = $oss->getList();
         $imgs = Img::attachHost($re);
         return $imgs;
@@ -84,6 +96,20 @@ class Img
         $new_path = substr_replace($origin, $new_key, $pos, $length);
         $this->move($id, $origin, $new_path);
         return $new_path;
+    }
+
+    public function clearFolder($obj, $id)
+    {
+        $file_name = Img::getFileName($obj);
+        $key = Img::getKey($file_name);
+        $imgs = $this->getList($id);
+        if (empty($imgs[$key])) {
+            return true;
+        } else {
+            $obj = Img::trimImgHost($imgs[$key]);
+            $this->remove($obj);
+        }
+        return false;
     }
 
     public static function getKey($filename)
@@ -176,11 +202,14 @@ class Img
             return [];
         }
         $host = Config::get('app.imghost');
-        $array = [];
-        foreach ($crud as $key => $img) {
-            $array[$key] = $host.$img;
+        if (is_array($crud)) {
+            $array = [];
+            foreach ($crud as $key => $img) {
+                $array[$key] = $host.$img;
+            }
+            return $array;
+        } else {
+            return $host.$crud;
         }
-
-        return $array;
     }
 }

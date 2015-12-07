@@ -32,7 +32,6 @@ $(document).ready(function () {
         autologin(tel,pass);
 });
 function registr(){
-    
     window.location.href="chooseschool.html?rurl="+rurl;
 }
 function autologin(tel,pass){
@@ -48,7 +47,7 @@ function autologin(tel,pass){
                 SetCookie("sid",r.data.school.id);
                 window.location.href=rurl;
             }else{
-                alert("登录失败");
+                alert(r.info);
             }
         },
         error: function () {

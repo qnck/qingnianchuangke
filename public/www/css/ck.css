@@ -399,7 +399,7 @@
     list-style: none;
     height: 70px;
     float: left;
-    color: white;
+    color:#1ab0ff;
     width: 25%;
     font-size: 14px;
     font-weight: bold;
@@ -1024,15 +1024,13 @@ span.login_p {
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
     -o-border-radius: 15px;
-    color: #46B4E7;
+    color: #ffffff;
 }
 .no_1,.no_2{
     visibility:hidden;
     color: red;
     font-size: 12px;
 }
-
-
 
 
 
