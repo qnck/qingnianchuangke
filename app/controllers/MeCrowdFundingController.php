@@ -202,6 +202,7 @@ class MeCrowdFundingController extends \BaseController
             $all_imgs = urldecode($all_imgs);
             $all_imgs = json_decode($all_imgs);
         }
+
         $content = urldecode($content);
 
         try {
@@ -273,6 +274,7 @@ class MeCrowdFundingController extends \BaseController
                 $img_obj = new Img('crowd_funding', $img_token_2);
                 foreach ($all_imgs as $key => $img) {
                     if ($img) {
+                        $img = Img::getFileName($img);
                         $old_key = Img::getKey($img);
                         if ($old_key != $key) {
                             $c_imgs = array_diff($c_imgs, [$img]);
@@ -289,7 +291,7 @@ class MeCrowdFundingController extends \BaseController
                         }
                     }
                 }
-                $c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id, implode(',', $c_imgs), true);
+                $c_imgs = $img_obj->getSavedImg($crowd_funding->cf_id, implode(',', $c_imgs), true);
             }
             $crowd_funding->c_imgs = implode(',', $c_imgs);
 
