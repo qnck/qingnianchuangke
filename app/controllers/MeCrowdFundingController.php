@@ -274,8 +274,8 @@ class MeCrowdFundingController extends \BaseController
                 $img_obj = new Img('crowd_funding', $img_token_2);
                 foreach ($all_imgs as $key => $img) {
                     if ($img) {
-                        $img = Img::getFileName($img);
-                        $old_key = Img::getKey($img);
+                        $file_name = Img::getFileName($img);
+                        $old_key = Img::getKey($file_name);
                         if ($old_key != $key) {
                             $c_imgs = array_diff($c_imgs, [$img]);
                             $tmp = explode('/', $img);
