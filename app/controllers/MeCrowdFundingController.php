@@ -271,7 +271,7 @@ class MeCrowdFundingController extends \BaseController
                 $crowd_funding->c_cate = 8;
             }
 
-            $c_imgs = explode($crowd_funding->c_imgs);
+            $c_imgs = explode(',', $crowd_funding->c_imgs);
             if ($deleted_img) {
                 $deleted_img = explode(',', $deleted_img);
                 $imgObj= new Img('crowd_funding', '');
