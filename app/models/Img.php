@@ -31,12 +31,21 @@ class Img
         return true;
     }
 
-    public function replace($id, $key)
+    public function transfer($id, $key)
     {
         $oss = new AliyunOss($this->category, $this->id, $id);
-        $img = $oss->replace($key);
+        $img = $oss->transfer($key);
         $img = Img::attachHost($img);
         return $img;
+    }
+    public function replace($id, $from, $to)
+    {
+        $from = Img::trimImgHost($from);
+        $to = Img::trimImgHost($to);
+        // move
+        $this->move($id, $from, $to);
+        // delete
+        $this->remove($id, $from);
     }
 
     public function remove($id, $obj)
@@ -210,6 +219,14 @@ class Img
             return $array;
         } else {
             return $host.$crud;
+        }
+    }
+
+    public function batchRemove($id, $img_array)
+    {
+        foreach ($img_array as $obj) {
+            $obj = Img::trimImgHost($obj);
+            $this->remove($id, $obj);
         }
     }
 }

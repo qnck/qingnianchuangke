@@ -111,7 +111,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
-            if ($amount <= 50000) {
+            if ((int)$amount <= 50000) {
                 $crowd_funding->c_status = 4;
             } else {
                 $crowd_funding->c_status = 1;
@@ -193,17 +193,25 @@ class MeCrowdFundingController extends \BaseController
 
         $img_token = Input::get('img_token', '');
         $img_token_2 = Input::get('img_token_2', '');
+        $crowd_img_1 = Input::get('crowd_img_1', '');
+        $crowd_img_2 = Input::get('crowd_img_2', '');
+        $crowd_img_3 = Input::get('crowd_img_3', '');
+        $crowd_img_4 = Input::get('crowd_img_4', '');
+        $crowd_img_5 = Input::get('crowd_img_5', '');
+        $crowd_img_6 = Input::get('crowd_img_6', '');
 
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
 
-        $modified_img = Input::get('modified_img', '');
-        $modified_img_index = Input::get('modified_img_index', '');
-
-        if ($modified_img) {
-            $modified_img = explode(',', $modified_img);
-        }
+        $img_array = [
+            ['crowd_img_1' => $crowd_img_1],
+            ['crowd_img_2' => $crowd_img_2],
+            ['crowd_img_3' => $crowd_img_3],
+            ['crowd_img_4' => $crowd_img_4],
+            ['crowd_img_5' => $crowd_img_5],
+            ['crowd_img_6' => $crowd_img_6],
+        ];
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -263,36 +271,40 @@ class MeCrowdFundingController extends \BaseController
                 $crowd_funding->c_cate = 8;
             }
 
-            if (is_numeric($modified_img_index)) {
-                $imgObj = new Img('crowd_funding', $img_token_2);
-                $new_paths = [];
-                if (!empty($modified_img)) {
-                    foreach ($modified_img as $old_path) {
-                        $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
-                        $new_paths[] = $new_path;
-                        $modified_img_index++;
-                    }
-                    $new_paths = Img::attachHost($new_paths);
-                    $crowd_funding->c_imgs = implode(',', $new_paths);
-                }
+            $c_imgs = explode($crowd_funding->c_imgs);
+            if ($deleted_img) {
+                $deleted_img = explode(',', $deleted_img);
+                $imgObj= new Img('crowd_funding', '');
+                $imgObj->batchRemove($crowd_funding->cf_id, $deleted_img);
+                $c_imgs = array_diff($c_imgs, $deleted_img);
             }
-
-            if ($img_token_2) {
-                $imgObj = new Img('crowd_funding', $img_token_2);
-                $imgs = $imgObj->getSavedImg($crowd_funding->cf_id, $crowd_funding->c_imgs, true);
-                if (!empty($modified_img)) {
-                    foreach ($modified_img as $del) {
-                        if (array_key_exists($del, $imgs)) {
-                            unset($imgs[$del]);
+            if ($img_array) {
+                $img_obj = new Img('crowd_funding', $img_token_2);
+                foreach ($img_array as $key => $img) {
+                    if ($img) {
+                        $old_key = Img::getKey($img);
+                        if ($old_key != $key) {
+                            $c_imgs = array_diff($c_imgs, [$img]);
+                            $tmp = explode('/', $img);
+                            $last_part = array_pop($tmp);
+                            $tmp = explode('.', $last_part);
+                            unset($tmp[0]);
+                            $new = implode('.', $tmp);
+                            $new_name = $key.'.'.$new;
+                            $length = strlen($new_name);
+                            $pos = strpos($tmp, $old_key);
+                            $new_path = substr_replace($img, $new_name, $pos, $length);
+                            $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
                         }
                     }
                 }
-                $crowd_funding->c_imgs = implode(',', $imgs);
+                $c_imgs = $imgObj->getSavedImg($crowd_funding->cf_id, implode(',', $c_imgs), true);
             }
+            $crowd_funding->c_imgs = implode(',', $c_imgs);
 
             if ($img_token) {
                 $img_obj = new Img('event', $img_token);
-                $cover_img = $img_obj->replace($event->e_id, 'cover_img');
+                $cover_img = $img_obj->transfer($event->e_id, 'cover_img');
                 $event->cover_img = $cover_img;
             }
             $crowd_funding->save();
