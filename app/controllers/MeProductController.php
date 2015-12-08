@@ -109,12 +109,12 @@ class MeProductController extends \BaseController
         }
 
         $img_token = Input::get('img_token', '');
-        $crowd_img_1 = Input::get('crowd_img_1', '');
-        $crowd_img_2 = Input::get('crowd_img_2', '');
-        $crowd_img_3 = Input::get('crowd_img_3', '');
-        $crowd_img_4 = Input::get('crowd_img_4', '');
-        $crowd_img_5 = Input::get('crowd_img_5', '');
-        $crowd_img_6 = Input::get('crowd_img_6', '');
+        $prod_img_1 = Input::get('prod_img_1', '');
+        $prod_img_2 = Input::get('prod_img_2', '');
+        $prod_img_3 = Input::get('prod_img_3', '');
+        $prod_img_4 = Input::get('prod_img_4', '');
+        $prod_img_5 = Input::get('prod_img_5', '');
+        $prod_img_6 = Input::get('prod_img_6', '');
 
         $prodDesc = urldecode($prodDesc);
 
