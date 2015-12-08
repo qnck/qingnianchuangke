@@ -200,6 +200,8 @@ class MeCrowdFundingController extends \BaseController
         $crowd_img_5 = Input::get('crowd_img_5', '');
         $crowd_img_6 = Input::get('crowd_img_6', '');
 
+        $deleted_img = Input::get('deleted_img', '');
+
         $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
