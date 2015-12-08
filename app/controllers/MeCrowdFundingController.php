@@ -193,27 +193,16 @@ class MeCrowdFundingController extends \BaseController
 
         $img_token = Input::get('img_token', '');
         $img_token_2 = Input::get('img_token_2', '');
-        $crowd_img_1 = Input::get('crowd_img_1', '');
-        $crowd_img_2 = Input::get('crowd_img_2', '');
-        $crowd_img_3 = Input::get('crowd_img_3', '');
-        $crowd_img_4 = Input::get('crowd_img_4', '');
-        $crowd_img_5 = Input::get('crowd_img_5', '');
-        $crowd_img_6 = Input::get('crowd_img_6', '');
 
+        $all_imgs = Input::get('all_imgs', '');
         $deleted_img = Input::get('deleted_img', '');
 
         $apartment_no = Input::get('apartment_no', '');
-
+        if ($all_imgs) {
+            $all_imgs = urldecode($all_imgs);
+            $all_imgs = json_decode($all_imgs);
+        }
         $content = urldecode($content);
-
-        $img_array = [
-            ['crowd_img_1' => $crowd_img_1],
-            ['crowd_img_2' => $crowd_img_2],
-            ['crowd_img_3' => $crowd_img_3],
-            ['crowd_img_4' => $crowd_img_4],
-            ['crowd_img_5' => $crowd_img_5],
-            ['crowd_img_6' => $crowd_img_6],
-        ];
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -280,9 +269,9 @@ class MeCrowdFundingController extends \BaseController
                 $imgObj->batchRemove($crowd_funding->cf_id, $deleted_img);
                 $c_imgs = array_diff($c_imgs, $deleted_img);
             }
-            if ($img_array) {
+            if ($all_imgs) {
                 $img_obj = new Img('crowd_funding', $img_token_2);
-                foreach ($img_array as $key => $img) {
+                foreach ($all_imgs as $key => $img) {
                     if ($img) {
                         $old_key = Img::getKey($img);
                         if ($old_key != $key) {
