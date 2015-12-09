@@ -116,6 +116,7 @@ class CrowdFunding extends Eloquent
         $data['created_at_timestamps'] = strtotime($data['created_at']);
         $data['praise_count'] = $this->c_praise_count;
         $data['mobile'] = $this->u_mobile;
+        $data['type'] = $this->c_type;
         $data['remark'] = $this->c_remark;
         $data['current_time'] = Tools::getNow();
         if ($this->product) {
