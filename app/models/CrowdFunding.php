@@ -92,6 +92,7 @@ class CrowdFunding extends Eloquent
             $this->load(['eventItem']);
         }
         $data['cover_img'] = [$this->eventItem->cover_img];
+        $data['type'] = $this->c_type;
         $data['title'] = $this->eventItem->e_title;
         $data['brief'] = $this->eventItem->e_brief;
         $data['active_at'] = $this->eventItem->e_start_at;
