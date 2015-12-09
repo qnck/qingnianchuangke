@@ -190,7 +190,7 @@ class CrowdFunding extends Eloquent
             return '';
         }
         $label = '';
-        $cates = CrowdFunding::getCrowdFundingCate();
+        $cates = CrowdFunding::getCrowdFundingCate($this->c_type);
         foreach ($cates as $cate) {
             if ($this->c_cate == $cate['id']) {
                 $label = $cate['label'];
