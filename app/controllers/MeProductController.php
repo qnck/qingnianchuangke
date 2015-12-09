@@ -150,6 +150,9 @@ class MeProductController extends \BaseController
             if ($img_token) {
                 $img_obj = new Img('product', $img_token);
                 $cover_img = $img_obj->transfer($product->p_id, 'cover_img');
+                $p_imgs = Img::attachKey($p_imgs);
+                $p_imgs['cover_img'] = $cover_img;
+                $p_imgs = array_values($p_imgs);
             }
             if ($img_token_2) {
                 $img_obj = new Img('product', $img_token_2);
@@ -177,9 +180,6 @@ class MeProductController extends \BaseController
                 }
                 $p_imgs = $img_obj->getSavedImg($product->p_id, implode(',', $p_imgs), true);
                 $p_imgs = Img::attachKey($p_imgs);
-                if ($img_token && $cover_img) {
-                    $p_imgs['cover_img'] = $cover_img;
-                }
                 ksort($p_imgs);
                 $p_imgs = array_values($p_imgs);
             }
