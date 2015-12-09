@@ -74,15 +74,15 @@ class MeProductController extends \BaseController
 
             $quantity->addQuantity();
 
-            if ($img_token_2) {
-                $imgObj = new Img('product', $img_token_2);
-                $imgs = $imgObj->getSavedImg($p_id, '', true);
-                $product->p_imgs = implode(',', $imgs);
-            }
             if ($img_token) {
                 $img_obj = new Img('product', $img_token);
                 $imgs = $img_obj->getSavedImg($p_id, '', true);
-                $product->p_imgs .= ','.reset($imgs);
+                $product->p_imgs = reset($imgs);
+            }
+            if ($img_token_2) {
+                $imgObj = new Img('product', $img_token_2);
+                $imgs = $imgObj->getSavedImg($p_id, $product->p_imgs, true);
+                $product->p_imgs = implode(',', $imgs);
             }
 
             $product->save();
