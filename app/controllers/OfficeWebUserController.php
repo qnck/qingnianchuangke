@@ -256,7 +256,7 @@ class OfficeWebUserController extends \BaseController
                 }
                 if ($tmp->u_is_student_verified) {
                     $user = User::find($id);
-                    $uesr->u_is_verified = 1;
+                    $user->u_is_verified = 1;
                     $user->save();
                 }
                 $log->content = '认证用户身份证信息: 通过';
@@ -299,7 +299,7 @@ class OfficeWebUserController extends \BaseController
                 }
                 if ($tmp->u_is_id_verified) {
                     $user = User::find($id);
-                    $uesr->u_is_verified = 1;
+                    $user->u_is_verified = 1;
                     $user->save();
                 }
                 $log->content = '认证用户学生证信息: 通过';

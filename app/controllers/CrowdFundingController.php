@@ -127,6 +127,9 @@ class CrowdFundingController extends \BaseController
             }
             if (!$key) {
                 $start = $start > 0 ? date('Y-m-d H:i:s', $start) : null;
+                if ($page == 1 && $list->getTotal() < $per_page) {
+                    $start = null;
+                }
                 $end = ($end > 0 && $page != 1) ? date('Y-m-d H:i:s', $end) : null;
                 $ad = Advertisement::fetchAd(1, $start, $end, $school, $city, $province, $range);
                 if ($ad && $data) {

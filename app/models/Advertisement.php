@@ -160,6 +160,9 @@ class Advertisement extends Eloquent
                 $result[] = $row;
             }
         }
+        if (!empty($ads)) {
+            $result = array_merge($result, $ads);
+        }
         return $result;
     }
 
