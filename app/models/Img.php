@@ -60,7 +60,7 @@ class Img
     public function getSavedImg($newId, $string = '', $array = false)
     {
         $imgs = $this->save($newId);
-        
+
         if ($string) {
             $o = explode(',', $string);
             $oldImgs = Img::attachKey($o);

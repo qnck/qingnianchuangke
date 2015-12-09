@@ -270,24 +270,27 @@ class MeCrowdFundingController extends \BaseController
                 $imgObj->batchRemove($crowd_funding->cf_id, $deleted_img);
                 $c_imgs = array_diff($c_imgs, $deleted_img);
             }
-            if ($all_imgs) {
+            if ($img_token_2) {
                 $img_obj = new Img('crowd_funding', $img_token_2);
-                foreach ($all_imgs as $key => $img) {
-                    if ($img) {
-                        $file_name = Img::getFileName($img);
-                        $old_key = Img::getKey($file_name);
-                        if ($old_key != $key) {
-                            $c_imgs = array_diff($c_imgs, [$img]);
-                            $tmp = explode('/', $img);
-                            $last_part = array_pop($tmp);
-                            $tmp = explode('.', $last_part);
-                            unset($tmp[0]);
-                            $new = implode('.', $tmp);
-                            $new_name = $key.'.'.$new;
-                            $length = strlen($new_name);
-                            $pos = strpos($img, $old_key);
-                            $new_path = substr_replace($img, $new_name, $pos, $length);
-                            $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
+                if ($all_imgs) {
+                    foreach ($all_imgs as $key => $img) {
+                        if ($img) {
+                            $file_name = Img::getFileName($img);
+                            $old_key = Img::getKey($file_name);
+                            if ($old_key != $key) {
+                                $c_imgs = array_diff($c_imgs, [$img]);
+                                $tmp = explode('/', $img);
+                                $last_part = array_pop($tmp);
+                                $tmp = explode('.', $last_part);
+                                unset($tmp[0]);
+                                $new = implode('.', $tmp);
+                                $new_name = $key.'.'.$new;
+                                $length = strlen($new_name);
+                                $pos = strpos($img, $old_key);
+                                $new_path = substr_replace($img, $new_name, $pos, $length);
+                                $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
+                                $c_imgs[] = $new_path;
+                            }
                         }
                     }
                 }

@@ -109,20 +109,14 @@ class MeProductController extends \BaseController
         }
 
         $img_token = Input::get('img_token', '');
-        $prod_img_1 = Input::get('prod_img_1', '');
-        $prod_img_2 = Input::get('prod_img_2', '');
-        $prod_img_3 = Input::get('prod_img_3', '');
-        $prod_img_4 = Input::get('prod_img_4', '');
-        $prod_img_5 = Input::get('prod_img_5', '');
-        $prod_img_6 = Input::get('prod_img_6', '');
+        $all_imgs = Input::get('all_imgs', '');
+        $deleted_img = Input::get('deleted_img', '');
 
         $prodDesc = urldecode($prodDesc);
 
-        $modified_img = Input::get('modified_img', '');
-        $modified_img_index = Input::get('modified_img_index', '');
-
-        if ($modified_img) {
-            $modified_img = explode(',', $modified_img);
+        if ($all_imgs) {
+            $all_imgs = urldecode($all_imgs);
+            $all_imgs = json_decode($all_imgs);
         }
 
         try {
