@@ -289,12 +289,15 @@ class MeCrowdFundingController extends \BaseController
                                 $pos = strpos($img, $old_key);
                                 $new_path = substr_replace($img, $new_name, $pos, $length);
                                 $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
-                                array_unshift($c_imgs, $new_path);
+                                $c_imgs[] = $new_path;
                             }
                         }
                     }
                 }
                 $c_imgs = $img_obj->getSavedImg($crowd_funding->cf_id, implode(',', $c_imgs), true);
+                $c_imgs = Img::attachKey($c_imgs);
+                ksort($c_imgs);
+                $c_imgs = array_values($c_imgs);
             }
             $crowd_funding->c_imgs = implode(',', $c_imgs);
 
