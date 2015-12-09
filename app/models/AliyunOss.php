@@ -172,7 +172,7 @@ class AliyunOss
         return true;
     }
 
-    public function replace($name)
+    public function transfer($name)
     {
         $tmp_imgs = $this->getTmpList();
         $imgs = $this->getList();

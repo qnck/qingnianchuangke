@@ -28,6 +28,7 @@ class MeProductController extends \BaseController
         }
         $prodDesc = urldecode($prodDesc);
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
 
         try {
             $user = User::chkUserByToken($token, $u_id);
@@ -73,13 +74,18 @@ class MeProductController extends \BaseController
 
             $quantity->addQuantity();
 
-            if ($img_token) {
-                $imgObj = new Img('product', $img_token);
+            if ($img_token_2) {
+                $imgObj = new Img('product', $img_token_2);
                 $imgs = $imgObj->getSavedImg($p_id, '', true);
                 $product->p_imgs = implode(',', $imgs);
-                $product->save();
+            }
+            if ($img_token) {
+                $img_obj = new Img('product', $img_token);
+                $imgs = $img_obj->getSavedImg($p_id, '', true);
+                $product->p_imgs .= ','.reset($imgs);
             }
 
+            $product->save();
             $re = Tools::reTrue('添加产品成功');
         } catch (Exception $e) {
             $re = Tools::reFalse($e->getCode(), '添加产品失败:'.$e->getMessage());
@@ -109,6 +115,8 @@ class MeProductController extends \BaseController
         }
 
         $img_token = Input::get('img_token', '');
+        $img_token_2 = Input::get('img_token_2', '');
+
         $all_imgs = Input::get('all_imgs', '');
         $deleted_img = Input::get('deleted_img', '');
 
@@ -138,16 +146,13 @@ class MeProductController extends \BaseController
             $product->p_mobile = $mobile;
             $product->open_file = $open_file;
 
-            $old_imgs = Img::toArray($product->p_imgs);
-            if (empty($old_imgs['cover_img'])) {
-                $cover_img = '';
-            } else {
-                $cover_img = $old_imgs['cover_img'];
-                unset($old_imgs['cover_img']);
-            }
             $p_imgs = $products->p_imgs;
             if ($img_token) {
                 $img_obj = new Img('product', $img_token);
+                $cover_img = $img_obj->transfer($product->p_id, 'cover_img');
+            }
+            if ($img_token_2) {
+                $img_obj = new Img('product', $img_token_2);
                 if ($all_imgs) {
                     foreach ($all_imgs as $key => $img) {
                         if ($img) {
@@ -165,51 +170,20 @@ class MeProductController extends \BaseController
                                 $pos = strpos($img, $old_key);
                                 $new_path = substr_replace($img, $new_name, $pos, $length);
                                 $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
-                                array_unshift($p_imgs, $new_path);
+                                $p_imgs[] = $new_path;
                             }
                         }
                     }
                 }
-            }
-
-            if (is_numeric($modified_img_index)) {
-                $imgObj = new Img('product', $img_token);
-                $new_paths = [];
-                if (!empty($modified_img)) {
-                    foreach ($modified_img as $old_path) {
-                        $new_path = $imgObj->reindexImg($id, $modified_img_index, $old_path);
-                        $new_paths[] = $new_path;
-                        $modified_img_index++;
-                    }
-                    foreach ($old_imgs as $obj) {
-                        if (!in_array($obj, $new_paths)) {
-                            $imgObj->remove($id, $obj);
-                        }
-                    }
-                    $new_paths = Img::attachHost($new_paths);
-                    
-                    $product->p_imgs = implode(',', $new_paths);
+                $p_imgs = $img_obj->getSavedImg($product->p_id, implode(',', $p_imgs), true);
+                $p_imgs = Img::attachKey($p_imgs);
+                if ($cover_img) {
+                    $p_imgs['cover_img'] = $cover_img;
                 }
+                ksort($p_imgs);
+                $p_imgs = array_values($p_imgs);
             }
-            if ($cover_img) {
-                if ($product->p_imgs) {
-                    $product->p_imgs .= ','.$cover_img;
-                } else {
-                    $product->p_imgs = $cover_img;
-                }
-            }
-            if ($img_token) {
-                $imgObj = new Img('product', $img_token);
-                $imgs = $imgObj->getSavedImg($id, $product->p_imgs, true);
-                if (!empty($modified_img)) {
-                    foreach ($modified_img as $del) {
-                        if (array_key_exists($del, $imgs)) {
-                            unset($imgs[$del]);
-                        }
-                    }
-                }
-                $product->p_imgs = implode(',', $imgs);
-            }
+            $product->p_imgs = implode(',', $p_imgs);
             $product->save();
 
             $re = Tools::reTrue('更新产品成功');
