@@ -169,7 +169,7 @@ class MeProductController extends \BaseController
                                 $length = strlen($new_name);
                                 $pos = strpos($img, $old_key);
                                 $new_path = substr_replace($img, $new_name, $pos, $length);
-                                $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
+                                $img_obj->replace($p_id, $img, $new_path);
                                 $p_imgs[] = $new_path;
                             }
                         }
