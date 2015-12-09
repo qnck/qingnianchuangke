@@ -19,6 +19,7 @@ class MeCrowdFundingController extends \BaseController
         $brief = Input::get('brief', '');
         $yield_desc = Input::get('yield_desc', '');
         $content = Input::get('content', '');
+        $type = Input::get('type', 1);
         $open_file = Input::get('open_file', 0);
         $active_at = Input::get('active_at');
         $local_only = Input::get('local_only', 0);
@@ -109,6 +110,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
+            $crowd_funding->c_type = $type;
             $crowd_funding->c_local_only = $local_only;
             $crowd_funding->c_open_file = $open_file;
             if ((int)$amount <= 50000) {
@@ -178,6 +180,7 @@ class MeCrowdFundingController extends \BaseController
         $yield_desc = Input::get('yield_desc', '');
         $content = Input::get('content', '');
         $open_file = Input::get('open_file', 0);
+        $type = Input::get('type', 1);
         $local_only = Input::get('local_only', 0);
         $is_schedule = Input::get('is_schedule', 0);
         $active_at = Input::get('active_at');
@@ -251,6 +254,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_shipping_fee = $shipping_fee;
             $crowd_funding->c_target_amount = $amount;
             $crowd_funding->c_cate = $cate;
+            $crowd_funding->c_type = $type;
             $crowd_funding->c_open_file = $open_file;
             if ($amount <= 2000) {
                 $crowd_funding->c_status = 4;

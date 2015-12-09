@@ -1865,9 +1865,13 @@ class MeController extends \BaseController
         $u_id = Input::get('u_id');
         $per_page = Input::get('per_page', 0);
 
+        $type = Input::get('type');
+        $type = $type?:1;
+        $cate = Input::get('cate', 0);
+
         try {
             $user = User::chkUserByToken($token, $u_id);
-            $list = Product::select('products.*', 'favorites.created_at')
+            $query = Product::select('products.*', 'favorites.created_at')
             ->with([
                 'user' => function ($q) {
                     $q->with(['school']);
@@ -1876,11 +1880,16 @@ class MeController extends \BaseController
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
             ])
+            ->where('products.p_type', '=', $type)
             ->join('favoriables', function ($q) {
                 $q->on('products.p_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'Product');
             })->join('favorites', function ($q) {
                 $q->on('favorites.id', '=', 'favoriables.favorite_id')->where('favorites.u_id', '=', $this->u_id);
-            })->orderBy('favorites.created_at', 'DESC')->paginate($per_page);
+            })->orderBy('favorites.created_at', 'DESC');
+            if ($cate) {
+                $query = $query->where('products.p_cate', '=', $cate);
+            }
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
@@ -1901,6 +1910,7 @@ class MeController extends \BaseController
     {
         $token = Input::get('token', '');
         $u_id = Input::get('u_id');
+        $type = Input::get('type', 1);
 
         $per_page = Input::get('per_page', 0);
 
@@ -1915,6 +1925,7 @@ class MeController extends \BaseController
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
                 ])
+            ->where('crowd_fundings.c_type', '=', $type)
             ->join('favoriables', function ($q) {
                 $q->on('crowd_fundings.cf_id', '=', 'favoriables.favoriable_id')->where('favoriables.favoriable_type', '=', 'CrowdFunding');
             })->join('favorites', function ($q) {

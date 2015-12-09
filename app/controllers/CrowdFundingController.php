@@ -10,7 +10,9 @@ class CrowdFundingController extends \BaseController
 
     public function getCate()
     {
-        $data = CrowdFunding::getCrowdFundingCate();
+        $type = Input::get('type');
+        $type = $type?:1;
+        $data = CrowdFunding::getCrowdFundingCate($type);
         $re = Tools::reTrue('获取分类成功', $data);
         return Response::json($re);
     }
@@ -19,6 +21,9 @@ class CrowdFundingController extends \BaseController
     {
         $per_page = Input::get('per_page', 30);
         $page = Input::get('page', 1);
+
+        $type = Input::get('type');
+        $type = $type?:1;
 
         $cate = Input::get('cate', 0);
         $u_id = Input::get('u_id', 0);
@@ -52,7 +57,8 @@ class CrowdFundingController extends \BaseController
                     $q->where('praises.u_id', '=', $this->u_id);
                 }
                 ])
-            ->where('c_status', '>', 2)
+            ->where('crowd_fundings.c_status', '>', 2)
+            ->where('crowd_fundings.c_type', '=', $type)
             ->join('event_ranges', function ($q) {
                 $q->on('event_ranges.e_id', '=', 'crowd_fundings.e_id');
             })
@@ -61,6 +67,16 @@ class CrowdFundingController extends \BaseController
             });
             if ($cate) {
                 $query = $query->where('c_cate', '=', $cate);
+            }
+
+            if ($city && $province && $range == 2) {
+                $query = $query->where(function ($q) use ($city, $province) {
+                    $q->where(function ($qq) use ($city, $province) {
+                        $qq->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
+                    })->orWhere(function ($qq) {
+                        $qq->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
+                    });
+                });
             }
 
             if ($school && $range == 3) {
@@ -86,14 +102,8 @@ class CrowdFundingController extends \BaseController
                 ->where('event_items.e_end_at', '>', $now);
             }
 
-            if ($city && $province && $range == 2) {
-                $query = $query->where(function ($q) use ($city, $province) {
-                    $q->where(function ($qq) use ($city, $province) {
-                        $qq->where('event_ranges.c_id', '=', $city)->where('event_ranges.p_id', '=', $province);
-                    })->orWhere(function ($qq) {
-                        $qq->where('event_ranges.c_id', '=', 0)->where('event_ranges.p_id', '=', 0)->where('event_ranges.s_id', '=', 0);
-                    });
-                });
+            if ($filter_option == 4) {
+                $query = $query->where('event_items.e_start_at', '>', $now)->orderBy('event_items.e_start_at');
             }
 
             if ($key) {

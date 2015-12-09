@@ -29,19 +29,44 @@ class CrowdFunding extends Eloquent
         }
     }
 
-    public static function getCrowdFundingCate()
+    public static function getCrowdFundingType()
     {
         return [
-            // 0 => ['id' => 8, 'label' => '官方发布'],
-            0 => ['id' => 3 ,'label' => '股权众筹'],
-            1 => ['id' => 4, 'label' => '产品预售'],
-            2 => ['id' => 1, 'label' => '娱乐活动'],
-            3 => ['id' => 7, 'label' => '爱心公益'],
-            4 => ['id' => 5, 'label' => '创意发明'],
-            5 => ['id' => 2, 'label' => '个人生活'],
-            6 => ['id' => 6, 'label' => '调查学习'],
-            7 => ['id' => 9, 'label' => '下课约']
+            0 => ['id' => 1, 'label' => '众筹'],
+            1 => ['id' => 2, 'label' => '下课约伴'],
         ];
+    }
+
+    public static function getCrowdFundingCate($type)
+    {
+        switch ($type) {
+            case 1:
+                $re = [
+                    // 0 => ['id' => 8, 'label' => '官方发布'],
+                    0 => ['id' => 3 ,'label' => '股权众筹'],
+                    1 => ['id' => 4, 'label' => '产品预售'],
+                    2 => ['id' => 1, 'label' => '娱乐活动'],
+                    3 => ['id' => 7, 'label' => '爱心公益'],
+                    4 => ['id' => 5, 'label' => '创意发明'],
+                    5 => ['id' => 2, 'label' => '个人生活'],
+                    6 => ['id' => 6, 'label' => '调查学习'],
+                    // 7 => ['id' => 9, 'label' => '下课约']
+                ];
+                break;
+            case 2:
+                $re = [
+                    0 => ['id' => 1 ,'label' => '娱乐活动'],
+                    1 => ['id' => 2, 'label' => '兴趣爱好'],
+                    2 => ['id' => 3, 'label' => '个人生活'],
+                    3 => ['id' => 4, 'label' => '爱心公益'],
+                    4 => ['id' => 5, 'label' => '其他'],
+                ];
+                break;
+            default:
+                $re = [];
+                break;
+        }
+        return $re;
     }
 
     private function baseValidate()

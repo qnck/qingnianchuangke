@@ -1,6 +1,6 @@
 <?php
 // play ground
-Route::get('vote', 'EmergencyController@vote');
+
 //
 Route::post('/v1', 'HomeController@v1');
 Route::get('/v1', 'HomeController@v1');
