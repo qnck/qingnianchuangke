@@ -197,4 +197,9 @@ class EmergencyController extends \BaseController
         }
         echo "done";
     }
+
+    public function vote()
+    {
+        return View::make('blade.test.test');
+    }
 }
