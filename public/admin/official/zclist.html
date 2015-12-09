@@ -55,7 +55,7 @@
 		$.ajax({
 			type: "get",
 			url: _url+'office/crowd',
-			data: {page:pageNumber,per_page:pageSize},
+			data: {page:pageNumber,per_page:pageSize,filter_option:1},
 			dataType: "json",
 			success: function (result) {
 				if(result.result=="2000")
@@ -558,16 +558,16 @@
             toolbar:'#optionTollbar'">
     <thead>
         <tr>
-            <th data-options="field:'id',width:120,align:'left',halign:'center'">id</th>
-            <th data-options="field:'title',width:120,align:'left',halign:'center'">众筹名称</th>
-            <th data-options="field:'cate_label',width:200,align:'left',halign:'center'">众筹分类</th>
-            <th data-options="field:'price',width:200,align:'left',halign:'center'">支持金额</th>
-          	<th data-options="field:'target_quantity',width:200,align:'left',halign:'center'">众筹份数</th>
-            <th data-options="field:'sold_quantity',width:130,align:'left',halign:'center'">已筹份数</th>
-            <th data-options="field:'is_limit',width:130,align:'left',halign:'center'">是否限购</th>
-            <th data-options="field:'target_amount',width:200,align:'left',halign:'center'">众筹总额</th>
-          	<th data-options="field:'time',width:200,align:'left',halign:'center'">众筹天数</th>
-          	<th data-options="field:'active_at',width:200,align:'left',halign:'center'">众筹开始时间</th>
+            <th data-options="field:'id',width:40,align:'left',halign:'center'">id</th>
+            <th data-options="field:'title',width:200,align:'left',halign:'center'">众筹名称</th>
+            <th data-options="field:'cate_label',width:100,align:'left',halign:'center'">众筹分类</th>
+            <th data-options="field:'price',width:100,align:'left',halign:'center'">支持金额</th>
+          	<th data-options="field:'target_quantity',width:100,align:'left',halign:'center'">众筹份数</th>
+            <th data-options="field:'sold_quantity',width:100,align:'left',halign:'center'">已筹份数</th>
+            <th data-options="field:'is_limit',width:100,align:'left',halign:'center'">是否限购</th>
+            <th data-options="field:'target_amount',width:100,align:'left',halign:'center'">众筹总额</th>
+          	<th data-options="field:'time',width:100,align:'left',halign:'center'">众筹天数</th>
+          	<th data-options="field:'active_at',width:100,align:'left',halign:'center'">众筹开始时间</th>
             <th data-options="field:'range',width:200,align:'left',halign:'center',formatter:formatRange">发布范围</th>
         </tr>
     </thead>
