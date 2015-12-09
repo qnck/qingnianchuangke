@@ -187,8 +187,6 @@ class AliyunOss
             $dir = $this->_cate.'/'.$this->_id.'/';
             $obj = $dir.$obj;
             $this->move($tmp_imgs[$name], $obj);
-        } else {
-            throw new Exception("没有找到目标文件", 20001);
         }
         return $obj;
     }
