@@ -289,7 +289,7 @@ class MeCrowdFundingController extends \BaseController
                                 $pos = strpos($img, $old_key);
                                 $new_path = substr_replace($img, $new_name, $pos, $length);
                                 $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
-                                $c_imgs[] = $new_path;
+                                array_unshift($c_imgs, $new_path);
                             }
                         }
                     }

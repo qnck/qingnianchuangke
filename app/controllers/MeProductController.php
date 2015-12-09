@@ -145,6 +145,32 @@ class MeProductController extends \BaseController
                 $cover_img = $old_imgs['cover_img'];
                 unset($old_imgs['cover_img']);
             }
+            $p_imgs = $products->p_imgs;
+            if ($img_token) {
+                $img_obj = new Img('product', $img_token);
+                if ($all_imgs) {
+                    foreach ($all_imgs as $key => $img) {
+                        if ($img) {
+                            $file_name = Img::getFileName($img);
+                            $old_key = Img::getKey($file_name);
+                            if ($old_key != $key) {
+                                $p_imgs = array_diff($p_imgs, [$img]);
+                                $tmp = explode('/', $img);
+                                $last_part = array_pop($tmp);
+                                $tmp = explode('.', $last_part);
+                                unset($tmp[0]);
+                                $new = implode('.', $tmp);
+                                $new_name = $key.'.'.$new;
+                                $length = strlen($new_name);
+                                $pos = strpos($img, $old_key);
+                                $new_path = substr_replace($img, $new_name, $pos, $length);
+                                $img_obj->replace($crowd_funding->cf_id, $img, $new_path);
+                                array_unshift($p_imgs, $new_path);
+                            }
+                        }
+                    }
+                }
+            }
 
             if (is_numeric($modified_img_index)) {
                 $imgObj = new Img('product', $img_token);
