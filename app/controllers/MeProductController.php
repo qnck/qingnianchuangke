@@ -177,7 +177,7 @@ class MeProductController extends \BaseController
                 }
                 $p_imgs = $img_obj->getSavedImg($product->p_id, implode(',', $p_imgs), true);
                 $p_imgs = Img::attachKey($p_imgs);
-                if ($cover_img) {
+                if ($img_token && $cover_img) {
                     $p_imgs['cover_img'] = $cover_img;
                 }
                 ksort($p_imgs);
