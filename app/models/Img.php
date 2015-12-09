@@ -40,6 +40,9 @@ class Img
     }
     public function replace($id, $from, $to)
     {
+        if ($from == $to) {
+            return true;
+        }
         $from = Img::trimImgHost($from);
         $to = Img::trimImgHost($to);
         // move

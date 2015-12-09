@@ -146,7 +146,7 @@ class MeProductController extends \BaseController
             $product->p_mobile = $mobile;
             $product->open_file = $open_file;
 
-            $p_imgs = $products->p_imgs;
+            $p_imgs = explode(',', $product->p_imgs);
             if ($img_token) {
                 $img_obj = new Img('product', $img_token);
                 $cover_img = $img_obj->transfer($product->p_id, 'cover_img');
