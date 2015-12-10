@@ -18,7 +18,7 @@ class MarketController extends \BaseController
         $is_follow = Input::get('is_follow', 0);
         $cate = Input::get('cate', 0);
 
-        $perPage = Input::get('per_page', 30);
+        $per_page = Input::get('per_page', 30);
         $page = Input::get('page', 1);
 
         try {
@@ -82,7 +82,7 @@ class MarketController extends \BaseController
                     ->orWhere('products.p_desc', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($perPage);
+            $list = $query->orderBy('promotion_infos.created_at', 'DESC')->paginate($per_page);
             $data = [];
             foreach ($list as $k => $product) {
                 $tmp = $product->showInListWithProduct();
@@ -124,7 +124,7 @@ class MarketController extends \BaseController
 
         $filter_option = Input::get('filter_option', 0);        // 1-within 1 day, 2-within 3 days, 3-within 7 days
 
-        $perPage = Input::get('per_page', 30);
+        $per_page = Input::get('per_page', 30);
         $page = Input::get('page', 1);
 
         try {
@@ -195,7 +195,7 @@ class MarketController extends \BaseController
                 $query = $query->where('products.active_at', '>', $date);
             }
 
-            $list = $query->orderBy('products.created_at', 'DESC')->paginate($perPage);
+            $list = $query->orderBy('products.created_at', 'DESC')->paginate($per_page);
             $data = [];
             $start = 0;
             $end = 0;
@@ -251,7 +251,7 @@ class MarketController extends \BaseController
         $school = Input::get('school', 0);
         $key = Input::get('key', '');
 
-        $perPage = Input::get('per_page', 30);
+        $per_page = Input::get('per_page', 30);
 
         try {
             $query = Booth::where('b_type', '=', 1)->where('b_status', '=', 1)->with(['user']);
@@ -266,7 +266,7 @@ class MarketController extends \BaseController
             if ($school) {
                 $query = $query->where('s_id', '=', $school);
             }
-            $list = $query->paginate($perPage);
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
                 $data[] = $booth->showDetail();
@@ -288,7 +288,7 @@ class MarketController extends \BaseController
         $cate = Input::get('cate', 0);
         $u_id = Input::get('u_id', 0);
 
-        $perPage = Input::get('per_page', 30);
+        $per_page = Input::get('per_page', 30);
 
         try {
             if (!$u_id) {
@@ -324,7 +324,7 @@ class MarketController extends \BaseController
                 $query = $query->where('b_cate', '=', $cate);
             }
 
-            $list = $query->paginate($perPage);
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $booth) {
                 $tmp = $booth->showDetail();
@@ -431,7 +431,7 @@ class MarketController extends \BaseController
         $b_id = Input::get('booth', 0);
         $key = Input::get('key', '');
 
-        $perPage = Input::get('per_page', 30);
+        $per_page = Input::get('per_page', 30);
 
         try {
             if (!$b_id) {
@@ -444,7 +444,7 @@ class MarketController extends \BaseController
                     ->orWhere('p_desc', 'LIKE', '%'.$key.'%');
                 });
             }
-            $list = $query->paginate($perPage);
+            $list = $query->paginate($per_page);
             $data = [];
             foreach ($list as $key => $product) {
                 $data[] = $product->showInList();
