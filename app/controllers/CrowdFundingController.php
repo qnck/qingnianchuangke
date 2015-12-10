@@ -39,7 +39,7 @@ class CrowdFundingController extends \BaseController
 
         try {
             if (!$u_id) {
-                throw new Exception("请传入用户id", 7001);
+                throw new Exception("请传入用户id", 7101);
             }
             $user = User::find($u_id);
             $user->load('school');
@@ -267,19 +267,19 @@ class CrowdFundingController extends \BaseController
 
             $now = new DateTime();
             if ($now > $date_end) {
-                throw new Exception("抱歉, 众筹已经结束", 2001);
+                throw new Exception($funding->getErrorMessage('already_end'), 7101);
             }
 
             if ($now < $date_start) {
-                throw new Exception("抱歉, 众筹还未开始, 请耐心等待", 2001);
+                throw new Exception($funding->getErrorMessage('not_start'), 7101);
             }
 
             if ($funding->c_status != 4) {
-                throw new Exception("抱歉, 无效的众筹状态", 2001);
+                throw new Exception($funding->getErrorMessage('wrong_status'), 7101);
             }
 
             if ($funding->u_id == $u_id) {
-                throw new Exception("您不能认筹自己发起的众筹", 2001);
+                throw new Exception($funding->getErrorMessage('cant_buy_own'), 7101);
             }
 
             $validator = Validator::make(
@@ -288,29 +288,29 @@ class CrowdFundingController extends \BaseController
             );
             if ($validator->fails()) {
                 $msg = $validator->messages();
-                throw new Exception($msg->first(), 7001);
+                throw new Exception($msg->first(), 7101);
             }
 
             $user = User::chkUserByToken($token, $u_id);
             if (!$user->u_mobile) {
-                throw new Exception("需要绑定联系电话，请到[我的-编辑资料]里绑定后进行支持", 2001);
+                throw new Exception("需要绑定联系电话，请到[我的-编辑资料]里绑定后进行支持", 7101);
             }
             if ($funding->c_local_only) {
                 $funding_owner = User::find($funding->u_id);
                 if ($funding_owner->u_school_id != $user->u_school_id) {
-                    throw new Exception("该众筹仅限于同校参与", 2001);
+                    throw new Exception($funding->getErrorMessage('local_only'), 7101);
                 }
             }
 
             $product = CrowdFundingProduct::find($p_id);
             if ($product->p_price == 0) {
                 if ($quantity != 1) {
-                    throw new Exception("此类众筹只能认筹一份", 1);
+                    throw new Exception($funding->getErrorMessage('buy_one'), 7101);
                 }
                 // check if user has bought
                 $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
                 if (!empty($chk)) {
-                    throw new Exception("此类众筹每人限认筹一次", 7001);
+                    throw new Exception($funding->getErrorMessage('pay_one'), 7101);
                 }
             }
 
@@ -395,7 +395,7 @@ class CrowdFundingController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $funding = CrowdFunding::find($id);
             if (empty($funding)) {
-                throw new Exception("请求的众筹不存在", 2001);
+                throw new Exception($funding->getErrorMessage('not_found'), 7101);
             }
             $chk = $funding->praises()->where('praises.u_id', '=', $u_id)->first();
             if ($type == 1) {
@@ -434,7 +434,7 @@ class CrowdFundingController extends \BaseController
             $user = User::chkUserByToken($token, $u_id);
             $funding = CrowdFunding::find($id);
             if (empty($funding)) {
-                throw new Exception("请求的众筹不存在", 2001);
+                throw new Exception($funding->getErrorMessage('not_found'), 7101);
             }
             $chk = $funding->favorites()->where('favorites.u_id', '=', $u_id)->first();
             if ($type == 1) {

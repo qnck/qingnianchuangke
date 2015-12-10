@@ -11,33 +11,39 @@ class MeCrowdFundingController extends \BaseController
 
         $title = Input::get('title', '');
         $cate = Input::get('cate', 1);
-        $amount = Input::get('amount', 0);
+        $brief = Input::get('brief', '');
         $time = Input::get('time', 0);
+        $is_limit = Input::get('is_limit', 0);
+        $local_only = Input::get('local_only', 0);
+        $open_file = Input::get('open_file', 0);
+        $content = Input::get('content', '');
+        $quantity = Input::get('quantity', 0);
+        $mobile = Input::get('mobile', '');
+        $apartment_no = Input::get('apartment_no', '');
+
+        $is_schedule = Input::get('is_schedule', 0);
+        $active_at = Input::get('active_at');
+
+        $type = Input::get('type', 1);
+
+
         $yield_time = Input::get('yield_time', 0);
         $shipping = Input::get('shipping', 0);
         $shipping_fee = Input::get('shipping_fee', 0);
-        $brief = Input::get('brief', '');
         $yield_desc = Input::get('yield_desc', '');
-        $content = Input::get('content', '');
-        $type = Input::get('type', 1);
-        $open_file = Input::get('open_file', 0);
-        $active_at = Input::get('active_at');
-        $local_only = Input::get('local_only', 0);
-        $is_schedule = Input::get('is_schedule', 0);
 
         if (empty($active_at)) {
             $active_at = Tools::getNow();
         }
 
-        $mobile = Input::get('mobile', '');
-
-        $price = Input::get('price', 0);
-        $quantity = Input::get('quantity', 0);
-        $is_limit = Input::get('is_limit', 0);
+        $price = 1;
+        if ($type == 2) {
+            $price = 0;
+        }
+        $amount = $quantity * $price;
 
         $img_token = Input::get('img_token', '');
         $img_token_2 = Input::get('img_token_2', '');
-        $apartment_no = Input::get('apartment_no', '');
 
         $content = urldecode($content);
 
@@ -94,7 +100,7 @@ class MeCrowdFundingController extends \BaseController
             $range->c_id = $user->school->t_city;
             $range->p_id = $user->school->t_province;
             $range->save();
-            
+
             // add funding
             $crowd_funding = new CrowdFunding();
             $crowd_funding->u_id = $u_id;
@@ -171,28 +177,35 @@ class MeCrowdFundingController extends \BaseController
 
         $title = Input::get('title', '');
         $cate = Input::get('cate', 1);
-        $amount = Input::get('amount', 0);
+        $brief = Input::get('brief', '');
+        $quantity = Input::get('quantity', 0);
         $time = Input::get('time', 0);
+        $is_limit = Input::get('is_limit', 0);
+        $local_only = Input::get('local_only', 0);
+        $open_file = Input::get('open_file', 0);
+        $content = Input::get('content', '');
+        $mobile = Input::get('mobile', '');
+        $apartment_no = Input::get('apartment_no', '');
+
+        $is_schedule = Input::get('is_schedule', 0);
+        $active_at = Input::get('active_at');
+
+        $type = Input::get('type', 1);
+        
+        
         $yield_time = Input::get('yield_time', 0);
         $shipping = Input::get('shipping', 0);
         $shipping_fee = Input::get('shipping_fee', 0);
-        $brief = Input::get('brief', '');
         $yield_desc = Input::get('yield_desc', '');
-        $content = Input::get('content', '');
-        $open_file = Input::get('open_file', 0);
-        $type = Input::get('type', 1);
-        $local_only = Input::get('local_only', 0);
-        $is_schedule = Input::get('is_schedule', 0);
-        $active_at = Input::get('active_at');
         if (empty($active_at)) {
             $active_at = Tools::getNow();
         }
 
-        $mobile = Input::get('mobile', '');
-
-        $price = Input::get('price', 0);
-        $quantity = Input::get('quantity', 0);
-        $is_limit = Input::get('is_limit', 0);
+        $price = 1;
+        if ($type == 2) {
+            $price = 0;
+        }
+        $amount = $quantity * $price;
 
         $img_token = Input::get('img_token', '');
         $img_token_2 = Input::get('img_token_2', '');
@@ -200,7 +213,6 @@ class MeCrowdFundingController extends \BaseController
         $all_imgs = Input::get('all_imgs', '');
         $deleted_img = Input::get('deleted_img', '');
 
-        $apartment_no = Input::get('apartment_no', '');
         if ($all_imgs) {
             $all_imgs = urldecode($all_imgs);
             $all_imgs = json_decode($all_imgs);
@@ -256,7 +268,7 @@ class MeCrowdFundingController extends \BaseController
             $crowd_funding->c_cate = $cate;
             $crowd_funding->c_type = $type;
             $crowd_funding->c_open_file = $open_file;
-            if ($amount <= 2000) {
+            if ($amount <= 50000) {
                 $crowd_funding->c_status = 4;
             } else {
                 $crowd_funding->c_status = 1;

@@ -376,6 +376,72 @@ class CrowdFunding extends Eloquent
         return $event;
     }
 
+    public function getErrorMessage($code)
+    {
+        if ($this->c_type == 1) {
+            switch ($code) {
+                case 'not_start':
+                    $msg = '抱歉, 众筹还未开始, 请耐心等待';
+                    break;
+                case 'already_end':
+                    $msg = '抱歉, 众筹已经结束';
+                    break;
+                case 'wrong_status':
+                    $msg = '抱歉, 无效的众筹状态';
+                    break;
+                case 'cant_buy_own':
+                    $msg = '您不能认筹自己发起的众筹';
+                    break;
+                case 'local_only':
+                    $msg = '该众筹仅限于同校参与';
+                    break;
+                case 'buy_one':
+                    $msg = '此类众筹只能认筹一份';
+                    break;
+                case 'pay_one':
+                    $msg = '此类众筹每人限认筹一次';
+                    break;
+                case 'not_found':
+                    $msg = '请求的众筹不存在';
+                    break;
+                default:
+                    $msg = '';
+                    break;
+            }
+        } else {
+            switch ($code) {
+                case 'not_start':
+                    $msg = '';
+                    break;
+                case 'already_end':
+                    $msg = '';
+                    break;
+                case 'wrong_status':
+                    $msg = '';
+                    break;
+                case 'cant_buy_own':
+                    $msg = '';
+                    break;
+                case 'local_only':
+                    $msg = '';
+                    break;
+                case 'buy_one':
+                    $msg = '';
+                    break;
+                case 'pay_one':
+                    $msg = '';
+                    break;
+                case 'not_found':
+                    $msg = '请求的活动不存在';
+                    break;
+                default:
+                    $msg = '';
+                    break;
+            }
+        }
+        return $msg;
+    }
+
     // relations
     public function city()
     {
