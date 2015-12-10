@@ -214,15 +214,18 @@ class CrowdFundingController extends \BaseController
         try {
             $user = User::chkUserByToken($token, $u_id);
             $to_user = User::find($to_u_id);
+            $cf = CrowdFunding::find($id);
             if (empty($to_user)) {
                 $to_u_id = 0;
                 $to_u_name = '';
+                $event = EventItem::find($cf->e_id);
+                $msg = new MessageDispatcher($cf->u_id);
+                $msg->fireCateToUser('您的众筹'.$event->e_title.'有用户评论', Notification::$CATE_CROWD_FUNDING, $id);
             } else {
                 $to_u_name = $to_user->u_nickname;
                 $msg = new MessageDispatcher($to_u_id);
                 $msg->fireCateToUser('您有新的用户回复', Notification::$CATE_CROWD_FUNDING, $id);
             }
-            $cf = CrowdFunding::find($id);
             $reply = [
                 'to_id' => $to,
                 'created_at' => Tools::getNow(),
