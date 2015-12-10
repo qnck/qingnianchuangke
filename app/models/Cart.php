@@ -183,11 +183,12 @@ class Cart extends Eloquent
         $product = CrowdFundingProduct::find($this->p_id);
         $product->confirmProduct($this->c_quantity);
         $funding = CrowdFunding::find($product->cf_id);
+        $event = EventItem::find($funding->e_id);
         $funding->c_amount += $this->c_amount;
         $funding->save();
 
         $msg = new MessageDispatcher($booth->u_id);
-        $msg->fireCateToUser('您的众筹'.$funding->c_title.'已有人认购', 1, $funding->cf_id);
+        $msg->fireCateToUser('您的众筹'.$event->e_title.'已有人认购', 1, $funding->cf_id);
 
         return true;
     }
