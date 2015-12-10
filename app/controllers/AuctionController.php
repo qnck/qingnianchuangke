@@ -13,7 +13,8 @@ class AuctionController extends \BaseController
             $auction = Auction::with('eventItem')
             ->join('event_items', function ($q) {
                 $q->on('event_items.e_id', '=', 'auctions.e_id');
-            })->where('event_items.e_end_at', '>', $now)
+            })->where('auctions.a_status', '>', 0)
+            ->where('event_items.e_end_at', '>', $now)
             ->orderBy('event_items.e_start_at')
             ->first();
             if (empty($auction)) {
@@ -73,12 +74,17 @@ class AuctionController extends \BaseController
         $per_page = Input::get('per_page', 30);
 
         try {
-            $now = Tools::getNow();
-
+            $date = Tools::getNow(false);
+            $now = $date->format('Y-m-d H:i:s');
+            $date->modify('-30 days');
+            $past = $date->format('Y-m-d H:i:s');
             $list = Auction::with('eventItem')
             ->join('event_items', function ($q) {
                 $q->on('event_items.e_id', '=', 'auctions.e_id');
-            })->where('event_items.e_end_at', '<', $now)->orderBy('auctions.created_at', 'DESC')->paginate($per_page);
+            })->where('event_items.e_end_at', '<', $now)->where('event_items.e_end_at', '>', $past)
+            ->where('auctions.a_status', '>', 0)
+            ->orderBy('auctions.created_at', 'DESC')
+            ->paginate($per_page);
             $data = [];
             foreach ($list as $key => $auction) {
                 $data[] = $auction->showDetail();

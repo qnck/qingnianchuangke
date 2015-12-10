@@ -17,9 +17,10 @@ class MeCrowdFundingController extends \BaseController
         $local_only = Input::get('local_only', 0);
         $open_file = Input::get('open_file', 0);
         $content = Input::get('content', '');
-        $quantity = Input::get('quantity', 0);
         $mobile = Input::get('mobile', '');
         $apartment_no = Input::get('apartment_no', '');
+        $price = Input::get('price', 0);
+        $quantity = Input::get('quantity', 0);
 
         $is_schedule = Input::get('is_schedule', 0);
         $active_at = Input::get('active_at');
@@ -36,9 +37,8 @@ class MeCrowdFundingController extends \BaseController
             $active_at = Tools::getNow();
         }
 
-        $price = 1;
-        if ($type == 2) {
-            $price = 0;
+        if ($type == 1) {
+            $price = 1;
         }
         $amount = $quantity * $price;
 
@@ -180,7 +180,6 @@ class MeCrowdFundingController extends \BaseController
         $title = Input::get('title', '');
         $cate = Input::get('cate', 1);
         $brief = Input::get('brief', '');
-        $quantity = Input::get('quantity', 0);
         $time = Input::get('time', 0);
         $is_limit = Input::get('is_limit', 0);
         $local_only = Input::get('local_only', 0);
@@ -188,13 +187,15 @@ class MeCrowdFundingController extends \BaseController
         $content = Input::get('content', '');
         $mobile = Input::get('mobile', '');
         $apartment_no = Input::get('apartment_no', '');
+        $price = Input::get('price', 0);
+        $quantity = Input::get('quantity', 0);
 
         $is_schedule = Input::get('is_schedule', 0);
         $active_at = Input::get('active_at');
 
         $type = Input::get('type', 1);
         
-        
+
         $yield_time = Input::get('yield_time', 0);
         $shipping = Input::get('shipping', 0);
         $shipping_fee = Input::get('shipping_fee', 0);
@@ -203,9 +204,8 @@ class MeCrowdFundingController extends \BaseController
             $active_at = Tools::getNow();
         }
 
-        $price = 1;
-        if ($type == 2) {
-            $price = 0;
+        if ($type == 1) {
+            $price = 1;
         }
         $amount = $quantity * $price;
 
