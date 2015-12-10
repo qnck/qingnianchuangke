@@ -516,6 +516,7 @@ class User extends Eloquent
         $log->u_id = $u_id;
         $log->inviter_id = $user->u_id;
         $log->amount = $reward;
+        $log->save();
         $wallet = UsersWalletBalances::find($user->u_id);
         $wallet->putIn($reward);
         return true;
