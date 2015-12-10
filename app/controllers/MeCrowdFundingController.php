@@ -161,10 +161,10 @@ class MeCrowdFundingController extends \BaseController
             }
 
             $funding_product->addProduct();
-            $re = Tools::reTrue('添加众筹成功');
+            $re = Tools::reTrue($crowd_funding->getErrorMessage('add_successfully'));
             DB::commit();
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), '添加众筹失败:'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), $crowd_funding->getErrorMessage('add_failed').':'.$e->getMessage());
             DB::rollback();
         }
         return Response::json($re);

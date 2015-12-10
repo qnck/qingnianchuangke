@@ -404,6 +404,12 @@ class CrowdFunding extends Eloquent
                 case 'not_found':
                     $msg = '请求的众筹不存在';
                     break;
+                case 'add_successfully':
+                    $msg = '添加众筹成功';
+                    break;
+                case 'add_failed':
+                    $msg = '添加众筹失败';
+                    break;
                 default:
                     $msg = '';
                     break;
@@ -433,6 +439,12 @@ class CrowdFunding extends Eloquent
                     break;
                 case 'not_found':
                     $msg = '请求的活动不存在';
+                    break;
+                case 'add_successfully':
+                    $msg = '添加活动成功';
+                    break;
+                case 'add_failed':
+                    $msg = '添加活动失败';
                     break;
                 default:
                     $msg = '';
