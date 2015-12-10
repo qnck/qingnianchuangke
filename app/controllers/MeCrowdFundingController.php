@@ -4,6 +4,38 @@
 */
 class MeCrowdFundingController extends \BaseController
 {
+    public function getCrowdFunding($id)
+    {
+        $u_id = Input::get('u_id', 0);
+        $token = Input::get('token', '');
+
+        try {
+            $user = User::chkUserByToken($token, $u_id);
+            $crowdfunding = CrowdFunding::find($id);
+            if ($user->u_id != $crowdfunding->u_id) {
+                throw new Exception($crowdfunding->getErrorMessage('auth_failed'), 7101);
+            }
+
+            $crowdfunding->load(['eventItem']);
+            $data = $crowdfunding->showDetail();
+            $apartment_no = '';
+            $base = TmpUserProfileBase::find($u_id);
+            if (!empty($base)) {
+                $apartment_no = $base->u_apartment_no;
+            }
+
+            $data['apartment_no'] = $apartment_no;
+
+            $data['participates_count'] = 0;
+            $data['is_praised'] = 0;
+            $data['is_favorited'] = 0;
+            $re = Tools::reTrue('获取众筹成功', $data);
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '获取众筹失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function postCrowdFunding()
     {
         $token = Input::get('token', '');

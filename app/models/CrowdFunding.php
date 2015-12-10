@@ -91,6 +91,7 @@ class CrowdFunding extends Eloquent
         if (empty($this->eventItem)) {
             $this->load(['eventItem']);
         }
+        $data['mobile'] = $this->u_mobile;
         $data['cover_img'] = [$this->eventItem->cover_img];
         $data['type'] = $this->c_type;
         $data['title'] = $this->eventItem->e_title;
@@ -105,6 +106,7 @@ class CrowdFunding extends Eloquent
         $data['local_only'] = $this->c_local_only;
         $data['amount'] = $this->c_amount;
         $data['is_official'] = $this->c_is_official;
+        $data['current_time'] = Tools::getNow();
 
         return $data;
     }
@@ -117,10 +119,7 @@ class CrowdFunding extends Eloquent
         $data['created_at'] = $date->format('Y-m-d H:i:s');
         $data['created_at_timestamps'] = strtotime($data['created_at']);
         $data['praise_count'] = $this->c_praise_count;
-        $data['mobile'] = $this->u_mobile;
-        $data['type'] = $this->c_type;
         $data['remark'] = $this->c_remark;
-        $data['current_time'] = Tools::getNow();
         if ($this->product) {
             $data['p_id'] = $this->product->p_id;
             $data['price'] = $this->product->p_price;
@@ -153,9 +152,7 @@ class CrowdFunding extends Eloquent
         $data['yield_time'] = $this->c_yield_time;
         $data['shipping'] = $this->c_shipping;
         $data['shipping_fee'] = $this->c_shipping_fee;
-        $data['mobile'] = $this->u_mobile;
         $data['yield_desc'] = $this->c_yield_desc;
-        $data['current_time'] = Tools::getNow();
         $data['is_schedule'] = $this->c_is_schedule;
         $data['open_file'] = $this->c_open_file;
         if ($this->product) {
@@ -411,6 +408,9 @@ class CrowdFunding extends Eloquent
                 case 'add_failed':
                     $msg = '添加众筹失败';
                     break;
+                case 'auth_failed':
+                    $msg = '只能编辑自己的众筹';
+                    break;
                 default:
                     $msg = '';
                     break;
@@ -446,6 +446,9 @@ class CrowdFunding extends Eloquent
                     break;
                 case 'add_failed':
                     $msg = '添加活动失败';
+                    break;
+                case 'auth_failed':
+                    $msg = '只能编辑自己的活动';
                     break;
                 default:
                     $msg = '';
