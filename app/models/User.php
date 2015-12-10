@@ -472,13 +472,13 @@ class User extends Eloquent
     private function getVerify()
     {
         $verify_tag = 'V';
-        if ($this->u_is_verified) {
+        if ($this->u_is_club_verified) {
+            $verify_type = 3;   // 社团认证
+        } elseif ($this->u_is_verified) {
             $verify_tag = '认';
-            $verify_type = 1;
-        } elseif ($this->u_is_club_verified) {
-            $verify_type = 3;
+            $verify_type = 1;   // 个人认证
         } elseif ($this->u_type == 2) {
-            $verify_type = 2;
+            $verify_type = 2;   // 官方认证
         } else {
             $verify_type = 0;
             $verify_tag = '';

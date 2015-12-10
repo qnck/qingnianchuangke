@@ -10,7 +10,6 @@ class OfficeCrowdFundingController extends \BaseController
         $b_id = Tools::getOfficialBoothId();
 
         $title = Input::get('title', '');
-        $amount = Input::get('amount', 0);
         $time = Input::get('time', 0);
         $yield_time = Input::get('yield_time', 0);
         $shipping = Input::get('shipping', 0);
@@ -24,6 +23,8 @@ class OfficeCrowdFundingController extends \BaseController
         $range = Input::get('range', 1);
         $cities = Input::get('cities', 0);
         $schools = Input::get('schools', 0);
+        $cate = Input::get('cate', 1);
+        $type = Input::get('type', 1);
 
         if (empty($active_at)) {
             $active_at = Tools::getNow();
@@ -31,8 +32,12 @@ class OfficeCrowdFundingController extends \BaseController
 
         $mobile = Input::get('mobile', '');
 
-        $price = Input::get('price', 0);
+        $price = 1;
         $quantity = Input::get('quantity', 0);
+        if ($type == 2) {
+            $price = 0;
+        }
+        $amount = $price * $quantity;
         $is_limit = Input::get('is_limit', 0);
 
         $img_token = Input::get('img_token', '');
@@ -75,8 +80,11 @@ class OfficeCrowdFundingController extends \BaseController
             $crowd_funding->c_remark = '';
             $crowd_funding->c_open_file = $open_file;
             $crowd_funding->c_status = 4;
-            $crowd_funding->c_cate = 8;
+            $crowd_funding->c_cate = $cate;
+            $crowd_funding->c_type = $type;
             $crowd_funding->e_id = $e_id;
+
+            $crowd_funding->c_is_official = 1;
 
             $crowd_funding->addCrowdFunding();
 

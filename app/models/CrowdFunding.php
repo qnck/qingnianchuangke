@@ -104,6 +104,7 @@ class CrowdFunding extends Eloquent
         $data['cate_label'] = $this->getCateLabel();
         $data['local_only'] = $this->c_local_only;
         $data['amount'] = $this->c_amount;
+        $data['is_official'] = $this->c_is_official;
 
         return $data;
     }
