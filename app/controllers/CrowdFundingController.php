@@ -278,7 +278,7 @@ class CrowdFundingController extends \BaseController
                 throw new Exception($funding->getErrorMessage('wrong_status'), 7101);
             }
 
-            if ($funding->u_id == $u_id) {
+            if ($funding->c_type == 1 && $funding->u_id == $u_id) {
                 throw new Exception($funding->getErrorMessage('cant_buy_own'), 7101);
             }
 
