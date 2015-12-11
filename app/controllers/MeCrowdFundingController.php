@@ -16,7 +16,7 @@ class MeCrowdFundingController extends \BaseController
                 throw new Exception($crowdfunding->getErrorMessage('auth_failed'), 7101);
             }
 
-            $crowdfunding->load(['eventItem']);
+            $crowdfunding->load(['eventItem', 'product']);
             $data = $crowdfunding->showDetail();
             $apartment_no = '';
             $base = TmpUserProfileBase::find($u_id);
@@ -198,7 +198,7 @@ class MeCrowdFundingController extends \BaseController
             $re = Tools::reTrue($crowd_funding->getErrorMessage('add_successfully'));
             DB::commit();
         } catch (Exception $e) {
-            $re = Tools::reFalse($e->getCode(), $crowd_funding->getErrorMessage('add_failed').':'.$e->getMessage());
+            $re = Tools::reFalse($e->getCode(), '添加失败:'.$e->getMessage());
             DB::rollback();
         }
         return Response::json($re);
