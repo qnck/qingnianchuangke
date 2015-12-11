@@ -79,7 +79,7 @@ class Advertisement extends Eloquent
     public static function fetchAd($position, $start_at, $end_at, $s_id = 0, $c_id = 0, $p_id = 0, $range = 1)
     {
         $query = Advertisement::select('advertisements.*')
-        ->with(['eventItem'])
+        ->with(['eventItem'])->where('advertisements.ad_status', '>', 0)
         ->join('event_positions', function ($q) use ($position) {
             $q->on('event_positions.e_id', '=', 'advertisements.e_id')
             ->where('event_positions.position', '=', $position);
