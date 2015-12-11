@@ -1893,6 +1893,7 @@ class MeController extends \BaseController
             $data = [];
             foreach ($list as $key => $product) {
                 $tmp = $product->showInList();
+                unset($tmp['cate_label']);
                 $tmp['is_praised'] = 0;
                 if (count($product->praises) > 0) {
                     $tmp['is_praised'] = 1;
