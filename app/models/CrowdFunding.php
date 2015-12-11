@@ -418,25 +418,25 @@ class CrowdFunding extends Eloquent
         } else {
             switch ($code) {
                 case 'not_start':
-                    $msg = '';
+                    $msg = '抱歉, 活动还未开始, 请耐心等待';
                     break;
                 case 'already_end':
-                    $msg = '';
+                    $msg = '抱歉, 活动已经结束';
                     break;
                 case 'wrong_status':
-                    $msg = '';
+                    $msg = '抱歉, 无效的活动状态';
                     break;
                 case 'cant_buy_own':
-                    $msg = '';
+                    $msg = '您不能参加自己发起的活动';
                     break;
                 case 'local_only':
-                    $msg = '';
+                    $msg = '该活动仅限于同校参与';
                     break;
                 case 'buy_one':
-                    $msg = '';
+                    $msg = '此类活动只能参与一次';
                     break;
                 case 'pay_one':
-                    $msg = '';
+                    $msg = '此类活动每人限参与一次';
                     break;
                 case 'not_found':
                     $msg = '请求的活动不存在';

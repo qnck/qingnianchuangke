@@ -71,6 +71,7 @@ class UsersDraw extends Eloquent
         } elseif ($this->d_status == 2) {
             $string = '放款失败, 平台备注:'.$comment;
         }
+        $this->dealt_at = Tools::getNow();
         $msg = new MessageDispatcher($this->u_id);
         $msg->fireTextToUser($string);
         return $this->save();

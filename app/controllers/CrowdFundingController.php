@@ -106,6 +106,12 @@ class CrowdFundingController extends \BaseController
                 $query = $query->where('event_items.e_start_at', '>', $now)->orderBy('event_items.e_start_at');
             }
 
+            if ($filter_option == 5) {
+                $query = $query->join('features', function ($q) {
+                    $q->on('features.featurable_id', '=', 'crowd_fundings.cf_id');
+                })->where('features.featurable_cate', '=', Feature::$CATE_CROWD_FUNDING);
+            }
+
             if ($key) {
                 $query = $query->where(function ($q) use ($key) {
                     $q->where('event_items.e_title', 'LIKE', '%'.$key.'%')
@@ -303,16 +309,16 @@ class CrowdFundingController extends \BaseController
             }
 
             $product = CrowdFundingProduct::find($p_id);
-            if ($product->p_price == 0) {
-                if ($quantity != 1) {
-                    throw new Exception($funding->getErrorMessage('buy_one'), 7101);
-                }
-                // check if user has bought
-                $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
-                if (!empty($chk)) {
-                    throw new Exception($funding->getErrorMessage('pay_one'), 7101);
-                }
-            }
+            // if ($product->p_price == 0) {
+            //     if ($quantity != 1) {
+            //         throw new Exception($funding->getErrorMessage('buy_one'), 7101);
+            //     }
+            //     // check if user has bought
+            //     $chk = Cart::where('u_id', '=', $u_id)->where('c_type', '=', 2)->where('p_id', '=', $p_id)->where('c_status', '>', 0)->first();
+            //     if (!empty($chk)) {
+            //         throw new Exception($funding->getErrorMessage('pay_one'), 7101);
+            //     }
+            // }
 
             // sku need to be calulated before cart generated
             $product->loadProduct($quantity);
