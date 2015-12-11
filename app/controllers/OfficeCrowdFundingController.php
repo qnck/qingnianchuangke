@@ -217,6 +217,28 @@ class OfficeCrowdFundingController extends \BaseController
         return Response::json($re);
     }
 
+    public function featureFunding($id)
+    {
+        $sort = Input::get('sort', 0);
+        try {
+            $funding = CrowdFunding::find($id);
+            if (empty($funding)) {
+                throw new Exception("没有找到请求的数据", 10001);
+            }
+            $feature = new Feature();
+            $feature->sort = $sort;
+            $feature->featurable_id = $id;
+            $feature->featurable_cate = Feature::$CATE_CROWD_FUNDING;
+            $feature->created_at = Tools::getNow();
+            $feature->status = 1;
+            $feature->save();
+            $re = Tools::reTrue('操作成功');
+        } catch (Exception $e) {
+            $re = Tools::reFalse($e->getCode(), '操作失败:'.$e->getMessage());
+        }
+        return Response::json($re);
+    }
+
     public function delFunding($id)
     {
         $u_id = Tools::getOfficialUserId();

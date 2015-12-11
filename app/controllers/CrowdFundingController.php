@@ -83,10 +83,12 @@ class CrowdFundingController extends \BaseController
                 $query = $query->where('event_ranges.s_id', '=', $school);
             }
 
+            // about to start
             if ($filter_option == 1) {
-                $query = $query->where('event_items.e_start_at', '>', $now);
+                $query = $query->where('event_items.e_start_at', '>', $now)->orderBy('event_items.e_start_at');
             }
 
+            // hot
             if ($filter_option == 2) {
                 // time passed more than 20%, and gathered more than 60% quantity
                 $query = $query->whereRaw('(DATEDIFF(CURDATE(), t_event_items.e_start_at)) > (t_crowd_fundings.c_time * 0.2)')
@@ -96,16 +98,19 @@ class CrowdFundingController extends \BaseController
                 ->where('event_items.e_start_at', '<', $now);
             }
 
+            // about to off
             if ($filter_option == 3) {
                 // left time is less than 20%
                 $query = $query->whereRaw('DATEDIFF(t_event_items.e_end_at, CURDATE()) < (t_crowd_fundings.c_time * 0.2)')
                 ->where('event_items.e_end_at', '>', $now);
             }
 
+            // newest
             if ($filter_option == 4) {
-                $query = $query->where('event_items.e_start_at', '>', $now)->orderBy('event_items.e_start_at');
+                $query = $query->where('event_items.e_start_at', '<', $now)->orderBy('event_items.e_start_at', 'DESC');
             }
 
+            // featured
             if ($filter_option == 5) {
                 $query = $query->join('features', function ($q) {
                     $q->on('features.featurable_id', '=', 'crowd_fundings.cf_id');
