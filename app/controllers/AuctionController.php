@@ -83,7 +83,7 @@ class AuctionController extends \BaseController
                 $q->on('event_items.e_id', '=', 'auctions.e_id');
             })->where('event_items.e_end_at', '<', $now)->where('event_items.e_end_at', '>', $past)
             ->where('auctions.a_status', '>', 0)
-            ->orderBy('auctions.created_at', 'DESC')
+            ->orderBy('event_items.e_end_at', 'DESC')
             ->paginate($per_page);
             $data = [];
             foreach ($list as $key => $auction) {
